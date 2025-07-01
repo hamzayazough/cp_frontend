@@ -1,0 +1,74 @@
+🧠 Project Context: Crowd Prop – Performance-Based Promotion Marketplace
+
+Crowd Prop is a performance-based marketplace connecting two roles:
+
+- Advertisers (companies/startups) who want to promote their product, brand, or sales
+- Promoters (freelancers/influencers/sellers) who drive traffic, create content, or close sales and earn money for it
+
+💼 Application Purpose
+
+Build a web platform where:
+- Advertisers can publish visibility, marketing, or sales-based campaigns
+- Promoters can explore offers, apply, or accept contracts and earn based on results (clicks, sales, reach)
+- The platform tracks traffic via redirect links and handles payouts
+
+✅ Core Features
+
+For Advertisers
+- Create campaigns (CPV, commissions, consulting, full-service)
+- Deposit funds (Stripe)
+- Track performance of each promoter (views, sales, costs)
+- Browse promoter profiles and hire by proposal
+- Manage wallet and payouts
+
+For Promoters
+- Explore filtered list of campaigns
+- Accept or apply to offers
+- Share unique referral links
+- Track stats (views generated, sales, earnings)
+- Connect payout account (Stripe Connect)
+
+For Admins
+- Flag fraud and bots
+- Review disputes, payments
+- View system-level stats
+
+General
+- Role-based authentication
+- Tracking logic via /r/[slug] redirect microservice (IP, fingerprint, unique-per-campaign)
+- Stripe Connect for escrow-style holding and payouts
+
+🧱 Frontend Stack
+- Framework: Next.js 15 (App Router)
+- Styling: Tailwind CSS + Framer Motion
+- State: Zustand + SWR
+- Forms: React Hook Form + Zod
+- Auth: Firebase (or optionally NextAuth)
+- Payments: Stripe Connect (Custom accounts)
+- Other: clsx, date-fns, Headless UI, HeroIcons
+
+📁 Key Pages & Routes
+
+/app
+  /auth                 → Login/Register
+  /dashboard/advertiser → Advertiser portal
+  /dashboard/promoter   → Promoter dashboard
+  /explore/campaigns    → Campaign discovery
+  /campaigns/[id]       → Campaign details
+  /advertisers/[id]     → Public advertiser profile
+  /profile              → User profile settings
+  /admin                → Admin panel
+  /r/[slug]             → Redirect tracking link
+  / (landing)
+  /about /contact /features /pricing /how-it-works /terms /privacy
+
+🔗 Tracking Logic
+- When a promoter accepts a campaign, a unique link like /r/abc123 is created
+- A redirect server logs IP + fingerprint and validates if it's a unique view/sale
+- If valid, logs it and redirects user to original advertiser URL (302)
+
+🎯 Goal
+A powerful yet simple marketplace where visibility and performance are tracked, and everyone is paid fairly based on their impact — with automated, secure infrastructure.
+
+
+
