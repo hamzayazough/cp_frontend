@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { routes } from '@/lib/router';
 
@@ -12,8 +13,15 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
-            <Link href={routes.home} className="text-2xl font-bold text-gray-900">
-              Crowd Prop
+            <Link href={routes.home} className="flex items-center">
+              <Image 
+                src="/cp_logo2.png" 
+                alt="Crowd Prop" 
+                width={200} 
+                height={50}
+                className="h-8 w-auto"
+                priority
+              />
             </Link>
           </div>
 
