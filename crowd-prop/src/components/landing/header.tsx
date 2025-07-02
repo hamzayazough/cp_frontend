@@ -8,7 +8,7 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100">
+    <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/30 border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
@@ -55,7 +55,7 @@ export function Header() {
         </div>
 
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100">
+          <div className="md:hidden py-4 border-t border-white/10">
             <div className="flex flex-col space-y-4">
               <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Features
