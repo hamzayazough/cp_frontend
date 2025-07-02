@@ -17,33 +17,32 @@ export function Header() {
               <Image 
                 src="/cp_logo2.png" 
                 alt="Crowd Prop" 
-                width={200} 
-                height={50}
-                className="h-8 w-auto"
+                width={250} 
+                height={60}
+                className="h-12 w-auto"
                 priority
               />
             </Link>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <a href="#features" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <a href="#how-it-works" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
               How It Works
             </a>
-            <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <a href="#pricing" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
               Pricing
             </a>
-            <Link href={routes.login} className="text-gray-600 hover:text-gray-900 transition-colors">
-              Login
-            </Link>
-            <Link
-              href={routes.register}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Join Now
-            </Link>
+            <div className="flex items-center space-x-4">
+              <Link
+                href={routes.register}
+                className="bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 text-white px-6 py-2.5 rounded-full font-medium hover:from-blue-700 hover:via-purple-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              >
+                Get Started
+              </Link>
+            </div>
           </nav>
 
           <div className="md:hidden">
@@ -65,23 +64,23 @@ export function Header() {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-white/10">
             <div className="flex flex-col space-y-4">
-              <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <a href="#features" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
                 Features
               </a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <a href="#how-it-works" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
                 How It Works
               </a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <a href="#pricing" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
                 Pricing
               </a>
-              <Link href={routes.login} className="text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href={routes.login} className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
                 Login
               </Link>
               <Link
                 href={routes.register}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-fit"
+                className="bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 text-white px-6 py-3 rounded-full font-medium hover:from-blue-700 hover:via-purple-700 hover:to-purple-800 transition-all duration-300 w-fit shadow-lg"
               >
-                Join Now
+                Get Started
               </Link>
             </div>
           </div>
