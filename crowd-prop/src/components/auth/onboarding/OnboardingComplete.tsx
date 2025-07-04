@@ -209,7 +209,14 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600" aria-label="Default cover photo"></div>
+            <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center" aria-label="Default cover photo">
+              <div className="text-center text-white opacity-70">
+                <svg className="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <p className="text-sm font-medium">Your cover photo will appear here</p>
+              </div>
+            </div>
           )}
         </div>
 
@@ -226,10 +233,12 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <svg className="w-8 h-8 mx-auto" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
               )}
             </div>
@@ -299,14 +308,16 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
                     href={data.youtubeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center px-4 py-2 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition-all"
+                    className="flex items-center px-4 py-2 bg-red-600 text-white rounded-full text-sm font-medium hover:bg-red-700 transition-all shadow-md"
+                    style={{ backgroundColor: '#dc2626', color: 'white' }}
                   >
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 mr-2" fill="white" viewBox="0 0 24 24">
                       <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                     </svg>
                     YouTube
                   </a>
                 )}
+                {/* Debug: YouTube URL exists: {data.youtubeUrl ? 'YES' : 'NO'} */}
                 {data.twitterUrl && (
                   <a
                     href={`https://twitter.com/${data.twitterUrl}`}
@@ -435,7 +446,7 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Your Portfolio</h3>
+                <h3 className="text-xl font-semibold text-gray-900">Some of your products</h3>
                 <span className="px-4 py-2 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
                   {data.advertiserWorks.length} {data.advertiserWorks.length === 1 ? 'sample' : 'samples'}
                 </span>
@@ -572,7 +583,7 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
 
       {/* Next Steps */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <h3 className="text-lg font-semibold text-blue-900 mb-2">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
           What&apos;s Next?
         </h3>
         <p className="text-blue-800">

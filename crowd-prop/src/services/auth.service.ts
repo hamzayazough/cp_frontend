@@ -247,6 +247,35 @@ export class AuthService {
   }
 
   /**
+   * Mark user setup as complete
+   * Requires authentication
+   */
+  async markSetupComplete(): Promise<AuthResponse> {
+    try {
+      const response = await httpService.post<AuthResponse>(
+        `${this.baseEndpoint}/mark-setup-complete`,
+        undefined,
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to mark setup complete:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required. Please log in again.");
+        }
+        if (error.message.includes("404")) {
+          throw new Error("User account not found. Please contact support.");
+        }
+      }
+
+      throw new Error("Failed to complete setup. Please try again.");
+    }
+  }
+
+  /**
    * Validate username format (client-side validation)
    */
   validateUsername(username: string): { isValid: boolean; error?: string } {

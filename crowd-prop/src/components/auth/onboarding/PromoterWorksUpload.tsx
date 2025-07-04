@@ -136,7 +136,7 @@ export default function PromoterWorksUpload({
           Showcase Your Content
         </h2>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Add examples of your best promotional content to attract advertisers
+          Share examples of your best work - marketing videos, editing skills, design projects, or any content that showcases your talents to your potential clients
         </p>
       </div>
 

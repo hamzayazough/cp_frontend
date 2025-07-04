@@ -202,14 +202,43 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
   };
 
   const handleFinalComplete = async () => {
-    console.log('=== ONBOARDING COMPLETE ===');
-    console.log('User Email:', user.email);
-    console.log('Firebase UID:', user.uid);
-    console.log('Complete Onboarding Data:', onboardingData);
-    console.log('User profile created successfully');
-    console.log('===========================');
+    setIsLoading(true);
+    setError(null);
     
-    onComplete();
+    try {
+      console.log('=== ONBOARDING COMPLETE ===');
+      console.log('User Email:', user.email);
+      console.log('Firebase UID:', user.uid);
+      console.log('Complete Onboarding Data:', onboardingData);
+      console.log('Marking setup as complete...');
+      
+      // Call the mark setup complete endpoint
+      const response = await authService.markSetupComplete();
+      
+      if (response.success) {
+        console.log('Setup marked as complete successfully');
+        
+        // Update current user with the response data
+        const updatedUser = { ...response.user, isSetupDone: true };
+        userService.setCurrentUser(updatedUser);
+        
+        console.log('User isSetupDone updated to:', updatedUser.isSetupDone);
+        console.log('===========================');
+        
+        onComplete();
+      } else {
+        throw new Error(response.message || 'Failed to mark setup as complete');
+      }
+    } catch (error) {
+      console.error('Failed to mark setup as complete:', error);
+      setError(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to complete setup. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateData = (data: Partial<OnboardingData>) => {

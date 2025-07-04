@@ -233,7 +233,7 @@ export default function ProfileImages({ data, onUpdate, onNext, onBack, isLoadin
               Profile Tips
             </h3>
             <p className="text-sm text-blue-700 mt-1">
-              A professional profile picture and engaging background help you make a great first impression with {data.role === 'PROMOTER' ? 'brands' : 'content creators'}.
+              A professional profile picture and engaging background help you make a great first impression with {data.role === 'PROMOTER' ? 'brands' : 'content creators'} and should be representative of your {data.role === 'PROMOTER' ? 'personal brand' : 'company'}.
             </p>
           </div>
         </div>

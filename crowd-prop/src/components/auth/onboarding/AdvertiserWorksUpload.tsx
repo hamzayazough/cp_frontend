@@ -153,10 +153,10 @@ export default function AdvertiserWorksUpload({
           </svg>
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-3">
-          Showcase Your Work
+          Showcase Your Products & Services
         </h2>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Add examples of your products or services to attract the best promoters
+          Share what your company offers so promoters can understand and effectively promote your brand
         </p>
       </div>
 
@@ -168,7 +168,7 @@ export default function AdvertiserWorksUpload({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">Add Work Sample</h3>
+          <h3 className="text-xl font-semibold text-gray-900">Add Product/Service</h3>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -198,7 +198,7 @@ export default function AdvertiserWorksUpload({
                 onChange={handleInputChange}
                 rows={5}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
-                placeholder="Describe your product or service in detail..."
+                placeholder="Describe what your company offers and why it's valuable..."
               />
             </div>
           </div>
@@ -207,7 +207,7 @@ export default function AdvertiserWorksUpload({
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
-                Website URL
+                Company Website/Product Page
               </label>
               <input
                 type="url"
@@ -215,7 +215,7 @@ export default function AdvertiserWorksUpload({
                 value={workFormData.websiteUrl}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                placeholder="https://your-website.com"
+                placeholder="https://your-company.com/product"
               />
             </div>
 
@@ -241,7 +241,7 @@ export default function AdvertiserWorksUpload({
             {/* File Upload */}
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
-                Product Image/Video
+                Product/Service Image or Video
               </label>
               <div
                 className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all ${
@@ -281,7 +281,7 @@ export default function AdvertiserWorksUpload({
                       Drop files here or <span className="text-blue-600">click to browse</span>
                     </p>
                     <p className="text-gray-500 text-sm">
-                      Images & Videos up to 50MB
+                      Show your products/services visually (Images & Videos up to 50MB)
                     </p>
                   </div>
                 )}
@@ -312,10 +312,10 @@ export default function AdvertiserWorksUpload({
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Uploading...
+              Adding...
             </div>
           ) : (
-            'Add Work Sample'
+            'Add to Portfolio'
           )}
         </button>
       </div>
@@ -330,10 +330,10 @@ export default function AdvertiserWorksUpload({
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">Your Portfolio</h3>
+              <h3 className="text-xl font-semibold text-gray-900">Company Portfolio</h3>
             </div>
             <span className="px-4 py-2 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
-              {data.advertiserWorks.length} {data.advertiserWorks.length === 1 ? 'sample' : 'samples'}
+              {data.advertiserWorks.length} {data.advertiserWorks.length === 1 ? 'offering' : 'offerings'}
             </span>
           </div>
           
@@ -346,7 +346,7 @@ export default function AdvertiserWorksUpload({
                     onClick={() => handleRemoveWork(index)}
                     className="flex-shrink-0 p-1.5 rounded-md transition-all shadow-sm"
                     style={{ backgroundColor: '#ef4444', borderColor: '#ef4444', border: '2px solid #ef4444' }}
-                    title="Delete work"
+                    title="Remove from portfolio"
                   >
                     <svg className="w-4 h-4" fill="white" stroke="white" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -376,7 +376,7 @@ export default function AdvertiserWorksUpload({
                       rel="noopener noreferrer"
                       className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full hover:bg-blue-200 transition-colors"
                     >
-                      View Product →
+                      Visit Page →
                     </a>
                   )}
                 </div>
