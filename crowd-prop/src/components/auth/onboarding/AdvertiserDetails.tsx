@@ -1,6 +1,7 @@
 'use client';
 
 import { OnboardingData } from '../UserOnboarding';
+import { AdvertiserType } from '@/app/enums/advertiser-type';
 
 interface AdvertiserDetailsProps {
   data: OnboardingData;
@@ -10,21 +11,43 @@ interface AdvertiserDetailsProps {
 }
 
 export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: AdvertiserDetailsProps) {
-  const advertiserTypes = [
-    'Clothing & Fashion',
-    'Food & Beverage',
-    'Technology',
-    'Beauty & Cosmetics',
-    'Health & Fitness',
-    'Education',
-    'Travel & Tourism',
-    'Gaming',
-    'Entertainment',
-    'Home & Garden',
-    'Automotive',
-    'Finance',
-    'Other'
-  ];
+  // Create a mapping for display names
+  const advertiserTypeLabels: Record<AdvertiserType, string> = {
+    [AdvertiserType.EDUCATION]: 'Education',
+    [AdvertiserType.CLOTHING]: 'Clothing & Fashion',
+    [AdvertiserType.TECH]: 'Technology',
+    [AdvertiserType.BEAUTY]: 'Beauty & Cosmetics',
+    [AdvertiserType.FOOD]: 'Food & Beverage',
+    [AdvertiserType.HEALTH]: 'Health & Fitness',
+    [AdvertiserType.ENTERTAINMENT]: 'Entertainment',
+    [AdvertiserType.TRAVEL]: 'Travel & Tourism',
+    [AdvertiserType.FINANCE]: 'Finance',
+    [AdvertiserType.OTHER]: 'Other',
+    [AdvertiserType.SPORTS]: 'Sports',
+    [AdvertiserType.AUTOMOTIVE]: 'Automotive',
+    [AdvertiserType.ART]: 'Art',
+    [AdvertiserType.GAMING]: 'Gaming',
+    [AdvertiserType.ECOMMERCE]: 'E-commerce',
+    [AdvertiserType.MEDIA]: 'Media',
+    [AdvertiserType.NON_PROFIT]: 'Non-Profit',
+    [AdvertiserType.REAL_ESTATE]: 'Real Estate',
+    [AdvertiserType.HOME_SERVICES]: 'Home & Garden',
+    [AdvertiserType.EVENTS]: 'Events',
+    [AdvertiserType.CONSULTING]: 'Consulting',
+    [AdvertiserType.BOOKS]: 'Books',
+    [AdvertiserType.MUSIC]: 'Music',
+    [AdvertiserType.PETS]: 'Pets',
+    [AdvertiserType.TOYS]: 'Toys',
+    [AdvertiserType.BABY]: 'Baby',
+    [AdvertiserType.JEWELRY]: 'Jewelry',
+    [AdvertiserType.SCIENCE]: 'Science',
+    [AdvertiserType.HARDWARE]: 'Hardware',
+    [AdvertiserType.ENERGY]: 'Energy',
+    [AdvertiserType.AGRICULTURE]: 'Agriculture',
+    [AdvertiserType.GOVERNMENT]: 'Government',
+  };
+
+  const advertiserTypes = Object.values(AdvertiserType);
 
   const handleCompanyNameChange = (value: string) => {
     onUpdate({
@@ -48,7 +71,7 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
     });
   };
 
-  const handleTypeToggle = (type: string) => {
+  const handleTypeToggle = (type: AdvertiserType) => {
     const currentTypes = data.advertiserDetails?.advertiserTypes || [];
     const newTypes = currentTypes.includes(type)
       ? currentTypes.filter(t => t !== type)
@@ -126,7 +149,7 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
                       : 'border-gray-200 hover:border-gray-300 text-gray-700'
                   }`}
                 >
-                  {type}
+                  {advertiserTypeLabels[type]}
                 </button>
               );
             })}

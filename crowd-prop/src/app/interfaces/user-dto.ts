@@ -18,6 +18,10 @@ export interface CreateUserDto {
   twitterUrl: string;
   websiteUrl: string;
 
+  // Profile images
+  avatarUrl?: string;
+  backgroundUrl?: string;
+
   advertiserDetails?: AdvertiserDetailsDto;
   promoterDetails?: PromoterDetailsDto;
 }

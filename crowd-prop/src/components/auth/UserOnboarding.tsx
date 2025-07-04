@@ -12,6 +12,7 @@ import RoleSelection from './onboarding/RoleSelection';
 import BasicInformation from './onboarding/BasicInformation';
 import AdvertiserDetails from './onboarding/AdvertiserDetails';
 import PromoterDetails from './onboarding/PromoterDetails';
+import ProfileImages from './onboarding/ProfileImages';
 import OnboardingComplete from './onboarding/OnboardingComplete';
 
 interface UserOnboardingProps {
@@ -31,15 +32,19 @@ export interface OnboardingData {
   twitterUrl: string;
   websiteUrl: string;
 
+  // Profile images
+  avatarUrl?: string;
+  backgroundUrl?: string;
+
   advertiserDetails?: {
     companyName: string;
-    advertiserTypes: string[];
+    advertiserTypes: AdvertiserType[];
     companyWebsite: string;
   };
 
   promoterDetails?: {
     location: string;
-    languagesSpoken: string[];
+    languagesSpoken: Language[];
     skills: string[];
   };
 }
@@ -60,7 +65,7 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
     websiteUrl: '',
   });
 
-  const totalSteps = onboardingData.role === 'ADVERTISER' ? 4 : onboardingData.role === 'PROMOTER' ? 4 : 3;
+  const totalSteps = onboardingData.role === 'ADVERTISER' ? 6 : onboardingData.role === 'PROMOTER' ? 6 : 4;
 
   const handleNext = () => {
     setCurrentStep(prev => prev + 1);
@@ -88,6 +93,8 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
         youtubeUrl: onboardingData.youtubeUrl,
         twitterUrl: onboardingData.twitterUrl,
         websiteUrl: onboardingData.websiteUrl,
+        avatarUrl: onboardingData.avatarUrl,
+        backgroundUrl: onboardingData.backgroundUrl,
       };
 
       // Add role-specific details
@@ -178,6 +185,15 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
         }
         break;
       case 4:
+        return (
+          <ProfileImages
+            data={onboardingData}
+            onUpdate={updateData}
+            onNext={handleNext}
+            onBack={handleBack}
+          />
+        );
+      case 5:
         return (
           <OnboardingComplete
             data={onboardingData}

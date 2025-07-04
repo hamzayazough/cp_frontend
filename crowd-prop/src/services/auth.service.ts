@@ -13,6 +13,17 @@ export interface ProfileResponse {
   user: User;
 }
 
+export interface UploadResult {
+  publicUrl: string;
+  key: string;
+}
+
+export interface UploadResponse {
+  success: boolean;
+  message: string;
+  result: UploadResult;
+}
+
 export interface UsernameCheckResponse {
   available: boolean;
   exists: boolean;
@@ -21,6 +32,17 @@ export interface UsernameCheckResponse {
 export interface UserByIdResponse {
   success: boolean;
   user: User;
+}
+
+export interface UploadResult {
+  publicUrl: string;
+  key: string;
+}
+
+export interface UploadResponse {
+  success: boolean;
+  message: string;
+  result: UploadResult;
 }
 
 export class AuthService {
@@ -312,6 +334,94 @@ export class AuthService {
       isValid: errors.length === 0,
       errors,
     };
+  }
+
+  /**
+   * Upload user avatar image
+   * Requires authentication
+   */
+  async uploadAvatar(file: File): Promise<UploadResponse> {
+    try {
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error(
+          "Invalid file type. Only JPEG, PNG, and WebP are allowed."
+        );
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error("File size too large. Maximum size is 5MB.");
+      }
+
+      const response = await httpService.uploadFile<UploadResponse>(
+        `${this.baseEndpoint}/upload-avatar`,
+        file,
+        undefined,
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload avatar:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Invalid file provided");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Invalid or missing Firebase token");
+        }
+      }
+
+      throw new Error("Failed to upload avatar. Please try again.");
+    }
+  }
+
+  /**
+   * Upload user background image
+   * Requires authentication
+   */
+  async uploadBackground(file: File): Promise<UploadResponse> {
+    try {
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error(
+          "Invalid file type. Only JPEG, PNG, and WebP are allowed."
+        );
+      }
+
+      // Validate file size (10MB max)
+      const maxSize = 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error("File size too large. Maximum size is 10MB.");
+      }
+
+      const response = await httpService.uploadFile<UploadResponse>(
+        `${this.baseEndpoint}/upload-background`,
+        file,
+        undefined,
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload background:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Invalid file provided");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Invalid or missing Firebase token");
+        }
+      }
+
+      throw new Error("Failed to upload background image. Please try again.");
+    }
   }
 }
 

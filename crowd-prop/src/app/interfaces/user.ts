@@ -41,6 +41,7 @@ export interface AdvertiserDetails {
   advertiserTypes: AdvertiserType[]; // e.g., ["CLOTHING", "EDUCATION"]
   companyWebsite?: string;
   verified?: boolean;
+  advertiserWork?: AdvertiserWork[]; // Example products or services offered
 }
 
 // 📣 Promoter-specific data
