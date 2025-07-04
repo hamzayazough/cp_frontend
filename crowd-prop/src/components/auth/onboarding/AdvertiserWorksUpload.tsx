@@ -342,7 +342,14 @@ export default function AdvertiserWorksUpload({
                   </button>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-4 leading-relaxed">{work.description}</p>
+                <p className="text-gray-700 text-sm mb-4 leading-relaxed h-12 overflow-hidden text-ellipsis" style={{ 
+                  display: '-webkit-box',
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical' as const,
+                  textOverflow: 'ellipsis'
+                }}>
+                  {work.description}
+                </p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {work.price && formatPrice(work.price) && (
@@ -363,20 +370,24 @@ export default function AdvertiserWorksUpload({
                 </div>
                 
                 {work.mediaUrl && (
-                  <div className="rounded-lg overflow-hidden border border-gray-200">
-                    {work.mediaUrl.includes('video') ? (
-                      <video 
-                        src={work.mediaUrl} 
-                        controls 
-                        className="w-full h-40 object-cover"
-                      />
-                    ) : (
-                      <img 
-                        src={work.mediaUrl} 
-                        alt={work.title} 
-                        className="w-full h-40 object-cover"
-                      />
-                    )}
+                  <div className="mt-4">
+                    <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-100" style={{ height: '192px' }}>
+                      {work.mediaUrl.includes('video') ? (
+                        <video 
+                          src={work.mediaUrl} 
+                          controls 
+                          className="w-full h-full object-cover"
+                          style={{ height: '192px' }}
+                        />
+                      ) : (
+                        <img 
+                          src={work.mediaUrl} 
+                          alt={work.title} 
+                          className="w-full h-full object-cover"
+                          style={{ height: '192px' }}
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
