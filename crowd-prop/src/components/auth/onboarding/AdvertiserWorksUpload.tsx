@@ -114,9 +114,19 @@ export default function AdvertiserWorksUpload({
     }
   };
 
-  const handleRemoveWork = (index: number) => {
-    const updatedWorks = data.advertiserWorks.filter((_, i) => i !== index);
-    onUpdate({ advertiserWorks: updatedWorks });
+  const handleRemoveWork = async (index: number) => {
+    const work = data.advertiserWorks[index];
+    
+    try {
+      await authService.deleteAdvertiserWork(work.title);
+      
+      // Remove from local state after successful API call
+      const updatedWorks = data.advertiserWorks.filter((_, i) => i !== index);
+      onUpdate({ advertiserWorks: updatedWorks });
+    } catch (error) {
+      console.error('Failed to delete work:', error);
+      setError(error instanceof Error ? error.message : 'Failed to delete work');
+    }
   };
 
   const handleSkip = () => {
@@ -334,10 +344,12 @@ export default function AdvertiserWorksUpload({
                   <h4 className="font-semibold text-gray-900 text-lg pr-4">{work.title}</h4>
                   <button
                     onClick={() => handleRemoveWork(index)}
-                    className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                    className="flex-shrink-0 p-1.5 rounded-md transition-all shadow-sm"
+                    style={{ backgroundColor: '#ef4444', borderColor: '#ef4444', border: '2px solid #ef4444' }}
+                    title="Delete work"
                   >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    <svg className="w-4 h-4" fill="white" stroke="white" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                     </svg>
                   </button>
                 </div>
@@ -369,7 +381,7 @@ export default function AdvertiserWorksUpload({
                   )}
                 </div>
                 
-                {work.mediaUrl && (
+                {work.mediaUrl ? (
                   <div className="mt-4">
                     <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-100" style={{ height: '192px' }}>
                       {work.mediaUrl.includes('video') ? (
@@ -387,6 +399,19 @@ export default function AdvertiserWorksUpload({
                           style={{ height: '192px' }}
                         />
                       )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4">
+                    <div className="rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center" style={{ height: '192px' }}>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <p className="text-gray-500 text-sm font-medium">No image uploaded</p>
+                      </div>
                     </div>
                   </div>
                 )}

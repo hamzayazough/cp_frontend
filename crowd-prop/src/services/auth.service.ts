@@ -600,6 +600,72 @@ export class AuthService {
       throw new Error("Failed to upload work. Please try again.");
     }
   }
+
+  /**
+   * Delete advertiser work
+   * Requires authentication
+   */
+  async deleteAdvertiserWork(
+    title: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+      }>(`${this.baseEndpoint}/delete-advertiser-work`, { title }, true);
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to delete advertiser work:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Title is required");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required");
+        }
+        if (error.message.includes("404")) {
+          throw new Error("Work not found");
+        }
+      }
+
+      throw new Error("Failed to delete work. Please try again.");
+    }
+  }
+
+  /**
+   * Delete promoter work
+   * Requires authentication
+   */
+  async deletePromoterWork(
+    title: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+      }>(`${this.baseEndpoint}/delete-promoter-work`, { title }, true);
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to delete promoter work:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Title is required");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required");
+        }
+        if (error.message.includes("404")) {
+          throw new Error("Work not found");
+        }
+      }
+
+      throw new Error("Failed to delete work. Please try again.");
+    }
+  }
 }
 
 export const authService = new AuthService();
