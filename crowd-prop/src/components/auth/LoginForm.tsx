@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { signInWithEmail, signInWithGoogle } from '@/lib/firebase';
+import { authService } from '@/services/auth.service';
+import { userService } from '@/services/user.service';
 import { FirebaseError } from 'firebase/app';
 
 interface LoginFormProps {
-  onSuccess: (newUser?: boolean) => void;
+  onSuccess: (needsOnboarding: boolean) => void;
 }
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
@@ -22,8 +24,48 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     setError('');
 
     try {
+      // Sign in with Firebase
       await signInWithEmail(email, password);
-      onSuccess(false);
+      
+      // Check if user exists in our backend
+      try {
+        const profileResponse = await authService.getProfile();
+        console.log('=== GET PROFILE RESPONSE ===');
+        console.log('Response:', profileResponse);
+        console.log('User isSetupDone:', profileResponse.user.isSetupDone);
+        console.log('============================');
+        
+        // Save user data to user service
+        userService.setCurrentUser(profileResponse.user);
+        // Check if user needs onboarding
+        onSuccess(!profileResponse.user.isSetupDone);
+      } catch {
+        // User doesn't exist in backend, create account
+        try {
+          const createResponse = await authService.createAccount();
+          // Save user data to user service
+          userService.setCurrentUser(createResponse.user);
+          // New user needs onboarding
+          onSuccess(true);
+        } catch (createError) {
+          if (createError instanceof Error) {
+            if (createError.message.includes('User already exists')) {
+              // User exists but profile fetch failed, try to get profile again
+              try {
+                const profileResponse = await authService.getProfile();
+                userService.setCurrentUser(profileResponse.user);
+                onSuccess(!profileResponse.user.isSetupDone);
+              } catch {
+                setError('Failed to load user profile. Please try again.');
+              }
+            } else {
+              setError(createError.message);
+            }
+          } else {
+            setError('Failed to create account. Please try again.');
+          }
+        }
+      }
     } catch (error) {
       const firebaseError = error as FirebaseError;
       setError(getErrorMessage(firebaseError.code));
@@ -37,9 +79,66 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     setError('');
 
     try {
+      // Sign in with Google
       const result = await signInWithGoogle();
       const isNewUser = result.user.metadata.creationTime === result.user.metadata.lastSignInTime;
-      onSuccess(isNewUser);
+      
+      if (isNewUser) {
+        // New Google user - create account immediately
+        try {
+          const createResponse = await authService.createAccount();
+          userService.setCurrentUser(createResponse.user);
+          onSuccess(true); // New user needs onboarding
+        } catch (createError) {
+          if (createError instanceof Error) {
+            if (createError.message.includes('User already exists')) {
+              // User exists, get profile
+              try {
+                const profileResponse = await authService.getProfile();
+                userService.setCurrentUser(profileResponse.user);
+                onSuccess(!profileResponse.user.isSetupDone);
+              } catch {
+                setError('Failed to load user profile. Please try again.');
+              }
+            } else {
+              setError(createError.message);
+            }
+          } else {
+            setError('Failed to create account. Please try again.');
+          }
+        }
+      } else {
+        // Existing Google user - check if profile exists
+        try {
+          const profileResponse = await authService.getProfile();
+          userService.setCurrentUser(profileResponse.user);
+          onSuccess(!profileResponse.user.isSetupDone);
+        } catch {
+          // Profile doesn't exist, create account
+          try {
+            const createResponse = await authService.createAccount();
+            userService.setCurrentUser(createResponse.user);
+            onSuccess(true); // New user needs onboarding
+          } catch (createError) {
+            if (createError instanceof Error) {
+              if (createError.message.includes('User already exists')) {
+                // User exists, try to get profile again
+                try {
+                  const profileResponse = await authService.getProfile();
+                  userService.setCurrentUser(profileResponse.user);
+                  onSuccess(!profileResponse.user.isSetupDone);
+                } catch {
+                  setError('Failed to load user profile. Please try again.');
+                }
+              } else {
+                setError(createError.message);
+              }
+            } else {
+              setError('Failed to create account. Please try again.');
+            }
+          }
+        }
+      }
     } catch (error) {
       const firebaseError = error as FirebaseError;
       setError(getErrorMessage(firebaseError.code));

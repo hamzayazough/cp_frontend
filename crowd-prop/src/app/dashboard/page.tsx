@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
-import { auth, logout } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import Link from "next/link";
 import { routes } from "@/lib/router";
 
 export default function DashboardPage() {
@@ -20,16 +19,28 @@ export default function DashboardPage() {
       
       if (!authUser) {
         router.push('/auth');
+        return;
+      }
+
+      // In a real app, you would get the user's role from your database
+      // For now, we'll assume they're a promoter and redirect accordingly
+      // You can modify this logic based on how you store user roles
+      
+      // Mock role detection - in production, get this from your user data
+      const userRole = 'PROMOTER'; // This should come from your user profile/database
+      
+      if (userRole === 'PROMOTER') {
+        router.push(routes.promoter.dashboard);
+      } else if (userRole === 'ADVERTISER') {
+        router.push(routes.advertiser.dashboard);
+      } else {
+        // Default fallback dashboard
+        router.push(routes.promoter.dashboard);
       }
     });
 
     return () => unsubscribe();
   }, [router]);
-
-  const handleLogout = async () => {
-    await logout();
-    router.push('/auth');
-  };
 
   if (loading) {
     return (
@@ -43,84 +54,13 @@ export default function DashboardPage() {
     return null;
   }
 
+  // This component should redirect, so we shouldn't reach this point
+  // But just in case, show a loading state
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Welcome to your Dashboard!
-              </h1>
-              <p className="text-gray-600 mt-2">
-                Hello {user.displayName || user.email}, your account setup is complete.
-              </p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-            >
-              Sign Out
-            </button>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="bg-white border rounded-lg p-6 shadow-sm">
-              <h3 className="text-xl font-semibold mb-2">Campaigns</h3>
-              <p className="text-gray-600 mb-4">Manage your marketing campaigns</p>
-              <Link
-                href={routes.campaigns}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors inline-block"
-              >
-                View Campaigns
-              </Link>
-            </div>
-
-            <div className="bg-white border rounded-lg p-6 shadow-sm">
-              <h3 className="text-xl font-semibold mb-2">Messages</h3>
-              <p className="text-gray-600 mb-4">Check your conversations</p>
-              <Link
-                href={routes.messages}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors inline-block"
-              >
-                View Messages
-              </Link>
-            </div>
-
-            <div className="bg-white border rounded-lg p-6 shadow-sm">
-              <h3 className="text-xl font-semibold mb-2">Profile</h3>
-              <p className="text-gray-600 mb-4">Update your profile settings</p>
-              <Link
-                href={routes.profile}
-                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors inline-block"
-              >
-                Edit Profile
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              🚀 Getting Started
-            </h3>
-            <p className="text-gray-700 text-sm mb-4">
-              Your profile information has been logged to the console. In a production environment, 
-              this data would be saved to your backend database.
-            </p>
-            <p className="text-gray-600 text-xs">
-              Check the browser console to see the complete onboarding data that was collected.
-            </p>
-          </div>
-
-          <div className="mt-8">
-            <Link
-              href={routes.home}
-              className="text-blue-600 hover:text-blue-800 underline"
-            >
-              ← Back to Home
-            </Link>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-600">Redirecting to your dashboard...</p>
       </div>
     </div>
   );

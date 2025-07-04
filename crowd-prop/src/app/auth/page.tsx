@@ -1,53 +1,74 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { userService } from '@/services/user.service';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
-import UserOnboarding from '@/components/auth/UserOnboarding';
-import { useRouter } from 'next/navigation';
 
 export default function AuthPage() {
-  const [currentView, setCurrentView] = useState<'login' | 'register' | 'onboarding'>('login');
-  const [user, setUser] = useState<User | null>(null);
+  const [currentView, setCurrentView] = useState<'login' | 'register'>('login');
   const [loading, setLoading] = useState(true);
-  const [isNewUser, setIsNewUser] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      setUser(authUser);
-      setLoading(false);
-      setAuthChecked(true);
+      if (!authUser) {
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    if (!authChecked || loading) return;
+    const unsubscribe = userService.onUserChange((currentUser) => {
+      const firebaseUser = auth.currentUser;
+      
+      if (firebaseUser && currentUser) {
+        if (!currentUser.isSetupDone) {
+          router.push('/onboarding');
+        } else {
+          const role = currentUser.role?.toLowerCase();
+          if (role === 'promoter') {
+            router.push('/dashboard/promoter');
+          } else if (role === 'advertiser') {
+            router.push('/dashboard/advertiser');
+          } else {
+            router.push('/dashboard');
+          }
+        }
+      }
+      
+      setLoading(false);
+    });
 
-    if (user && isNewUser) {
-      setCurrentView('onboarding');
-    } else if (user && !isNewUser) {
-      router.push('/dashboard');
+    return unsubscribe;
+  }, [router]);
+
+  const handleAuthSuccess = (needsOnboarding: boolean) => {
+    console.log('Auth success called with needsOnboarding:', needsOnboarding);
+    if (needsOnboarding) {
+      console.log('Redirecting to onboarding');
+      router.push('/onboarding');
+    } else {
+      console.log('Redirecting to dashboard');
+      const currentUser = userService.getCurrentUserSync();
+      if (currentUser) {
+        const role = currentUser.role?.toLowerCase();
+        if (role === 'promoter') {
+          router.push('/dashboard/promoter');
+        } else if (role === 'advertiser') {
+          router.push('/dashboard/advertiser');
+        } else {
+          router.push('/dashboard');
+        }
+      } else {
+        router.push('/dashboard');
+      }
     }
-  }, [user, isNewUser, authChecked, loading, router]);
-
-  const handleAuthSuccess = (newUser: boolean = false) => {
-    console.log('Auth success called with newUser:', newUser);
-    setIsNewUser(newUser);
-    if (newUser) {
-      console.log('Setting current view to onboarding');
-      setCurrentView('onboarding');
-    }
-  };
-
-  const handleOnboardingComplete = () => {
-    router.push('/dashboard');
   };
 
   if (loading) {
@@ -56,10 +77,6 @@ export default function AuthPage() {
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
-  }
-
-  if (user && currentView === 'onboarding') {
-    return <UserOnboarding user={user} onComplete={handleOnboardingComplete} />;
   }
 
   return (

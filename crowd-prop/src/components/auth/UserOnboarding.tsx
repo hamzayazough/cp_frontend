@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { User } from 'firebase/auth';
 import { UserRole } from '@/app/interfaces/user';
+import { authService } from '@/services/auth.service';
+import { userService } from '@/services/user.service';
+import { CreateUserDto } from '@/app/interfaces/user-dto';
+import { AdvertiserType } from '@/app/enums/advertiser-type';
+import { Language } from '@/app/enums/language';
 import RoleSelection from './onboarding/RoleSelection';
 import BasicInformation from './onboarding/BasicInformation';
 import AdvertiserDetails from './onboarding/AdvertiserDetails';
@@ -41,6 +46,8 @@ export interface OnboardingData {
 
 export default function UserOnboarding({ user, onComplete }: UserOnboardingProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     name: user.displayName || '',
     bio: '',
@@ -63,15 +70,67 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
     setCurrentStep(prev => prev - 1);
   };
 
-  const handleComplete = () => {
-    // Console log the final data
-    console.log('=== ONBOARDING COMPLETE ===');
-    console.log('User Email:', user.email);
-    console.log('Firebase UID:', user.uid);
-    console.log('Complete Onboarding Data:', onboardingData);
-    console.log('===========================');
+  const handleComplete = async () => {
+    setIsLoading(true);
+    setError(null);
     
-    onComplete();
+    try {
+      // Convert onboarding data to CreateUserDto format
+      const createUserDto: CreateUserDto = {
+        firebaseUid: user.uid,
+        email: user.email || '',
+        name: onboardingData.name,
+        bio: onboardingData.bio,
+        role: onboardingData.role,
+        tiktokUrl: onboardingData.tiktokUrl,
+        instagramUrl: onboardingData.instagramUrl,
+        snapchatUrl: onboardingData.snapchatUrl,
+        youtubeUrl: onboardingData.youtubeUrl,
+        twitterUrl: onboardingData.twitterUrl,
+        websiteUrl: onboardingData.websiteUrl,
+      };
+
+      // Add role-specific details
+      if (onboardingData.role === 'ADVERTISER' && onboardingData.advertiserDetails) {
+        createUserDto.advertiserDetails = {
+          companyName: onboardingData.advertiserDetails.companyName,
+          advertiserTypes: onboardingData.advertiserDetails.advertiserTypes as AdvertiserType[],
+          companyWebsite: onboardingData.advertiserDetails.companyWebsite,
+        };
+      }
+
+      if (onboardingData.role === 'PROMOTER' && onboardingData.promoterDetails) {
+        createUserDto.promoterDetails = {
+          location: onboardingData.promoterDetails.location,
+          languagesSpoken: onboardingData.promoterDetails.languagesSpoken as Language[],
+          skills: onboardingData.promoterDetails.skills,
+        };
+      }
+
+      // Complete account setup using auth service
+      const response = await authService.completeAccount(createUserDto);
+      
+      // Update user data in user service
+      userService.setCurrentUser(response.user);
+
+      console.log('=== ONBOARDING COMPLETE ===');
+      console.log('User Email:', user.email);
+      console.log('Firebase UID:', user.uid);
+      console.log('Complete Onboarding Data:', onboardingData);
+      console.log('User profile created successfully');
+      console.log('===========================');
+      
+      onComplete();
+    } catch (error) {
+      console.error('Failed to complete account setup:', error);
+      setError(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to complete onboarding. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateData = (data: Partial<OnboardingData>) => {
@@ -125,6 +184,7 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
             userEmail={user.email || ''}
             onComplete={handleComplete}
             onBack={handleBack}
+            isLoading={isLoading}
           />
         );
     }
@@ -160,6 +220,11 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
           {renderStep()}
         </div>
       </div>

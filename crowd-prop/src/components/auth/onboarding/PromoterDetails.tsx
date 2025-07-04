@@ -1,6 +1,7 @@
 'use client';
 
 import { OnboardingData } from '../UserOnboarding';
+import { Language } from '@/app/enums/language';
 
 interface PromoterDetailsProps {
   data: OnboardingData;
@@ -10,9 +11,25 @@ interface PromoterDetailsProps {
 }
 
 export default function PromoterDetails({ data, onUpdate, onNext, onBack }: PromoterDetailsProps) {
-  const languages = [
-    'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 
-    'Russian', 'Chinese', 'Japanese', 'Korean', 'Arabic', 'Hindi', 'Other'
+  // Language mapping for display purposes
+  const languageOptions = [
+    { value: Language.ENGLISH, display: 'English' },
+    { value: Language.SPANISH, display: 'Spanish' },
+    { value: Language.FRENCH, display: 'French' },
+    { value: Language.GERMAN, display: 'German' },
+    { value: Language.ITALIAN, display: 'Italian' },
+    { value: Language.PORTUGUESE, display: 'Portuguese' },
+    { value: Language.RUSSIAN, display: 'Russian' },
+    { value: Language.CHINESE, display: 'Chinese' },
+    { value: Language.JAPANESE, display: 'Japanese' },
+    { value: Language.KOREAN, display: 'Korean' },
+    { value: Language.ARABIC, display: 'Arabic' },
+    { value: Language.HINDI, display: 'Hindi' },
+    { value: Language.DUTCH, display: 'Dutch' },
+    { value: Language.TURKISH, display: 'Turkish' },
+    { value: Language.POLISH, display: 'Polish' },
+    { value: Language.SWEDISH, display: 'Swedish' },
+    { value: Language.OTHER, display: 'Other' }
   ];
 
   const skillsOptions = [
@@ -33,7 +50,7 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
     });
   };
 
-  const handleLanguageToggle = (language: string) => {
+  const handleLanguageToggle = (language: Language) => {
     const currentLanguages = data.promoterDetails?.languagesSpoken || [];
     const newLanguages = currentLanguages.includes(language)
       ? currentLanguages.filter(l => l !== language)
@@ -101,20 +118,20 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
             Languages Spoken * (Select all that apply)
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {languages.map((language) => {
-              const isSelected = (data.promoterDetails?.languagesSpoken || []).includes(language);
+            {languageOptions.map((languageOption) => {
+              const isSelected = (data.promoterDetails?.languagesSpoken || []).includes(languageOption.value);
               return (
                 <button
-                  key={language}
+                  key={languageOption.value}
                   type="button"
-                  onClick={() => handleLanguageToggle(language)}
+                  onClick={() => handleLanguageToggle(languageOption.value)}
                   className={`p-2 text-sm border rounded-lg text-center transition-all duration-200 ${
                     isSelected
                       ? 'border-blue-500 bg-blue-50 text-blue-700'
                       : 'border-gray-200 hover:border-gray-300 text-gray-700'
                   }`}
                 >
-                  {language}
+                  {languageOption.display}
                 </button>
               );
             })}
