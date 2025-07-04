@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { UserRole } from '@/app/interfaces/user';
 import { authService } from '@/services/auth.service';
@@ -8,11 +8,15 @@ import { userService } from '@/services/user.service';
 import { CreateUserDto } from '@/app/interfaces/user-dto';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
 import { Language } from '@/app/enums/language';
+import { PromoterWork } from '@/app/interfaces/promoter-work';
+import { AdvertiserWork } from '@/app/interfaces/advertiser-work';
 import RoleSelection from './onboarding/RoleSelection';
 import BasicInformation from './onboarding/BasicInformation';
 import AdvertiserDetails from './onboarding/AdvertiserDetails';
 import PromoterDetails from './onboarding/PromoterDetails';
 import ProfileImages from './onboarding/ProfileImages';
+import AdvertiserWorksUpload from './onboarding/AdvertiserWorksUpload';
+import PromoterWorksUpload from './onboarding/PromoterWorksUpload';
 import OnboardingComplete from './onboarding/OnboardingComplete';
 
 interface UserOnboardingProps {
@@ -36,6 +40,10 @@ export interface OnboardingData {
   avatarUrl?: string;
   backgroundUrl?: string;
 
+  // Portfolio/Works
+  promoterWorks: PromoterWork[];
+  advertiserWorks: AdvertiserWork[];
+
   advertiserDetails?: {
     companyName: string;
     advertiserTypes: AdvertiserType[];
@@ -52,6 +60,7 @@ export interface OnboardingData {
 export default function UserOnboarding({ user, onComplete }: UserOnboardingProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     name: user.displayName || '',
@@ -63,9 +72,61 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
     youtubeUrl: '',
     twitterUrl: '',
     websiteUrl: '',
+    promoterWorks: [],
+    advertiserWorks: [],
   });
 
-  const totalSteps = onboardingData.role === 'ADVERTISER' ? 6 : onboardingData.role === 'PROMOTER' ? 6 : 4;
+  // Load existing user profile on component mount
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        setIsLoadingProfile(true);
+        const response = await authService.getProfile();
+        
+        if (response.success && response.user) {
+          // User profile exists, populate the form
+          const existingUser = response.user;
+          setOnboardingData({
+            name: existingUser.name || user.displayName || '',
+            bio: existingUser.bio || '',
+            role: existingUser.role,
+            tiktokUrl: existingUser.tiktokUrl || '',
+            instagramUrl: existingUser.instagramUrl || '',
+            snapchatUrl: existingUser.snapchatUrl || '',
+            youtubeUrl: existingUser.youtubeUrl || '',
+            twitterUrl: existingUser.twitterUrl || '',
+            websiteUrl: existingUser.websiteUrl || '',
+            avatarUrl: existingUser.avatarUrl,
+            backgroundUrl: existingUser.backgroundUrl,
+            promoterWorks: existingUser.promoterDetails?.works || [],
+            advertiserWorks: existingUser.advertiserDetails?.advertiserWork || [],
+            advertiserDetails: existingUser.advertiserDetails ? {
+              companyName: existingUser.advertiserDetails.companyName || '',
+              advertiserTypes: existingUser.advertiserDetails.advertiserTypes || [],
+              companyWebsite: existingUser.advertiserDetails.companyWebsite || '',
+            } : undefined,
+            promoterDetails: existingUser.promoterDetails ? {
+              location: existingUser.promoterDetails.location || '',
+              languagesSpoken: existingUser.promoterDetails.languagesSpoken || [],
+              skills: existingUser.promoterDetails.skills || [],
+            } : undefined,
+          });
+          
+          // Set current user in user service
+          userService.setCurrentUser(existingUser);
+        }
+      } catch (error) {
+        // User profile doesn't exist (404) or other error - continue with empty form
+        console.log('No existing user profile found, starting fresh onboarding:', error);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    loadUserProfile();
+  }, [user.displayName, user.uid]);
+
+  const totalSteps = onboardingData.role === 'ADVERTISER' ? 6 : onboardingData.role === 'PROMOTER' ? 6 : 6;
 
   const handleNext = () => {
     setCurrentStep(prev => prev + 1);
@@ -120,24 +181,35 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
       // Update user data in user service
       userService.setCurrentUser(response.user);
 
-      console.log('=== ONBOARDING COMPLETE ===');
+      console.log('=== ACCOUNT SETUP COMPLETE ===');
       console.log('User Email:', user.email);
       console.log('Firebase UID:', user.uid);
-      console.log('Complete Onboarding Data:', onboardingData);
-      console.log('User profile created successfully');
-      console.log('===========================');
+      console.log('Account created successfully');
+      console.log('===============================');
       
-      onComplete();
+      // Continue to next step (work upload)
+      handleNext();
     } catch (error) {
       console.error('Failed to complete account setup:', error);
       setError(
         error instanceof Error 
           ? error.message 
-          : 'Failed to complete onboarding. Please try again.'
+          : 'Failed to complete account setup. Please try again.'
       );
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFinalComplete = async () => {
+    console.log('=== ONBOARDING COMPLETE ===');
+    console.log('User Email:', user.email);
+    console.log('Firebase UID:', user.uid);
+    console.log('Complete Onboarding Data:', onboardingData);
+    console.log('User profile created successfully');
+    console.log('===========================');
+    
+    onComplete();
   };
 
   const updateData = (data: Partial<OnboardingData>) => {
@@ -189,16 +261,38 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
           <ProfileImages
             data={onboardingData}
             onUpdate={updateData}
-            onNext={handleNext}
+            onNext={handleComplete}
             onBack={handleBack}
+            isLoading={isLoading}
           />
         );
       case 5:
+        if (onboardingData.role === 'ADVERTISER') {
+          return (
+            <AdvertiserWorksUpload
+              data={onboardingData}
+              onUpdate={updateData}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          );
+        } else if (onboardingData.role === 'PROMOTER') {
+          return (
+            <PromoterWorksUpload
+              data={onboardingData}
+              onUpdate={updateData}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          );
+        }
+        break;
+      case 6:
         return (
           <OnboardingComplete
             data={onboardingData}
             userEmail={user.email || ''}
-            onComplete={handleComplete}
+            onComplete={handleFinalComplete}
             onBack={handleBack}
             isLoading={isLoading}
           />
@@ -236,12 +330,26 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600 text-sm">{error}</p>
+          {isLoadingProfile ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center space-x-3">
+                <svg className="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span className="text-gray-600 font-medium">Loading your profile...</span>
+              </div>
             </div>
+          ) : (
+            <>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
+              {renderStep()}
+            </>
           )}
-          {renderStep()}
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { AdvertiserType } from "../enums/advertiser-type";
 import { Language } from "../enums/language";
+import { AdvertiserWork } from "./advertiser-work";
 import { FollowerEstimate } from "./follower-estimate";
 import { PromoterWork } from "./promoter-work";
 

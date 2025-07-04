@@ -1,6 +1,8 @@
 import { httpService } from "./http.service";
 import { User } from "@/app/interfaces/user";
 import { CreateUserDto } from "@/app/interfaces/user-dto";
+import { PromoterWork } from "@/app/interfaces/promoter-work";
+import { AdvertiserWork } from "@/app/interfaces/advertiser-work";
 
 export interface AuthResponse {
   success: boolean;
@@ -34,15 +36,18 @@ export interface UserByIdResponse {
   user: User;
 }
 
-export interface UploadResult {
-  publicUrl: string;
-  key: string;
-}
-
-export interface UploadResponse {
+export interface PromoterWorkUploadResponse {
   success: boolean;
   message: string;
   result: UploadResult;
+  work: PromoterWork;
+}
+
+export interface AdvertiserWorkUploadResponse {
+  success: boolean;
+  message: string;
+  result?: UploadResult;
+  work: AdvertiserWork;
 }
 
 export class AuthService {
@@ -421,6 +426,178 @@ export class AuthService {
       }
 
       throw new Error("Failed to upload background image. Please try again.");
+    }
+  }
+
+  /**
+   * Upload promoter work
+   * Requires authentication
+   */
+  async uploadPromoterWork(
+    file: File,
+    title: string,
+    description?: string,
+    workId?: string
+  ): Promise<PromoterWorkUploadResponse> {
+    try {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "video/mp4",
+        "video/webm",
+        "video/quicktime",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error(
+          "Invalid file type. Only images (JPEG, PNG, WebP, GIF) and videos (MP4, WebM, MOV) are allowed."
+        );
+      }
+
+      // Validate file size (50MB max)
+      const maxSize = 50 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error("File size too large. Maximum size is 50MB.");
+      }
+
+      // Validate title
+      if (!title || title.trim().length === 0) {
+        throw new Error("Title is required");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("title", title.trim());
+      if (description) {
+        formData.append("description", description.trim());
+      }
+
+      const url = workId
+        ? `${
+            this.baseEndpoint
+          }/upload-promoter-work?workId=${encodeURIComponent(workId)}`
+        : `${this.baseEndpoint}/upload-promoter-work`;
+
+      const response =
+        await httpService.uploadFormData<PromoterWorkUploadResponse>(
+          url,
+          formData,
+          true
+        );
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload promoter work:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Invalid file or missing required fields");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required");
+        }
+      }
+
+      throw new Error("Failed to upload work. Please try again.");
+    }
+  }
+
+  /**
+   * Upload advertiser work
+   * Requires authentication
+   */
+  async uploadAdvertiserWork(
+    title: string,
+    description: string,
+    file?: File,
+    websiteUrl?: string,
+    price?: number,
+    workId?: string
+  ): Promise<AdvertiserWorkUploadResponse> {
+    try {
+      // Validate required fields
+      if (!title || title.trim().length === 0) {
+        throw new Error("Title is required");
+      }
+
+      if (!description || description.trim().length === 0) {
+        throw new Error("Description is required");
+      }
+
+      // Validate file if provided
+      if (file) {
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "video/mp4",
+          "video/webm",
+          "video/quicktime",
+        ];
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error(
+            "Invalid file type. Only images (JPEG, PNG, WebP, GIF) and videos (MP4, WebM, MOV) are allowed."
+          );
+        }
+
+        // Validate file size (50MB max)
+        const maxSize = 50 * 1024 * 1024;
+        if (file.size > maxSize) {
+          throw new Error("File size too large. Maximum size is 50MB.");
+        }
+      }
+
+      // Validate price if provided
+      if (price !== undefined && (price < 0 || isNaN(price))) {
+        throw new Error("Price must be a valid positive number");
+      }
+
+      const formData = new FormData();
+      formData.append("title", title.trim());
+      formData.append("description", description.trim());
+
+      if (file) {
+        formData.append("file", file);
+      }
+
+      if (websiteUrl) {
+        formData.append("websiteUrl", websiteUrl.trim());
+      }
+
+      if (price !== undefined) {
+        formData.append("price", price.toString());
+      }
+
+      const url = workId
+        ? `${
+            this.baseEndpoint
+          }/upload-advertiser-work?workId=${encodeURIComponent(workId)}`
+        : `${this.baseEndpoint}/upload-advertiser-work`;
+
+      const response =
+        await httpService.uploadFormData<AdvertiserWorkUploadResponse>(
+          url,
+          formData,
+          true
+        );
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload advertiser work:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Invalid data or missing required fields");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required");
+        }
+      }
+
+      throw new Error("Failed to upload work. Please try again.");
     }
   }
 }

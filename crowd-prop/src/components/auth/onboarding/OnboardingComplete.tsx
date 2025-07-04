@@ -362,6 +362,69 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
             </div>
           </div>
         )}
+
+        {/* Portfolio/Works Section */}
+        {data.role === 'ADVERTISER' && data.advertiserWorks.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              Work Portfolio ({data.advertiserWorks.length} samples)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {data.advertiserWorks.map((work, index) => (
+                <div key={index} className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-2">{work.title}</h4>
+                  <p className="text-gray-600 text-sm mb-2">{work.description}</p>
+                  {work.price && (
+                    <p className="text-green-600 font-semibold text-sm mb-2">
+                      ${work.price.toFixed(2)}
+                    </p>
+                  )}
+                  {work.websiteUrl && (
+                    <p className="text-blue-600 text-sm mb-2">
+                      <a href={work.websiteUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        View Product
+                      </a>
+                    </p>
+                  )}
+                  {work.mediaUrl && (
+                    <div className="mt-2">
+                      {work.mediaUrl.includes('video') ? (
+                        <video src={work.mediaUrl} className="w-full h-24 object-cover rounded" />
+                      ) : (
+                        <img src={work.mediaUrl} alt={work.title} className="w-full h-24 object-cover rounded" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {data.role === 'PROMOTER' && data.promoterWorks.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              Content Portfolio ({data.promoterWorks.length} samples)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {data.promoterWorks.map((work, index) => (
+                <div key={index} className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-2">{work.title}</h4>
+                  {work.description && (
+                    <p className="text-gray-600 text-sm mb-2">{work.description}</p>
+                  )}
+                  <div className="mt-2">
+                    {work.mediaUrl.includes('video') ? (
+                      <video src={work.mediaUrl} className="w-full h-24 object-cover rounded" />
+                    ) : (
+                      <img src={work.mediaUrl} alt={work.title} className="w-full h-24 object-cover rounded" />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Next Steps */}

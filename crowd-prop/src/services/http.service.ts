@@ -237,6 +237,51 @@ export class HttpService {
       throw error;
     }
   }
+
+  /**
+   * Upload form data
+   */
+  async uploadFormData<T>(
+    endpoint: string,
+    formData: FormData,
+    requiresAuth: boolean = true
+  ): Promise<ApiResponse<T>> {
+    try {
+      const headers: Record<string, string> = {};
+
+      if (requiresAuth) {
+        const token = await this.getAuthToken();
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        } else {
+          throw new Error("Authentication required but no valid token found");
+        }
+      }
+
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: "POST",
+        headers,
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP ${response.status}: ${data.message || "Upload failed"}`
+        );
+      }
+
+      return {
+        data,
+        status: response.status,
+        message: response.statusText,
+      };
+    } catch (error) {
+      console.error("Form data upload failed:", error);
+      throw error;
+    }
+  }
 }
 
 export const httpService = new HttpService();
