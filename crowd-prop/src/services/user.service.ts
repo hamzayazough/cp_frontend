@@ -1,5 +1,6 @@
 import { httpService } from "./http.service";
 import { User } from "@/app/interfaces/user";
+import { PromoterWork } from "@/app/interfaces/promoter-work";
 import { OnboardingData } from "@/components/auth/UserOnboarding";
 import { ProfileResponse } from "./auth.service";
 
@@ -27,6 +28,7 @@ export interface UpdateUserRequest {
     location?: string;
     languagesSpoken?: string[];
     skills?: string[];
+    works?: PromoterWork[];
   };
 }
 
@@ -128,59 +130,6 @@ export class UserService {
 
       throw new Error("Failed to load user profile. Please try again.");
     }
-  }
-
-  /**
-   * Get user statistics (for promoters)
-   */
-  async getUserStats(): Promise<{
-    totalCampaigns: number;
-    completedCampaigns: number;
-    totalEarnings: number;
-    avgRating: number;
-  }> {
-    const response = await httpService.get<{
-      totalCampaigns: number;
-      completedCampaigns: number;
-      totalEarnings: number;
-      avgRating: number;
-    }>("/users/me/stats", true);
-    return response.data;
-  }
-
-  /**
-   * Search users (for finding promoters/advertisers)
-   */
-  async searchUsers(params: {
-    query?: string;
-    role?: "PROMOTER" | "ADVERTISER";
-    skills?: string[];
-    location?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<{
-    users: User[];
-    total: number;
-    hasMore: boolean;
-  }> {
-    const searchParams = new URLSearchParams();
-
-    if (params.query) searchParams.append("query", params.query);
-    if (params.role) searchParams.append("role", params.role);
-    if (params.skills?.length) {
-      params.skills.forEach((skill) => searchParams.append("skills", skill));
-    }
-    if (params.location) searchParams.append("location", params.location);
-    if (params.limit) searchParams.append("limit", params.limit.toString());
-    if (params.offset) searchParams.append("offset", params.offset.toString());
-
-    const response = await httpService.get<{
-      users: User[];
-      total: number;
-      hasMore: boolean;
-    }>(`/users/search?${searchParams.toString()}`, true);
-
-    return response.data;
   }
 }
 

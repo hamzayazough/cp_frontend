@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { userService } from '@/services/user.service';
 import { User as AppUser } from '@/app/interfaces/user';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import PromoterProfileContent from '@/components/dashboard/PromoterProfileContent';
 
 export default function ProfilePage() {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
@@ -77,16 +78,7 @@ export default function ProfilePage() {
   const renderProfileContent = () => {
     switch (appUser.role) {
       case 'PROMOTER':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Promoter Profile
-            </h2>
-            <p className="text-gray-600">
-              Manage your promoter profile, portfolio, and skills.
-            </p>
-          </div>
-        );
+        return <PromoterProfileContent user={appUser} onUserUpdate={setAppUser} />;
       case 'ADVERTISER':
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
