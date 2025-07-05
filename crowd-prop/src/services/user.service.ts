@@ -1,6 +1,7 @@
 import { httpService } from "./http.service";
 import { User } from "@/app/interfaces/user";
 import { OnboardingData } from "@/components/auth/UserOnboarding";
+import { ProfileResponse } from "./auth.service";
 
 export interface CreateUserRequest {
   firebaseUid: string;
@@ -99,64 +100,34 @@ export class UserService {
     this.currentUser = null;
     this.notifyUserListeners();
   }
-  /**
-   * Create a new user profile after Firebase registration
-   */
-  async createUser(userData: CreateUserRequest): Promise<UserProfileResponse> {
-    const response = await httpService.post<UserProfileResponse>(
-      "/users",
-      userData,
-      true // requires authentication
-    );
-    return response.data;
-  }
 
   /**
    * Get current user profile
    */
   async getCurrentUser(): Promise<User> {
-    const response = await httpService.get<User>("/users/me", true);
-    return response.data;
-  }
+    try {
+      console.log("BAABLALBALBLABLA");
+      const response = await httpService.get<ProfileResponse>(
+        `/auth/profile`,
+        true
+      );
+      console.log("User profile response:", response.data);
 
-  /**
-   * Get user profile by ID
-   */
-  async getUserById(userId: string): Promise<User> {
-    const response = await httpService.get<User>(`/users/${userId}`, true);
-    return response.data;
-  }
+      return response.data.user;
+    } catch (error) {
+      console.error("Failed to get user profile:", error);
 
-  /**
-   * Update current user profile
-   */
-  async updateUser(userData: UpdateUserRequest): Promise<User> {
-    const response = await httpService.patch<User>("/users/me", userData, true);
-    return response.data;
-  }
+      if (error instanceof Error) {
+        if (error.message.includes("401")) {
+          throw new Error("Invalid or missing Firebase token");
+        }
+        if (error.message.includes("404")) {
+          throw new Error("User account not found. Please create an account.");
+        }
+      }
 
-  /**
-   * Delete current user account
-   */
-  async deleteUser(): Promise<{ message: string }> {
-    const response = await httpService.delete<{ message: string }>(
-      "/users/me",
-      true
-    );
-    return response.data;
-  }
-
-  /**
-   * Upload user avatar
-   */
-  async uploadAvatar(file: File): Promise<{ avatarUrl: string }> {
-    const response = await httpService.uploadFile<{ avatarUrl: string }>(
-      "/users/me/avatar",
-      file,
-      undefined,
-      true
-    );
-    return response.data;
+      throw new Error("Failed to load user profile. Please try again.");
+    }
   }
 
   /**

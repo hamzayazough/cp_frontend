@@ -13,7 +13,6 @@ import {
   ChatBubbleLeftRightIcon,
   Cog6ToothIcon,
   PlusCircleIcon,
-  DocumentTextIcon,
   ChartBarIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
@@ -26,7 +25,6 @@ import {
   ChatBubbleLeftRightIcon as ChatIconSolid,
   Cog6ToothIcon as CogIconSolid,
   PlusCircleIcon as PlusIconSolid,
-  DocumentTextIcon as DocumentIconSolid,
   ChartBarIcon as ChartIconSolid
 } from '@heroicons/react/24/solid';
 
@@ -52,49 +50,49 @@ export default function DashboardSidebar({ role, isOpen, onClose }: SidebarProps
       return [
         {
           name: 'Dashboard',
-          href: routes.promoter.dashboard,
+          href: routes.dashboard,
           icon: HomeIcon,
           activeIcon: HomeIconSolid,
           description: 'Overview & stats'
         },
         {
           name: 'Explore Campaigns',
-          href: routes.promoter.explore,
+          href: routes.dashboardExplore,
           icon: MagnifyingGlassIcon,
           activeIcon: SearchIconSolid,
           description: 'Find new opportunities'
         },
         {
           name: 'My Campaigns',
-          href: routes.promoter.campaigns,
+          href: routes.dashboardCampaigns,
           icon: RectangleStackIcon,
           activeIcon: StackIconSolid,
           description: 'Active & applied campaigns'
         },
         {
           name: 'Earnings',
-          href: routes.promoter.earnings,
+          href: routes.dashboardEarnings,
           icon: BanknotesIcon,
           activeIcon: BanknotesIconSolid,
           description: 'Wallet & payouts'
         },
         {
           name: 'My Profile',
-          href: routes.promoter.profile,
+          href: routes.dashboardProfile,
           icon: UserIcon,
           activeIcon: UserIconSolid,
           description: 'Portfolio & skills'
         },
         {
           name: 'Messages',
-          href: routes.promoter.messages,
+          href: routes.dashboardMessages,
           icon: ChatBubbleLeftRightIcon,
           activeIcon: ChatIconSolid,
           description: 'Chat with advertisers'
         },
         {
           name: 'Settings',
-          href: routes.promoter.settings,
+          href: routes.dashboardSettings,
           icon: Cog6ToothIcon,
           activeIcon: CogIconSolid,
           description: 'Preferences & integrations'
@@ -104,59 +102,104 @@ export default function DashboardSidebar({ role, isOpen, onClose }: SidebarProps
       return [
         {
           name: 'Dashboard',
-          href: routes.advertiser.dashboard,
+          href: routes.dashboard,
           icon: HomeIcon,
           activeIcon: HomeIconSolid,
           description: 'Overview & metrics'
         },
         {
           name: 'My Campaigns',
-          href: routes.advertiser.campaigns,
+          href: routes.dashboardCampaigns,
           icon: RectangleStackIcon,
           activeIcon: StackIconSolid,
           description: 'Manage campaigns'
         },
         {
-          name: 'Applications',
-          href: routes.advertiser.applications,
-          icon: DocumentTextIcon,
-          activeIcon: DocumentIconSolid,
-          description: 'Review promoter applications'
+          name: 'Explore Promoters',
+          href: routes.dashboardExplore,
+          icon: MagnifyingGlassIcon,
+          activeIcon: SearchIconSolid,
+          description: 'Find promoters for your campaigns'
         },
         {
           name: 'Create Campaign',
-          href: routes.advertiser.campaignCreate,
+          href: routes.dashboardCampaigns + '/create',
           icon: PlusCircleIcon,
           activeIcon: PlusIconSolid,
           description: 'Launch new campaign'
         },
         {
-          name: 'Stats',
-          href: routes.advertiser.stats,
+          name: 'Campaign Spending',
+          href: routes.dashboardEarnings,
           icon: ChartBarIcon,
           activeIcon: ChartIconSolid,
-          description: 'Performance analytics'
+          description: 'Budget & spending analytics'
         },
         {
           name: 'Profile',
-          href: routes.advertiser.profile,
+          href: routes.dashboardProfile,
           icon: UserIcon,
           activeIcon: UserIconSolid,
           description: 'Company info'
         },
         {
           name: 'Messages',
-          href: routes.advertiser.messages,
+          href: routes.dashboardMessages,
           icon: ChatBubbleLeftRightIcon,
           activeIcon: ChatIconSolid,
           description: 'Communicate with promoters'
         },
         {
           name: 'Settings',
-          href: routes.advertiser.settings,
+          href: routes.dashboardSettings,
           icon: Cog6ToothIcon,
           activeIcon: CogIconSolid,
           description: 'Account settings'
+        }
+      ];
+    } else if (userRole === 'ADMIN') {
+      return [
+        {
+          name: 'Dashboard',
+          href: routes.dashboard,
+          icon: HomeIcon,
+          activeIcon: HomeIconSolid,
+          description: 'Platform overview'
+        },
+        {
+          name: 'All Campaigns',
+          href: routes.dashboardCampaigns,
+          icon: RectangleStackIcon,
+          activeIcon: StackIconSolid,
+          description: 'Manage all campaigns'
+        },
+        {
+          name: 'Platform Overview',
+          href: routes.dashboardExplore,
+          icon: MagnifyingGlassIcon,
+          activeIcon: SearchIconSolid,
+          description: 'User & platform stats'
+        },
+        {
+          name: 'Platform Financials',
+          href: routes.dashboardEarnings,
+          icon: BanknotesIcon,
+          activeIcon: BanknotesIconSolid,
+          description: 'Revenue & payouts'
+        },
+        {
+          name: 'Platform Messages',
+          href: routes.dashboardMessages,
+          icon: ChatBubbleLeftRightIcon,
+          activeIcon: ChatIconSolid,
+          description: 'Monitor communications'
+        },
+        {
+          name: 'Settings',
+          href: routes.dashboardSettings,
+          icon: Cog6ToothIcon,
+          activeIcon: CogIconSolid,
+          description: 'Platform settings'
         }
       ];
     }

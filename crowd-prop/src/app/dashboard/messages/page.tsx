@@ -8,9 +8,9 @@ import { useRouter } from 'next/navigation';
 import { userService } from '@/services/user.service';
 import { User as AppUser } from '@/app/interfaces/user';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import PromoterDashboardContent from '@/components/dashboard/promoter/PromoterDashboardContent';
+import PromoterMessagesContent from '@/components/dashboard/promoter/PromoterMessagesContent';
 
-export default function DashboardPage() {
+export default function MessagesPage() {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +39,6 @@ export default function DashboardPage() {
         }
       } catch (error) {
         console.error('Error fetching user:', error);
-        // If user data doesn't exist or there's an error, redirect to onboarding
         router.push('/onboarding');
       }
 
@@ -75,20 +74,19 @@ export default function DashboardPage() {
     return null;
   }
 
-  const renderDashboardContent = () => {
+  // Render role-based messages content
+  const renderMessagesContent = () => {
     switch (appUser.role) {
       case 'PROMOTER':
-        return <PromoterDashboardContent userName={appUser.name} />;
+        return <PromoterMessagesContent />;
       case 'ADVERTISER':
-        // For now, we'll create a placeholder for advertiser content
-        // You can create AdvertiserDashboardContent component later
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Advertiser Dashboard
+              Messages
             </h2>
             <p className="text-gray-600">
-              Welcome to your advertiser dashboard! This is where you can manage your campaigns and track performance.
+              Here you can communicate with promoters and manage your conversations.
             </p>
           </div>
         );
@@ -96,15 +94,15 @@ export default function DashboardPage() {
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Admin Dashboard
+              Platform Messages
             </h2>
             <p className="text-gray-600">
-              Welcome to the admin dashboard! This is where you can manage the platform.
+              Here you can view and moderate platform communications.
             </p>
           </div>
         );
       default:
-        return <PromoterDashboardContent />;
+        return <PromoterMessagesContent />;
     }
   };
 
@@ -115,7 +113,7 @@ export default function DashboardPage() {
       userEmail={appUser.email}
       userAvatar={appUser.avatarUrl}
     >
-      {renderDashboardContent()}
+      {renderMessagesContent()}
     </DashboardLayout>
   );
 }

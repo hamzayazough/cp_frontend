@@ -7,19 +7,31 @@ export const routes = {
   register: "/auth",
   forgotPassword: "/auth/forgot-password",
 
+  // Onboarding
+  onboarding: "/onboarding",
+
   // Explore routes
   exploreCampaigns: "/explore/campaigns",
 
-  // Dashboard routes
+  // Unified Dashboard routes (role-based content)
   dashboard: "/dashboard",
+  dashboardCampaigns: "/dashboard/campaigns",
+  dashboardCampaignDetails: (id: string) => `/dashboard/campaigns/${id}`,
+  dashboardExplore: "/dashboard/explore",
+  dashboardEarnings: "/dashboard/earnings",
+  dashboardMessages: "/dashboard/messages",
+  dashboardProfile: "/dashboard/profile",
+  dashboardSettings: "/dashboard/settings",
+
+  // Legacy routes (deprecated - keeping for backwards compatibility)
   profile: "/dashboard/profile",
   settings: "/dashboard/settings",
 
-  // Role-based dashboards
+  // Role-based dashboards (deprecated - keeping for backwards compatibility)
   advertiserDashboard: "/dashboard/advertiser",
   promoterDashboard: "/dashboard/promoter",
 
-  // Advertiser-specific routes
+  // Advertiser-specific routes (deprecated - keeping for backwards compatibility)
   advertiser: {
     dashboard: "/dashboard/advertiser",
     campaigns: "/dashboard/advertiser/campaigns",
@@ -33,7 +45,7 @@ export const routes = {
     settings: "/dashboard/advertiser/settings",
   },
 
-  // Promoter-specific routes
+  // Promoter-specific routes (deprecated - keeping for backwards compatibility)
   promoter: {
     dashboard: "/dashboard/promoter",
     explore: "/dashboard/promoter/explore",
@@ -94,6 +106,10 @@ export class Router {
     return routes.messageThread(id);
   }
 
+  static dashboardCampaignDetails(id: string): string {
+    return routes.dashboardCampaignDetails(id);
+  }
+
   static isCurrentRoute(pathname: string, route: string): boolean {
     return pathname === route;
   }
@@ -124,6 +140,12 @@ export class Router {
 export const routeGuards = {
   protected: [
     routes.dashboard,
+    routes.dashboardCampaigns,
+    routes.dashboardExplore,
+    routes.dashboardEarnings,
+    routes.dashboardMessages,
+    routes.dashboardProfile,
+    routes.dashboardSettings,
     routes.profile,
     routes.settings,
     routes.campaignCreate,

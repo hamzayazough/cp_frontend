@@ -19,14 +19,30 @@ export type {
   UserProfileResponse,
 } from "./user.service";
 
+// Promoter Service - Promoter dashboard and campaign management
+export { PromoterService, promoterService } from "./promoter.service";
+export type {
+  PromoterDashboardData,
+  PromoterStats,
+  PromoterActiveCampaign,
+  PromoterSuggestedCampaign,
+  PromoterTransaction,
+  PromoterMessage,
+  PromoterWallet,
+  GetPromoterDashboardRequest,
+  GetPromoterDashboardResponse,
+} from "../interfaces/promoter-dashboard";
+
 // Import service instances separately for the services object
 import { httpService } from "./http.service";
 import { authService } from "./auth.service";
 import { userService } from "./user.service";
+import { promoterService } from "./promoter.service";
 
 // Re-export commonly used service instances for convenience
 export const services = {
   http: httpService,
   auth: authService,
   user: userService,
+  promoter: promoterService,
 } as const;
