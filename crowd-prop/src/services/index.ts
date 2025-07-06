@@ -33,11 +33,26 @@ export type {
   GetPromoterDashboardResponse,
 } from "../interfaces/promoter-dashboard";
 
+// Advertiser Service - Advertiser dashboard and campaign management
+export { advertiserService } from "./advertiser.service";
+export type {
+  AdvertiserDashboardData,
+  AdvertiserStats,
+  AdvertiserActiveCampaign,
+  AdvertiserRecommendedPromoter,
+  AdvertiserTransaction,
+  AdvertiserMessage,
+  AdvertiserWallet,
+  GetAdvertiserDashboardRequest,
+  GetAdvertiserDashboardResponse,
+} from "../interfaces/advertiser-dashboard";
+
 // Import service instances separately for the services object
 import { httpService } from "./http.service";
 import { authService } from "./auth.service";
 import { userService } from "./user.service";
 import { promoterService } from "./promoter.service";
+import { advertiserService } from "./advertiser.service";
 
 // Re-export commonly used service instances for convenience
 export const services = {
@@ -45,4 +60,5 @@ export const services = {
   auth: authService,
   user: userService,
   promoter: promoterService,
+  advertiser: advertiserService,
 } as const;

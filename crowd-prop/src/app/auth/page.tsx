@@ -82,14 +82,7 @@ export default function AuthPage() {
           router.push('/onboarding');
         } else {
           console.log('User setup complete - redirecting to dashboard');
-          const role = currentUser.role?.toLowerCase();
-          if (role === 'promoter') {
-            router.push('/dashboard/promoter');
-          } else if (role === 'advertiser') {
-            router.push('/dashboard/advertiser');
-          } else {
-            router.push('/dashboard');
-          }
+          router.push('/dashboard');
         }
       } else {
         console.log('Missing user data - Firebase user:', !!firebaseUser, 'Current user:', !!currentUser);
@@ -111,15 +104,6 @@ export default function AuthPage() {
       console.log('Redirecting to dashboard');
       const currentUser = userService.getCurrentUserSync();
       if (currentUser) {
-        const role = currentUser.role?.toLowerCase();
-        if (role === 'promoter') {
-          router.push('/dashboard/promoter');
-        } else if (role === 'advertiser') {
-          router.push('/dashboard/advertiser');
-        } else {
-          router.push('/dashboard');
-        }
-      } else {
         router.push('/dashboard');
       }
     }

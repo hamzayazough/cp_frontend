@@ -23,41 +23,6 @@ export const routes = {
   dashboardProfile: "/dashboard/profile",
   dashboardSettings: "/dashboard/settings",
 
-  // Legacy routes (deprecated - keeping for backwards compatibility)
-  profile: "/dashboard/profile",
-  settings: "/dashboard/settings",
-
-  // Role-based dashboards (deprecated - keeping for backwards compatibility)
-  advertiserDashboard: "/dashboard/advertiser",
-  promoterDashboard: "/dashboard/promoter",
-
-  // Advertiser-specific routes (deprecated - keeping for backwards compatibility)
-  advertiser: {
-    dashboard: "/dashboard/advertiser",
-    campaigns: "/dashboard/advertiser/campaigns",
-    campaignCreate: "/dashboard/advertiser/campaigns/create",
-    campaignDetails: (id: string) => `/dashboard/advertiser/campaigns/${id}`,
-    applications: "/dashboard/advertiser/applications",
-    stats: "/dashboard/advertiser/stats",
-    profile: "/dashboard/advertiser/profile",
-    messages: "/dashboard/advertiser/messages",
-    messageThread: (id: string) => `/dashboard/advertiser/messages/${id}`,
-    settings: "/dashboard/advertiser/settings",
-  },
-
-  // Promoter-specific routes (deprecated - keeping for backwards compatibility)
-  promoter: {
-    dashboard: "/dashboard/promoter",
-    explore: "/dashboard/promoter/explore",
-    campaigns: "/dashboard/promoter/campaigns",
-    campaignDetails: (id: string) => `/dashboard/promoter/campaigns/${id}`,
-    earnings: "/dashboard/promoter/earnings",
-    profile: "/dashboard/promoter/profile",
-    messages: "/dashboard/promoter/messages",
-    messageThread: (id: string) => `/dashboard/promoter/messages/${id}`,
-    settings: "/dashboard/promoter/settings",
-  },
-
   // Campaign routes (legacy)
   campaigns: "/campaigns",
   campaignCreate: "/campaigns/create",

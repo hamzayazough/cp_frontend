@@ -104,15 +104,7 @@ export const useAuthRedirect = () => {
       if (needsOnboarding) {
         router.push("/onboarding");
       } else {
-        // User is fully set up, redirect to dashboard
-        const role = user.role?.toLowerCase();
-        if (role === "promoter") {
-          router.push("/dashboard/promoter");
-        } else if (role === "advertiser") {
-          router.push("/dashboard/advertiser");
-        } else {
-          router.push("/dashboard");
-        }
+        router.push("/dashboard");
       }
     }
   }, [user, loading, needsOnboarding, router]);

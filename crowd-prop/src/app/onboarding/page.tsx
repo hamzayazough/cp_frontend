@@ -21,14 +21,7 @@ export default function OnboardingPage() {
         if (currentUser) {
           if (currentUser.isSetupDone) {
             // User has already completed setup, redirect to dashboard
-            const role = currentUser.role?.toLowerCase();
-            if (role === 'promoter') {
-              router.push('/dashboard/promoter');
-            } else if (role === 'advertiser') {
-              router.push('/dashboard/advertiser');
-            } else {
-              router.push('/dashboard');
-            }
+            router.push('/dashboard');
             return;
           }
         }
@@ -47,16 +40,9 @@ export default function OnboardingPage() {
   const handleOnboardingComplete = () => {
     const currentUser = userService.getCurrentUserSync();
     if (currentUser) {
-      const role = currentUser.role?.toLowerCase();
-      if (role === 'promoter') {
-        router.push('/dashboard/promoter');
-      } else if (role === 'advertiser') {
-        router.push('/dashboard/advertiser');
-      } else {
-        router.push('/dashboard');
-      }
-    } else {
       router.push('/dashboard');
+    } else {
+      router.push('/');
     }
   };
 

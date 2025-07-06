@@ -9,6 +9,7 @@ import { userService } from '@/services/user.service';
 import { User as AppUser } from '@/app/interfaces/user';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import PromoterDashboardContent from '@/components/dashboard/promoter/PromoterDashboardContent';
+import AdvertiserDashboardContent from '@/components/dashboard/advertiser/AdvertiserDashboardContent';
 
 export default function DashboardPage() {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
@@ -80,18 +81,7 @@ export default function DashboardPage() {
       case 'PROMOTER':
         return <PromoterDashboardContent userName={appUser.name} />;
       case 'ADVERTISER':
-        // For now, we'll create a placeholder for advertiser content
-        // You can create AdvertiserDashboardContent component later
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Advertiser Dashboard
-            </h2>
-            <p className="text-gray-600">
-              Welcome to your advertiser dashboard! This is where you can manage your campaigns and track performance.
-            </p>
-          </div>
-        );
+        return <AdvertiserDashboardContent userName={appUser.name} />;
       case 'ADMIN':
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
