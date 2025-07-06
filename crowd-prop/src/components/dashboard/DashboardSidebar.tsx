@@ -210,24 +210,17 @@ export default function DashboardSidebar({ role, isOpen, onClose }: SidebarProps
   const navigationItems = getNavigationItems(role);
 
   const isActive = (href: string) => {
-    // Exact match for the root dashboard
     if (href === routes.dashboard) {
       return pathname === routes.dashboard;
     }
     
-    // For exact routes, check exact match first
     if (pathname === href) {
       return true;
     }
     
-    // For sub-routes, make sure we don't match parent routes when on child routes
-    // that have their own navigation items
     if (pathname.startsWith(href + '/')) {
-      // Check if this is a child route that has its own navigation item
       const childRoutes = navigationItems.map(item => item.href);
       
-      // If the current pathname matches a more specific route in navigation, 
-      // don't activate the parent route
       const moreSpecificRoute = childRoutes.find(route => 
         route !== href && 
         route.startsWith(href + '/') && 
