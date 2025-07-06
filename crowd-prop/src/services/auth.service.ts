@@ -695,6 +695,41 @@ export class AuthService {
       throw new Error("Failed to delete work. Please try again.");
     }
   }
+
+  /**
+   * Update user profile information
+   * Requires authentication
+   */
+  async updateUserInfo(updateData: Partial<User>): Promise<AuthResponse> {
+    try {
+      console.log("Sending update request with data:", updateData);
+
+      const response = await httpService.post<AuthResponse>(
+        `${this.baseEndpoint}/update-profile`,
+        updateData,
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to update user profile:", error);
+      console.error("Update data sent:", updateData);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Invalid user data provided");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required. Please log in again.");
+        }
+        if (error.message.includes("404")) {
+          throw new Error("User account not found. Please contact support.");
+        }
+      }
+
+      throw new Error("Failed to update profile. Please try again.");
+    }
+  }
 }
 
 export const authService = new AuthService();

@@ -158,18 +158,6 @@ export default function PortfolioManager({ works, onClose }: PortfolioManagerPro
     setEditingWorks(editingWorks.map((work, i) => (i === index ? workToUpdate : work)))
   }
 
-  const handleSave = () => {
-    // Check if there are any unsaved files
-    const hasUnsavedFiles = Object.values(editingFiles).some(file => file !== null)
-    
-    if (hasUnsavedFiles) {
-      alert("Please save all uploaded files before closing.")
-      return
-    }
-    
-    // Just close the modal - individual works are already saved via handleSaveWork and handleAddWork
-    onClose()
-  }
 
   return (
     <div
@@ -489,12 +477,7 @@ export default function PortfolioManager({ works, onClose }: PortfolioManagerPro
             >
               Cancel
             </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Close
-            </button>
+            
           </div>
         </div>
       </div>

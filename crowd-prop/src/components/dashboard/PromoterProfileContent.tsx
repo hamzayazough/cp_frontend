@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { User } from '@/app/interfaces/user';
 import { Language } from '@/app/enums/language';
 import { PromoterWork } from '@/app/interfaces/promoter-work';
-import { userService } from '@/services/user.service';
+import { authService } from '@/services/auth.service';
 import PortfolioManager from './PortfolioManager';
+import PortfolioDetailModal from './PortfolioDetailModal';
 
 interface PromoterProfileContentProps {
   user: User;
@@ -16,6 +17,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showPortfolioManager, setShowPortfolioManager] = useState(false);
+  const [selectedWork, setSelectedWork] = useState<PromoterWork | null>(null);
   const [editData, setEditData] = useState({
     name: user.name,
     bio: user.bio || '',
@@ -29,6 +31,12 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
     twitterUrl: user.twitterUrl || '',
     websiteUrl: user.websiteUrl || '',
   });
+
+  // Helper function to truncate text
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
 
   // Language mapping for display purposes
   const languageOptions = [
@@ -65,27 +73,40 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Update user profile via userService
-      const updatedUser = await userService.updateProfile({
-        name: editData.name,
-        bio: editData.bio,
-        tiktokUrl: editData.tiktokUrl,
-        instagramUrl: editData.instagramUrl,
-        snapchatUrl: editData.snapchatUrl,
-        youtubeUrl: editData.youtubeUrl,
-        twitterUrl: editData.twitterUrl,
-        websiteUrl: editData.websiteUrl,
+      // Clean and prepare the update data - only include editable fields
+      const updateData = {
+        name: editData.name?.trim(),
+        bio: editData.bio?.trim(),
+        tiktokUrl: editData.tiktokUrl?.trim() || undefined,
+        instagramUrl: editData.instagramUrl?.trim() || undefined,
+        snapchatUrl: editData.snapchatUrl?.trim() || undefined,
+        youtubeUrl: editData.youtubeUrl?.trim() || undefined,
+        twitterUrl: editData.twitterUrl?.trim() || undefined,
+        websiteUrl: editData.websiteUrl?.trim() || undefined,
         promoterDetails: {
-          ...user.promoterDetails,
-          location: editData.location,
+          location: editData.location?.trim(),
           languagesSpoken: editData.languagesSpoken,
           skills: editData.skills,
         }
+      };
+
+      // Remove empty/undefined fields
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined || updateData[key] === '') {
+          delete updateData[key];
+        }
       });
 
-      // Update the user in the service and parent component
-      userService.setCurrentUser(updatedUser);
+      console.log('Sending update data:', updateData);
+
+      // Update user profile via authService
+      const response = await authService.updateUserInfo(updateData);
+
+      const updatedUser = response.user;
+
+      // Update the parent component with the updated user
       onUserUpdate(updatedUser);
+      console.log('Updated user:', updatedUser);
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -134,14 +155,14 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
   const handlePortfolioUpdate = async (works: PromoterWork[]) => {
     try {
       setIsSaving(true);
-      const updatedUser = await userService.updateProfile({
+      const response = await authService.updateUserInfo({
         promoterDetails: {
           ...user.promoterDetails,
           works: works,
         }
       });
 
-      userService.setCurrentUser(updatedUser);
+      const updatedUser = response.user;
       onUserUpdate(updatedUser);
     } catch (error) {
       console.error('Failed to update portfolio:', error);
@@ -229,9 +250,18 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm"
+                    className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                    title={isSaving ? 'Saving...' : 'Save Changes'}
                   >
-                    {isSaving ? 'Saving...' : 'Save Changes'}
+                    {isSaving ? (
+                      <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
                   </button>
                 </div>
               )}
@@ -248,7 +278,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                   value={editData.bio}
                   onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
                   placeholder="Tell us about yourself..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-400"
                   rows={3}
                 />
               ) : (
@@ -267,7 +297,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                   value={editData.location}
                   onChange={(e) => setEditData(prev => ({ ...prev, location: e.target.value }))}
                   placeholder="Enter your location"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
                 />
               ) : (
                 <p className="text-gray-600 text-sm">
@@ -289,7 +319,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                     value={editData.tiktokUrl}
                     onChange={(e) => setEditData(prev => ({ ...prev, tiktokUrl: e.target.value }))}
                     placeholder="https://tiktok.com/@username"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -299,7 +329,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                     value={editData.instagramUrl}
                     onChange={(e) => setEditData(prev => ({ ...prev, instagramUrl: e.target.value }))}
                     placeholder="https://instagram.com/username"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -309,7 +339,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                     value={editData.youtubeUrl}
                     onChange={(e) => setEditData(prev => ({ ...prev, youtubeUrl: e.target.value }))}
                     placeholder="https://youtube.com/@username"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -319,7 +349,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                     value={editData.twitterUrl}
                     onChange={(e) => setEditData(prev => ({ ...prev, twitterUrl: e.target.value }))}
                     placeholder="https://x.com/username"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -329,7 +359,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                     value={editData.snapchatUrl}
                     onChange={(e) => setEditData(prev => ({ ...prev, snapchatUrl: e.target.value }))}
                     placeholder="https://snapchat.com/add/username"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
                   />
                 </div>
                 <div>
@@ -339,7 +369,7 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                     value={editData.websiteUrl}
                     onChange={(e) => setEditData(prev => ({ ...prev, websiteUrl: e.target.value }))}
                     placeholder="https://yourwebsite.com"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
                   />
                 </div>
               </div>
@@ -452,6 +482,29 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
         </div>
       </div>
 
+      {/* Performance Stats - Moved up for prominence */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Stats</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">{user.promoterDetails?.numberOfCampaignDone || 0}</div>
+            <div className="text-sm text-gray-500 mt-1">Campaigns Done</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">${user.promoterDetails?.totalSales?.toFixed(2) || '0.00'}</div>
+            <div className="text-sm text-gray-500 mt-1">Total Sales</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">{user.promoterDetails?.totalViewsGenerated?.toLocaleString() || '0'}</div>
+            <div className="text-sm text-gray-500 mt-1">Views Generated</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-yellow-600">{user.rating ? user.rating.toFixed(1) : 'N/A'}</div>
+            <div className="text-sm text-gray-500 mt-1">Rating</div>
+          </div>
+        </div>
+      </div>
+
       {/* Languages & Skills */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Languages */}
@@ -535,7 +588,11 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
         {user.promoterDetails?.works && user.promoterDetails.works.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {user.promoterDetails.works.map((work: PromoterWork, index: number) => (
-              <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+              <div 
+                key={index} 
+                className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setSelectedWork(work)}
+              >
                 <div className="aspect-video bg-gray-100 relative">
                   {work.mediaUrl && (
                     <img
@@ -546,8 +603,12 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
                   )}
                 </div>
                 <div className="p-3">
-                  <h4 className="font-medium text-gray-900 mb-1 text-sm">{work.title}</h4>
-                  <p className="text-xs text-gray-600 line-clamp-2">{work.description}</p>
+                  <h4 className="font-medium text-gray-900 mb-1 text-sm">
+                    {truncateText(work.title, 30)}
+                  </h4>
+                  <p className="text-xs text-gray-600">
+                    {truncateText(work.description, 60)}
+                  </p>
                 </div>
               </div>
             ))}
@@ -571,31 +632,20 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
         )}
       </div>
 
-      {/* Stats */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-3">Performance Stats</h3>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className="text-xl font-bold text-blue-600">0</div>
-            <div className="text-xs text-gray-500">Campaigns</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xl font-bold text-green-600">${user.walletBalance?.toFixed(2) || '0.00'}</div>
-            <div className="text-xs text-gray-500">Earnings</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xl font-bold text-purple-600">{user.rating ? user.rating.toFixed(1) : 'N/A'}</div>
-            <div className="text-xs text-gray-500">Rating</div>
-          </div>
-        </div>
-      </div>
-
       {/* Portfolio Manager Modal */}
       {showPortfolioManager && (
         <PortfolioManager
           works={user.promoterDetails?.works || []}
           onUpdate={handlePortfolioUpdate}
           onClose={() => setShowPortfolioManager(false)}
+        />
+      )}
+
+      {/* Portfolio Detail Modal */}
+      {selectedWork && (
+        <PortfolioDetailModal
+          work={selectedWork}
+          onClose={() => setSelectedWork(null)}
         />
       )}
     </div>

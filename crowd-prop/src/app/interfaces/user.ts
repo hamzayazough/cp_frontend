@@ -53,4 +53,7 @@ export interface PromoterDetails {
   followersEstimate?: FollowerEstimate[];
   skills?: string[];
   verified?: boolean;
+  totalSales?: number;
+  numberOfCampaignDone?: number;
+  totalViewsGenerated?: number;
 }
