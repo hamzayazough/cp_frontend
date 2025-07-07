@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { CampaignFormData } from '../CreateCampaignWizard';
-import { CampaignType } from '@/app/enums/campaign-type';
-import { PhotoIcon, CalendarIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { useState } from "react";
+import { AdvertiserType } from "@/app/enums/advertiser-type";
+import Image from "next/image";
+import { CampaignFormData } from "../CreateCampaignWizard";
+import { CampaignType } from "@/app/enums/campaign-type";
+import { PhotoIcon, CalendarIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
 
 interface BasicInfoStepProps {
   formData: CampaignFormData;
@@ -15,7 +16,7 @@ interface BasicInfoStepProps {
 export default function BasicInfoStep({ formData, updateFormData }: BasicInfoStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (field: keyof CampaignFormData, value: string | number | Date | null) => {
+  const handleInputChange = (field: keyof CampaignFormData, value: string | number | Date | null | string[]) => {
     updateFormData({ [field]: value });
     
     // Clear error when user starts typing
@@ -50,8 +51,24 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
       case 'mediaUrl':
         // No validation needed for file upload since we handle it in the upload function
         break;
+      case 'advertiserTypes':
+        if (!value || !Array.isArray(value) || value.length === 0) {
+          return 'Please select at least one advertiser type';
+        }
+        break;
     }
     return '';
+  };
+
+  // Helper for toggling advertiser type selection
+  const toggleAdvertiserType = (type: AdvertiserType) => {
+    const newTypes = formData.advertiserTypes.includes(type)
+      ? formData.advertiserTypes.filter(t => t !== type)
+      : [...formData.advertiserTypes, type];
+    handleInputChange('advertiserTypes', newTypes);
+    if (errors.advertiserTypes) {
+      setErrors(prev => ({ ...prev, advertiserTypes: '' }));
+    }
   };
 
   const handleBlur = (field: keyof CampaignFormData) => {
@@ -92,6 +109,28 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6">
+        {/* Advertiser Types Multi-select */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Advertiser Type(s) *
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {Object.values(AdvertiserType).map(type => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => toggleAdvertiserType(type)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${formData.advertiserTypes.includes(type) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50'}`}
+              >
+                {type.charAt(0) + type.slice(1).toLowerCase().replace(/_/g, ' ')}
+              </button>
+            ))}
+          </div>
+          {errors.advertiserTypes && (
+            <p className="mt-1 text-sm text-red-600">{errors.advertiserTypes}</p>
+          )}
+        </div>
+
         {/* Campaign Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -306,8 +345,8 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
                 </h5>
                 <p className="text-sm text-gray-600 mb-2">
                   {formData.description 
-                    ? formData.description.length > 100 
-                      ? `${formData.description.substring(0, 100)}...` 
+                    ? formData.description.length > 50 
+                      ? `${formData.description.substring(0, 50)}...` 
                       : formData.description
                     : 'Campaign description will appear here...'
                   }

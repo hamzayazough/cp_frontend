@@ -13,10 +13,11 @@ export interface Campaign {
   title: string;
   description: string;
   type: CampaignType;
+
+  //server initiate them
   status: CampaignStatus;
   createdAt: string;
   updatedAt?: string;
-
   createdBy: string; // advertiserId
   advertiserType?: AdvertiserType[];
 

@@ -70,10 +70,25 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
               type="number"
               min="0.50"
               step="0.01"
-              value={formData.cpv || ''}
-              onChange={(e) => updateFormData({ cpv: e.target.value ? parseFloat(e.target.value) : null })}
+              value={formData.cpv ?? ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Allow empty string for clearing
+                if (value === '') {
+                  updateFormData({ cpv: null });
+                  return;
+                }
+                let num = parseFloat(value);
+                if (isNaN(num)) return;
+                if (num < 0.5) {
+                  num = 0.5;
+                }
+                // Always keep two decimals
+                num = Math.round(num * 100) / 100;
+                updateFormData({ cpv: num });
+              }}
               placeholder="0.50"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${formData.cpv !== null && formData.cpv !== undefined && formData.cpv < 0.5 ? 'border-red-500' : 'border-gray-300'}`}
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <span className="text-gray-500 text-sm">$/100 views</span>
@@ -82,6 +97,9 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
           <p className="mt-1 text-sm text-gray-500">
             Minimum $0.50 per 100 views
           </p>
+          {formData.cpv !== null && formData.cpv !== undefined && formData.cpv < 0.5 && (
+            <p className="mt-1 text-sm text-red-600 font-medium">CPV must be at least $0.50 per 100 views.</p>
+          )}
         </div>
 
         <div>
@@ -111,11 +129,14 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
           value={formData.trackUrl}
           onChange={(e) => updateFormData({ trackUrl: e.target.value })}
           placeholder="https://example.com/your-page"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${formData.trackUrl && !formData.trackUrl.startsWith('https://') ? 'border-red-500' : 'border-gray-300'}`}
         />
         <p className="mt-1 text-sm text-gray-500">
           The URL where you want to drive traffic
         </p>
+        {formData.trackUrl && !formData.trackUrl.startsWith('https://') && (
+          <p className="mt-1 text-sm text-red-600 font-medium">URL must start with https://</p>
+        )}
       </div>
     </div>
   );
