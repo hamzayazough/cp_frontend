@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { Campaign } from '@/app/interfaces/campaign';
-import { CampaignType, CampaignStatus, Deliverable, MeetingPlan, SalesTrackingMethod } from '@/app/enums/campaign-type';
+import { CampaignType, Deliverable, MeetingPlan, SalesTrackingMethod } from '@/app/enums/campaign-type';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { advertiserService } from '@/services/advertiser.service';
 import StepIndicator from './StepIndicator';
 import CampaignTypeStep from './steps/CampaignTypeStep';
 import BasicInfoStep from './steps/BasicInfoStep';
@@ -94,7 +95,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
     {
       id: 'basic',
       title: 'Basic Information',
-      description: 'Campaign details and content',
+      description: 'Provide campaign details',
       component: BasicInfoStep,
     },
     {
@@ -166,21 +167,14 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
     setIsSubmitting(true);
     
     try {
-      // Here you would typically make an API call to create the campaign
-      // For now, we'll simulate the creation
-      const newCampaign: Campaign = {
-        id: `campaign-${Date.now()}`,
+      // Prepare campaign data for API
+      const campaignData = {
         title: formData.title,
         description: formData.description,
         type: formData.type!,
-        status: CampaignStatus.ACTIVE,
-        createdAt: new Date().toISOString(),
-        createdBy: 'current-user-id', // This would come from user context
-        isPublic: formData.type === CampaignType.VISIBILITY || formData.type === CampaignType.SALESMAN,
-        applicationRequired: formData.type === CampaignType.CONSULTANT || formData.type === CampaignType.SELLER,
         budget: formData.budget || undefined,
-        deadline: formData.deadline || undefined,
-        expiryDate: formData.expiryDate || undefined,
+        deadline: formData.deadline?.toISOString() || undefined,
+        expiryDate: formData.expiryDate?.toISOString() || undefined,
         mediaUrl: formData.mediaUrl || undefined,
         
         // Type-specific fields
@@ -212,13 +206,18 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
         }),
       };
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call the advertiser service to create the campaign
+      const result = await advertiserService.createCampaign(campaignData);
       
-      onComplete(newCampaign);
+      if (result.success && result.campaign) {
+        onComplete(result.campaign);
+      } else {
+        throw new Error(result.message || 'Failed to create campaign');
+      }
     } catch (error) {
       console.error('Error creating campaign:', error);
       // Handle error (show toast, etc.)
+      // You might want to show an error message to the user here
     } finally {
       setIsSubmitting(false);
     }

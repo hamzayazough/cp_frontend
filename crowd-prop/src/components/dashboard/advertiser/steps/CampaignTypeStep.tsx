@@ -80,7 +80,34 @@ const campaignTypes = [
 
 export default function CampaignTypeStep({ formData, updateFormData }: CampaignTypeStepProps) {
   const handleTypeSelect = (type: CampaignType) => {
-    updateFormData({ type });
+    // Reset all form data except type to avoid errors from previous step values
+    updateFormData({
+      type,
+      // Reset all other fields to their initial values
+      // (You may want to adjust these defaults based on your actual CampaignFormData definition)
+      title: '',
+      description: '',
+      file: null,
+      expiryDate: '',
+      budget: null,
+      deadline: '',
+      cpv: null,
+      maxViews: null,
+      trackUrl: '',
+      expectedDeliverables: [],
+      sellerRequirements: [],
+      deliverables: [],
+      meetingCount: '',
+      maxQuote: '',
+      referenceUrl: '',
+      meetingPlan: '',
+      deadlineStrict: false,
+      commissionPerSale: '',
+      trackSalesVia: '',
+      codePrefix: '',
+      onlyApprovedCanSell: false,
+      applicationRequired: type === CampaignType.CONSULTANT || type === CampaignType.SELLER ? true : false,
+    });
   };
 
   const getSelectionClasses = (campaignType: CampaignType, isSelected: boolean) => {
@@ -178,7 +205,7 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
                     ? 'bg-blue-100 text-blue-800' 
                     : 'bg-green-100 text-green-800'
                 }`}>
-                  {campaign.applicationRequired ? 'Application Required' : 'Instant Access'}
+                  {campaign.applicationRequired ? 'Private' : 'Public'}
                 </span>
               </div>
             </button>

@@ -75,7 +75,7 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
         </p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <div className="bg-white border border-gIn rray-200 rounded-lg overflow-hidden">
         {/* Campaign Header */}
         <div className={`bg-${typeInfo.color}-50 border-b border-${typeInfo.color}-100 p-6`}>
           <div className="flex items-center space-x-4">
@@ -280,18 +280,11 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
             <h5 className="text-sm font-medium text-gray-900 mb-3">Campaign Access</h5>
             <div className="flex space-x-4">
               <span className={`px-3 py-1 text-sm rounded-full ${
-                formData.type === CampaignType.VISIBILITY || formData.type === CampaignType.SALESMAN
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-yellow-100 text-yellow-800'
+                formData.applicationRequired
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-green-100 text-green-800'
               }`}>
-                {formData.type === CampaignType.VISIBILITY || formData.type === CampaignType.SALESMAN ? 'Public' : 'Private'}
-              </span>
-              <span className={`px-3 py-1 text-sm rounded-full ${
-                formData.type === CampaignType.CONSULTANT || formData.type === CampaignType.SELLER
-                  ? 'bg-blue-100 text-blue-800' 
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
-                {formData.type === CampaignType.CONSULTANT || formData.type === CampaignType.SELLER ? 'Application Required' : 'Instant Access'}
+                {formData.applicationRequired ? 'Private' : 'Public'}
               </span>
             </div>
           </div>
@@ -302,8 +295,8 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
         <div className="flex items-start space-x-3">
           <DocumentTextIcon className="h-5 w-5 text-blue-600 mt-0.5" />
           <div>
-            <h4 className="text-sm font-medium text-blue-900">Ready to launch?</h4>
-            <p className="text-sm text-blue-700 mt-1">
+            <h4 className="text-sm font-medium text-gray-900">Ready to launch?</h4>
+            <p className="text-sm text-gray-700 mt-1">
               Your campaign will be created and made available to promoters immediately. 
               You can always edit or pause it later from your campaign dashboard.
             </p>

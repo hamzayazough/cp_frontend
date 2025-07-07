@@ -39,25 +39,49 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
         <h3 className="text-lg font-medium text-gray-900">Visibility Campaign Settings</h3>
       </div>
 
+      {/* Access Type Toggle */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Access</label>
+        <div className="flex space-x-4">
+          <button
+            type="button"
+            className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${!formData.applicationRequired ? 'bg-green-100 text-green-800 border-green-300' : 'bg-white text-gray-700 border-gray-300'}`}
+            onClick={() => updateFormData({ applicationRequired: false })}
+          >
+            Public
+          </button>
+          <button
+            type="button"
+            className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${formData.applicationRequired ? 'bg-blue-100 text-blue-800 border-blue-300' : 'bg-white text-gray-700 border-gray-300'}`}
+            onClick={() => updateFormData({ applicationRequired: true })}
+          >
+            Private
+          </button>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Cost Per View (CPV) *
+            Cost Per 100 Views (CPV) *
           </label>
           <div className="relative">
             <input
               type="number"
-              min="0"
+              min="0.50"
               step="0.01"
               value={formData.cpv || ''}
               onChange={(e) => updateFormData({ cpv: e.target.value ? parseFloat(e.target.value) : null })}
-              placeholder="0.05"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="0.50"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-              <span className="text-gray-500 text-sm">$/view</span>
+              <span className="text-gray-500 text-sm">$/100 views</span>
             </div>
           </div>
+          <p className="mt-1 text-sm text-gray-500">
+            Minimum $0.50 per 100 views
+          </p>
         </div>
 
         <div>
@@ -70,7 +94,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
             value={formData.maxViews || ''}
             onChange={(e) => updateFormData({ maxViews: e.target.value ? parseInt(e.target.value) : null })}
             placeholder="10000"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
         </div>
       </div>
@@ -87,7 +111,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
           value={formData.trackUrl}
           onChange={(e) => updateFormData({ trackUrl: e.target.value })}
           placeholder="https://example.com/your-page"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
         />
         <p className="mt-1 text-sm text-gray-500">
           The URL where you want to drive traffic
@@ -133,47 +157,49 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <div className="flex items-center">
               <UsersIcon className="h-4 w-4 mr-1" />
-              Meeting Count (Optional)
+              Minimum Weekly Meeting Count *
             </div>
           </label>
           <input
             type="number"
-            min="0"
+            min="1"
+            required
             value={formData.meetingCount || ''}
-            onChange={(e) => updateFormData({ meetingCount: e.target.value ? parseInt(e.target.value) : null })}
+            onChange={(e) => {
+              let value = e.target.value ? parseInt(e.target.value) : null;
+              if (value !== null && value < 1) value = 1;
+              updateFormData({ meetingCount: value });
+            }}
             placeholder="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
+          <p className="mt-1 text-sm text-gray-500">Enter the minimum number of meetings required per week.</p>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Max Quote ($) (Optional)
+            Maximum Budget ($) (Optional)
           </label>
           <input
             type="number"
-            min="0"
-            step="0.01"
+            min="10"
+            step="1"
             value={formData.maxQuote || ''}
-            onChange={(e) => updateFormData({ maxQuote: e.target.value ? parseFloat(e.target.value) : null })}
+            onChange={(e) => {
+              const value = e.target.value ? parseInt(e.target.value) : null;
+              updateFormData({ maxQuote: value });
+            }}
             placeholder="500"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
+          <p className="mt-1 text-sm text-gray-500">Set the highest amount (minimum $10) you are willing to pay for all consultant deliverables in this campaign.</p>
+          {formData.maxQuote !== undefined && formData.maxQuote !== null && formData.maxQuote !== '' && formData.maxQuote < 10 && (
+            <p className="mt-1 text-sm text-red-600 font-medium">Warning: Minimum allowed is $10.</p>
+          )}
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Reference URL (Optional)
-        </label>
-        <input
-          type="url"
-          value={formData.referenceUrl}
-          onChange={(e) => updateFormData({ referenceUrl: e.target.value })}
-          placeholder="https://example.com/reference"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
-      </div>
+      {/* Reference URL removed as it will be provided by the selected promoter */}
     </div>
   );
 
@@ -239,7 +265,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
           <select
             value={formData.meetingPlan || ''}
             onChange={(e) => updateFormData({ meetingPlan: e.target.value as MeetingPlan })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           >
             <option value="">Select meeting plan</option>
             {Object.values(MeetingPlan).map(plan => (
@@ -272,6 +298,16 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
         <h3 className="text-lg font-medium text-gray-900">Salesman Campaign Settings</h3>
       </div>
 
+      {/* Access Type is fixed for Salesman: isPublic: false, onlyApprovedCanSell: true */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Access</label>
+        <div className="flex space-x-4">
+          <span className="px-3 py-1 rounded-full text-sm font-medium border bg-blue-100 text-blue-800 border-blue-300 cursor-not-allowed opacity-70">
+            Private (Only approved promoter can sell)
+          </span>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -284,7 +320,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
             value={formData.commissionPerSale || ''}
             onChange={(e) => updateFormData({ commissionPerSale: e.target.value ? parseFloat(e.target.value) : null })}
             placeholder="10.00"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
         </div>
 
@@ -295,7 +331,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
           <select
             value={formData.trackSalesVia || ''}
             onChange={(e) => updateFormData({ trackSalesVia: e.target.value as SalesTrackingMethod })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           >
             <option value="">Select tracking method</option>
             {Object.values(SalesTrackingMethod).map(method => (
@@ -309,29 +345,36 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Code Prefix (Optional)
+          Code Prefix {formData.type === CampaignType.SALESMAN && <span className="text-red-600">*</span>}
         </label>
         <input
           type="text"
           value={formData.codePrefix}
           onChange={(e) => updateFormData({ codePrefix: e.target.value })}
           placeholder="PROMO"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          required={formData.type === CampaignType.SALESMAN}
+          className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
+            formData.type === CampaignType.SALESMAN && !formData.codePrefix ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
         <p className="mt-1 text-sm text-gray-500">
-          Prefix for generated coupon codes (e.g., PROMO-ABC123)
+          Prefix for generated coupon codes (e.g., PROMO-ABC123){formData.type === CampaignType.SALESMAN && ' (required)'}
         </p>
+        {formData.type === CampaignType.SALESMAN && !formData.codePrefix && (
+          <p className="mt-1 text-sm text-red-600 font-medium">Code Prefix is required for Salesman campaigns.</p>
+        )}
       </div>
 
       <div className="flex items-center">
         <label className="flex items-center">
           <input
             type="checkbox"
-            checked={formData.onlyApprovedCanSell}
-            onChange={(e) => updateFormData({ onlyApprovedCanSell: e.target.checked })}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            checked={true}
+            readOnly
+            disabled
+            className="h-4 w-4 text-blue-600 border-gray-300 rounded cursor-not-allowed bg-gray-100"
           />
-          <span className="ml-2 text-sm text-gray-700">Only approved promoters can sell</span>
+          <span className="ml-2 text-sm text-gray-700 opacity-70">Only approved promoter can sell</span>
         </label>
       </div>
     </div>

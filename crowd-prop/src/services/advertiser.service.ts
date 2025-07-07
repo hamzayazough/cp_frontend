@@ -10,6 +10,24 @@ import {
   GetAdvertiserMessagesResponse,
   GetAdvertiserWalletResponse,
 } from "@/interfaces/advertiser-dashboard";
+import { Campaign } from "@/app/interfaces/campaign";
+
+interface CreateCampaignRequest {
+  title: string;
+  description: string;
+  type: string;
+  budget?: number;
+  deadline?: string;
+  expiryDate?: string;
+  mediaUrl?: string;
+  [key: string]: unknown;
+}
+
+interface CreateCampaignResponse {
+  success: boolean;
+  message: string;
+  campaign?: Campaign;
+}
 
 class AdvertiserService {
   private baseUrl = "/api/advertiser";
@@ -208,6 +226,30 @@ class AdvertiserService {
         success: false,
         message:
           error instanceof Error ? error.message : "Failed to contact promoter",
+      };
+    }
+  }
+
+  async createCampaign(
+    campaignData: CreateCampaignRequest
+  ): Promise<CreateCampaignResponse> {
+    try {
+      const response = await httpService.post(
+        `${this.baseUrl}/campaigns`,
+        campaignData,
+        true
+      );
+
+      return {
+        success: true,
+        message: response.message || "Campaign created successfully",
+        campaign: response.data as Campaign,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to create campaign",
       };
     }
   }
