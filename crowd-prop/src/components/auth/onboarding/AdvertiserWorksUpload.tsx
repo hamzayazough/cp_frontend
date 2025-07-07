@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { authService } from '@/services/auth.service';
 import { OnboardingData } from '../UserOnboarding';
 
@@ -392,12 +393,15 @@ export default function AdvertiserWorksUpload({
                           style={{ height: '192px' }}
                         />
                       ) : (
-                        <img 
-                          src={work.mediaUrl} 
-                          alt={work.title} 
-                          className="w-full h-full object-cover"
-                          style={{ height: '192px' }}
-                        />
+            <Image
+              src={work.mediaUrl}
+              alt={work.title}
+              width={384}
+              height={192}
+              className="w-full h-full object-cover"
+              style={{ height: '192px' }}
+              unoptimized
+            />
                       )}
                     </div>
                   </div>

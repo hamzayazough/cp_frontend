@@ -120,7 +120,7 @@ export const useAdvertiserDashboard = (): UseAdvertiserDashboardReturn => {
 
   useEffect(() => {
     fetchData();
-  }, [useTemplate]); // Add useTemplate as dependency since fetchData depends on it
+  }, [useTemplate, fetchData]); // Add fetchData as dependency for exhaustive-deps
 
   return {
     data,

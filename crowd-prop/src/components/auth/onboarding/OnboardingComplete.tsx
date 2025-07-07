@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { OnboardingData } from '../UserOnboarding';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
 import { Language } from '@/app/enums/language';
@@ -100,10 +101,13 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
         {/* Cover Photo */}
         <div className="relative h-40">
           {data.backgroundUrl ? (
-            <img
+            <Image
               src={data.backgroundUrl}
               alt={`${data.name}'s cover photo`}
+              width={1200}
+              height={320}
               className="w-full h-full object-cover"
+              unoptimized
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center" aria-label="Default cover photo">
@@ -124,10 +128,13 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
             {/* Profile Picture */}
             <div className="w-20 h-20 rounded-full bg-white p-1 shadow-lg flex-shrink-0">
               {data.avatarUrl ? (
-                <img
+                <Image
                   src={data.avatarUrl}
                   alt={`${data.name}'s profile picture`}
+                  width={80}
+                  height={80}
                   className="w-full h-full rounded-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
@@ -392,11 +399,14 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
                               style={{ height: '192px' }}
                             />
                           ) : (
-                            <img 
-                              src={work.mediaUrl} 
-                              alt={work.title} 
+                            <Image
+                              src={work.mediaUrl}
+                              alt={work.title}
+                              width={384}
+                              height={192}
                               className="w-full h-full object-cover"
                               style={{ height: '192px' }}
+                              unoptimized
                             />
                           )}
                         </div>
@@ -461,11 +471,14 @@ export default function OnboardingComplete({ data, userEmail, onComplete, onBack
                             style={{ height: '192px' }}
                           />
                         ) : (
-                          <img 
-                            src={work.mediaUrl} 
-                            alt={work.title} 
+                          <Image
+                            src={work.mediaUrl}
+                            alt={work.title}
+                            width={384}
+                            height={192}
                             className="w-full h-full object-cover"
                             style={{ height: '192px' }}
+                            unoptimized
                           />
                         )}
                       </div>

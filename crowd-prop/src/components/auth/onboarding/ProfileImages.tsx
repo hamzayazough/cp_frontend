@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { OnboardingData } from '../UserOnboarding';
 import { authService } from '@/services/auth.service';
 
@@ -116,10 +117,13 @@ export default function ProfileImages({ data, onUpdate, onNext, onBack, isLoadin
             <div className="relative">
               <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
                 {avatarPreview ? (
-                  <img
+                  <Image
                     src={avatarPreview}
                     alt="Avatar preview"
+                    width={96}
+                    height={96}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -171,10 +175,13 @@ export default function ProfileImages({ data, onUpdate, onNext, onBack, isLoadin
             <div className="relative">
               <div className="w-full aspect-[3/1] bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300">
                 {backgroundPreview ? (
-                  <img
+                  <Image
                     src={backgroundPreview}
                     alt="Background preview"
+                    width={600}
+                    height={200}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="text-center">

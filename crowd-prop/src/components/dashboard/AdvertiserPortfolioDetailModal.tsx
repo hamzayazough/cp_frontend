@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { AdvertiserWork } from '@/app/interfaces/advertiser-work';
 
 interface AdvertiserPortfolioDetailModalProps {
@@ -29,10 +30,13 @@ export default function AdvertiserPortfolioDetailModal({ work, onClose }: Advert
           {work.mediaUrl && (
             <div className="mb-6">
               <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                <img
+                <Image
                   src={work.mediaUrl}
                   alt={work.title}
+                  width={800}
+                  height={450}
                   className="w-full h-full object-cover"
+                  unoptimized
                 />
               </div>
             </div>

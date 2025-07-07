@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAdvertiserDashboard } from '@/hooks/useAdvertiserDashboard';
 import AdvertiserDashboardTemplate from './AdvertiserDashboardTemplate';
 import { formatWalletValue } from '@/utils/wallet';
@@ -396,10 +397,13 @@ export default function AdvertiserDashboardContent({ userName }: AdvertiserDashb
                     <div className="flex items-start space-x-3">
                       <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
                         {promoter.avatar ? (
-                          <img
+                          <Image
                             src={promoter.avatar}
                             alt={promoter.name}
+                            width={48}
+                            height={48}
                             className="w-full h-full rounded-full object-cover"
+                            unoptimized
                           />
                         ) : (
                           <span className="text-lg font-bold text-gray-500">
@@ -564,10 +568,13 @@ export default function AdvertiserDashboardContent({ userName }: AdvertiserDashb
                     <div key={message.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
                       <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                         {message.avatar ? (
-                          <img
+                          <Image
                             src={message.avatar}
                             alt={message.name}
+                            width={40}
+                            height={40}
                             className="w-full h-full rounded-full object-cover"
+                            unoptimized
                           />
                         ) : (
                           <span className="text-sm font-bold text-gray-500">
