@@ -305,7 +305,7 @@ export default function PromoterMessagesContent() {
                 <VideoCameraIcon className="h-5 w-5" />
               </button>
               <Link
-                href={routes.promoter.campaignDetails(selectedThread.campaign.id)}
+                href={routes.dashboardCampaignDetails(selectedThread.campaign.id)}
                 className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <InformationCircleIcon className="h-5 w-5" />

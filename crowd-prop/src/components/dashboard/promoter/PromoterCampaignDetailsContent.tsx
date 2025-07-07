@@ -79,7 +79,7 @@ export default function PromoterCampaignDetailsContent({ campaignId }: PromoterC
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Campaign Not Found</h2>
         <p className="text-gray-600 mb-6">The campaign you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.</p>
         <Link
-          href={routes.promoter.campaigns}
+          href={routes.dashboardCampaigns}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           Back to Campaigns
@@ -132,7 +132,7 @@ export default function PromoterCampaignDetailsContent({ campaignId }: PromoterC
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link
-            href={routes.promoter.campaigns}
+            href={routes.dashboardCampaigns}
             className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
           >
             <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
@@ -158,7 +158,7 @@ export default function PromoterCampaignDetailsContent({ campaignId }: PromoterC
             Share Link
           </button>
           <Link
-            href={routes.promoter.messageThread(campaignId)}
+            href={routes.messageThread(campaignId)}
             className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
@@ -413,7 +413,7 @@ export default function PromoterCampaignDetailsContent({ campaignId }: PromoterC
               <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
               <p className="text-gray-600 mb-4">Start a conversation with the advertiser</p>
               <Link
-                href={routes.promoter.messageThread(campaignId)}
+                href={routes.messageThread(campaignId)}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Send Message

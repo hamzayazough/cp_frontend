@@ -40,13 +40,13 @@ export default function PromoterDashboardTemplate({ userName }: PromoterDashboar
         </p>
         <div className="flex space-x-4">
           <Link
-            href={routes.promoter.explore}
+            href={routes.dashboardExplore}
             className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
           >
             Explore Campaigns
           </Link>
           <Link
-            href={routes.promoter.campaigns}
+            href={routes.dashboardCampaigns}
             className="border border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-blue-600 transition-colors"
           >
             My Campaigns
@@ -126,7 +126,7 @@ export default function PromoterDashboardTemplate({ userName }: PromoterDashboar
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Active Campaigns</h2>
             <Link
-              href={routes.promoter.campaigns}
+              href={routes.dashboardCampaigns}
               className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
             >
               View All
@@ -144,7 +144,7 @@ export default function PromoterDashboardTemplate({ userName }: PromoterDashboar
               Your active campaigns will appear here once you apply and get accepted.
             </p>
             <Link
-              href={routes.promoter.explore}
+              href={routes.dashboardExplore}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
               Explore Campaigns
@@ -161,7 +161,7 @@ export default function PromoterDashboardTemplate({ userName }: PromoterDashboar
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Suggested Campaigns</h2>
               <Link
-                href={routes.promoter.explore}
+                href={routes.dashboardExplore}
                 className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
               >
                 Explore More
@@ -179,7 +179,7 @@ export default function PromoterDashboardTemplate({ userName }: PromoterDashboar
                 Personalized campaign suggestions will appear here based on your profile and performance.
               </p>
               <Link
-                href={routes.promoter.explore}
+                href={routes.dashboardExplore}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
                 Browse All Campaigns
@@ -196,7 +196,7 @@ export default function PromoterDashboardTemplate({ userName }: PromoterDashboar
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">Wallet Overview</h2>
                 <Link
-                  href={routes.promoter.earnings}
+                  href={routes.dashboardEarnings}
                   className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
                 >
                   View All
@@ -257,7 +257,7 @@ export default function PromoterDashboardTemplate({ userName }: PromoterDashboar
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">Messages</h2>
                 <Link
-                  href={routes.promoter.messages}
+                  href={routes.dashboardMessages}
                   className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
                 >
                   View All

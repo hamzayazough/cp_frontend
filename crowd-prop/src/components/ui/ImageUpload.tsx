@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface ImageUploadProps {
   onUpload: (url: string) => void;
@@ -59,10 +60,13 @@ export default function ImageUpload({ onUpload, currentUrl, className }: ImageUp
       </label>
       {currentUrl && (
         <div className="mt-2">
-          <img
+          <Image
             src={currentUrl}
             alt="Preview"
+            width={200}
+            height={96}
             className="w-full h-24 object-cover rounded-lg border border-gray-200"
+            unoptimized
           />
         </div>
       )}

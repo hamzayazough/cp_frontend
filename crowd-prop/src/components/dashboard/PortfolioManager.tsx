@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from 'next/image'
 import type { PromoterWork } from "@/app/interfaces/promoter-work"
 import { authService } from "@/services/auth.service"
 
@@ -265,10 +266,13 @@ export default function PortfolioManager({ works, onClose }: PortfolioManagerPro
                                 controls
                               />
                             ) : (
-                              <img
+                              <Image
                                 src={URL.createObjectURL(editingFiles[index]!)}
                                 alt="Preview"
-                                className="w-32 h-24 object-cover rounded-lg border border-gray-200"
+                                width={128}
+                                height={96}
+                                className="object-cover rounded-lg border border-gray-200"
+                                unoptimized
                               />
                             )}
                             
@@ -349,10 +353,13 @@ export default function PortfolioManager({ works, onClose }: PortfolioManagerPro
                           controls
                         />
                       ) : (
-                        <img
+                        <Image
                           src={work.mediaUrl || "/placeholder.svg"}
                           alt={work.title}
-                          className="w-32 h-24 object-cover rounded-lg border border-gray-200"
+                          width={128}
+                          height={96}
+                          className="object-cover rounded-lg border border-gray-200"
+                          unoptimized
                         />
                       )}
                     </div>
@@ -417,10 +424,13 @@ export default function PortfolioManager({ works, onClose }: PortfolioManagerPro
                               controls
                             />
                           ) : (
-                            <img
+                            <Image
                               src={URL.createObjectURL(newWorkFile)}
                               alt="Preview"
-                              className="w-32 h-24 object-cover rounded-lg border border-gray-200"
+                              width={128}
+                              height={96}
+                              className="object-cover rounded-lg border border-gray-200"
+                              unoptimized
                             />
                           )}
                         </div>

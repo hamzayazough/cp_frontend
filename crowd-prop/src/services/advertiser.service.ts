@@ -17,175 +17,199 @@ class AdvertiserService {
   async getDashboardData(
     params?: GetAdvertiserDashboardRequest
   ): Promise<AdvertiserDashboardData> {
-    const response = await httpService.get<GetAdvertiserDashboardResponse>(
-      `${this.baseUrl}/dashboard`,
-      {
-        params: {
-          includeStats: true,
-          includeCampaigns: true,
-          includeRecommendations: true,
-          includeTransactions: true,
-          includeMessages: true,
-          includeWallet: true,
-          activeCampaignLimit: 5,
-          recommendedPromoterLimit: 6,
-          transactionLimit: 10,
-          messageLimit: 5,
-          ...params,
-        },
+    const queryParams = {
+      includeStats: true,
+      includeCampaigns: true,
+      includeRecommendations: true,
+      includeTransactions: true,
+      includeMessages: true,
+      includeWallet: true,
+      activeCampaignLimit: 5,
+      recommendedPromoterLimit: 6,
+      transactionLimit: 10,
+      messageLimit: 5,
+      ...params,
+    };
+
+    const searchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.append(key, String(value));
       }
+    });
+
+    const response = await httpService.get<GetAdvertiserDashboardResponse>(
+      `${this.baseUrl}/dashboard?${searchParams.toString()}`,
+      true
     );
 
-    if (!response.success) {
-      throw new Error(response.message || "Failed to fetch dashboard data");
-    }
-
-    return response.data;
+    return response.data.data;
   }
 
   async getStats(): Promise<GetAdvertiserStatsResponse> {
     const response = await httpService.get<GetAdvertiserStatsResponse>(
-      `${this.baseUrl}/stats`
+      `${this.baseUrl}/stats`,
+      true
     );
 
-    if (!response.success) {
-      throw new Error(response.message || "Failed to fetch stats");
-    }
-
-    return response;
+    return response.data;
   }
 
   async getCampaigns(limit?: number): Promise<GetAdvertiserCampaignsResponse> {
+    const endpoint = limit
+      ? `${this.baseUrl}/campaigns?limit=${limit}`
+      : `${this.baseUrl}/campaigns`;
+
     const response = await httpService.get<GetAdvertiserCampaignsResponse>(
-      `${this.baseUrl}/campaigns`,
-      {
-        params: { limit },
-      }
+      endpoint,
+      true
     );
 
-    if (!response.success) {
-      throw new Error(response.message || "Failed to fetch campaigns");
-    }
-
-    return response;
+    return response.data;
   }
 
   async getRecommendedPromoters(
     limit?: number
   ): Promise<GetRecommendedPromotersResponse> {
+    const endpoint = limit
+      ? `${this.baseUrl}/recommended-promoters?limit=${limit}`
+      : `${this.baseUrl}/recommended-promoters`;
+
     const response = await httpService.get<GetRecommendedPromotersResponse>(
-      `${this.baseUrl}/recommended-promoters`,
-      {
-        params: { limit },
-      }
+      endpoint,
+      true
     );
 
-    if (!response.success) {
-      throw new Error(
-        response.message || "Failed to fetch recommended promoters"
-      );
-    }
-
-    return response;
+    return response.data;
   }
 
   async getTransactions(
     limit?: number
   ): Promise<GetAdvertiserTransactionsResponse> {
+    const endpoint = limit
+      ? `${this.baseUrl}/transactions?limit=${limit}`
+      : `${this.baseUrl}/transactions`;
+
     const response = await httpService.get<GetAdvertiserTransactionsResponse>(
-      `${this.baseUrl}/transactions`,
-      {
-        params: { limit },
-      }
+      endpoint,
+      true
     );
 
-    if (!response.success) {
-      throw new Error(response.message || "Failed to fetch transactions");
-    }
-
-    return response;
+    return response.data;
   }
 
   async getMessages(limit?: number): Promise<GetAdvertiserMessagesResponse> {
+    const endpoint = limit
+      ? `${this.baseUrl}/messages?limit=${limit}`
+      : `${this.baseUrl}/messages`;
+
     const response = await httpService.get<GetAdvertiserMessagesResponse>(
-      `${this.baseUrl}/messages`,
-      {
-        params: { limit },
-      }
+      endpoint,
+      true
     );
 
-    if (!response.success) {
-      throw new Error(response.message || "Failed to fetch messages");
-    }
-
-    return response;
+    return response.data;
   }
 
   async getWallet(): Promise<GetAdvertiserWalletResponse> {
     const response = await httpService.get<GetAdvertiserWalletResponse>(
-      `${this.baseUrl}/wallet`
+      `${this.baseUrl}/wallet`,
+      true
     );
 
-    if (!response.success) {
-      throw new Error(response.message || "Failed to fetch wallet");
-    }
-
-    return response;
+    return response.data;
   }
 
   async addFunds(
     amount: number
   ): Promise<{ success: boolean; message: string }> {
-    const response = await httpService.post(
-      `${this.baseUrl}/wallet/add-funds`,
-      { amount }
-    );
+    try {
+      const response = await httpService.post(
+        `${this.baseUrl}/wallet/add-funds`,
+        { amount },
+        true
+      );
 
-    return {
-      success: response.success || false,
-      message: response.message || "Failed to add funds",
-    };
+      return {
+        success: true,
+        message: response.message || "Funds added successfully",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : "Failed to add funds",
+      };
+    }
   }
 
   async pauseCampaign(
     campaignId: string
   ): Promise<{ success: boolean; message: string }> {
-    const response = await httpService.post(
-      `${this.baseUrl}/campaigns/${campaignId}/pause`
-    );
+    try {
+      const response = await httpService.post(
+        `${this.baseUrl}/campaigns/${campaignId}/pause`,
+        undefined,
+        true
+      );
 
-    return {
-      success: response.success || false,
-      message: response.message || "Failed to pause campaign",
-    };
+      return {
+        success: true,
+        message: response.message || "Campaign paused successfully",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to pause campaign",
+      };
+    }
   }
 
   async resumeCampaign(
     campaignId: string
   ): Promise<{ success: boolean; message: string }> {
-    const response = await httpService.post(
-      `${this.baseUrl}/campaigns/${campaignId}/resume`
-    );
+    try {
+      const response = await httpService.post(
+        `${this.baseUrl}/campaigns/${campaignId}/resume`,
+        undefined,
+        true
+      );
 
-    return {
-      success: response.success || false,
-      message: response.message || "Failed to resume campaign",
-    };
+      return {
+        success: true,
+        message: response.message || "Campaign resumed successfully",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to resume campaign",
+      };
+    }
   }
 
   async contactPromoter(
     promoterId: string,
     message: string
   ): Promise<{ success: boolean; message: string }> {
-    const response = await httpService.post(
-      `${this.baseUrl}/promoters/${promoterId}/contact`,
-      { message }
-    );
+    try {
+      const response = await httpService.post(
+        `${this.baseUrl}/promoters/${promoterId}/contact`,
+        { message },
+        true
+      );
 
-    return {
-      success: response.success || false,
-      message: response.message || "Failed to contact promoter",
-    };
+      return {
+        success: true,
+        message: response.message || "Message sent successfully",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to contact promoter",
+      };
+    }
   }
 }
 

@@ -9,18 +9,27 @@ import { userService } from '@/services/user.service';
 import { User as AppUser } from '@/app/interfaces/user';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import PromoterCampaignDetailsContent from '@/components/dashboard/promoter/PromoterCampaignDetailsContent';
+import AdvertiserCampaignDetailsContent from '@/components/dashboard/advertiser/AdvertiserCampaignDetailsContent';
 
 interface CampaignDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function CampaignDetailsPage({ params }: CampaignDetailsPageProps) {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [campaignId, setCampaignId] = useState<string>('');
   const router = useRouter();
+
+  // Resolve params Promise
+  useEffect(() => {
+    params.then((resolvedParams) => {
+      setCampaignId(resolvedParams.id);
+    });
+  }, [params]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
@@ -82,23 +91,19 @@ export default function CampaignDetailsPage({ params }: CampaignDetailsPageProps
 
   // Render role-based campaign details content
   const renderCampaignDetailsContent = () => {
+    if (!campaignId) {
+      return (
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+      );
+    }
+
     switch (appUser.role) {
       case 'PROMOTER':
-        return <PromoterCampaignDetailsContent campaignId={params.id} />;
+        return <PromoterCampaignDetailsContent campaignId={campaignId} />;
       case 'ADVERTISER':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Campaign Details
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Campaign ID: {params.id}
-            </p>
-            <p className="text-gray-600">
-              Here you can view and manage the details of your advertising campaign.
-            </p>
-          </div>
-        );
+        return <AdvertiserCampaignDetailsContent campaignId={campaignId} />;
       case 'ADMIN':
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
@@ -106,7 +111,7 @@ export default function CampaignDetailsPage({ params }: CampaignDetailsPageProps
               Campaign Details (Admin View)
             </h2>
             <p className="text-gray-600 mb-4">
-              Campaign ID: {params.id}
+              Campaign ID: {campaignId}
             </p>
             <p className="text-gray-600">
               Here you can view and manage all campaign details as an admin.
@@ -114,7 +119,7 @@ export default function CampaignDetailsPage({ params }: CampaignDetailsPageProps
           </div>
         );
       default:
-        return <PromoterCampaignDetailsContent campaignId={params.id} />;
+        return <PromoterCampaignDetailsContent campaignId={campaignId} />;
     }
   };
 

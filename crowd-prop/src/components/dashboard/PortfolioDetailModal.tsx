@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import Image from 'next/image'
 import type { PromoterWork } from "@/app/interfaces/promoter-work"
 
 interface PortfolioDetailModalProps {
@@ -59,10 +60,13 @@ export default function PortfolioDetailModal({ work, onClose }: PortfolioDetailM
             {work.mediaUrl && (
               <div className="flex justify-center">
                 <div className="w-full max-w-2xl">
-                  <img
+                  <Image
                     src={work.mediaUrl || "/placeholder.svg"}
                     alt={work.title}
+                    width={800}
+                    height={320}
                     className="w-full h-auto max-h-80 object-contain rounded-2xl shadow-lg border border-gray-200"
+                    unoptimized
                   />
                 </div>
               </div>

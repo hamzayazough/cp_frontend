@@ -130,13 +130,13 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
         </p>
         <div className="flex space-x-4">
           <Link
-            href={routes.promoter.explore}
+            href={routes.dashboardExplore}
             className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
           >
             Explore Campaigns
           </Link>
           <Link
-            href={routes.promoter.campaigns}
+            href={routes.dashboardCampaigns}
             className="border border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-blue-600 transition-colors"
           >
             My Campaigns
@@ -219,7 +219,7 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Active Campaigns</h2>
             <Link
-              href={routes.promoter.campaigns}
+              href={routes.dashboardCampaigns}
               className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
             >
               View All
@@ -263,13 +263,13 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
                   </div>
                   <div className="flex space-x-2">
                     <Link
-                      href={routes.promoter.campaignDetails(campaign.id)}
+                      href={routes.dashboardCampaignDetails(campaign.id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
                     >
                       View Stats
                     </Link>
                     <Link
-                      href={routes.promoter.messageThread(campaign.id)}
+                      href={routes.messageThread(campaign.id)}
                       className="bg-gray-100 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-200 transition-colors"
                     >
                       Send Message
@@ -285,7 +285,7 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
                   You don&apos;t have any active campaigns yet. Start by exploring available campaigns.
                 </p>
                 <Link
-                  href={routes.promoter.explore}
+                  href={routes.dashboardExplore}
                   className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Explore Campaigns
@@ -304,7 +304,7 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Suggested Campaigns</h2>
               <Link
-                href={routes.promoter.explore}
+                href={routes.dashboardExplore}
                 className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
               >
                 Explore More
@@ -357,7 +357,7 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
                       </p>
                     </div>
                     <Link
-                      href={routes.promoter.campaignDetails(campaign.id)}
+                      href={routes.dashboardCampaignDetails(campaign.id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
                     >
                       View Campaign
@@ -372,7 +372,7 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
                     We&apos;ll recommend campaigns based on your interests and performance.
                   </p>
                   <Link
-                    href={routes.promoter.explore}
+                    href={routes.dashboardExplore}
                     className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     Explore All Campaigns
@@ -391,7 +391,7 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">Wallet Overview</h2>
                 <Link
-                  href={routes.promoter.earnings}
+                  href={routes.dashboardEarnings}
                   className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
                 >
                   View All
@@ -503,7 +503,7 @@ export default function PromoterDashboardContent({ userName }: PromoterDashboard
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">Messages</h2>
                 <Link
-                  href={routes.promoter.messages}
+                  href={routes.dashboardMessages}
                   className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
                 >
                   View All

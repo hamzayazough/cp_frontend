@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { UserRole } from '@/app/interfaces/user';
 import { 
   Bars3Icon, 
@@ -122,7 +123,14 @@ export default function DashboardHeader({
             >
               <div className="flex-shrink-0">
                 {userAvatar ? (
-                  <img className="h-8 w-8 rounded-full" src={userAvatar} alt="" />
+                  <Image 
+                    src={userAvatar} 
+                    alt="" 
+                    width={32} 
+                    height={32} 
+                    className="rounded-full"
+                    unoptimized
+                  />
                 ) : (
                   <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
                     <span className="text-sm font-medium text-white">
@@ -145,7 +153,7 @@ export default function DashboardHeader({
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                 <div className="py-1">
                   <Link
-                    href={userRole === 'PROMOTER' ? routes.promoter.profile : routes.advertiser.profile}
+                    href={routes.dashboardProfile}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => setDropdownOpen(false)}
                   >

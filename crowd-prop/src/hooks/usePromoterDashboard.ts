@@ -68,7 +68,7 @@ export const usePromoterDashboard = (): UsePromoterDashboardReturn => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [useTemplate]); // Add useTemplate as dependency since fetchData depends on it
 
   return {
     data,

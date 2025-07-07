@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { User } from '@/app/interfaces/user';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
 import { AdvertiserWork } from '@/app/interfaces/advertiser-work';
@@ -101,8 +102,9 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
 
       // Remove empty/undefined fields
       Object.keys(updateData).forEach(key => {
-        if (updateData[key] === undefined || updateData[key] === '') {
-          delete updateData[key];
+        const typedKey = key as keyof typeof updateData;
+        if (updateData[typedKey] === undefined || updateData[typedKey] === '') {
+          delete updateData[typedKey];
         }
       });
 
@@ -157,7 +159,10 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
       setIsSaving(true);
       const response = await authService.updateUserInfo({
         advertiserDetails: {
-          ...user.advertiserDetails,
+          companyName: user.advertiserDetails?.companyName || '',
+          companyWebsite: user.advertiserDetails?.companyWebsite,
+          advertiserTypes: user.advertiserDetails?.advertiserTypes || [],
+          verified: user.advertiserDetails?.verified || false,
           advertiserWork: works,
         }
       });
@@ -181,10 +186,12 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600"></div>
           
           {/* Background image - using fallback image for now */}
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
             alt="Profile background"
-            className="absolute inset-0 w-full h-full object-cover z-10"
+            fill
+            className="object-cover z-10"
+            unoptimized
             onLoad={() => console.log('Background image loaded successfully')}
             onError={(e) => {
               console.log('Background image failed to load');
@@ -200,10 +207,13 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
               {/* Profile Picture */}
               <div className="w-24 h-24 rounded-full bg-white p-1 shadow-lg">
                 {user.avatarUrl ? (
-                  <img
+                  <Image
                     src={user.avatarUrl}
                     alt={user.name}
+                    width={96}
+                    height={96}
                     className="w-full h-full rounded-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
@@ -594,10 +604,12 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
               >
                 <div className="aspect-video bg-gray-100 relative">
                   {work.mediaUrl && (
-                    <img
+                    <Image
                       src={work.mediaUrl}
                       alt={work.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      unoptimized
                     />
                   )}
                   {work.price && (

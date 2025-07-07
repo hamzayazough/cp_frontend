@@ -111,8 +111,6 @@ export const routeGuards = {
     routes.dashboardMessages,
     routes.dashboardProfile,
     routes.dashboardSettings,
-    routes.profile,
-    routes.settings,
     routes.campaignCreate,
     routes.messages,
   ],

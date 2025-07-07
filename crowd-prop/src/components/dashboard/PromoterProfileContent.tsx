@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { User } from '@/app/interfaces/user';
 import { Language } from '@/app/enums/language';
 import { PromoterWork } from '@/app/interfaces/promoter-work';
@@ -84,16 +85,19 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
         twitterUrl: editData.twitterUrl?.trim() || undefined,
         websiteUrl: editData.websiteUrl?.trim() || undefined,
         promoterDetails: {
+          ...user.promoterDetails,
           location: editData.location?.trim(),
           languagesSpoken: editData.languagesSpoken,
           skills: editData.skills,
+          works: user.promoterDetails?.works || [],
         }
       };
 
       // Remove empty/undefined fields
       Object.keys(updateData).forEach(key => {
-        if (updateData[key] === undefined || updateData[key] === '') {
-          delete updateData[key];
+        const typedKey = key as keyof typeof updateData;
+        if (updateData[typedKey] === undefined || updateData[typedKey] === '') {
+          delete updateData[typedKey];
         }
       });
 
@@ -152,25 +156,6 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
     }));
   };
 
-  const handlePortfolioUpdate = async (works: PromoterWork[]) => {
-    try {
-      setIsSaving(true);
-      const response = await authService.updateUserInfo({
-        promoterDetails: {
-          ...user.promoterDetails,
-          works: works,
-        }
-      });
-
-      const updatedUser = response.user;
-      onUserUpdate(updatedUser);
-    } catch (error) {
-      console.error('Failed to update portfolio:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Profile Header */}
@@ -181,10 +166,12 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600"></div>
           
           {/* Background image - using fallback image for now */}
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
             alt="Profile background"
-            className="absolute inset-0 w-full h-full object-cover z-10"
+            fill
+            className="object-cover z-10"
+            unoptimized
             onLoad={() => console.log('Background image loaded successfully')}
             onError={(e) => {
               console.log('Background image failed to load');
@@ -200,10 +187,13 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
               {/* Profile Picture */}
               <div className="w-24 h-24 rounded-full bg-white p-1 shadow-lg">
                 {user.avatarUrl ? (
-                  <img
+                  <Image
                     src={user.avatarUrl}
                     alt={user.name}
+                    width={96}
+                    height={96}
                     className="w-full h-full rounded-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
@@ -595,10 +585,12 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
               >
                 <div className="aspect-video bg-gray-100 relative">
                   {work.mediaUrl && (
-                    <img
+                    <Image
                       src={work.mediaUrl}
                       alt={work.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      unoptimized
                     />
                   )}
                 </div>
@@ -636,7 +628,6 @@ export default function PromoterProfileContent({ user, onUserUpdate }: PromoterP
       {showPortfolioManager && (
         <PortfolioManager
           works={user.promoterDetails?.works || []}
-          onUpdate={handlePortfolioUpdate}
           onClose={() => setShowPortfolioManager(false)}
         />
       )}

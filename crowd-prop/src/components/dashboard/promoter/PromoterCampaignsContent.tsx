@@ -191,7 +191,7 @@ export default function PromoterCampaignsContent() {
         </div>
         <div className="mt-4 sm:mt-0">
           <Link
-            href={routes.promoter.explore}
+            href={routes.dashboardExplore}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Explore New Campaigns
@@ -315,7 +315,7 @@ export default function PromoterCampaignsContent() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">No campaigns found</h3>
             <p className="text-gray-600 mb-6">Try adjusting your search or filters</p>
             <Link
-              href={routes.promoter.explore}
+              href={routes.dashboardExplore}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               Explore Campaigns
@@ -377,14 +377,14 @@ export default function PromoterCampaignsContent() {
                 {/* Actions */}
                 <div className="flex space-x-3">
                   <Link
-                    href={routes.promoter.campaignDetails(campaign.id)}
+                    href={routes.dashboardCampaignDetails(campaign.id)}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
                     View Details
                   </Link>
                   {campaign.status === 'ONGOING' && (
                     <Link
-                      href={routes.promoter.messageThread(campaign.id)}
+                      href={routes.messageThread(campaign.id)}
                       className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                     >
                       Message Advertiser
