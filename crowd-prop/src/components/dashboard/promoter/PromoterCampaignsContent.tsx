@@ -26,7 +26,7 @@ const mockCampaigns = [
     advertiser: 'HealthTech Inc.',
     deadline: '2025-07-15',
     joinedDate: '2025-06-01',
-    cpv: 0.05,
+    cpv: 0.75,
     description: 'Promote our new fitness app to health-conscious audiences',
     tags: ['Health', 'Fitness', 'Mobile App']
   },

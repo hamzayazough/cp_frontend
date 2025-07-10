@@ -1,3 +1,5 @@
+import { CampaignType } from "@/app/enums/campaign-type";
+
 export interface PromoterStats {
   earningsThisWeek: number;
   earningsLastWeek: number;
@@ -15,7 +17,7 @@ export interface PromoterStats {
 export interface PromoterActiveCampaign {
   id: string;
   title: string;
-  type: "VISIBILITY" | "SALESMAN" | "CONSULTANT";
+  type: CampaignType;
   status: "ONGOING" | "AWAITING_REVIEW" | "COMPLETED" | "PAUSED";
   views: number;
   earnings: number;
@@ -28,7 +30,7 @@ export interface PromoterActiveCampaign {
 export interface PromoterSuggestedCampaign {
   id: string;
   title: string;
-  type: "VISIBILITY" | "SALESMAN" | "CONSULTANT";
+  type: CampaignType;
   cpv?: number; // Cost per view for VISIBILITY campaigns
   commission?: number; // Commission percentage for SALESMAN campaigns
   fixedFee?: number; // Fixed fee for CONSULTANT campaigns
