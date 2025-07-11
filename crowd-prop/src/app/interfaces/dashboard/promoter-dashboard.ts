@@ -1,4 +1,5 @@
 import { CampaignType } from "@/app/enums/campaign-type";
+import { PromoterCampaignStatus } from "../promoter-campaign";
 
 export interface PromoterStats {
   earningsThisWeek: number;
@@ -18,7 +19,7 @@ export interface PromoterActiveCampaign {
   id: string;
   title: string;
   type: CampaignType;
-  status: "ONGOING" | "AWAITING_REVIEW" | "COMPLETED" | "PAUSED";
+  status: PromoterCampaignStatus;
   views: number;
   earnings: number;
   advertiser: string;

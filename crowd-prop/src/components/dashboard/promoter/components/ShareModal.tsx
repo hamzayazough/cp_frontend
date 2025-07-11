@@ -1,6 +1,6 @@
 "use client";
 
-import { VisibilityCampaignDetails } from "@/interfaces/campaign-promoter";
+import { VisibilityCampaignDetails } from "@/app/interfaces/campaign/promoter-campaign-details";
 
 interface ShareModalProps {
   campaign: {
@@ -10,7 +10,11 @@ interface ShareModalProps {
   onClose: () => void;
 }
 
-export default function ShareModal({ campaign, isOpen, onClose }: ShareModalProps) {
+export default function ShareModal({
+  campaign,
+  isOpen,
+  onClose,
+}: ShareModalProps) {
   if (!isOpen) return null;
 
   const copyToClipboard = () => {
@@ -44,8 +48,8 @@ export default function ShareModal({ campaign, isOpen, onClose }: ShareModalProp
             </div>
           </div>
           <div className="text-sm text-gray-600">
-            Use this link to track your referrals and earn money for each
-            valid view or conversion.
+            Use this link to track your referrals and earn money for each valid
+            view or conversion.
           </div>
           <div className="flex space-x-3 pt-4">
             <button

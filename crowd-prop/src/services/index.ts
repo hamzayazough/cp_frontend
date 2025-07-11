@@ -31,7 +31,7 @@ export type {
   PromoterWallet,
   GetPromoterDashboardRequest,
   GetPromoterDashboardResponse,
-} from "../interfaces/promoter-dashboard";
+} from "../app/interfaces/dashboard/promoter-dashboard";
 
 // Advertiser Service - Advertiser dashboard and campaign management
 export { advertiserService } from "./advertiser.service";
@@ -45,7 +45,7 @@ export type {
   AdvertiserWallet,
   GetAdvertiserDashboardRequest,
   GetAdvertiserDashboardResponse,
-} from "../interfaces/advertiser-dashboard";
+} from "../app/interfaces/dashboard/advertiser-dashboard";
 
 // Import service instances separately for the services object
 import { httpService } from "./http.service";

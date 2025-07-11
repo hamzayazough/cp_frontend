@@ -9,12 +9,18 @@ import {
   XMarkIcon,
   CheckIcon,
 } from "@heroicons/react/24/outline";
+import { CampaignType } from "@/app/enums/campaign-type";
+import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 interface PromoterLinksProps {
   campaignType: string;
+  campaignStatus: PromoterCampaignStatus;
 }
 
-export default function PromoterLinks({ campaignType }: PromoterLinksProps) {
+export default function PromoterLinks({
+  campaignType,
+  campaignStatus,
+}: PromoterLinksProps) {
   const [promoterLinks, setPromoterLinks] = useState<string[]>([]);
   const [newLink, setNewLink] = useState("");
   const [editingLinkIndex, setEditingLinkIndex] = useState<number | null>(null);
@@ -50,8 +56,13 @@ export default function PromoterLinks({ campaignType }: PromoterLinksProps) {
     setEditingLinkIndex(null);
     setEditingLinkValue("");
   };
-
-  if (campaignType !== "CONSULTANT") {
+  if (
+    !(
+      campaignType === CampaignType.CONSULTANT ||
+      campaignType === CampaignType.SELLER
+    ) ||
+    campaignStatus !== PromoterCampaignStatus.ONGOING
+  ) {
     return null;
   }
 
@@ -59,13 +70,12 @@ export default function PromoterLinks({ campaignType }: PromoterLinksProps) {
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">
-          Your Campaign Links
+          Share Links With Client
         </h3>
         <span className="text-sm text-gray-600">
           Add links to your work (posts, videos, docs, etc.)
         </span>
       </div>
-      
       {/* Add New Link */}
       <div className="mb-4">
         <div className="flex gap-3">
@@ -86,15 +96,12 @@ export default function PromoterLinks({ campaignType }: PromoterLinksProps) {
           </button>
         </div>
       </div>
-      
       {/* Links List */}
       <div className="space-y-3">
         {promoterLinks.length === 0 ? (
           <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
             <LinkIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-500 font-medium">
-              No work links added yet
-            </p>
+            <p className="text-gray-500 font-medium">No work links added yet</p>
             <p className="text-gray-400 text-sm">
               Share Google Docs, PowerPoints, designs, or reports that your
               client needs to review
@@ -158,8 +165,7 @@ export default function PromoterLinks({ campaignType }: PromoterLinksProps) {
             </div>
           ))
         )}
-      </div>
-      
+      </div>{" "}
       {/* Helper text */}
       <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
         <p className="text-purple-700 text-sm">
@@ -167,13 +173,25 @@ export default function PromoterLinks({ campaignType }: PromoterLinksProps) {
           <strong>visible to your client</strong>. Share links to your
           deliverables and work progress such as:
         </p>
-        <ul className="text-purple-700 text-sm mt-2 ml-4 space-y-1">
-          <li>• Google Docs with strategy documents or reports</li>
-          <li>• PowerPoint presentations with your recommendations</li>
-          <li>• Spreadsheets with data analysis or campaign metrics</li>
-          <li>• Figma/Canva designs for marketing materials</li>
-          <li>• Live campaign examples or case studies you&apos;ve created</li>
-        </ul>
+        {campaignType === CampaignType.CONSULTANT ? (
+          <ul className="text-purple-700 text-sm mt-2 ml-4 space-y-1">
+            <li>• Google Docs with strategy documents or reports</li>
+            <li>• PowerPoint presentations with your recommendations</li>
+            <li>• Spreadsheets with data analysis or campaign metrics</li>
+            <li>• Figma/Canva designs for marketing materials</li>
+            <li>
+              • Live campaign examples or case studies you&apos;ve created
+            </li>
+          </ul>
+        ) : (
+          <ul className="text-purple-700 text-sm mt-2 ml-4 space-y-1">
+            <li>• Product photos and videos you&apos;ve created</li>
+            <li>• Social media posts showcasing the products</li>
+            <li>• Store setup progress and screenshots</li>
+            <li>• Sales reports and analytics dashboards</li>
+            <li>• Customer testimonials and reviews you&apos;ve collected</li>
+          </ul>
+        )}
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+import { PromoterCampaignStatus } from "../promoter-campaign";
+
 export interface AdvertiserStats {
   spendingThisWeek: number;
   spendingLastWeek: number;
@@ -16,7 +18,7 @@ export interface AdvertiserActiveCampaign {
   id: string;
   title: string;
   type: "VISIBILITY" | "SALESMAN" | "CONSULTANT";
-  status: "ONGOING" | "AWAITING_PROMOTER" | "COMPLETED" | "PAUSED";
+  status: PromoterCampaignStatus;
   views: number;
   spent: number;
   applications: number;

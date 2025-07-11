@@ -4,7 +4,7 @@ import {
   ConsultantCampaignDetails,
   SellerCampaignDetails,
   SalesmanCampaignDetails,
-} from "@/interfaces/campaign-promoter";
+} from "@/app/interfaces/campaign/promoter-campaign-details";
 import {
   CampaignType,
   MeetingPlan,
@@ -13,6 +13,7 @@ import {
 } from "../enums/campaign-type";
 import { SocialPlatform } from "../enums/social-platform";
 import { PromoterCampaignStatus } from "../interfaces/promoter-campaign";
+import { AdvertiserType } from "../enums/advertiser-type";
 
 export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
   id: "1",
@@ -23,13 +24,20 @@ export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
   description:
     "Help us promote our revolutionary health and fitness app to reach health-conscious millennials and Gen Z.",
   advertiser: {
-    name: "HealthTech Inc.",
+    id: "1",
+    companyName: "HealthTech Inc.",
     profileUrl: undefined,
     rating: 4.8,
     verified: true,
     description:
       "Leading health technology company focused on making fitness accessible to everyone.",
     website: "https://healthtech.com",
+    advertiserTypes: [
+      AdvertiserType.EVENTS,
+      AdvertiserType.SPORTS,
+      AdvertiserType.TECH,
+      AdvertiserType.HEALTH,
+    ],
   },
   campaign: {
     type: CampaignType.VISIBILITY,
@@ -59,7 +67,12 @@ export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
     viewsGenerated: 12700,
     projectedTotal: 850,
   },
-  tags: ["Health", "Fitness", "Mobile App", "Wellness"],
+  tags: [
+    AdvertiserType.EVENTS,
+    AdvertiserType.SPORTS,
+    AdvertiserType.TECH,
+    AdvertiserType.HEALTH,
+  ],
 };
 
 export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
@@ -71,13 +84,20 @@ export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
   description:
     "Looking for an experienced digital marketing consultant to help develop a comprehensive marketing strategy for our e-commerce platform.",
   advertiser: {
-    name: "TechStart Solutions",
+    id: "2",
+    companyName: "TechStart Solutions",
     profileUrl: undefined,
     rating: 4.6,
     verified: true,
     description:
       "Innovative e-commerce platform startup focused on sustainable products.",
     website: "https://techstartsolutions.com",
+    advertiserTypes: [
+      AdvertiserType.EVENTS,
+      AdvertiserType.SPORTS,
+      AdvertiserType.TECH,
+      AdvertiserType.HEALTH,
+    ],
   },
   campaign: {
     type: CampaignType.CONSULTANT,
@@ -112,7 +132,12 @@ export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
     viewsGenerated: 0,
     projectedTotal: 5000,
   },
-  tags: ["Digital Marketing", "Consulting", "E-commerce", "Strategy"],
+  tags: [
+    AdvertiserType.EVENTS,
+    AdvertiserType.SPORTS,
+    AdvertiserType.TECH,
+    AdvertiserType.HEALTH,
+  ],
 };
 
 export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
@@ -124,13 +149,20 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
   description:
     "Looking for a skilled promoter to create and manage a complete e-commerce store for our handmade jewelry business, including product photography, store setup, and initial sales.",
   advertiser: {
-    name: "Artisan Jewelry Co.",
+    id: "3",
+    companyName: "Artisan Jewelry Co.",
     profileUrl: undefined,
     rating: 4.7,
     verified: true,
     description:
       "Small business specializing in handcrafted jewelry with unique designs.",
     website: "https://artisanjewelry.com",
+    advertiserTypes: [
+      AdvertiserType.EVENTS,
+      AdvertiserType.SPORTS,
+      AdvertiserType.TECH,
+      AdvertiserType.HEALTH,
+    ],
   },
   campaign: {
     type: CampaignType.SELLER,
@@ -159,6 +191,9 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
       "Social media marketing experience",
       "Knowledge of jewelry market",
     ],
+    needMeeting: true, // Indicates if a meeting is required before starting
+    meetingCount: 4, // Number of meetings required for the campaign
+
     createdAt: new Date("2025-06-10"),
     deadline: "2025-08-15",
     startDate: "2025-06-15",
@@ -170,7 +205,12 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
     viewsGenerated: 0,
     projectedTotal: 2500,
   },
-  tags: ["E-commerce", "Jewelry", "Store Creation", "Sales"],
+  tags: [
+    AdvertiserType.EVENTS,
+    AdvertiserType.SPORTS,
+    AdvertiserType.TECH,
+    AdvertiserType.HEALTH,
+  ],
 };
 
 export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
@@ -182,13 +222,20 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
   description:
     "Join our sales team and earn commission for every fitness app subscription you generate. Perfect for fitness influencers and health enthusiasts with engaged audiences.",
   advertiser: {
-    name: "FitTrack Pro",
+    id: "4",
+    companyName: "FitTrack Pro",
     profileUrl: undefined,
     rating: 4.9,
     verified: true,
     description:
       "Leading fitness tracking app with personalized workout plans and nutrition guidance.",
     website: "https://fittrackpro.com",
+    advertiserTypes: [
+      AdvertiserType.EVENTS,
+      AdvertiserType.SPORTS,
+      AdvertiserType.TECH,
+      AdvertiserType.HEALTH,
+    ],
   },
   campaign: {
     type: CampaignType.SALESMAN,
@@ -222,5 +269,10 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
     viewsGenerated: 0, // Not applicable for sales campaigns
     projectedTotal: 2000,
   },
-  tags: ["Fitness", "App Sales", "Commission", "Health"],
+  tags: [
+    AdvertiserType.SPORTS,
+    AdvertiserType.TECH,
+    AdvertiserType.SCIENCE,
+    AdvertiserType.HEALTH,
+  ],
 };

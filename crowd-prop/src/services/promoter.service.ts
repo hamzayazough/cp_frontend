@@ -15,7 +15,7 @@ import {
   PromoterTransaction,
   PromoterMessage,
   PromoterWallet,
-} from "@/interfaces/promoter-dashboard";
+} from "@/app/interfaces/dashboard/promoter-dashboard";
 
 export class PromoterService {
   private httpService: HttpService;

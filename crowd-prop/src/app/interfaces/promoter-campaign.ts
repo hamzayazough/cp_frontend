@@ -16,6 +16,9 @@ export interface PromoterCampaign {
   completedAt?: Date;
   updatedAt: Date;
 
+  //new field
+  promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
+
   // Payment tracking fields
   budgetHeld: number; // Amount currently reserved/held from advertiser
   spentBudget: number; // Amount spent so far in the campaign

@@ -7,7 +7,7 @@ import {
   ShareIcon,
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
-import { CampaignPromoter } from "@/interfaces/campaign-promoter";
+import { CampaignPromoter } from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
 
 interface CampaignHeaderProps {
@@ -35,9 +35,7 @@ export default function CampaignHeader({
           <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {campaign.title}
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">{campaign.title}</h1>
           <div className="flex items-center space-x-3 mt-2">
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(

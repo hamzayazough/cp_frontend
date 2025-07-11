@@ -1,18 +1,21 @@
 "use client";
 
-import { 
-  CampaignPromoter, 
+import {
+  CampaignPromoter,
   VisibilityCampaignDetails,
-  ConsultantCampaignDetails
-} from "@/interfaces/campaign-promoter";
+  ConsultantCampaignDetails,
+  SellerCampaignDetails,
+} from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
 
 interface CampaignPerformanceProps {
   campaign: CampaignPromoter;
 }
 
-export default function CampaignPerformance({ campaign }: CampaignPerformanceProps) {
-  const progress = 
+export default function CampaignPerformance({
+  campaign,
+}: CampaignPerformanceProps) {
+  const progress =
     campaign.campaign.type === CampaignType.VISIBILITY &&
     "maxViews" in campaign.campaign
       ? ((campaign.earnings.viewsGenerated || 0) /
@@ -32,9 +35,9 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Views Generated</p>
+              <p className="text-sm text-gray-600">Views Generated</p>{" "}
               <p className="text-xl font-bold text-gray-900">
-                {campaign.earnings.viewsGenerated.toLocaleString()}
+                {(campaign.earnings.viewsGenerated || 0).toLocaleString()}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
@@ -45,29 +48,81 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
             </div>
           </>
         );
-
       case CampaignType.CONSULTANT:
+        const consultantDetails =
+          campaign.campaign as ConsultantCampaignDetails;
+        // Assume meetingsDone comes from campaign.meetingDone or calculate from some field
+        const meetingsDone = campaign.meetingDone ? 1 : 0; // Placeholder logic
+        const meetingsRemaining = Math.max(
+          0,
+          consultantDetails.meetingCount - meetingsDone
+        );
+
         return (
           <>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Meetings Planned</p>
+              <p className="text-sm text-gray-600">Meetings Done</p>
+              <p className="text-xl font-bold text-gray-900">{meetingsDone}</p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Meetings Remaining</p>
               <p className="text-xl font-bold text-gray-900">
-                {(campaign.campaign as ConsultantCampaignDetails).meetingCount || 0}
+                {meetingsRemaining}
+              </p>
+            </div>{" "}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Total Earned</p>
+              <p className="text-xl font-bold text-gray-900">
+                ${(campaign.earnings.totalEarned || 0).toLocaleString()}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Budget used</p>
+              <p className="text-sm text-gray-600">Max Budget</p>
               <p className="text-xl font-bold text-gray-900">
-                {(
-                  (campaign.campaign.spentBudget / campaign.campaign.budgetHeld) *
-                  100
-                ).toFixed(1)}%
+                ${(consultantDetails.maxBudget || 0).toLocaleString()}
               </p>
             </div>
           </>
         );
 
       case CampaignType.SELLER:
+        const sellerDetails = campaign.campaign as SellerCampaignDetails;
+        // For seller campaigns, check if meetings are required
+        const sellerMeetingsDone = campaign.meetingDone ? 1 : 0; // Placeholder logic
+        const sellerMeetingsRemaining = sellerDetails.needMeeting
+          ? Math.max(0, sellerDetails.meetingCount - sellerMeetingsDone)
+          : 0;
+
+        return (
+          <>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Meetings Done</p>
+              <p className="text-xl font-bold text-gray-900">
+                {sellerDetails.needMeeting ? sellerMeetingsDone : "N/A"}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Meetings Remaining</p>
+              <p className="text-xl font-bold text-gray-900">
+                {sellerDetails.needMeeting ? sellerMeetingsRemaining : "N/A"}
+              </p>
+            </div>{" "}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Total Earned</p>
+              <p className="text-xl font-bold text-gray-900">
+                ${(campaign.earnings.totalEarned || 0).toLocaleString()}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Max Budget</p>
+              <p className="text-xl font-bold text-gray-900">
+                ${(sellerDetails.maxBudget || 0).toLocaleString()}
+              </p>
+            </div>
+          </>
+        );
+
+      case CampaignType.SALESMAN:
       case CampaignType.SALESMAN:
         return (
           <>
@@ -83,12 +138,6 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
                 ${campaign.earnings.projectedTotal}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Completion Rate</p>
-              <p className="text-xl font-bold text-gray-900">
-                {campaign.earnings.totalEarned > 0 ? "100%" : "0%"}
-              </p>
-            </div>
           </>
         );
 
@@ -98,24 +147,28 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
   };
 
   const renderTrackingSection = () => {
-    if (campaign.campaign.type === CampaignType.VISIBILITY && 
-        (campaign.campaign as VisibilityCampaignDetails).trackingLink) {
+    if (
+      campaign.campaign.type === CampaignType.VISIBILITY &&
+      (campaign.campaign as VisibilityCampaignDetails).trackingLink
+    ) {
       return (
         <div>
-          <h4 className="font-medium text-gray-900 mb-2">
-            Your Tracking Link
-          </h4>
+          <h4 className="font-medium text-gray-900 mb-2">Your Tracking Link</h4>
           <div className="flex items-center space-x-2">
             <input
               type="text"
-              value={(campaign.campaign as VisibilityCampaignDetails).trackingLink || ""}
+              value={
+                (campaign.campaign as VisibilityCampaignDetails).trackingLink ||
+                ""
+              }
               readOnly
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
             />
             <button
               onClick={() =>
                 navigator.clipboard.writeText(
-                  (campaign.campaign as VisibilityCampaignDetails).trackingLink || ""
+                  (campaign.campaign as VisibilityCampaignDetails)
+                    .trackingLink || ""
                 )
               }
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -128,12 +181,11 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
     }
     return null;
   };
-
   const renderConsultantDeliverables = () => {
     if (campaign.campaign.type !== CampaignType.CONSULTANT) return null;
 
     const consultantDetails = campaign.campaign as ConsultantCampaignDetails;
-    
+
     return (
       <div className="space-y-4">
         <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
@@ -162,9 +214,45 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
     );
   };
 
+  const renderSellerDeliverables = () => {
+    if (campaign.campaign.type !== CampaignType.SELLER) return null;
+
+    const sellerDetails = campaign.campaign as SellerCampaignDetails;
+
+    return (
+      <div className="space-y-4">
+        <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {sellerDetails.deliverables?.map((deliverable, index) => (
+            <div
+              key={index}
+              className="bg-orange-50 p-4 rounded-lg border border-orange-200"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-orange-900">
+                  {deliverable}
+                </span>
+                <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+                  In Progress
+                </span>
+              </div>
+            </div>
+          )) || (
+            <div className="col-span-2 text-center text-gray-500 py-4">
+              No specific deliverables defined yet
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderSalesPerformance = () => {
-    if (campaign.campaign.type !== CampaignType.SELLER && 
-        campaign.campaign.type !== CampaignType.SALESMAN) return null;
+    if (
+      campaign.campaign.type !== CampaignType.SELLER &&
+      campaign.campaign.type !== CampaignType.SALESMAN
+    )
+      return null;
 
     return (
       <div>
@@ -180,15 +268,14 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
       </div>
     );
   };
-
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">
         Performance Analytics
       </h3>
-      
+
       {/* Performance Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {renderPerformanceStats()}
       </div>
 
@@ -197,6 +284,9 @@ export default function CampaignPerformance({ campaign }: CampaignPerformancePro
 
       {/* Consultant Performance Tools */}
       {renderConsultantDeliverables()}
+
+      {/* Seller Performance Tools */}
+      {renderSellerDeliverables()}
 
       {/* Sales Performance */}
       {renderSalesPerformance()}

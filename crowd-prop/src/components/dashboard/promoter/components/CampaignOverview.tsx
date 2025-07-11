@@ -9,14 +9,15 @@ import {
   TagIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
-import { 
-  CampaignPromoter, 
+import {
+  CampaignPromoter,
   VisibilityCampaignDetails,
   ConsultantCampaignDetails,
   SellerCampaignDetails,
-  SalesmanCampaignDetails
-} from "@/interfaces/campaign-promoter";
+  SalesmanCampaignDetails,
+} from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
+import Image from "next/image";
 
 interface CampaignOverviewProps {
   campaign: CampaignPromoter;
@@ -41,15 +42,22 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                 <div className="space-y-2 text-sm text-emerald-800">
                   <div className="flex items-start space-x-2">
                     <span>•</span>
-                    <span>Post consistently and engage with your audience</span>
+                    <span>
+                      Post consistently on different platforms and use your
+                      creativity to generate engaging content
+                    </span>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
-                    <span>Use trending hashtags and optimize posting times</span>
+                    <span>
+                      Use trending hashtags and optimize posting times
+                    </span>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
-                    <span>Create authentic content that resonates with your followers</span>
+                    <span>
+                      Create authentic content that resonates with your audience
+                    </span>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
@@ -80,7 +88,9 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
-                    <span>Deliver actionable insights and recommendations</span>
+                    <span>
+                      Exceed client expectations by delivering exceptional value
+                    </span>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
@@ -88,7 +98,9 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
-                    <span>Be responsive and maintain professional communication</span>
+                    <span>
+                      Be responsive and maintain professional communication
+                    </span>
                   </div>
                 </div>
               </div>
@@ -120,7 +132,9 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
-                    <span>Track your sales metrics and optimize your approach</span>
+                    <span>
+                      Track your sales metrics and optimize your approach
+                    </span>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span>•</span>
@@ -153,12 +167,18 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
 
     switch (campaign.campaign.type) {
       case CampaignType.VISIBILITY:
-        const visibilityDetails = campaign.campaign as VisibilityCampaignDetails;
+        const visibilityDetails =
+          campaign.campaign as VisibilityCampaignDetails;
         specificDetails.push(
-          <div key="cpv" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+          <div
+            key="cpv"
+            className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+          >
             <div className="flex items-center">
               <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-              <span className="text-sm text-gray-600">Revenue per 100 Views</span>
+              <span className="text-sm text-gray-600">
+                Revenue per 100 Views
+              </span>
             </div>
             <span className="font-semibold text-gray-900">
               ${visibilityDetails.cpv}
@@ -168,9 +188,13 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
         break;
 
       case CampaignType.CONSULTANT:
-        const consultantDetails = campaign.campaign as ConsultantCampaignDetails;
+        const consultantDetails =
+          campaign.campaign as ConsultantCampaignDetails;
         specificDetails.push(
-          <div key="minBudget" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+          <div
+            key="minBudget"
+            className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+          >
             <div className="flex items-center">
               <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
               <span className="text-sm text-gray-600">Min Budget</span>
@@ -179,7 +203,10 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               ${consultantDetails.minBudget?.toLocaleString() || 0}
             </span>
           </div>,
-          <div key="maxBudget" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+          <div
+            key="maxBudget"
+            className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+          >
             <div className="flex items-center">
               <div className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></div>
               <span className="text-sm text-gray-600">Max Budget</span>
@@ -188,7 +215,10 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               ${consultantDetails.maxBudget?.toLocaleString() || 0}
             </span>
           </div>,
-          <div key="meetingPlan" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+          <div
+            key="meetingPlan"
+            className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+          >
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
               <span className="text-sm text-gray-600">Meeting Plan</span>
@@ -196,29 +226,140 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
             <span className="font-semibold text-gray-900">
               {consultantDetails.meetingPlan || "TBD"}
             </span>
-          </div>
-        );
-        break;
-
-      case CampaignType.SELLER:
-        const sellerDetails = campaign.campaign as SellerCampaignDetails;
-        specificDetails.push(
-          <div key="fixedPrice" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+          </div>,
+          <div
+            key="meetingCount"
+            className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+          >
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-              <span className="text-sm text-gray-600">Fixed Price</span>
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+              <span className="text-sm text-gray-600">Planned Meetings</span>
             </div>
             <span className="font-semibold text-gray-900">
-              ${sellerDetails.fixedPrice || 0}
+              {consultantDetails.meetingCount || 0}
             </span>
           </div>
         );
+
+        // Add deliverables if they exist
+        if (
+          consultantDetails.expectedDeliverables &&
+          consultantDetails.expectedDeliverables.length > 0
+        ) {
+          specificDetails.push(
+            <div
+              key="deliverables"
+              className="p-3 bg-white rounded-lg shadow-sm"
+            >
+              <div className="flex items-center mb-3">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                <span className="text-sm text-gray-600">
+                  Expected Deliverables
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {consultantDetails.expectedDeliverables.map(
+                  (deliverable, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full"
+                    >
+                      {deliverable}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          );
+        }
+        break;
+      case CampaignType.SELLER:
+        const sellerDetails = campaign.campaign as SellerCampaignDetails;
+
+        // Show meeting requirement
+        specificDetails.push(
+          <div
+            key="needMeeting"
+            className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+          >
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+              <span className="text-sm text-gray-600">Meeting Required</span>
+            </div>
+            <span className="font-semibold text-gray-900">
+              {sellerDetails.needMeeting ? "Yes" : "No"}
+            </span>
+          </div>
+        );
+
+        // If meeting is required, show meeting details
+        if (sellerDetails.needMeeting) {
+          specificDetails.push(
+            <div
+              key="meetingPlan"
+              className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+            >
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                <span className="text-sm text-gray-600">Meeting Plan</span>
+              </div>
+              <span className="font-semibold text-gray-900">
+                {sellerDetails.meetingPlan || "TBD"}
+              </span>
+            </div>,
+            <div
+              key="meetingCount"
+              className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+            >
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                <span className="text-sm text-gray-600">Planned Meetings</span>
+              </div>
+              <span className="font-semibold text-gray-900">
+                {sellerDetails.meetingCount || 0}
+              </span>
+            </div>
+          );
+        }
+
+        // Add deliverables if they exist
+        if (
+          sellerDetails.deliverables &&
+          sellerDetails.deliverables.length > 0
+        ) {
+          specificDetails.push(
+            <div
+              key="deliverables"
+              className="p-3 bg-white rounded-lg shadow-sm"
+            >
+              <div className="flex items-center mb-3">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                <span className="text-sm text-gray-600">
+                  Required Deliverables
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {sellerDetails.deliverables.map((deliverable, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full"
+                  >
+                    {deliverable}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        }
         break;
 
       case CampaignType.SALESMAN:
         const salesmanDetails = campaign.campaign as SalesmanCampaignDetails;
         specificDetails.push(
-          <div key="commission" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+          <div
+            key="commission"
+            className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+          >
             <div className="flex items-center">
               <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
               <span className="text-sm text-gray-600">Commission Rate</span>
@@ -248,7 +389,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <img
+              <Image
                 src={campaign.mediaUrl}
                 alt="Campaign Media"
                 className="w-full h-full object-cover"
@@ -287,14 +428,14 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           <h3 className="text-lg font-semibold text-gray-900 ml-3">
             Advertiser Information
           </h3>
-        </div>
+        </div>{" "}
         <div className="bg-white p-4 rounded-lg shadow-sm">
           <div className="flex items-start space-x-4">
             <div className="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
               {campaign.advertiser.profileUrl ? (
-                <img
+                <Image
                   src={campaign.advertiser.profileUrl}
-                  alt={campaign.advertiser.name}
+                  alt={campaign.advertiser.companyName}
                   className="w-full h-full object-cover rounded-lg"
                 />
               ) : (
@@ -302,25 +443,69 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               )}
             </div>
             <div className="flex-1">
+              {" "}
               <div className="flex items-center space-x-2 mb-2">
                 <h4 className="font-semibold text-gray-900">
-                  {campaign.advertiser.name}
-                </h4>
-                <span className="text-sm text-gray-500">
-                  {campaign.advertiser.type}
-                </span>
+                  {campaign.advertiser.companyName}
+                </h4>{" "}
+                {campaign.advertiser.verified && (
+                  <div className="relative">
+                    <svg
+                      className="w-5 h-5 text-blue-500"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center space-x-2 mb-3">
+                <span className="text-sm text-gray-500">Rating:</span>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-gray-900">
+                    {campaign.advertiser.rating.toFixed(1)}
+                  </span>
+                  <span className="text-yellow-400 ml-1">★</span>
+                </div>
               </div>
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
                 {campaign.advertiser.description}
               </p>
-              <div className="flex items-center space-x-4 text-sm">
-                <span className="text-gray-500">
-                  Industry: {campaign.advertiser.industry}
-                </span>
-                <span className="text-gray-500">
-                  Since: {campaign.advertiser.memberSince}
-                </span>
-              </div>
+              {campaign.advertiser.website && (
+                <div className="mb-3">
+                  <a
+                    href={campaign.advertiser.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-600 hover:text-cyan-700 text-sm font-medium"
+                  >
+                    Visit Website →
+                  </a>
+                </div>
+              )}
+              {campaign.advertiser.advertiserTypes &&
+                campaign.advertiser.advertiserTypes.length > 0 && (
+                  <div>
+                    <span className="text-sm text-gray-500 mb-2 block">
+                      Industries:
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {campaign.advertiser.advertiserTypes.map((type) => (
+                        <span
+                          key={type}
+                          className="inline-flex items-center px-2 py-1 bg-cyan-100 text-cyan-800 text-xs font-medium rounded-full"
+                        >
+                          {type}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -338,9 +523,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               Campaign Details
             </h3>
           </div>
-          <div className="space-y-4">
-            {renderCampaignDetails()}
-          </div>
+          <div className="space-y-4">{renderCampaignDetails()}</div>
         </div>
 
         {/* Target Audience Card */}
@@ -371,7 +554,10 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               </div>
               <div className="bg-white p-3 rounded-lg shadow-sm border border-green-200">
                 <p className="text-green-700 text-sm font-medium">
-                  {(campaign.campaign as ConsultantCampaignDetails).expertiseRequired}
+                  {
+                    (campaign.campaign as ConsultantCampaignDetails)
+                      .expertiseRequired
+                  }
                 </p>
               </div>
             </div>
@@ -439,11 +625,15 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               <div className="flex justify-between items-center mb-4">
                 <div className="text-sm text-gray-600">
                   <div className="font-medium">Start Date</div>
-                  <div>{new Date(campaign.campaign.startDate).toLocaleDateString()}</div>
+                  <div>
+                    {new Date(campaign.campaign.startDate).toLocaleDateString()}
+                  </div>
                 </div>
                 <div className="text-sm text-gray-600">
                   <div className="font-medium">Deadline</div>
-                  <div>{new Date(campaign.campaign.deadline).toLocaleDateString()}</div>
+                  <div>
+                    {new Date(campaign.campaign.deadline).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -453,8 +643,10 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                     width: `${Math.min(
                       Math.max(
                         0,
-                        ((new Date().getTime() - new Date(campaign.campaign.startDate).getTime()) /
-                          (new Date(campaign.campaign.deadline).getTime() - new Date(campaign.campaign.startDate).getTime())) *
+                        ((new Date().getTime() -
+                          new Date(campaign.campaign.startDate).getTime()) /
+                          (new Date(campaign.campaign.deadline).getTime() -
+                            new Date(campaign.campaign.startDate).getTime())) *
                           100
                       ),
                       100
@@ -480,7 +672,8 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   Join Campaign Channel
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Connect with the advertiser and other promoters
+                  Having questions? Connect directly with the advertiser in the
+                  campaign channel.
                 </p>
               </div>
             </div>

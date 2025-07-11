@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { promoterService } from "@/services/promoter.service";
-import { PromoterDashboardData } from "@/interfaces/promoter-dashboard";
+import { PromoterDashboardData } from "@/app/interfaces/dashboard/promoter-dashboard";
 
 interface UsePromoterDashboardReturn {
   data: PromoterDashboardData | null;

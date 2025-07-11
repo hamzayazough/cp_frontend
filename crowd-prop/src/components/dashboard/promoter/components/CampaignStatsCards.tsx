@@ -6,11 +6,12 @@ import {
   ChartBarIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
-import { 
-  CampaignPromoter, 
+import {
+  CampaignPromoter,
   VisibilityCampaignDetails,
-  ConsultantCampaignDetails 
-} from "@/interfaces/campaign-promoter";
+  ConsultantCampaignDetails,
+  SellerCampaignDetails,
+} from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
 
 interface CampaignStatsCardsProps {
@@ -30,14 +31,14 @@ export default function CampaignStatsCards({
             <CurrencyDollarIcon className="h-6 w-6 text-green-600" />
           </div>
           <div className="ml-4">
+            {" "}
             <p className="text-sm font-medium text-gray-600">Total Earned</p>
             <p className="text-2xl font-bold text-gray-900">
-              ${campaign.earnings.totalEarned.toLocaleString()}
+              ${(campaign.earnings.totalEarned || 0).toLocaleString()}
             </p>
           </div>
         </div>
       </div>
-      
       {campaign.campaign.type === CampaignType.VISIBILITY && (
         <>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -46,32 +47,33 @@ export default function CampaignStatsCards({
                 <EyeIcon className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Views Generated</p>
+                {" "}
+                <p className="text-sm font-medium text-gray-600">
+                  Views Generated
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {campaign.earnings.viewsGenerated.toLocaleString()}
+                  {(campaign.earnings.viewsGenerated || 0).toLocaleString()}
                 </p>
               </div>
             </div>
-          </div>
+          </div>{" "}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <ChartBarIcon className="h-6 w-6 text-purple-600" />
+                <CurrencyDollarIcon className="h-6 w-6 text-purple-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Progress</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Earning per 100 views
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(
-                    (campaign.earnings.viewsGenerated / 
-                    (campaign.campaign as VisibilityCampaignDetails).maxViews) * 100
-                  )}%
+                  ${(campaign.campaign as VisibilityCampaignDetails).cpv}
                 </p>
               </div>
             </div>
           </div>
         </>
       )}
-      
       {campaign.campaign.type === CampaignType.CONSULTANT && (
         <>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -83,8 +85,11 @@ export default function CampaignStatsCards({
                 <p className="text-sm font-medium text-gray-600">Budget Used</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {Math.round(
-                    (campaign.campaign.spentBudget / campaign.campaign.budgetHeld) * 100
-                  )}%
+                    (campaign.campaign.spentBudget /
+                      campaign.campaign.budgetHeld) *
+                      100
+                  )}
+                  %
                 </p>
               </div>
             </div>
@@ -97,46 +102,70 @@ export default function CampaignStatsCards({
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Meetings</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {(campaign.campaign as ConsultantCampaignDetails).meetingCount || 0}
+                  {(campaign.campaign as ConsultantCampaignDetails)
+                    .meetingCount || 0}
                 </p>
               </div>
             </div>
           </div>
         </>
+      )}{" "}
+      {campaign.campaign.type === CampaignType.SALESMAN && (
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <ChartBarIcon className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Sales</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {campaign.earnings.totalEarned || 0}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
-      
+      {campaign.campaign.type === CampaignType.SELLER && (
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <CurrencyDollarIcon className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              {" "}
+              <p className="text-sm font-medium text-gray-600">Min Budget</p>
+              <p className="text-2xl font-bold text-gray-900">
+                $
+                {(
+                  (campaign.campaign as SellerCampaignDetails).minBudget || 0
+                ).toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       {(campaign.campaign.type === CampaignType.SELLER ||
         campaign.campaign.type === CampaignType.SALESMAN) && (
-        <>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <ChartBarIcon className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Sales</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {campaign.earnings.salesGenerated || 0}
-                </p>
-              </div>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <CurrencyDollarIcon className="h-6 w-6 text-purple-600" />
+            </div>
+            <div className="ml-4">
+              {" "}
+              <p className="text-sm font-medium text-gray-600">Max Budget</p>
+              <p className="text-2xl font-bold text-gray-900">
+                $
+                {(campaign.campaign.type === CampaignType.SELLER ||
+                campaign.campaign.type === CampaignType.SALESMAN
+                  ? (campaign.campaign as SellerCampaignDetails).maxBudget || 0
+                  : 0
+                ).toLocaleString()}
+              </p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <EyeIcon className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Conversion</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {campaign.earnings.conversionRate || 0}%
-                </p>
-              </div>
-            </div>
-          </div>
-        </>
+        </div>
       )}
-      
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <div className="flex items-center">
           <div className="p-2 bg-orange-100 rounded-lg">

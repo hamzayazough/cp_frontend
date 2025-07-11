@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   CampaignPromoter,
   VisibilityCampaignDetails,
-} from "@/interfaces/campaign-promoter";
+} from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
 import {
   MOCK_CAMPAIGN_PROMOTER1,
@@ -25,6 +25,7 @@ import CampaignRequirements from "./components/CampaignRequirements";
 import CampaignMessages from "./components/CampaignMessages";
 import ShareModal from "./components/ShareModal";
 import CampaignNotFound from "./components/CampaignNotFound";
+import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 interface PromoterCampaignDetailsContentProps {
   campaignId: string;
@@ -43,17 +44,18 @@ export default function PromoterCampaignDetailsContent({
 }: PromoterCampaignDetailsContentProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [showShareModal, setShowShareModal] = useState(false);
-  
-  const campaign = mockCampaignData[campaignId as keyof typeof mockCampaignData];
+
+  const campaign =
+    mockCampaignData[campaignId as keyof typeof mockCampaignData];
 
   // Helper functions for styling
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "ONGOING":
+      case PromoterCampaignStatus.ONGOING:
         return "bg-green-100 text-green-800";
-      case "AWAITING_REVIEW":
+      case PromoterCampaignStatus.AWAITING_REVIEW:
         return "bg-yellow-100 text-yellow-800";
-      case "COMPLETED":
+      case PromoterCampaignStatus.COMPLETED:
         return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -77,7 +79,8 @@ export default function PromoterCampaignDetailsContent({
 
   const daysLeft = campaign?.campaign.deadline
     ? Math.ceil(
-        (new Date(campaign.campaign.deadline).getTime() - new Date().getTime()) /
+        (new Date(campaign.campaign.deadline).getTime() -
+          new Date().getTime()) /
           (1000 * 60 * 60 * 24)
       )
     : "N/A";
@@ -111,26 +114,21 @@ export default function PromoterCampaignDetailsContent({
         getStatusColor={getStatusColor}
         getTypeColor={getTypeColor}
       />
-
       {/* Stats Cards */}
-      <CampaignStatsCards campaign={campaign} daysLeft={daysLeft} />
-
+      <CampaignStatsCards campaign={campaign} daysLeft={daysLeft} />{" "}
       {/* Progress Bar */}
       <CampaignProgress campaign={campaign} />
-
       {/* PromoterLinks Section - Only for Consultant Campaigns */}
-      <PromoterLinks campaignType={campaign.campaign.type} />
-
+      <PromoterLinks
+        campaignType={campaign.campaign.type}
+        campaignStatus={campaign.status}
+      />
       {/* Tabs */}
       <CampaignTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
       {/* Tab Content */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="p-6">
-          {renderTabContent()}
-        </div>
+        <div className="p-6">{renderTabContent()}</div>
       </div>
-
       {/* Share Modal */}
       {showShareModal && campaign.campaign.type === CampaignType.VISIBILITY && (
         <ShareModal

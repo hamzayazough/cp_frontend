@@ -9,7 +9,7 @@ import {
   GetAdvertiserTransactionsResponse,
   GetAdvertiserMessagesResponse,
   GetAdvertiserWalletResponse,
-} from "@/interfaces/advertiser-dashboard";
+} from "@/app/interfaces/dashboard/advertiser-dashboard";
 import { Campaign, CampaignFormData } from "@/app/interfaces/campaign";
 
 interface CreateCampaignResponse {

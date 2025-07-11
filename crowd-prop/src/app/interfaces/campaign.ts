@@ -6,6 +6,7 @@ import {
   MeetingPlan,
 } from "../enums/campaign-type";
 import { AdvertiserType } from "../enums/advertiser-type";
+import { SocialPlatform } from "../enums/social-platform";
 
 // Base Campaign interface - now abstract, not used directly
 export interface BaseCampaign {
@@ -42,26 +43,28 @@ export interface VisibilityCampaign extends BaseCampaign {
 
 export interface ConsultantCampaign extends BaseCampaign {
   type: CampaignType.CONSULTANT;
-  meetingPlan?: MeetingPlan;
+  meetingPlan: MeetingPlan;
   expertiseRequired?: string;
   expectedDeliverables: Deliverable[];
-  meetingCount?: number;
+  meetingCount: number;
   maxBudget: number;
   minBudget: number;
   isPublic: false;
-  promoterLinks?: string[];
 }
 
 export interface SellerCampaign extends BaseCampaign {
   type: CampaignType.SELLER;
   sellerRequirements?: Deliverable[];
   deliverables?: Deliverable[];
-  meetingPlan?: MeetingPlan;
   maxBudget: number;
   minBudget: number;
   isPublic: false;
   minFollowers?: number;
-  promoterLinks?: string[];
+
+  // new
+  needMeeting: boolean; // If true, the promoter needs to have a meeting with the advertiser before starting the campaign
+  meetingPlan: MeetingPlan; // If needMeeting is true, this will contain the meeting plan details
+  meetingCount: number; // Number of meetings required for the campaign
 }
 
 export interface SalesmanCampaign extends BaseCampaign {

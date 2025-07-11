@@ -9,12 +9,14 @@ import { SocialPlatform } from "@/app/enums/social-platform";
 import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 export interface Advertiser {
-  name: string;
+  id: string; // Optional ID for the advertiser
+  companyName: string;
   profileUrl?: string;
   rating: number;
   verified: boolean;
   description: string;
   website: string;
+  advertiserTypes: AdvertiserType[];
 }
 
 export interface BaseCampaignDetails {
@@ -43,10 +45,10 @@ export interface VisibilityCampaignDetails extends BaseCampaignDetails {
 
 export interface ConsultantCampaignDetails extends BaseCampaignDetails {
   type: CampaignType.CONSULTANT;
-  meetingPlan?: MeetingPlan;
+  meetingPlan: MeetingPlan;
   expectedDeliverables?: Deliverable[];
   expertiseRequired?: string;
-  meetingCount?: number;
+  meetingCount: number;
   maxBudget: number;
   minBudget: number;
   promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
@@ -59,7 +61,13 @@ export interface SellerCampaignDetails extends BaseCampaignDetails {
   fixedPrice?: number;
   maxBudget: number;
   minBudget: number;
-  promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
+  promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones¸ field available from PromoterCampaign interface
+  minFollowers?: number;
+
+  //new
+  needMeeting: boolean; // If true, the promoter needs to have a meeting with the advertiser before starting the campaign
+  meetingPlan: MeetingPlan; // If needMeeting is true, this will contain the meeting plan details
+  meetingCount: number;
 }
 
 export interface SalesmanCampaignDetails extends BaseCampaignDetails {
@@ -94,4 +102,5 @@ export interface CampaignPromoter {
   campaign: CampaignDetailsUnion;
   earnings: Earnings; // money earned by the promoter for now by this campaign
   tags: AdvertiserType[]; //getting them from Advertiser user -> user.advertiserType
+  meetingDone?: boolean; // Indicates if the meeting is done for campaigns that require it. from PromoterCampaign
 }
