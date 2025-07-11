@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AdvertiserType } from "@/app/enums/advertiser-type";
 import Image from "next/image";
-import { CampaignFormData } from "../CreateCampaignWizard";
+import { CampaignFormData } from "@/app/interfaces/campaign";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { PhotoIcon, CalendarIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
 
@@ -43,15 +43,10 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
           return 'Description must be less than 1000 characters';
         }
         break;
-      case 'budget':
-        if (value !== null && typeof value === 'number' && value <= 0) {
-          return 'Budget must be greater than 0';
-        }
-        break;
       case 'mediaUrl':
         // No validation needed for file upload since we handle it in the upload function
         break;
-      case 'advertiserTypes':
+      case 'advertiserType':
         if (!value || !Array.isArray(value) || value.length === 0) {
           return 'Please select at least one advertiser type';
         }
@@ -62,12 +57,12 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
 
   // Helper for toggling advertiser type selection
   const toggleAdvertiserType = (type: AdvertiserType) => {
-    const newTypes = formData.advertiserTypes.includes(type)
-      ? formData.advertiserTypes.filter(t => t !== type)
-      : [...formData.advertiserTypes, type];
-    handleInputChange('advertiserTypes', newTypes);
-    if (errors.advertiserTypes) {
-      setErrors(prev => ({ ...prev, advertiserTypes: '' }));
+    const newTypes = formData.advertiserType.includes(type)
+      ? formData.advertiserType.filter(t => t !== type)
+      : [...formData.advertiserType, type];
+    handleInputChange('advertiserType', newTypes);
+    if (errors.advertiserType) {
+      setErrors(prev => ({ ...prev, advertiserType: '' }));
     }
   };
 
@@ -120,14 +115,14 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
                 key={type}
                 type="button"
                 onClick={() => toggleAdvertiserType(type)}
-                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${formData.advertiserTypes.includes(type) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50'}`}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${formData.advertiserType.includes(type) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50'}`}
               >
                 {type.charAt(0) + type.slice(1).toLowerCase().replace(/_/g, ' ')}
               </button>
             ))}
           </div>
-          {errors.advertiserTypes && (
-            <p className="mt-1 text-sm text-red-600">{errors.advertiserTypes}</p>
+          {errors.advertiserType && (
+            <p className="mt-1 text-sm text-red-600">{errors.advertiserType}</p>
           )}
         </div>
 
@@ -240,63 +235,7 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
         </div>
 
         {/* Budget and Dates Row */}
-        <div className={`grid grid-cols-1 gap-4 ${
-          formData.type === CampaignType.VISIBILITY || formData.type === CampaignType.SALESMAN 
-            ? 'md:grid-cols-1' 
-            : 'md:grid-cols-3'
-        }`}>
-          {/* Budget - Hidden for Visibility and Salesman campaigns */}
-          {formData.type !== CampaignType.VISIBILITY && formData.type !== CampaignType.SALESMAN && (
-            <div>
-              <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
-                <div className="flex items-center">
-                  <CurrencyDollarIcon className="h-4 w-4 mr-1" />
-                  Budget {formData.type === CampaignType.SELLER && <span className="text-red-600">*</span>}
-                </div>
-              </label>
-              <input
-                type="number"
-                id="budget"
-                min="0.01"
-                step="0.01"
-                value={formData.budget || ''}
-                onChange={(e) => handleInputChange('budget', e.target.value ? parseFloat(e.target.value) : null)}
-                onBlur={() => handleBlur('budget')}
-                placeholder="0.00"
-                required={formData.type === CampaignType.SELLER}
-                className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
-                  errors.budget ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {formData.type === CampaignType.SELLER && (
-                <p className="mt-1 text-sm text-gray-500">This is the maximum amount you are willing to pay to the seller for this campaign. This field is required.</p>
-              )}
-              {errors.budget && (
-                <p className="mt-1 text-sm text-red-600">{errors.budget}</p>
-              )}
-            </div>
-          )}
-
-          {/* Deadline - Hidden for Visibility and Salesman campaigns */}
-          {formData.type !== CampaignType.VISIBILITY && formData.type !== CampaignType.SALESMAN && (
-            <div>
-              <label htmlFor="deadline" className="block text-sm font-medium text-gray-700 mb-2">
-                <div className="flex items-center">
-                  <CalendarIcon className="h-4 w-4 mr-1" />
-                  Deadline (Optional)
-                </div>
-              </label>
-              <input
-                type="date"
-                id="deadline"
-                value={formData.deadline ? formData.deadline.toISOString().split('T')[0] : ''}
-                onChange={(e) => handleInputChange('deadline', e.target.value ? new Date(e.target.value) : null)}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-              />
-            </div>
-          )}
-
+        <div className="grid grid-cols-1 gap-4">
           {/* Expiry Date */}
           <div>
             <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700 mb-2">
@@ -365,10 +304,10 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
                   {/* Show budget and deadline for Consultant and Seller campaigns */}
                   {formData.type !== CampaignType.VISIBILITY && formData.type !== CampaignType.SALESMAN && (
                     <>
-                      {formData.budget && (
+                      {formData.minBudget && formData.maxBudget && (
                         <span className="flex items-center">
                           <CurrencyDollarIcon className="h-3 w-3 mr-1" />
-                          ${formData.budget}
+                          ${formData.minBudget} - ${formData.maxBudget}
                         </span>
                       )}
                       {formData.deadline && (

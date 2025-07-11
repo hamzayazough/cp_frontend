@@ -29,6 +29,23 @@ module.exports = {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
+        // Explicitly add light and outline colors for orange and purple
+        orange: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          500: '#f97316',
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+        },
+        purple: {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          500: '#a21caf',
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6d28d9',
+        },
       },
     },
   },

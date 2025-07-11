@@ -10,18 +10,7 @@ import {
   GetAdvertiserMessagesResponse,
   GetAdvertiserWalletResponse,
 } from "@/interfaces/advertiser-dashboard";
-import { Campaign } from "@/app/interfaces/campaign";
-
-interface CreateCampaignRequest {
-  title: string;
-  description: string;
-  type: string;
-  budget?: number;
-  deadline?: string;
-  expiryDate?: string;
-  mediaUrl?: string;
-  [key: string]: unknown;
-}
+import { Campaign, CampaignFormData } from "@/app/interfaces/campaign";
 
 interface CreateCampaignResponse {
   success: boolean;
@@ -30,38 +19,30 @@ interface CreateCampaignResponse {
 }
 
 class AdvertiserService {
-  private baseUrl = "/api/advertiser";
+  private baseUrl = "/advertiser";
 
   async getDashboardData(
-    params?: GetAdvertiserDashboardRequest
+    firebaseUid: string,
+    params: GetAdvertiserDashboardRequest
   ): Promise<AdvertiserDashboardData> {
-    const queryParams = {
-      includeStats: true,
-      includeCampaigns: true,
-      includeRecommendations: true,
-      includeTransactions: true,
-      includeMessages: true,
-      includeWallet: true,
-      activeCampaignLimit: 5,
-      recommendedPromoterLimit: 6,
-      transactionLimit: 10,
-      messageLimit: 5,
-      ...params,
-    };
+    try {
+      const response = await httpService.post<GetAdvertiserDashboardResponse>(
+        `${this.baseUrl}/dashboard`,
+        {
+          firebaseUid,
+          ...params,
+        },
+        true
+      );
 
-    const searchParams = new URLSearchParams();
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (value !== undefined) {
-        searchParams.append(key, String(value));
-      }
-    });
-
-    const response = await httpService.get<GetAdvertiserDashboardResponse>(
-      `${this.baseUrl}/dashboard?${searchParams.toString()}`,
-      true
-    );
-
-    return response.data.data;
+      return response.data.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to retrieve dashboard data"
+      );
+    }
   }
 
   async getStats(): Promise<GetAdvertiserStatsResponse> {
@@ -231,7 +212,7 @@ class AdvertiserService {
   }
 
   async createCampaign(
-    campaignData: CreateCampaignRequest
+    campaignData: CampaignFormData
   ): Promise<CreateCampaignResponse> {
     try {
       const response = await httpService.post(

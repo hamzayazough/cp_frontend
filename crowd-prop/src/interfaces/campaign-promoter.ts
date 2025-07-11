@@ -20,14 +20,13 @@ export interface BaseCampaignDetails {
   budget: number;
   spentBudget: number;
   targetAudience?: string;
-  platforms?: SocialPlatform[];
+  preferredPlatforms?: SocialPlatform[]; // Preferred platforms for the campaign
+
   requirements?: string[];
   createdAt: Date;
   deadline?: string;
   startDate?: string;
   isPublic: boolean; // Indicates if the campaign is visible to all promoters or if the advertiser has selected a specific promoter
-
-  preferredPlatforms?: SocialPlatform[]; // Preferred platforms for the campaign
 
   PromoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
   discordInviteLink: string; // Discord invite link for the campaign.

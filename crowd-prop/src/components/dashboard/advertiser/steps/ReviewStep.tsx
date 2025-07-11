@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { CampaignType } from '@/app/enums/campaign-type';
-import { CampaignFormData } from '../CreateCampaignWizard';
+import { CampaignFormData } from '@/app/interfaces/campaign';
 import { 
   EyeIcon, 
   UserIcon, 
@@ -99,10 +99,17 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                 <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
                 <p className="text-sm text-gray-900">{formData.description}</p>
               </div>
-              {formData.budget && (
+              {/* Show budget for Consultant and Seller campaigns */}
+              {(formData.type === CampaignType.CONSULTANT && formData.minBudget && formData.maxBudget) && (
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Budget</label>
-                  <p className="text-sm text-gray-900">${formData.budget}</p>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Budget Range</label>
+                  <p className="text-sm text-gray-900">${formData.minBudget} - ${formData.maxBudget}</p>
+                </div>
+              )}
+              {(formData.type === CampaignType.SELLER && formData.sellerMinBudget && formData.sellerMaxBudget) && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Budget Range</label>
+                  <p className="text-sm text-gray-900">${formData.sellerMinBudget} - ${formData.sellerMaxBudget}</p>
                 </div>
               )}
               {formData.deadline && (
@@ -171,16 +178,18 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
             <div>
               <h5 className="text-sm font-medium text-gray-900 mb-3">Consultant Settings</h5>
               <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Expected Deliverables</label>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.expectedDeliverables.map(deliverable => (
-                      <span key={deliverable} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
-                        {deliverable.replace(/_/g, ' ')}
-                      </span>
-                    ))}
+                {formData.expectedDeliverables && formData.expectedDeliverables.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Expected Deliverables</label>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.expectedDeliverables.map(deliverable => (
+                        <span key={deliverable} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                          {deliverable.replace(/_/g, ' ')}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {formData.meetingCount && (
                     <div>
@@ -188,10 +197,10 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                       <p className="text-sm text-gray-900">{formData.meetingCount}</p>
                     </div>
                   )}
-                  {formData.maxQuote && (
+                  {formData.maxBudget && formData.minBudget && (
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Max Quote</label>
-                      <p className="text-sm text-gray-900">${formData.maxQuote}</p>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">Budget Range</label>
+                      <p className="text-sm text-gray-900">${formData.minBudget} - ${formData.maxBudget}</p>
                     </div>
                   )}
                 </div>
@@ -213,27 +222,31 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
             <div>
               <h5 className="text-sm font-medium text-gray-900 mb-3">Seller Settings</h5>
               <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Seller Requirements</label>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.sellerRequirements.map(requirement => (
-                      <span key={requirement} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                        {requirement.replace(/_/g, ' ')}
-                      </span>
-                    ))}
+                {formData.sellerRequirements && formData.sellerRequirements.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Seller Requirements</label>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.sellerRequirements.map(requirement => (
+                        <span key={requirement} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                          {requirement.replace(/_/g, ' ')}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Expected Deliverables</label>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.deliverables.map(deliverable => (
-                      <span key={deliverable} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                        {deliverable.replace(/_/g, ' ')}
-                      </span>
-                    ))}
+                )}
+                {formData.deliverables && formData.deliverables.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Expected Deliverables</label>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.deliverables.map(deliverable => (
+                        <span key={deliverable} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                          {deliverable.replace(/_/g, ' ')}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {formData.meetingPlan && (
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-1">Meeting Plan</label>
@@ -244,6 +257,12 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     <label className="block text-xs font-medium text-gray-500 mb-1">Strict Deadline</label>
                     <p className="text-sm text-gray-900">{formData.deadlineStrict ? 'Yes' : 'No'}</p>
                   </div>
+                  {formData.sellerMinBudget && formData.sellerMaxBudget && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">Budget Range</label>
+                      <p className="text-sm text-gray-900">${formData.sellerMinBudget} - ${formData.sellerMaxBudget}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -267,10 +286,6 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     <p className="text-sm text-gray-900">{formData.codePrefix}</p>
                   </div>
                 )}
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Only Approved Can Sell</label>
-                  <p className="text-sm text-gray-900">{formData.onlyApprovedCanSell ? 'Yes' : 'No'}</p>
-                </div>
               </div>
             </div>
           )}
@@ -280,11 +295,11 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
             <h5 className="text-sm font-medium text-gray-900 mb-3">Campaign Access</h5>
             <div className="flex space-x-4">
               <span className={`px-3 py-1 text-sm rounded-full ${
-                formData.applicationRequired
+                !formData.isPublic
                   ? 'bg-yellow-100 text-yellow-800'
                   : 'bg-green-100 text-green-800'
               }`}>
-                {formData.applicationRequired ? 'Private' : 'Public'}
+                {!formData.isPublic ? 'Private' : 'Public'}
               </span>
             </div>
           </div>

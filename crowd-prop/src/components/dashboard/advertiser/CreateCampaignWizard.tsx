@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Campaign } from '@/app/interfaces/campaign';
-import { CampaignType, Deliverable, MeetingPlan, SalesTrackingMethod } from '@/app/enums/campaign-type';
+import { Campaign, CampaignFormData } from '@/app/interfaces/campaign';
+import { CampaignType } from '@/app/enums/campaign-type';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { advertiserService } from '@/services/advertiser.service';
 import StepIndicator from './StepIndicator';
@@ -16,72 +16,43 @@ interface CreateCampaignWizardProps {
   onCancel: () => void;
 }
 
-export interface CampaignFormData {
-  // Basic Info
-  title: string;
-  description: string;
-  type: CampaignType | null;
-  budget: number | null;
-  deadline: Date | null;
-  expiryDate: Date | null;
-  mediaUrl: string;
-  file: File | null; // For Salesman campaigns only
-  advertiserTypes: string[]; // Array of AdvertiserType enums
-
-  // Type-specific fields
-  // VISIBILITY
-  cpv: number | null;
-  maxViews: number | null;
-  trackUrl: string;
-
-  // CONSULTANT
-  expectedDeliverables: Deliverable[];
-  meetingCount: number | null;
-  referenceUrl: string;
-  maxQuote: number | null;
-
-  // SELLER
-  sellerRequirements: Deliverable[];
-  deliverables: Deliverable[];
-  meetingPlan: MeetingPlan | null;
-  deadlineStrict: boolean;
-
-  // SALESMAN
-  commissionPerSale: number | null;
-  trackSalesVia: SalesTrackingMethod | null;
-  codePrefix: string;
-  onlyApprovedCanSell: boolean;
-}
-
 const initialFormData: CampaignFormData = {
   title: '',
   description: '',
   type: null,
-  budget: null,
-  deadline: null,
   expiryDate: null,
   mediaUrl: '',
-  file: null,
-  advertiserTypes: [],
+  advertiserType: [],
+  isPublic: true, // Default to true, will be set based on campaign type
 
-  cpv: null,
+  // VISIBILITY
+  cpv: undefined,
   maxViews: null,
   trackUrl: '',
 
+  // CONSULTANT
   expectedDeliverables: [],
   meetingCount: null,
   referenceUrl: '',
-  maxQuote: null,
+  maxBudget: undefined,
+  minBudget: undefined,
+  deadline: null,
 
+  // SELLER
   sellerRequirements: [],
   deliverables: [],
   meetingPlan: null,
   deadlineStrict: false,
+  sellerMaxBudget: undefined,
+  sellerMinBudget: undefined,
 
-  commissionPerSale: null,
+  // SALESMAN
+  commissionPerSale: undefined,
   trackSalesVia: null,
   codePrefix: '',
-  onlyApprovedCanSell: false,
+
+  // UI-only
+  file: null,
 };
 
 export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCampaignWizardProps) {
@@ -128,7 +99,11 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
       case 0: // Campaign Type
         return formData.type !== null;
       case 1: // Basic Info
-        return formData.title.trim() !== '' && formData.description.trim() !== '';
+        return (
+          formData.title.trim() !== '' && 
+          formData.description.trim() !== '' &&
+          formData.advertiserType.length > 0
+        );
       case 2: // Settings
         return validateSettings();
       case 3: // Review
@@ -144,16 +119,39 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
     switch (formData.type) {
       case CampaignType.VISIBILITY:
         return (
-          formData.cpv !== null &&
+          typeof formData.cpv === 'number' &&
           formData.cpv >= 0.5 &&
+          typeof formData.trackUrl === 'string' &&
           formData.trackUrl.trim() !== ''
         );
       case CampaignType.CONSULTANT:
-        return formData.expectedDeliverables.length > 0;
+        return (
+          Array.isArray(formData.expectedDeliverables) && 
+          formData.expectedDeliverables.length > 0 &&
+          typeof formData.maxBudget === 'number' &&
+          formData.maxBudget > 0 &&
+          typeof formData.minBudget === 'number' &&
+          formData.minBudget > 0 &&
+          formData.minBudget <= formData.maxBudget
+        );
       case CampaignType.SELLER:
-        return formData.sellerRequirements.length > 0 && formData.deliverables.length > 0;
+        return (
+          // Either seller requirements OR deliverables should be specified
+          ((Array.isArray(formData.sellerRequirements) && formData.sellerRequirements.length > 0) ||
+           (Array.isArray(formData.deliverables) && formData.deliverables.length > 0)) &&
+          typeof formData.sellerMaxBudget === 'number' &&
+          formData.sellerMaxBudget > 0 &&
+          typeof formData.sellerMinBudget === 'number' &&
+          formData.sellerMinBudget > 0 &&
+          formData.sellerMinBudget <= formData.sellerMaxBudget
+        );
       case CampaignType.SALESMAN:
-        return formData.commissionPerSale !== null && formData.trackSalesVia !== null;
+        return (
+          typeof formData.commissionPerSale === 'number' &&
+          formData.commissionPerSale > 0 &&
+          formData.trackSalesVia !== null &&
+          formData.trackSalesVia !== undefined
+        );
       default:
         return false;
     }
@@ -175,64 +173,52 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
     setIsSubmitting(true);
 
     try {
-      // Ensure deadline and expiryDate are always ISO strings if present
-      const getISODate = (val: Date | string | null | undefined) => {
-        if (!val) return undefined;
-        if (val instanceof Date) return val.toISOString();
-        // If it's a string, try to parse as date
-        const d = new Date(val);
-        return isNaN(d.getTime()) ? undefined : d.toISOString();
-      };
 
-
-      const campaignData: any = {
+      const campaignData = {
         title: formData.title,
         description: formData.description,
         type: formData.type!,
-        budget: formData.budget || undefined,
-        deadline: getISODate(formData.deadline),
-        expiryDate: getISODate(formData.expiryDate),
-        advertiserTypes: formData.advertiserTypes,
+        expiryDate: formData.expiryDate,
+        mediaUrl: formData.mediaUrl || undefined,
+        advertiserType: formData.advertiserType,
+        // Set isPublic based on campaign type
+        isPublic: formData.type === CampaignType.VISIBILITY || formData.type === CampaignType.SALESMAN,
 
-        // Type-specific fields
+        // Type-specific fields based on new interface
         ...(formData.type === CampaignType.VISIBILITY && {
-          mediaUrl: formData.mediaUrl || undefined,
-          cpv: formData.cpv || undefined,
+          cpv: formData.cpv!,
           maxViews: formData.maxViews || undefined,
-          trackUrl: formData.trackUrl || undefined,
-          isPublic: true,
+          trackUrl: formData.trackUrl!,
         }),
 
         ...(formData.type === CampaignType.CONSULTANT && {
-          mediaUrl: formData.mediaUrl || undefined,
-          expectedDeliverables: formData.expectedDeliverables,
+          expectedDeliverables: formData.expectedDeliverables || [],
           meetingCount: formData.meetingCount || undefined,
-          referenceUrl: formData.referenceUrl || undefined,
-          maxQuote: formData.maxQuote || undefined,
+          maxBudget: formData.maxBudget!,
+          minBudget: formData.minBudget!,
+          deadline: formData.deadline,
         }),
 
         ...(formData.type === CampaignType.SELLER && {
-          mediaUrl: formData.mediaUrl || undefined,
-          sellerRequirements: formData.sellerRequirements,
-          deliverables: formData.deliverables,
+          sellerRequirements: formData.sellerRequirements || undefined,
+          deliverables: formData.deliverables || undefined,
           meetingPlan: formData.meetingPlan || undefined,
-          deadlineStrict: formData.deadlineStrict,
+          deadlineStrict: formData.deadlineStrict || false,
+          maxBudget: formData.sellerMaxBudget!,
+          minBudget: formData.sellerMinBudget!,
         }),
 
         ...(formData.type === CampaignType.SALESMAN && {
-          // Do NOT include mediaUrl for Salesman
-          commissionPerSale: formData.commissionPerSale || undefined,
-          trackSalesVia: formData.trackSalesVia || undefined,
+          commissionPerSale: formData.commissionPerSale!,
+          trackSalesVia: formData.trackSalesVia!,
           codePrefix: formData.codePrefix || undefined,
-          onlyApprovedCanSell: true,
-          isPublic: false,
         }),
       };
 
-      // For Salesman, add file if present
-      if (formData.type === CampaignType.SALESMAN && formData.file) {
-        campaignData.file = formData.file;
-      }
+      // // For Salesman, add file if present
+      // if (formData.type === CampaignType.SALESMAN && formData.file) {
+      //   campaignData.file = formData.file;
+      // }
 
       // Print the payload being sent
       console.log('Submitting campaignData:', campaignData);

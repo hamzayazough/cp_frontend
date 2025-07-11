@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { advertiserService } from "@/services/advertiser.service";
 import { AdvertiserDashboardData } from "@/interfaces/advertiser-dashboard";
 
@@ -28,7 +28,7 @@ export const useAdvertiserDashboard = (): UseAdvertiserDashboardReturn => {
   const [error, setError] = useState<string | null>(null);
   const [useTemplate, setUseTemplate] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (useTemplate) {
       setLoading(false);
       return;
@@ -37,7 +37,9 @@ export const useAdvertiserDashboard = (): UseAdvertiserDashboardReturn => {
     try {
       setLoading(true);
       setError(null);
+      console.log("Fetching advertiser dashboard data...");
       const dashboardData = await advertiserService.getDashboardData();
+      console.log("Dashboard data fetched successfully:", dashboardData);
       setData(dashboardData);
     } catch (err) {
       const errorMessage =
@@ -57,7 +59,7 @@ export const useAdvertiserDashboard = (): UseAdvertiserDashboardReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [useTemplate]);
 
   const addFunds = async (amount: number) => {
     try {

@@ -11,12 +11,6 @@ export enum CampaignType {
   SALESMAN = "SALESMAN",
 }
 
-export enum ViewTrackingStrategy {
-  IP = "IP",
-  USER = "USER",
-  DEVICE = "DEVICE",
-}
-
 export enum SalesTrackingMethod {
   REF_LINK = "REF_LINK",
   COUPON_CODE = "COUPON_CODE",

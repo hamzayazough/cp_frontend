@@ -1080,8 +1080,8 @@ export default function PromoterCampaignDetailsContent({
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {campaign.campaign.platforms &&
-                        campaign.campaign.platforms.map((platform) => (
+                      {campaign.campaign.preferredPlatforms &&
+                        campaign.campaign.preferredPlatforms.map((platform) => (
                           <span
                             key={platform}
                             className="inline-flex items-center px-3 py-1 bg-white border border-green-200 text-green-700 rounded-full text-sm font-medium shadow-sm"

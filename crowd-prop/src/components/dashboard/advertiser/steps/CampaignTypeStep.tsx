@@ -1,7 +1,7 @@
 'use client';
 
 import { CampaignType } from '@/app/enums/campaign-type';
-import { CampaignFormData } from '../CreateCampaignWizard';
+import { CampaignFormData } from '@/app/interfaces/campaign';
 import { 
   EyeIcon, 
   UserIcon, 
@@ -29,7 +29,6 @@ const campaignTypes = [
     ],
     color: 'blue',
     isPublic: true,
-    applicationRequired: false,
   },
   {
     type: CampaignType.CONSULTANT,
@@ -44,7 +43,6 @@ const campaignTypes = [
     ],
     color: 'purple',
     isPublic: false,
-    applicationRequired: true,
   },
   {
     type: CampaignType.SELLER,
@@ -59,7 +57,6 @@ const campaignTypes = [
     ],
     color: 'green',
     isPublic: false,
-    applicationRequired: true,
   },
   {
     type: CampaignType.SALESMAN,
@@ -73,8 +70,7 @@ const campaignTypes = [
       'Sales analytics'
     ],
     color: 'orange',
-    isPublic: true,
-    applicationRequired: false,
+    isPublic: false,
   },
 ];
 
@@ -84,29 +80,31 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
     updateFormData({
       type,
       // Reset all other fields to their initial values
-      // (You may want to adjust these defaults based on your actual CampaignFormData definition)
       title: '',
       description: '',
       file: null,
-      expiryDate: '',
-      budget: null,
-      deadline: '',
-      cpv: null,
+      expiryDate: null,
+      minBudget: undefined,
+      maxBudget: undefined,
+      deadline: null,
+      cpv: undefined,
       maxViews: null,
-      trackUrl: '',
+      trackUrl: undefined,
       expectedDeliverables: [],
       sellerRequirements: [],
       deliverables: [],
-      meetingCount: '',
-      maxQuote: '',
-      referenceUrl: '',
-      meetingPlan: '',
+      meetingCount: null,
+      referenceUrl: undefined,
+      meetingPlan: null,
       deadlineStrict: false,
-      commissionPerSale: '',
-      trackSalesVia: '',
-      codePrefix: '',
-      onlyApprovedCanSell: false,
-      applicationRequired: type === CampaignType.CONSULTANT || type === CampaignType.SELLER ? true : false,
+      sellerMaxBudget: undefined,
+      sellerMinBudget: undefined,
+      commissionPerSale: undefined,
+      trackSalesVia: null,
+      codePrefix: undefined,
+      advertiserType: [],
+      // Set isPublic based on campaign type
+      isPublic: type === CampaignType.VISIBILITY || type === CampaignType.SALESMAN,
     });
   };
 
@@ -201,11 +199,11 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
               {/* Single access badge */}
               <div className="flex mt-4">
                 <span className={`px-3 py-1 text-xs rounded-full ${
-                  campaign.applicationRequired 
+                  campaign.isPublic 
                     ? 'bg-blue-100 text-blue-800' 
                     : 'bg-green-100 text-green-800'
                 }`}>
-                  {campaign.applicationRequired ? 'Private' : 'Public'}
+                  {campaign.isPublic ? 'Public' : 'Private'}
                 </span>
               </div>
             </button>

@@ -2,7 +2,7 @@
 
 import { CampaignType } from '@/app/enums/campaign-type';
 import { Deliverable, MeetingPlan, SalesTrackingMethod } from '@/app/enums/campaign-type';
-import { CampaignFormData } from '../CreateCampaignWizard';
+import { CampaignFormData } from '@/app/interfaces/campaign';
 import { 
   EyeIcon, 
   UserIcon, 
@@ -39,27 +39,6 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
         <h3 className="text-lg font-medium text-gray-900">Visibility Campaign Settings</h3>
       </div>
 
-      {/* Access Type Toggle */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Access</label>
-        <div className="flex space-x-4">
-          <button
-            type="button"
-            className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${!formData.applicationRequired ? 'bg-green-100 text-green-800 border-green-300' : 'bg-white text-gray-700 border-gray-300'}`}
-            onClick={() => updateFormData({ applicationRequired: false })}
-          >
-            Public
-          </button>
-          <button
-            type="button"
-            className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${formData.applicationRequired ? 'bg-blue-100 text-blue-800 border-blue-300' : 'bg-white text-gray-700 border-gray-300'}`}
-            onClick={() => updateFormData({ applicationRequired: true })}
-          >
-            Private
-          </button>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -75,7 +54,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
                 const value = e.target.value;
                 // Allow empty string for clearing
                 if (value === '') {
-                  updateFormData({ cpv: null });
+                  updateFormData({ cpv: undefined });
                   return;
                 }
                 let num = parseFloat(value);
@@ -88,7 +67,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
                 updateFormData({ cpv: num });
               }}
               placeholder="0.50"
-              className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${formData.cpv !== null && formData.cpv !== undefined && formData.cpv < 0.5 ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${formData.cpv && formData.cpv < 0.5 ? 'border-red-500' : 'border-gray-300'}`}
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <span className="text-gray-500 text-sm">$/100 views</span>
@@ -104,13 +83,13 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Max Views (Optional)
+            Max Views (Optional if you have a budget limit)
           </label>
           <input
             type="number"
             min="0"
             value={formData.maxViews || ''}
-            onChange={(e) => updateFormData({ maxViews: e.target.value ? parseInt(e.target.value) : null })}
+            onChange={(e) => updateFormData({ maxViews: e.target.value ? parseInt(e.target.value) : undefined })}
             placeholder="10000"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
@@ -121,22 +100,49 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
         <label className="block text-sm font-medium text-gray-700 mb-2">
           <div className="flex items-center">
             <LinkIcon className="h-4 w-4 mr-1" />
-            Target URL *
+            Destination URL *
           </div>
         </label>
         <input
           type="url"
-          value={formData.trackUrl}
+          value={formData.trackUrl || ''}
           onChange={(e) => updateFormData({ trackUrl: e.target.value })}
           placeholder="https://example.com/your-page"
           className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${formData.trackUrl && !formData.trackUrl.startsWith('https://') ? 'border-red-500' : 'border-gray-300'}`}
         />
         <p className="mt-1 text-sm text-gray-500">
-          The URL where you want to drive traffic
+          Enter the web address where you want users to be directed.
         </p>
         {formData.trackUrl && !formData.trackUrl.startsWith('https://') && (
           <p className="mt-1 text-sm text-red-600 font-medium">URL must start with https://</p>
         )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Campaign Access
+        </label>
+        <div className="flex items-center space-x-4">
+          <button
+            type="button"
+            onClick={() => updateFormData({ isPublic: true })}
+            className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${formData.isPublic ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+          >
+            Public
+          </button>
+          <button
+            type="button"
+            onClick={() => updateFormData({ isPublic: false })}
+            className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${!formData.isPublic ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+          >
+            Private
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-gray-500">
+          {formData.isPublic
+            ? 'Anyone can participate in this campaign.'
+            : 'People need to apply, and you are responsible for selecting participants for the campaign.'}
+        </p>
       </div>
     </div>
   );
@@ -160,9 +166,9 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
             <button
               key={deliverable}
               type="button"
-              onClick={() => toggleDeliverable(deliverable, formData.expectedDeliverables, 'expectedDeliverables')}
+              onClick={() => toggleDeliverable(deliverable, formData.expectedDeliverables || [], 'expectedDeliverables')}
               className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                formData.expectedDeliverables.includes(deliverable)
+                (formData.expectedDeliverables || []).includes(deliverable)
                   ? 'bg-purple-50 border-purple-200 text-purple-700'
                   : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
               }`}
@@ -173,51 +179,88 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             <div className="flex items-center">
               <UsersIcon className="h-4 w-4 mr-1" />
-              Minimum Weekly Meeting Count *
+              Meeting Count (Optional)
             </div>
           </label>
           <input
             type="number"
             min="1"
-            required
             value={formData.meetingCount || ''}
             onChange={(e) => {
-              let value = e.target.value ? parseInt(e.target.value) : null;
-              if (value !== null && value < 1) value = 1;
+              let value = e.target.value ? parseInt(e.target.value) : undefined;
+              if (value && value < 1) value = 1;
               updateFormData({ meetingCount: value });
             }}
             placeholder="3"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
-          <p className="mt-1 text-sm text-gray-500">Enter the minimum number of meetings required per week.</p>
+          <p className="mt-1 text-sm text-gray-500">Number of meetings required.</p>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Maximum Budget ($) (Optional)
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+              Min Budget ($) *
+            </div>
           </label>
           <input
             type="number"
             min="10"
             step="1"
-            value={formData.maxQuote || ''}
+            required
+            value={formData.minBudget || ''}
             onChange={(e) => {
-              const value = e.target.value ? parseInt(e.target.value) : null;
-              updateFormData({ maxQuote: value });
+              const value = e.target.value ? parseInt(e.target.value) : undefined;
+              updateFormData({ minBudget: value });
+            }}
+            placeholder="100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+              Max Budget ($) *
+            </div>
+          </label>
+          <input
+            type="number"
+            min="10"
+            step="1"
+            required
+            value={formData.maxBudget || ''}
+            onChange={(e) => {
+              const value = e.target.value ? parseInt(e.target.value) : undefined;
+              updateFormData({ maxBudget: value });
             }}
             placeholder="500"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />
-          <p className="mt-1 text-sm text-gray-500">Set the highest amount (minimum $10) you are willing to pay for all consultant deliverables in this campaign.</p>
-          {formData.maxQuote !== undefined && formData.maxQuote !== null && formData.maxQuote !== '' && formData.maxQuote < 10 && (
-            <p className="mt-1 text-sm text-red-600 font-medium">Warning: Minimum allowed is $10.</p>
-          )}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="flex items-center">
+            <ClockIcon className="h-4 w-4 mr-1" />
+            Deadline (Optional)
+          </div>
+        </label>
+        <input
+          type="date"
+          value={formData.deadline ? formData.deadline.toISOString().split('T')[0] : ''}
+          onChange={(e) => updateFormData({ deadline: e.target.value ? new Date(e.target.value) : undefined })}
+          min={new Date().toISOString().split('T')[0]}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+        />
       </div>
 
       {/* Reference URL removed as it will be provided by the selected promoter */}
@@ -240,9 +283,9 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
             <button
               key={deliverable}
               type="button"
-              onClick={() => toggleDeliverable(deliverable, formData.sellerRequirements, 'sellerRequirements')}
+              onClick={() => toggleDeliverable(deliverable, formData.sellerRequirements || [], 'sellerRequirements')}
               className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                formData.sellerRequirements.includes(deliverable)
+                (formData.sellerRequirements || []).includes(deliverable)
                   ? 'bg-green-50 border-green-200 text-green-700'
                   : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
               }`}
@@ -262,9 +305,9 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
             <button
               key={deliverable}
               type="button"
-              onClick={() => toggleDeliverable(deliverable, formData.deliverables, 'deliverables')}
+              onClick={() => toggleDeliverable(deliverable, formData.deliverables || [], 'deliverables')}
               className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                formData.deliverables.includes(deliverable)
+                (formData.deliverables || []).includes(deliverable)
                   ? 'bg-green-50 border-green-200 text-green-700'
                   : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
               }`}
@@ -272,6 +315,52 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
               {deliverable.replace(/_/g, ' ')}
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+              Min Budget ($) *
+            </div>
+          </label>
+          <input
+            type="number"
+            min="10"
+            step="1"
+            required
+            value={formData.sellerMinBudget || ''}
+            onChange={(e) => {
+              const value = e.target.value ? parseInt(e.target.value) : undefined;
+              updateFormData({ sellerMinBudget: value });
+            }}
+            placeholder="100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="h-4 w-4 mr-1" />
+              Max Budget ($) *
+            </div>
+          </label>
+          <input
+            type="number"
+            min="10"
+            step="1"
+            required
+            value={formData.sellerMaxBudget || ''}
+            onChange={(e) => {
+              const value = e.target.value ? parseInt(e.target.value) : undefined;
+              updateFormData({ sellerMaxBudget: value });
+            }}
+            placeholder="500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          />
         </div>
       </div>
 
@@ -339,7 +428,7 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
             min="0"
             step="0.01"
             value={formData.commissionPerSale || ''}
-            onChange={(e) => updateFormData({ commissionPerSale: e.target.value ? parseFloat(e.target.value) : null })}
+            onChange={(e) => updateFormData({ commissionPerSale: e.target.value ? parseFloat(e.target.value) : undefined })}
             placeholder="10.00"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           />

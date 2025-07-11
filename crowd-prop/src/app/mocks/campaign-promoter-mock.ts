@@ -41,7 +41,7 @@ export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
     minFollowers: 1000,
     trackingLink: "https://crowdprop.com/r/keepfit-abc123",
     targetAudience: "Health-conscious millennials and Gen Z",
-    platforms: [SocialPlatform.INSTAGRAM, SocialPlatform.TIKTOK],
+    preferredPlatforms: [SocialPlatform.INSTAGRAM, SocialPlatform.TIKTOK],
     requirements: [
       "Minimum 1K engaged followers",
       "Health/Fitness content niche",
@@ -93,7 +93,7 @@ export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
     expertiseRequired: "Digital Marketing, E-commerce, Social Media Strategy",
     meetingCount: 8,
     targetAudience: "E-commerce businesses, Sustainable product retailers",
-    platforms: [
+    preferredPlatforms: [
       SocialPlatform.LINKEDIN,
       SocialPlatform.INSTAGRAM,
       SocialPlatform.OTHER,
@@ -155,7 +155,7 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
     deadlineStrict: true,
     targetAudience:
       "Jewelry enthusiasts, gift buyers, fashion-conscious consumers",
-    platforms: [
+    preferredPlatforms: [
       SocialPlatform.INSTAGRAM,
       SocialPlatform.FACEBOOK,
       SocialPlatform.OTHER,
@@ -210,7 +210,7 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
     minFollowers: 5000,
     targetAudience:
       "Fitness enthusiasts, health-conscious individuals, gym-goers",
-    platforms: [
+    preferredPlatforms: [
       SocialPlatform.INSTAGRAM,
       SocialPlatform.TIKTOK,
       SocialPlatform.YOUTUBE,
