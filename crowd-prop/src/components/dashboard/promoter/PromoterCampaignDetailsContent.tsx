@@ -30,7 +30,7 @@ import {
   SellerCampaignDetails,
   SalesmanCampaignDetails,
 } from "@/interfaces/campaign-promoter";
-import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignType } from "@/app/enums/campaign-type";
 import {
   MOCK_CAMPAIGN_PROMOTER1,
   MOCK_CAMPAIGN_PROMOTER2,
@@ -44,7 +44,7 @@ interface PromoterCampaignDetailsContentProps {
 
 // Mock campaign data - in production, this would be fetched from your API
 const mockCampaignData: Record<string, CampaignPromoter> = {
-  "1": MOCK_CAMPAIGN_PROMOTER3,
+  "1": MOCK_CAMPAIGN_PROMOTER1,
   "2": MOCK_CAMPAIGN_PROMOTER2,
   "3": MOCK_CAMPAIGN_PROMOTER3,
   "4": MOCK_CAMPAIGN_PROMOTER4,
@@ -271,7 +271,7 @@ export default function PromoterCampaignDetailsContent({
             className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
-            Message Advertiser
+            Chat
           </Link>
         </div>
       </div>{" "}
@@ -379,7 +379,7 @@ export default function PromoterCampaignDetailsContent({
                     Campaign Budget
                   </p>
                   <p className="text-2xl font-bold text-gray-900">
-                    ${campaign.campaign.budget.toLocaleString()}
+                    ${campaign.campaign.budgetHeld.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -449,8 +449,8 @@ export default function PromoterCampaignDetailsContent({
               Budget Progress
             </h3>
             <span className="text-sm text-gray-600">
-              ${campaign.campaign.spentBudget.toLocaleString()} / $
-              {campaign.campaign.budget.toLocaleString()}
+              ${campaign.earnings.totalEarned.toLocaleString()} / $
+              {campaign.campaign.budgetHeld.toLocaleString()}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
@@ -458,7 +458,7 @@ export default function PromoterCampaignDetailsContent({
               className="bg-purple-600 h-3 rounded-full transition-all duration-300"
               style={{
                 width: `${Math.min(
-                  (campaign.campaign.spentBudget / campaign.campaign.budget) *
+                  (campaign.earnings.totalEarned / campaign.campaign.budgetHeld) *
                     100,
                   100
                 )}%`,
@@ -467,7 +467,7 @@ export default function PromoterCampaignDetailsContent({
           </div>{" "}
           <p className="text-sm text-gray-600 mt-2">
             {(
-              (campaign.campaign.spentBudget / campaign.campaign.budget) *
+              (campaign.earnings.totalEarned / campaign.campaign.budgetHeld) *
               100
             ).toFixed(1)}
             % budget used
@@ -603,8 +603,8 @@ export default function PromoterCampaignDetailsContent({
               Campaign Progress
             </h3>
             <span className="text-sm text-gray-600">
-              ${campaign.campaign.spentBudget.toLocaleString()} / $
-              {campaign.campaign.budget.toLocaleString()}
+              ${campaign.earnings.totalEarned.toLocaleString()} / $
+              {campaign.campaign.budgetHeld.toLocaleString()}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
@@ -612,7 +612,7 @@ export default function PromoterCampaignDetailsContent({
               className="bg-green-600 h-3 rounded-full transition-all duration-300"
               style={{
                 width: `${Math.min(
-                  (campaign.campaign.spentBudget / campaign.campaign.budget) *
+                  (campaign.earnings.totalEarned / campaign.campaign.budgetHeld) *
                     100,
                   100
                 )}%`,
@@ -621,10 +621,10 @@ export default function PromoterCampaignDetailsContent({
           </div>
           <p className="text-sm text-gray-600 mt-2">
             {(
-              (campaign.campaign.spentBudget / campaign.campaign.budget) *
+              (campaign.campaign.spentBudget / campaign.campaign.budgetHeld) *
               100
             ).toFixed(1)}
-            % budget utilized
+            % budget used
           </p>
         </div>
       )}
@@ -936,7 +936,7 @@ export default function PromoterCampaignDetailsContent({
                         <span className="text-sm text-gray-600">Budget</span>
                       </div>
                       <span className="font-semibold text-gray-900">
-                        ${campaign.campaign.budget.toLocaleString()}
+                        ${campaign.campaign.budgetHeld.toLocaleString()}
                       </span>
                     </div>
                     {/* Visibility Campaign Specific Details */}
@@ -1237,9 +1237,7 @@ export default function PromoterCampaignDetailsContent({
 
                                 {/* Progress Information */}
                                 <div className="text-center mt-6 space-y-1">
-                                  <div className="text-sm font-medium text-gray-700">
-                                    {`${progressPercent.toFixed(0)}% Complete`}
-                                  </div>
+                                  
                                   <div className="text-xs text-gray-500">
                                     {daysLeft > 0
                                       ? `${daysLeft} days remaining`
@@ -1297,9 +1295,9 @@ export default function PromoterCampaignDetailsContent({
                 {campaign.campaign.type === CampaignType.VISIBILITY && (
                   <>
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">Average CPV</p>
+                      <p className="text-sm text-gray-600">Price per 100 views</p>
                       <p className="text-xl font-bold text-gray-900">
-                        ${campaign.earnings.averageCPV}
+                        ${campaign.campaign.cpv}
                       </p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg">
@@ -1329,11 +1327,11 @@ export default function PromoterCampaignDetailsContent({
                       </p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">Budget Utilized</p>
+                      <p className="text-sm text-gray-600">Budget used</p>
                       <p className="text-xl font-bold text-gray-900">
                         {(
                           (campaign.campaign.spentBudget /
-                            campaign.campaign.budget) *
+                            campaign.campaign.budgetHeld) *
                           100
                         ).toFixed(1)}
                         %
@@ -1406,7 +1404,7 @@ export default function PromoterCampaignDetailsContent({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(
                       campaign.campaign as ConsultantCampaignDetails
-                    ).deliverables?.map((deliverable, index) => (
+                    ).expectedDeliverables?.map((deliverable, index) => (
                       <div
                         key={index}
                         className="bg-purple-50 p-4 rounded-lg border border-purple-200"

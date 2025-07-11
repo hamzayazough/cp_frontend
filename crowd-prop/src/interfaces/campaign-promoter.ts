@@ -1,5 +1,5 @@
+import { AdvertiserType } from "@/app/enums/advertiser-type";
 import {
-  CampaignStatus,
   CampaignType,
   Deliverable,
   MeetingPlan,
@@ -17,18 +17,17 @@ export interface Advertiser {
 }
 
 export interface BaseCampaignDetails {
-  budget: number;
+  budgetHeld: number;
   spentBudget: number;
   targetAudience?: string;
   preferredPlatforms?: SocialPlatform[]; // Preferred platforms for the campaign
 
   requirements?: string[];
   createdAt: Date;
-  deadline?: string;
-  startDate?: string;
+  deadline: string;
+  startDate: string;
   isPublic: boolean; // Indicates if the campaign is visible to all promoters or if the advertiser has selected a specific promoter
 
-  PromoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
   discordInviteLink: string; // Discord invite link for the campaign.
 }
 
@@ -44,21 +43,22 @@ export interface VisibilityCampaignDetails extends BaseCampaignDetails {
 export interface ConsultantCampaignDetails extends BaseCampaignDetails {
   type: CampaignType.CONSULTANT;
   meetingPlan?: MeetingPlan;
-  deliverables?: Deliverable[];
+  expectedDeliverables?: Deliverable[];
   expertiseRequired?: string;
   meetingCount?: number;
   maxBudget: number;
   minBudget: number;
+  promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
 }
 
 export interface SellerCampaignDetails extends BaseCampaignDetails {
   type: CampaignType.SELLER;
-  deliverables?: Deliverable[];
-  deadlineStrict?: boolean;
   sellerRequirements?: Deliverable[];
+  deliverables?: Deliverable[];
   fixedPrice?: number;
   maxBudget: number;
   minBudget: number;
+  promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
 }
 
 export interface SalesmanCampaignDetails extends BaseCampaignDetails {
@@ -77,9 +77,8 @@ export type CampaignDetailsUnion =
   | SalesmanCampaignDetails;
 
 export interface Earnings {
-  totalEarned: number;
-  viewsGenerated: number;
-  averageCPV: number;
+  totalEarned: number; // PromoterCampaign.earnings
+  viewsGenerated: number; //from PromoterCampaign
   projectedTotal: number;
 }
 
@@ -88,12 +87,10 @@ export interface CampaignPromoter {
   title: string;
   type: CampaignType;
   mediaUrl?: string; // URL to the S3 campaign media (image/video)
-  status: CampaignStatus;
-  description: string;
+  status: PromoterCampaignStatus; // PromoterCampaign.status
+  description: string; // from Campaign
   advertiser: Advertiser;
   campaign: CampaignDetailsUnion;
   earnings: Earnings; // money earned by the promoter for now by this campaign
-  tags: string[];
-  joinedDate: string;
-  lastActivity: string;
+  tags: AdvertiserType[]; //getting them from Advertiser user -> user.advertiserType
 }

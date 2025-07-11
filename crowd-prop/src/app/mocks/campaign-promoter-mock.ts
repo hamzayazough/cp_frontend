@@ -6,20 +6,20 @@ import {
   SalesmanCampaignDetails,
 } from "@/interfaces/campaign-promoter";
 import {
-  CampaignStatus,
   CampaignType,
   MeetingPlan,
   Deliverable,
   SalesTrackingMethod,
 } from "../enums/campaign-type";
 import { SocialPlatform } from "../enums/social-platform";
+import { PromoterCampaignStatus } from "../interfaces/promoter-campaign";
 
 export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
   id: "1",
   title: "KeepFit Health App Promotion",
   type: CampaignType.VISIBILITY,
   mediaUrl: undefined,
-  status: CampaignStatus.ACTIVE,
+  status: PromoterCampaignStatus.ONGOING,
   description:
     "Help us promote our revolutionary health and fitness app to reach health-conscious millennials and Gen Z.",
   advertiser: {
@@ -33,7 +33,7 @@ export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
   },
   campaign: {
     type: CampaignType.VISIBILITY,
-    budget: 10000,
+    budgetHeld: 10000,
     spentBudget: 2000,
     maxViews: 200000,
     currentViews: 12700,
@@ -57,12 +57,9 @@ export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
   earnings: {
     totalEarned: 635,
     viewsGenerated: 12700,
-    averageCPV: 0.05,
     projectedTotal: 850,
   },
   tags: ["Health", "Fitness", "Mobile App", "Wellness"],
-  joinedDate: "2025-06-01",
-  lastActivity: "2025-07-01T08:30:00Z",
 };
 
 export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
@@ -70,7 +67,7 @@ export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
   title: "Digital Marketing Strategy Consultation",
   type: CampaignType.CONSULTANT,
   mediaUrl: undefined,
-  status: CampaignStatus.ACTIVE,
+  status: PromoterCampaignStatus.ONGOING,
   description:
     "Looking for an experienced digital marketing consultant to help develop a comprehensive marketing strategy for our e-commerce platform.",
   advertiser: {
@@ -84,12 +81,12 @@ export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
   },
   campaign: {
     type: CampaignType.CONSULTANT,
-    budget: 5000,
+    budgetHeld: 5000,
     spentBudget: 0,
     maxBudget: 5000,
     minBudget: 2500,
     meetingPlan: MeetingPlan.WEEKLY,
-    deliverables: [Deliverable.CONTENT_PLAN, Deliverable.WEEKLY_REPORT],
+    expectedDeliverables: [Deliverable.CONTENT_PLAN, Deliverable.WEEKLY_REPORT],
     expertiseRequired: "Digital Marketing, E-commerce, Social Media Strategy",
     meetingCount: 8,
     targetAudience: "E-commerce businesses, Sustainable product retailers",
@@ -113,12 +110,9 @@ export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
   earnings: {
     totalEarned: 0,
     viewsGenerated: 0,
-    averageCPV: 0,
     projectedTotal: 5000,
   },
   tags: ["Digital Marketing", "Consulting", "E-commerce", "Strategy"],
-  joinedDate: "2025-06-20",
-  lastActivity: "2025-07-09T14:15:00Z",
 };
 
 export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
@@ -126,7 +120,7 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
   title: "E-commerce Store Creation & Sales",
   type: CampaignType.SELLER,
   mediaUrl: undefined,
-  status: CampaignStatus.ACTIVE,
+  status: PromoterCampaignStatus.ONGOING,
   description:
     "Looking for a skilled promoter to create and manage a complete e-commerce store for our handmade jewelry business, including product photography, store setup, and initial sales.",
   advertiser: {
@@ -140,7 +134,7 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
   },
   campaign: {
     type: CampaignType.SELLER,
-    budget: 3000,
+    budgetHeld: 3000,
     spentBudget: 500,
     maxBudget: 3000,
     minBudget: 1500,
@@ -152,7 +146,6 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
     sellerRequirements: [Deliverable.INSTAGRAM_POST, Deliverable.CONTENT_PLAN],
     fixedPrice: 2500,
     meetingPlan: MeetingPlan.WEEKLY,
-    deadlineStrict: true,
     targetAudience:
       "Jewelry enthusiasts, gift buyers, fashion-conscious consumers",
     preferredPlatforms: [
@@ -175,12 +168,9 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
   earnings: {
     totalEarned: 0,
     viewsGenerated: 0,
-    averageCPV: 0,
     projectedTotal: 2500,
   },
   tags: ["E-commerce", "Jewelry", "Store Creation", "Sales"],
-  joinedDate: "2025-06-12",
-  lastActivity: "2025-07-08T10:20:00Z",
 };
 
 export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
@@ -188,7 +178,7 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
   title: "Fitness App Sales Commission Program",
   type: CampaignType.SALESMAN,
   mediaUrl: undefined,
-  status: CampaignStatus.ACTIVE,
+  status: PromoterCampaignStatus.ONGOING,
   description:
     "Join our sales team and earn commission for every fitness app subscription you generate. Perfect for fitness influencers and health enthusiasts with engaged audiences.",
   advertiser: {
@@ -202,7 +192,7 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
   },
   campaign: {
     type: CampaignType.SALESMAN,
-    budget: 8000,
+    budgetHeld: 8000,
     spentBudget: 1200,
     commissionPerSale: 25,
     trackSalesVia: SalesTrackingMethod.COUPON_CODE,
@@ -230,10 +220,7 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
   earnings: {
     totalEarned: 450,
     viewsGenerated: 0, // Not applicable for sales campaigns
-    averageCPV: 0, // Not applicable for sales campaigns
     projectedTotal: 2000,
   },
   tags: ["Fitness", "App Sales", "Commission", "Health"],
-  joinedDate: "2025-06-08",
-  lastActivity: "2025-07-09T16:45:00Z",
 };
