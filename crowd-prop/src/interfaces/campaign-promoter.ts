@@ -6,6 +6,7 @@ import {
   SalesTrackingMethod,
 } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
+import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 export interface Advertiser {
   name: string;
