@@ -32,7 +32,7 @@ interface PromoterCampaignDetailsContentProps {
 
 // Mock campaign data - in production, this would be fetched from your API
 const mockCampaignData: Record<string, CampaignPromoter> = {
-  "1": MOCK_CAMPAIGN_PROMOTER2,
+  "1": MOCK_CAMPAIGN_PROMOTER1,
   "2": MOCK_CAMPAIGN_PROMOTER2,
   "3": MOCK_CAMPAIGN_PROMOTER3,
   "4": MOCK_CAMPAIGN_PROMOTER4,
