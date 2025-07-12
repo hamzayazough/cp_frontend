@@ -1,31 +1,34 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import Image from 'next/image'
-import type { PromoterWork } from "@/app/interfaces/promoter-work"
+import { useEffect } from "react";
+import Image from "next/image";
+import type { PromoterWork } from "@/app/interfaces/promoter-work";
 
 interface PortfolioDetailModalProps {
-  work: PromoterWork
-  onClose: () => void
+  work: PromoterWork;
+  onClose: () => void;
 }
 
-export default function PortfolioDetailModal({ work, onClose }: PortfolioDetailModalProps) {
+export default function PortfolioDetailModal({
+  work,
+  onClose,
+}: PortfolioDetailModalProps) {
   useEffect(() => {
     // Prevent body scroll when modal is open
-    document.body.style.overflow = "hidden"
+    document.body.style.overflow = "hidden";
 
     // Cleanup function to restore body scroll
     return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [])
+      document.body.style.overflow = "unset";
+    };
+  }, []);
 
   return (
     <div
       className="fixed inset-0 backdrop-blur-lg bg-black/30 flex items-center justify-center p-4 z-50"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
-          onClose()
+          onClose();
         }
       }}
     >
@@ -40,8 +43,18 @@ export default function PortfolioDetailModal({ work, onClose }: PortfolioDetailM
             onClick={onClose}
             className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors shadow-lg"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -60,14 +73,17 @@ export default function PortfolioDetailModal({ work, onClose }: PortfolioDetailM
             {work.mediaUrl && (
               <div className="flex justify-center">
                 <div className="w-full max-w-2xl">
-                  <Image
-                    src={work.mediaUrl || "/placeholder.svg"}
-                    alt={work.title}
-                    width={800}
-                    height={320}
-                    className="w-full h-auto max-h-80 object-contain rounded-2xl shadow-lg border border-gray-200"
-                    unoptimized
-                  />
+                  <div className="relative w-full max-h-80 rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                    <Image
+                      src={work.mediaUrl || "/placeholder.svg"}
+                      alt={work.title}
+                      width={800}
+                      height={320}
+                      className="object-contain"
+                      style={{ width: "100%", height: "auto" }}
+                      unoptimized
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -108,5 +124,5 @@ export default function PortfolioDetailModal({ work, onClose }: PortfolioDetailM
         </div>
       </div>
     </div>
-  )
+  );
 }

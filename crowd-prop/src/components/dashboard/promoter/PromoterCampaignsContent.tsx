@@ -280,13 +280,16 @@ export default function PromoterCampaignsContent() {
                             controls
                           />
                         ) : (
-                          <Image
-                            src={campaign.mediaUrl}
-                            alt={campaign.title}
-                            className="w-full h-full object-cover"
-                            width={400}
-                            height={192}
-                          />
+                          <div className="w-full h-full overflow-hidden">
+                            <Image
+                              src={campaign.mediaUrl}
+                              alt={campaign.title}
+                              className="object-cover"
+                              width={400}
+                              height={192}
+                              style={{ width: "100%", height: "100%" }}
+                            />
+                          </div>
                         )}
                       </div>
                     </div>
