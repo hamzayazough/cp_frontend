@@ -12,12 +12,12 @@ export const routes = {
 
   // Explore routes
   exploreCampaigns: "/explore/campaigns",
-
   // Unified Dashboard routes (role-based content)
   dashboard: "/dashboard",
   dashboardCampaigns: "/dashboard/campaigns",
   dashboardCampaignDetails: (id: string) => `/dashboard/campaigns/${id}`,
   dashboardExplore: "/dashboard/explore",
+  dashboardExploreDetails: (id: string) => `/dashboard/explore/${id}`,
   dashboardEarnings: "/dashboard/earnings",
   dashboardMessages: "/dashboard/messages",
   dashboardProfile: "/dashboard/profile",
