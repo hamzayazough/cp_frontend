@@ -276,3 +276,11 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
     AdvertiserType.HEALTH,
   ],
 };
+
+// Export all campaigns as an array for components that need the complete list
+export const MOCK_CAMPAIGN_PROMOTERS = [
+  MOCK_CAMPAIGN_PROMOTER1,
+  MOCK_CAMPAIGN_PROMOTER2,
+  MOCK_CAMPAIGN_PROMOTER3,
+  MOCK_CAMPAIGN_PROMOTER4,
+];
