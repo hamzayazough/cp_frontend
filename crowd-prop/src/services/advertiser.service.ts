@@ -5,12 +5,11 @@ import {
   GetAdvertiserDashboardResponse,
   GetAdvertiserStatsResponse,
   GetAdvertiserCampaignsResponse,
-  GetRecommendedPromotersResponse,
   GetAdvertiserTransactionsResponse,
   GetAdvertiserMessagesResponse,
   GetAdvertiserWalletResponse,
 } from "@/app/interfaces/dashboard/advertiser-dashboard";
-import { Campaign, CampaignFormData } from "@/app/interfaces/campaign";
+import { Campaign } from "@/app/interfaces/campaign";
 
 interface CreateCampaignResponse {
   success: boolean;
@@ -22,16 +21,12 @@ class AdvertiserService {
   private baseUrl = "/advertiser";
 
   async getDashboardData(
-    firebaseUid: string,
-    params: GetAdvertiserDashboardRequest
+    params: GetAdvertiserDashboardRequest = {}
   ): Promise<AdvertiserDashboardData> {
     try {
       const response = await httpService.post<GetAdvertiserDashboardResponse>(
         `${this.baseUrl}/dashboard`,
-        {
-          firebaseUid,
-          ...params,
-        },
+        params,
         true
       );
 
@@ -66,22 +61,6 @@ class AdvertiserService {
 
     return response.data;
   }
-
-  async getRecommendedPromoters(
-    limit?: number
-  ): Promise<GetRecommendedPromotersResponse> {
-    const endpoint = limit
-      ? `${this.baseUrl}/recommended-promoters?limit=${limit}`
-      : `${this.baseUrl}/recommended-promoters`;
-
-    const response = await httpService.get<GetRecommendedPromotersResponse>(
-      endpoint,
-      true
-    );
-
-    return response.data;
-  }
-
   async getTransactions(
     limit?: number
   ): Promise<GetAdvertiserTransactionsResponse> {
@@ -212,7 +191,7 @@ class AdvertiserService {
   }
 
   async createCampaign(
-    campaignData: CampaignFormData
+    campaignData: Campaign
   ): Promise<CreateCampaignResponse> {
     try {
       const response = await httpService.post(

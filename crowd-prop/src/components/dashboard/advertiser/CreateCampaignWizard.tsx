@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Campaign, CampaignFormData } from '@/app/interfaces/campaign';
+import { Campaign } from '@/app/interfaces/campaign';
 import { CampaignType } from '@/app/enums/campaign-type';
+import { AdvertiserType } from '@/app/enums/advertiser-type';
+import { SocialPlatform } from '@/app/enums/social-platform';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { advertiserService } from '@/services/advertiser.service';
 import StepIndicator from './StepIndicator';
@@ -16,40 +18,94 @@ interface CreateCampaignWizardProps {
   onCancel: () => void;
 }
 
-const initialFormData: CampaignFormData = {
+// Form data interface that mirrors Campaign union type structure
+export interface CampaignWizardFormData {
+  // Basic info (common to all types)
+  title: string;
+  description: string;
+  type: CampaignType | null;
+  advertiserTypes: AdvertiserType[];
+  isPublic: boolean;
+  file: File | null; // Changed from mediaUrl to file - required for upload
+  
+  // Optional common fields
+  requirements?: string[];
+  targetAudience?: string;
+  preferredPlatforms?: SocialPlatform[];
+  deadline: Date | null; // When the campaign should be deactivated and no longer visible to promoters
+  startDate: Date | null;
+
+  // Visibility-specific fields
+  cpv?: number;
+  maxViews?: number;
+  trackingLink?: string;
+  minFollowers?: number;
+
+  // Consultant-specific fields
+  meetingPlan?: import('@/app/enums/campaign-type').MeetingPlan;
+  expertiseRequired?: string;
+  expectedDeliverables?: import('@/app/enums/campaign-type').Deliverable[];
+  meetingCount?: number;
+  maxBudget?: number;
+  minBudget?: number;
+
+  // Seller-specific fields
+  sellerRequirements?: import('@/app/enums/campaign-type').Deliverable[];
+  deliverables?: import('@/app/enums/campaign-type').Deliverable[];
+  needMeeting?: boolean;
+  sellerMeetingPlan?: import('@/app/enums/campaign-type').MeetingPlan;
+  sellerMeetingCount?: number;
+  sellerMaxBudget?: number;
+  sellerMinBudget?: number;
+
+  // Salesman-specific fields
+  commissionPerSale?: number;
+  trackSalesVia?: import('@/app/enums/campaign-type').SalesTrackingMethod;
+  codePrefix?: string;
+  salesmanMinFollowers?: number;
+}
+
+const initialFormData: CampaignWizardFormData = {
   title: '',
   description: '',
   type: null,
-  expiryDate: null,
-  mediaUrl: '',
-  advertiserType: [],
-  isPublic: true, // Default to true, will be set based on campaign type
+  advertiserTypes: [],
+  isPublic: true,
+  file: null,
+  requirements: [],
+  targetAudience: '',
+  preferredPlatforms: [],
+  deadline: null,
+  startDate: null,
 
-  // VISIBILITY
+  // Visibility fields
   cpv: undefined,
-  maxViews: null,
-  trackUrl: '',
+  maxViews: undefined,
+  trackingLink: '',
+  minFollowers: undefined,
 
-  // CONSULTANT
+  // Consultant fields
+  meetingPlan: undefined,
+  expertiseRequired: '',
   expectedDeliverables: [],
-  meetingCount: null,
-  referenceUrl: '',
+  meetingCount: undefined,
   maxBudget: undefined,
   minBudget: undefined,
-  deadline: null,
 
-  // SELLER
+  // Seller fields
   sellerRequirements: [],
   deliverables: [],
-  meetingPlan: null,
-  deadlineStrict: false,
+  needMeeting: false,
+  sellerMeetingPlan: undefined,
+  sellerMeetingCount: undefined,
   sellerMaxBudget: undefined,
   sellerMinBudget: undefined,
 
-  // SALESMAN
+  // Salesman fields
   commissionPerSale: undefined,
-  trackSalesVia: null,
+  trackSalesVia: undefined,
   codePrefix: '',
+  salesmanMinFollowers: undefined,
 
   // UI-only
   file: null,
@@ -57,7 +113,7 @@ const initialFormData: CampaignFormData = {
 
 export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCampaignWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<CampaignFormData>(initialFormData);
+  const [formData, setFormData] = useState<CampaignWizardFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const steps = [
@@ -90,7 +146,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
   const currentStepData = steps[currentStep];
   const StepComponent = currentStepData.component;
 
-  const updateFormData = (updates: Partial<CampaignFormData>) => {
+  const updateFormData = (updates: Partial<CampaignWizardFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
@@ -102,7 +158,10 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
         return (
           formData.title.trim() !== '' && 
           formData.description.trim() !== '' &&
-          formData.advertiserType.length > 0
+          formData.advertiserTypes.length > 0 &&
+          formData.startDate !== null &&
+          formData.deadline !== null &&
+          formData.file !== null
         );
       case 2: // Settings
         return validateSettings();
@@ -121,8 +180,10 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
         return (
           typeof formData.cpv === 'number' &&
           formData.cpv >= 0.5 &&
-          typeof formData.trackUrl === 'string' &&
-          formData.trackUrl.trim() !== ''
+          typeof formData.trackingLink === 'string' &&
+          formData.trackingLink.trim() !== '' &&
+          typeof formData.maxViews === 'number' &&
+          formData.maxViews > 0
         );
       case CampaignType.CONSULTANT:
         return (
@@ -132,18 +193,27 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           formData.maxBudget > 0 &&
           typeof formData.minBudget === 'number' &&
           formData.minBudget > 0 &&
-          formData.minBudget <= formData.maxBudget
+          formData.minBudget <= formData.maxBudget &&
+          formData.meetingPlan !== undefined &&
+          typeof formData.meetingCount === 'number' &&
+          formData.meetingCount > 0
         );
       case CampaignType.SELLER:
         return (
-          // Either seller requirements OR deliverables should be specified
-          ((Array.isArray(formData.sellerRequirements) && formData.sellerRequirements.length > 0) ||
-           (Array.isArray(formData.deliverables) && formData.deliverables.length > 0)) &&
+          // Both seller requirements AND deliverables are now required
+          Array.isArray(formData.sellerRequirements) && 
+          formData.sellerRequirements.length > 0 &&
+          Array.isArray(formData.deliverables) && 
+          formData.deliverables.length > 0 &&
           typeof formData.sellerMaxBudget === 'number' &&
           formData.sellerMaxBudget > 0 &&
           typeof formData.sellerMinBudget === 'number' &&
           formData.sellerMinBudget > 0 &&
-          formData.sellerMinBudget <= formData.sellerMaxBudget
+          formData.sellerMinBudget <= formData.sellerMaxBudget &&
+          (formData.needMeeting === false || 
+           (formData.sellerMeetingPlan !== undefined && 
+            typeof formData.sellerMeetingCount === 'number' &&
+            formData.sellerMeetingCount > 0))
         );
       case CampaignType.SALESMAN:
         return (
@@ -160,12 +230,16 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
+      // Scroll to top of the page when moving to next step
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      // Scroll to top of the page when moving to previous step
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -173,52 +247,80 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
     setIsSubmitting(true);
 
     try {
+      // Create the campaign object based on the selected type
+      let campaignData: Campaign;
 
-      const campaignData = {
+      const baseData = {
         title: formData.title,
         description: formData.description,
-        type: formData.type!,
-        expiryDate: formData.expiryDate,
-        mediaUrl: formData.mediaUrl || undefined,
-        advertiserType: formData.advertiserType,
-        // Set isPublic based on campaign type
-        isPublic: formData.type === CampaignType.VISIBILITY || formData.type === CampaignType.SALESMAN,
-
-        // Type-specific fields based on new interface
-        ...(formData.type === CampaignType.VISIBILITY && {
-          cpv: formData.cpv!,
-          maxViews: formData.maxViews || undefined,
-          trackUrl: formData.trackUrl!,
-        }),
-
-        ...(formData.type === CampaignType.CONSULTANT && {
-          expectedDeliverables: formData.expectedDeliverables || [],
-          meetingCount: formData.meetingCount || undefined,
-          maxBudget: formData.maxBudget!,
-          minBudget: formData.minBudget!,
-          deadline: formData.deadline,
-        }),
-
-        ...(formData.type === CampaignType.SELLER && {
-          sellerRequirements: formData.sellerRequirements || undefined,
-          deliverables: formData.deliverables || undefined,
-          meetingPlan: formData.meetingPlan || undefined,
-          deadlineStrict: formData.deadlineStrict || false,
-          maxBudget: formData.sellerMaxBudget!,
-          minBudget: formData.sellerMinBudget!,
-        }),
-
-        ...(formData.type === CampaignType.SALESMAN && {
-          commissionPerSale: formData.commissionPerSale!,
-          trackSalesVia: formData.trackSalesVia!,
-          codePrefix: formData.codePrefix || undefined,
-        }),
+        advertiserTypes: formData.advertiserTypes,
+        isPublic: formData.type === CampaignType.VISIBILITY ? formData.isPublic : false,
+        file: formData.file!,
+        requirements: formData.requirements,
+        targetAudience: formData.targetAudience,
+        preferredPlatforms: formData.preferredPlatforms,
+        deadline: formData.deadline!, // This serves as both deadline and expiry date
+        startDate: formData.startDate!,
       };
 
-      // // For Salesman, add file if present
-      // if (formData.type === CampaignType.SALESMAN && formData.file) {
-      //   campaignData.file = formData.file;
-      // }
+      switch (formData.type) {
+        case CampaignType.VISIBILITY:
+          campaignData = {
+            ...baseData,
+            type: CampaignType.VISIBILITY,
+            cpv: formData.cpv!,
+            maxViews: formData.maxViews!, // Now required
+            trackingLink: formData.trackingLink!,
+            minFollowers: formData.minFollowers,
+            isPublic: formData.isPublic, // Use the user's choice for visibility campaigns
+          };
+          break;
+
+        case CampaignType.CONSULTANT:
+          campaignData = {
+            ...baseData,
+            type: CampaignType.CONSULTANT,
+            meetingPlan: formData.meetingPlan!,
+            expertiseRequired: formData.expertiseRequired,
+            expectedDeliverables: formData.expectedDeliverables!,
+            meetingCount: formData.meetingCount!,
+            maxBudget: formData.maxBudget!,
+            minBudget: formData.minBudget!,
+            isPublic: false, // Always false for consultant campaigns
+          };
+          break;
+
+        case CampaignType.SELLER:
+          campaignData = {
+            ...baseData,
+            type: CampaignType.SELLER,
+            sellerRequirements: formData.sellerRequirements,
+            deliverables: formData.deliverables,
+            maxBudget: formData.sellerMaxBudget!,
+            minBudget: formData.sellerMinBudget!,
+            isPublic: false,
+            minFollowers: formData.minFollowers,
+            needMeeting: formData.needMeeting!,
+            meetingPlan: formData.sellerMeetingPlan!,
+            meetingCount: formData.sellerMeetingCount || 0,
+          };
+          break;
+
+        case CampaignType.SALESMAN:
+          campaignData = {
+            ...baseData,
+            type: CampaignType.SALESMAN,
+            commissionPerSale: formData.commissionPerSale!,
+            trackSalesVia: formData.trackSalesVia!,
+            codePrefix: formData.codePrefix,
+            isPublic: false,
+            minFollowers: formData.salesmanMinFollowers,
+          };
+          break;
+
+        default:
+          throw new Error('Invalid campaign type');
+      }
 
       // Print the payload being sent
       console.log('Submitting campaignData:', campaignData);

@@ -28,25 +28,6 @@ export interface AdvertiserActiveCampaign {
   updatedAt: string;
 }
 
-export interface AdvertiserRecommendedPromoter {
-  id: string;
-  name: string;
-  avatar?: string;
-  rating: number;
-  followers: number;
-  specialties: string[];
-  location?: string;
-  successRate: number;
-  averageViews: number;
-  completedCampaigns: number;
-  priceRange: {
-    min: number;
-    max: number;
-  };
-  isVerified: boolean;
-  languages: string[];
-}
-
 export interface AdvertiserTransaction {
   id: string;
   amount: number;
@@ -102,7 +83,6 @@ export interface AdvertiserWallet {
 export interface AdvertiserDashboardData {
   stats: AdvertiserStats;
   activeCampaigns: AdvertiserActiveCampaign[];
-  recommendedPromoters: AdvertiserRecommendedPromoter[];
   recentTransactions: AdvertiserTransaction[];
   recentMessages: AdvertiserMessage[];
   wallet: AdvertiserWallet;
@@ -118,7 +98,6 @@ export interface GetAdvertiserDashboardRequest {
   includeMessages?: boolean;
   includeWallet?: boolean;
   activeCampaignLimit?: number;
-  recommendedPromoterLimit?: number;
   transactionLimit?: number;
   messageLimit?: number;
 }
@@ -143,16 +122,6 @@ export interface GetAdvertiserCampaignsResponse {
     totalActive: number;
     totalCompleted: number;
     totalPending: number;
-  };
-  message?: string;
-}
-
-export interface GetRecommendedPromotersResponse {
-  success: boolean;
-  data: {
-    promoters: AdvertiserRecommendedPromoter[];
-    total: number;
-    hasMore: boolean;
   };
   message?: string;
 }

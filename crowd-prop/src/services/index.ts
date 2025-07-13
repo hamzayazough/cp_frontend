@@ -39,7 +39,6 @@ export type {
   AdvertiserDashboardData,
   AdvertiserStats,
   AdvertiserActiveCampaign,
-  AdvertiserRecommendedPromoter,
   AdvertiserTransaction,
   AdvertiserMessage,
   AdvertiserWallet,

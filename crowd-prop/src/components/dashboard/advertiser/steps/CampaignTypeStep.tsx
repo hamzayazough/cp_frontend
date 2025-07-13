@@ -1,7 +1,7 @@
 'use client';
 
 import { CampaignType } from '@/app/enums/campaign-type';
-import { CampaignFormData } from '@/app/interfaces/campaign';
+import { CampaignWizardFormData } from '../CreateCampaignWizard';
 import { 
   EyeIcon, 
   UserIcon, 
@@ -10,8 +10,8 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface CampaignTypeStepProps {
-  formData: CampaignFormData;
-  updateFormData: (updates: Partial<CampaignFormData>) => void;
+  formData: CampaignWizardFormData;
+  updateFormData: (updates: Partial<CampaignWizardFormData>) => void;
   onNext?: () => void;
 }
 
@@ -83,7 +83,6 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
       title: '',
       description: '',
       file: null,
-      expiryDate: null,
       minBudget: undefined,
       maxBudget: undefined,
       deadline: null,

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useAdvertiserDashboard } from "@/hooks/useAdvertiserDashboard";
-import AdvertiserDashboardTemplate from "./AdvertiserDashboardTemplate";
 import { formatWalletValue } from "@/utils/wallet";
 import {
   EyeIcon,
@@ -17,9 +16,6 @@ import {
   ExclamationTriangleIcon,
   PlayIcon,
   PauseIcon,
-  UserGroupIcon,
-  StarIcon,
-  MapPinIcon,
   BanknotesIcon,
   PlusIcon,
   ArrowUpIcon,
@@ -41,9 +37,6 @@ export default function AdvertiserDashboardContent({
     addFunds,
     pauseCampaign,
     resumeCampaign,
-    contactPromoter,
-    useTemplate,
-    setUseTemplate,
   } = useAdvertiserDashboard();
 
   const handleAddFunds = async (amount: number) => {
@@ -97,23 +90,6 @@ export default function AdvertiserDashboardContent({
     }
   };
 
-  const handleContactPromoter = async (promoterId: string, message: string) => {
-    try {
-      const result = await contactPromoter(promoterId, message);
-      if (result.success) {
-        alert("Message sent successfully!");
-      } else {
-        alert(`Failed to send message: ${result.message}`);
-      }
-    } catch (err) {
-      alert(
-        `Error sending message: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -122,18 +98,7 @@ export default function AdvertiserDashboardContent({
     );
   }
 
-  // Show template if explicitly using template mode
-  if (useTemplate) {
-    return <AdvertiserDashboardTemplate userName={userName} />;
-  }
-
   if (error) {
-    // If it's a 404 error (API not implemented), show the template
-    if (error.includes("API endpoints are not yet implemented")) {
-      return <AdvertiserDashboardTemplate userName={userName} />;
-    }
-
-    // For other errors, show the error message with option to use template
     return (
       <div className="space-y-4">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -144,18 +109,12 @@ export default function AdvertiserDashboardContent({
                 Error loading dashboard
               </h3>
               <p className="mt-1 text-sm text-red-700">{error}</p>
-              <div className="mt-3 flex space-x-2">
+              <div className="mt-3">
                 <button
                   onClick={refetch}
                   className="text-sm text-red-800 underline hover:text-red-900"
                 >
                   Try again
-                </button>
-                <button
-                  onClick={() => setUseTemplate(true)}
-                  className="text-sm text-blue-600 underline hover:text-blue-800"
-                >
-                  Use template view
                 </button>
               </div>
             </div>
@@ -227,16 +186,16 @@ export default function AdvertiserDashboardContent({
         </p>
         <div className="flex space-x-4">
           <Link
-            href="/dashboard/campaigns"
+            href="/dashboard/campaigns/create"
             className="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors"
           >
             Create Campaign
           </Link>
           <Link
-            href="/dashboard/explore"
+            href="/dashboard/profile"
             className="border border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-purple-600 transition-colors"
           >
-            Find Promoters
+            Manage profile
           </Link>
         </div>
       </div>
@@ -273,7 +232,7 @@ export default function AdvertiserDashboardContent({
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Views Today</p>
+              <p className="text-sm font-medium text-gray-600">Views Generated Today</p>
               <p className="text-3xl font-bold text-gray-900">
                 {formatNumber(dashboardData.stats.viewsToday)}
               </p>
@@ -448,7 +407,7 @@ export default function AdvertiserDashboardContent({
                   creating your first campaign.
                 </p>
                 <Link
-                  href="/dashboard/campaigns"
+                  href="/dashboard/campaigns/create"
                   className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Create Campaign
@@ -461,120 +420,7 @@ export default function AdvertiserDashboardContent({
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recommended Promoters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">
-                Recommended Promoters
-              </h2>
-              <Link
-                href="/dashboard/explore"
-                className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-              >
-                View All
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {dashboardData.recommendedPromoters.length > 0 ? (
-                dashboardData.recommendedPromoters.map((promoter) => (
-                  <div
-                    key={promoter.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                        {promoter.avatar ? (
-                          <Image
-                            src={promoter.avatar}
-                            alt={promoter.name}
-                            width={48}
-                            height={48}
-                            className="w-full h-full rounded-full object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <span className="text-lg font-bold text-gray-500">
-                            {promoter.name.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="font-medium text-gray-900">
-                            {promoter.name}
-                          </h3>
-                          {promoter.isVerified && (
-                            <CheckCircleIcon className="h-4 w-4 text-blue-500" />
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
-                          <div className="flex items-center">
-                            <StarIcon className="h-4 w-4 text-yellow-400 mr-1" />
-                            {promoter.rating}
-                          </div>
-                          <div className="flex items-center">
-                            <UserGroupIcon className="h-4 w-4 mr-1" />
-                            {formatNumber(promoter.followers)}
-                          </div>
-                          {promoter.location && (
-                            <div className="flex items-center">
-                              <MapPinIcon className="h-4 w-4 mr-1" />
-                              {promoter.location}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {promoter.specialties
-                            .slice(0, 3)
-                            .map((specialty, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
-                              >
-                                {specialty}
-                              </span>
-                            ))}
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">
-                            {formatCurrency(promoter.priceRange.min)} -{" "}
-                            {formatCurrency(promoter.priceRange.max)}
-                          </span>
-                          <button
-                            onClick={() =>
-                              handleContactPromoter(
-                                promoter.id,
-                                `Hi ${promoter.name}, I'm interested in working with you on a campaign.`
-                              )
-                            }
-                            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs"
-                          >
-                            Contact
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8">
-                  <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-4 text-sm font-medium text-gray-900">
-                    No recommended promoters
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-500">
-                    We&apos;ll recommend promoters based on your campaign
-                    history and preferences.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        
 
         {/* Wallet & Messages */}
         <div className="space-y-8">
