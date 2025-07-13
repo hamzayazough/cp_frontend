@@ -8,7 +8,6 @@ export enum PromoterCampaignStatus {
 export interface PromoterCampaign {
   id: string;
   campaignId: string;
-  promoterId: string;
   status: PromoterCampaignStatus;
   viewsGenerated: number;
   earnings: number;

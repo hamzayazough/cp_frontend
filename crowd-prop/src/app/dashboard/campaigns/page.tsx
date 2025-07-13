@@ -9,6 +9,7 @@ import { userService } from '@/services/user.service';
 import { User as AppUser } from '@/app/interfaces/user';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import PromoterCampaignsContent from '@/components/dashboard/promoter/PromoterCampaignsContent';
+import AdvertiserCampaignsContent from '@/components/dashboard/advertiser/AdvertiserCampaignsContent';
 
 export default function CampaignsPage() {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
@@ -80,16 +81,7 @@ export default function CampaignsPage() {
       case 'PROMOTER':
         return <PromoterCampaignsContent />;
       case 'ADVERTISER':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              My Campaigns
-            </h2>
-            <p className="text-gray-600">
-              Here you can manage your advertising campaigns, create new ones, and track their performance.
-            </p>
-          </div>
-        );
+        return <AdvertiserCampaignsContent />;
       case 'ADMIN':
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
