@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Campaign } from '@/app/interfaces/campaign';
+import { Campaign } from '@/app/interfaces/campaign/campaign';
 import { CampaignType } from '@/app/enums/campaign-type';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
 import { SocialPlatform } from '@/app/enums/social-platform';
@@ -106,9 +106,6 @@ const initialFormData: CampaignWizardFormData = {
   trackSalesVia: undefined,
   codePrefix: '',
   salesmanMinFollowers: undefined,
-
-  // UI-only
-  file: null,
 };
 
 export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCampaignWizardProps) {
@@ -255,13 +252,12 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
 
     try {
       // Step 1: Create the campaign object first without media
-      let campaignData: Omit<Campaign, 'file'> & { mediaUrl?: string };
+      let campaignData: Campaign;
 
       const baseData = {
         title: formData.title,
         description: formData.description,
         advertiserTypes: formData.advertiserTypes,
-        isPublic: formData.type === CampaignType.VISIBILITY ? formData.isPublic : false,
         requirements: formData.requirements,
         targetAudience: formData.targetAudience,
         preferredPlatforms: formData.preferredPlatforms,
@@ -274,7 +270,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           campaignData = {
             ...baseData,
             type: CampaignType.VISIBILITY,
-            cpv: formData.cpv!,
+            cpv: formData.cpv !== undefined ? formData.cpv : 0, 
             maxViews: formData.maxViews!, // Now required
             trackingLink: formData.trackingLink!,
             minFollowers: formData.minFollowers,
@@ -300,8 +296,8 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           campaignData = {
             ...baseData,
             type: CampaignType.SELLER,
-            sellerRequirements: formData.sellerRequirements,
-            deliverables: formData.deliverables,
+            sellerRequirements: formData.sellerRequirements ?? [],
+            deliverables: formData.deliverables ?? [],
             maxBudget: formData.sellerMaxBudget!,
             minBudget: formData.sellerMinBudget!,
             isPublic: false,

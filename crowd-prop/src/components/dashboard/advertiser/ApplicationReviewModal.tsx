@@ -1,6 +1,6 @@
 'use client';
 
-import { PromoterApplicationInfo } from '@/app/interfaces/advertiser-campaign';
+import { PromoterApplicationInfo } from '@/app/interfaces/campaign/advertiser-campaign';
 import { 
   X, 
   Star, 
@@ -10,6 +10,7 @@ import {
   Check,
   XIcon
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface ApplicationReviewModalProps {
   isOpen: boolean;
@@ -38,6 +39,10 @@ export default function ApplicationReviewModal({
       hour: '2-digit',
       minute: '2-digit',
     }).format(new Date(date));
+  };
+
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('en-US').format(num);
   };
 
   const handleAccept = (applicationId: string) => {
@@ -97,7 +102,7 @@ export default function ApplicationReviewModal({
                     {/* Avatar */}
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
                       {app.promoter.avatarUrl ? (
-                        <img 
+                        <Image
                           src={app.promoter.avatarUrl} 
                           alt={app.promoter.name}
                           className="w-full h-full rounded-full object-cover"
@@ -156,7 +161,7 @@ export default function ApplicationReviewModal({
                           {app.promoter.bio || 'No bio provided'}
                         </p>
                         
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div>
                             <p className="text-xs text-gray-500 mb-1">Status</p>
                             <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
@@ -168,8 +173,39 @@ export default function ApplicationReviewModal({
                             </span>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Earnings</p>
+                            <p className="text-xs text-gray-500 mb-1">Current Earnings</p>
                             <p className="text-sm font-medium text-gray-900">${app.earnings || 0}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Total Views</p>
+                            <p className="text-sm font-medium text-gray-900">{formatNumber(app.promoter.totalViewsGenerated || 0)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Total Sales</p>
+                            <p className="text-sm font-medium text-gray-900">${formatNumber(app.promoter.totalSales || 0)}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Campaign Statistics */}
+                      <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                        <h5 className="font-medium text-gray-900 mb-2">Campaigns Done</h5>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Visibility</p>
+                            <p className="text-sm font-medium text-gray-900">{app.promoter.numberOfVisibilityCampaignDone || 0}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Consultant</p>
+                            <p className="text-sm font-medium text-gray-900">{app.promoter.numberOfConsultantCampaignDone || 0}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Seller</p>
+                            <p className="text-sm font-medium text-gray-900">{app.promoter.numberOfSellerCampaignDone || 0}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Salesman</p>
+                            <p className="text-sm font-medium text-gray-900">{app.promoter.numberOfSalesmanCampaignDone || 0}</p>
                           </div>
                         </div>
                       </div>

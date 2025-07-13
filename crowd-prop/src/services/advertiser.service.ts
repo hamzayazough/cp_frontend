@@ -9,7 +9,7 @@ import {
   GetAdvertiserMessagesResponse,
   GetAdvertiserWalletResponse,
 } from "@/app/interfaces/dashboard/advertiser-dashboard";
-import { Campaign } from "@/app/interfaces/campaign";
+import { Campaign } from "@/app/interfaces/campaign/campaign";
 
 interface CreateCampaignResponse {
   success: boolean;
@@ -211,11 +211,17 @@ class AdvertiserService {
         true
       );
 
+      // Type assertion for the response data
+      const responseData = response.data as {
+        fileUrl?: string;
+        campaign?: Campaign;
+      };
+
       return {
         success: true,
         message: response.message || "File uploaded successfully",
-        fileUrl: response.data.fileUrl,
-        campaign: response.data.campaign as Campaign,
+        fileUrl: responseData.fileUrl,
+        campaign: responseData.campaign,
       };
     } catch (error) {
       return {
@@ -242,13 +248,19 @@ class AdvertiserService {
       console.log("Raw API response:", response);
       console.log("Response data:", response.data);
 
+      // Type assertion for the response data
+      const responseData = response.data as {
+        message?: string;
+        campaign?: Campaign;
+      };
+
       return {
         success: true,
         message:
-          response.data?.message ||
+          responseData.message ||
           response.message ||
           "Campaign created successfully",
-        campaign: response.data?.campaign || (response.data as Campaign),
+        campaign: responseData.campaign || (response.data as Campaign),
       };
     } catch (error) {
       return {

@@ -4,9 +4,9 @@ import {
   SalesTrackingMethod,
   Deliverable,
   MeetingPlan,
-} from "../enums/campaign-type";
-import { AdvertiserType } from "../enums/advertiser-type";
-import { SocialPlatform } from "../enums/social-platform";
+} from "../../enums/campaign-type";
+import { AdvertiserType } from "../../enums/advertiser-type";
+import { SocialPlatform } from "../../enums/social-platform";
 
 // Base Campaign interface - now abstract, not used directly
 export interface BaseCampaign {

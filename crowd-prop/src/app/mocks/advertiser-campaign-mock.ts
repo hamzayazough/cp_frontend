@@ -17,7 +17,7 @@ import {
   AdvertiserVisibilityCampaignDetails,
   AdvertiserConsultantCampaignDetails,
   AdvertiserSalesmanCampaignDetails,
-} from "../interfaces/advertiser-campaign";
+} from "../interfaces/campaign/advertiser-campaign";
 import { Promoter } from "../interfaces/user";
 
 // Mock Promoters
@@ -145,7 +145,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     campaign: {
       type: CampaignType.CONSULTANT,
       meetingPlan: MeetingPlan.WEEKLY,
-      expectedDeliverables: [Deliverable.STRATEGY_DOCUMENT],
+      expectedDeliverables: [Deliverable.CONTENT_PLAN],
       expertiseRequired: "Creative Strategy, Brand Development",
       meetingCount: 4,
       maxBudget: 5000,
@@ -181,7 +181,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     campaign: {
       type: CampaignType.SALESMAN,
       commissionPerSale: 50,
-      trackSalesVia: SalesTrackingMethod.PROMO_CODE,
+      trackSalesVia: SalesTrackingMethod.COUPON_CODE,
       codePrefix: "AFFILIATE",
       minFollowers: 1000,
       budgetHeld: 12000,

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { CampaignAdvertiser, PromoterApplicationInfo } from '@/app/interfaces/advertiser-campaign';
+import { useRouter } from 'next/navigation';
+import { CampaignAdvertiser, PromoterApplicationInfo } from '@/app/interfaces/campaign/advertiser-campaign';
 import { CampaignType, PromoterCampaignStatus, CampaignStatus } from '@/app/enums/campaign-type';
 import { ADVERTISER_CAMPAIGN_MOCKS } from '@/app/mocks/advertiser-campaign-mock';
 import ApplicationReviewModal from './ApplicationReviewModal';
@@ -26,6 +27,7 @@ interface CampaignListProps {
 }
 
 export default function CampaignList({ campaigns }: CampaignListProps) {
+  const router = useRouter();
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     campaign: CampaignAdvertiser | null;
@@ -49,7 +51,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     return new Intl.NumberFormat('en-US').format(num);
   };
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
@@ -64,11 +66,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
         return `${baseClasses} bg-green-100 text-green-800`;
       case CampaignStatus.PAUSED:
         return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      case CampaignStatus.COMPLETED:
-        return `${baseClasses} bg-blue-100 text-blue-800`;
-      case CampaignStatus.EXPIRED:
-        return `${baseClasses} bg-red-100 text-red-800`;
-      case CampaignStatus.DRAFT:
+      case CampaignStatus.ENDED:
         return `${baseClasses} bg-gray-100 text-gray-800`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-800`;
@@ -199,9 +197,12 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                      <button
+                        onClick={() => router.push(`/dashboard/campaigns/${campaign.id}`)}
+                        className="text-lg font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
+                      >
                         {campaign.title}
-                      </h3>
+                      </button>
                       <span className={getStatusBadge(campaign.status)}>
                         {campaign.status}
                       </span>
@@ -566,6 +567,13 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
 
                 {/* Actions */}
                 <div className="flex items-center space-x-2 ml-4">
+                  <button
+                    onClick={() => router.push(`/dashboard/campaigns/${campaign.id}`)}
+                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="View Details"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
                   {campaign.status === CampaignStatus.ACTIVE && (
                     <button className="p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors">
                       <PauseCircle className="h-4 w-4" />

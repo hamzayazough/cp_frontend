@@ -101,5 +101,9 @@ export interface Promoter {
   verified?: boolean;
   totalSales?: number;
   numberOfCampaignDone?: number;
+  numberOfVisibilityCampaignDone?: number;
+  numberOfSellerCampaignDone?: number;
+  numberOfSalesmanCampaignDone?: number;
+  numberOfConsultantCampaignDone?: number;
   totalViewsGenerated?: number;
 }

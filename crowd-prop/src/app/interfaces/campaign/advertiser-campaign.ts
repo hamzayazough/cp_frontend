@@ -8,6 +8,7 @@ import {
 import { SocialPlatform } from "@/app/enums/social-platform";
 import { CampaignStatus } from "@/app/enums/campaign-type";
 import { Promoter } from "../user";
+import { AdvertiserType } from "@/app/enums/advertiser-type";
 
 export enum AdvertiserCampaignSortField {
   CREATED_AT = "createdAt",

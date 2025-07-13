@@ -1,6 +1,6 @@
 'use client';
 
-import { AdvertiserDashboardSummary } from '@/app/interfaces/advertiser-campaign';
+import { AdvertiserDashboardSummary } from '@/app/interfaces/campaign/advertiser-campaign';
 import { TrendingUp, TrendingDown, DollarSign, Target, Users, BarChart3 } from 'lucide-react';
 
 interface CampaignStatsCardsProps {

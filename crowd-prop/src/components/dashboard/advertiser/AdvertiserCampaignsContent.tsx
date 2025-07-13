@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { CampaignType } from '@/app/enums/campaign-type';
-import { ADVERTISER_CAMPAIGN_MOCKS, CampaignStatus } from '@/app/mocks/advertiser-campaign-mock';
-import { AdvertiserCampaignSortField } from '@/app/interfaces/advertiser-campaign';
+import { ADVERTISER_CAMPAIGN_MOCKS } from '@/app/mocks/advertiser-campaign-mock';
+import { CampaignStatus } from '@/app/enums/campaign-type';
+import { AdvertiserCampaignSortField } from '@/app/interfaces/campaign/advertiser-campaign';
 import CampaignStatsCards from './CampaignStatsCards';
 import CampaignFilters from './CampaignFilters';
 import CampaignList from './CampaignList';

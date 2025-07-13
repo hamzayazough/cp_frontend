@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { CampaignStatus, CampaignType } from '@/app/enums/campaign-type';
 import { MOCK_CAMPAIGN_FILTERS } from '@/app/mocks/advertiser-campaign-mock';
-import { AdvertiserCampaignSortField } from '@/app/interfaces/advertiser-campaign';
+import { AdvertiserCampaignSortField } from '@/app/interfaces/campaign/advertiser-campaign';
 import { Search, Filter, SortAsc, SortDesc, X } from 'lucide-react';
 
 interface CampaignFiltersProps {
@@ -61,12 +61,6 @@ export default function CampaignFilters({
         return 'bg-green-100 text-green-800 border-green-200';
       case CampaignStatus.PAUSED:
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case CampaignStatus.COMPLETED:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case CampaignStatus.EXPIRED:
-        return 'bg-red-100 text-red-800 border-red-200';
-      case CampaignStatus.DRAFT:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }

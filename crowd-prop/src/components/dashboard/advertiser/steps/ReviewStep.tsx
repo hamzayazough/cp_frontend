@@ -319,17 +319,6 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     </div>
                   )}
                 </div>
-                {formData.referenceUrl && (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">Reference URL</label>
-                    <div className="bg-white p-4 rounded-lg border border-purple-200">
-                      <a href={formData.referenceUrl} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 font-medium flex items-center">
-                        <LinkIcon className="h-5 w-5 mr-2" />
-                        {formData.referenceUrl}
-                      </a>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -365,27 +354,15 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     </div>
                   </div>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {formData.meetingPlan && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {formData.sellerMeetingPlan && (
                     <div className="space-y-2">
                       <label className="block text-sm font-semibold text-gray-700">Meeting Plan</label>
                       <div className="bg-white p-4 rounded-lg border border-green-200">
-                        <p className="text-sm font-bold text-green-600">{formData.meetingPlan.replace(/_/g, ' ')}</p>
+                        <p className="text-sm font-bold text-green-600">{formData.sellerMeetingPlan.replace(/_/g, ' ')}</p>
                       </div>
                     </div>
                   )}
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">Strict Deadline</label>
-                    <div className="bg-white p-4 rounded-lg border border-green-200">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold ${
-                        formData.deadlineStrict 
-                          ? 'bg-red-100 text-red-800 border border-red-200' 
-                          : 'bg-green-100 text-green-800 border border-green-200'
-                      }`}>
-                        {formData.deadlineStrict ? 'Yes' : 'No'}
-                      </span>
-                    </div>
-                  </div>
                   {formData.sellerMinBudget && formData.sellerMaxBudget && (
                     <div className="space-y-2">
                       <label className="block text-sm font-semibold text-gray-700">Budget Range</label>
