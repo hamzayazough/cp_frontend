@@ -30,10 +30,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       // Check if user exists in our backend
       try {
         const profileResponse = await authService.getProfile();
-        console.log('=== GET PROFILE RESPONSE ===');
-        console.log('Response:', profileResponse);
-        console.log('User isSetupDone:', profileResponse.user.isSetupDone);
-        console.log('============================');
         
         // Save user data to user service
         userService.setCurrentUser(profileResponse.user);

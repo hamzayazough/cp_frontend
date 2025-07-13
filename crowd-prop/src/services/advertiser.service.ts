@@ -190,20 +190,65 @@ class AdvertiserService {
     }
   }
 
-  async createCampaign(
-    campaignData: Campaign
-  ): Promise<CreateCampaignResponse> {
+  async uploadCampaignFile(
+    file: File,
+    campaignId: string
+  ): Promise<{
+    success: boolean;
+    message: string;
+    fileUrl?: string;
+    campaign?: Campaign;
+  }> {
     try {
-      const response = await httpService.post(
-        `${this.baseUrl}/campaigns`,
-        campaignData,
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("campaignId", campaignId);
+      formData.append("type", "campaign-media");
+
+      const response = await httpService.uploadFormData(
+        `${this.baseUrl}/upload-file`,
+        formData,
         true
       );
 
       return {
         success: true,
-        message: response.message || "Campaign created successfully",
-        campaign: response.data as Campaign,
+        message: response.message || "File uploaded successfully",
+        fileUrl: response.data.fileUrl,
+        campaign: response.data.campaign as Campaign,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to upload file",
+      };
+    }
+  }
+
+  async createCampaign(
+    campaignData: Omit<Campaign, "file"> & {
+      mediaUrl?: string;
+    }
+  ): Promise<CreateCampaignResponse> {
+    try {
+      const response = await httpService.post(
+        `${this.baseUrl}/create-campaign`,
+        campaignData,
+        true
+      );
+
+      // Debug log to see the response structure
+      console.log("Raw API response:", response);
+      console.log("Response data:", response.data);
+
+      return {
+        success: true,
+        message:
+          response.data?.message ||
+          response.message ||
+          "Campaign created successfully",
+        campaign: response.data?.campaign || (response.data as Campaign),
       };
     } catch (error) {
       return {

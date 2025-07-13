@@ -50,11 +50,6 @@ export class UserService {
    * Set current user data in memory
    */
   setCurrentUser(user: User | null): void {
-    console.log("=== USER SERVICE SET CURRENT USER ===");
-    console.log("Setting user:", user);
-    console.log("User isSetupDone:", user?.isSetupDone);
-    console.log("=====================================");
-
     this.currentUser = user;
     this.notifyUserListeners();
   }
@@ -108,12 +103,10 @@ export class UserService {
    */
   async getCurrentUser(): Promise<User> {
     try {
-      console.log("BAABLALBALBLABLA");
       const response = await httpService.get<ProfileResponse>(
         `/auth/profile`,
         true
       );
-      console.log("User profile response:", response.data);
 
       return response.data.user;
     } catch (error) {

@@ -41,10 +41,6 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       // Create account in our backend
       try {
         const createResponse = await authService.createAccount();
-        console.log('=== CREATE ACCOUNT RESPONSE ===');
-        console.log('Response:', createResponse);
-        console.log('User isSetupDone:', createResponse.user.isSetupDone);
-        console.log('===============================');
         
         userService.setCurrentUser(createResponse.user);
         onSuccess(true); // New user always needs onboarding

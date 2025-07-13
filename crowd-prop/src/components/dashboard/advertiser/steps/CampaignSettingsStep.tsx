@@ -10,7 +10,8 @@ import {
   CurrencyDollarIcon,
   LinkIcon,
   ClockIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 
 interface CampaignSettingsStepProps {
@@ -20,6 +21,12 @@ interface CampaignSettingsStepProps {
 }
 
 export default function CampaignSettingsStep({ formData, updateFormData }: CampaignSettingsStepProps) {
+  const calculatePaymentHold = () => {
+    if (!formData.cpv || !formData.maxViews) return '0.00';
+    const total = (formData.cpv * formData.maxViews) / 100;
+    return total.toFixed(2);
+  };
+
   const handleDeliverablesChange = (deliverables: Deliverable[], field: 'expectedDeliverables' | 'sellerRequirements' | 'deliverables') => {
     updateFormData({ [field]: deliverables });
   };
@@ -48,7 +55,9 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
             <CurrencyDollarIcon className="h-5 w-5 mr-2 text-blue-600" />
             Pricing Configuration
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* Main Pricing Inputs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Cost Per 100 Views (CPV) *
@@ -103,7 +112,69 @@ export default function CampaignSettingsStep({ formData, updateFormData }: Campa
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
               />
               <p className="mt-2 text-sm text-gray-500">
-                📊 Maximum number of views to purchase
+                📊 Maximum number of views to target
+              </p>
+            </div>
+          </div>
+
+          {/* Payment Hold Information */}
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h5 className="text-sm font-semibold text-gray-800 flex items-center">
+                  <CurrencyDollarIcon className="h-4 w-4 mr-2 text-amber-600" />
+                  Payment Hold Amount
+                </h5>
+                <p className="text-xs text-gray-600 mt-1">
+                  Total amount held until campaign completion
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-xl font-bold text-amber-600">
+                  ${calculatePaymentHold()}
+                </span>
+                <p className="text-xs text-gray-500">USD</p>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-gray-600">
+              💳 This amount represents the maximum cost if your campaign reaches the full target. 
+              You will only be charged for actual verified views received.
+            </p>
+          </div>
+
+          {/* View Tracking & Verification */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h5 className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+              <ShieldCheckIcon className="h-4 w-4 mr-2 text-green-600" />
+              View Tracking & Verification
+            </h5>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <div className="flex items-start space-x-2">
+                <EyeIcon className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
+                <div>
+                  <span className="text-xs font-medium text-gray-700 block">Organic Views Only</span>
+                  <p className="text-xs text-gray-600">
+                    Real people willingly visiting your URL - <strong>not from ads</strong>
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-2">
+                <UserIcon className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
+                <div>
+                  <span className="text-xs font-medium text-gray-700 block">Anti-Fraud Protection</span>
+                  <p className="text-xs text-gray-600">
+                    IP & MAC tracking ensures <strong>unique users only</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-2 bg-green-100 rounded border border-green-300">
+              <p className="text-xs text-green-800">
+                <strong>🛡️ Quality Guarantee:</strong> Advanced bot detection blocks automated traffic. 
+                Only genuine human engagement from unique visitors is counted and charged.
               </p>
             </div>
           </div>

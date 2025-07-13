@@ -22,16 +22,18 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
     if (formData.type && formData.type !== CampaignType.VISIBILITY) {
       updateFormData({ isPublic: false });
     }
-  }, [formData.type, updateFormData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.type]); // updateFormData is memoized with useCallback, safe to omit
 
   // Set default start date to today if not already set
   useEffect(() => {
     if (!formData.startDate) {
       updateFormData({ startDate: new Date() });
     }
-  }, [formData.startDate, updateFormData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.startDate]); // updateFormData is memoized with useCallback, safe to omit
 
-  const handleInputChange = (field: keyof CampaignWizardFormData, value: string | number | Date | null | string[]) => {
+  const handleInputChange = (field: keyof CampaignWizardFormData, value: string | number | Date | null | string[] | File) => {
     updateFormData({ [field]: value });
     
     // Clear error when user starts typing
@@ -168,6 +170,7 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    console.log('File selected:', file);
     if (!file) return;
 
     // Validate file size (10MB limit)
@@ -185,11 +188,14 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
 
     try {
       // Store the file directly
+      console.log('Setting file in form data:', file);
       handleInputChange('file', file);
       
       // Clear any previous errors
       setErrors(prev => ({ ...prev, file: '' }));
-    } catch {
+      console.log('File set successfully in form data');
+    } catch (error) {
+      console.error('Error setting file:', error);
       setErrors(prev => ({ ...prev, file: 'Failed to upload file' }));
     }
   };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Campaign } from '@/app/interfaces/campaign';
 import { CampaignType } from '@/app/enums/campaign-type';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
@@ -115,6 +115,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<CampaignWizardFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadStep, setUploadStep] = useState<'idle' | 'uploading' | 'creating'>('idle');
 
   const steps = [
     {
@@ -146,9 +147,12 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
   const currentStepData = steps[currentStep];
   const StepComponent = currentStepData.component;
 
-  const updateFormData = (updates: Partial<CampaignWizardFormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
-  };
+  const updateFormData = useCallback((updates: Partial<CampaignWizardFormData>) => {
+    setFormData(prev => {
+      const newData = { ...prev, ...updates };
+      return newData;
+    });
+  }, []);
 
   const canProceed = () => {
     switch (currentStep) {
@@ -245,17 +249,19 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setUploadStep('creating');
+
+    // Debug: Log the entire form data at submission
 
     try {
-      // Create the campaign object based on the selected type
-      let campaignData: Campaign;
+      // Step 1: Create the campaign object first without media
+      let campaignData: Omit<Campaign, 'file'> & { mediaUrl?: string };
 
       const baseData = {
         title: formData.title,
         description: formData.description,
         advertiserTypes: formData.advertiserTypes,
         isPublic: formData.type === CampaignType.VISIBILITY ? formData.isPublic : false,
-        file: formData.file!,
         requirements: formData.requirements,
         targetAudience: formData.targetAudience,
         preferredPlatforms: formData.preferredPlatforms,
@@ -322,14 +328,37 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           throw new Error('Invalid campaign type');
       }
 
-      // Print the payload being sent
-      console.log('Submitting campaignData:', campaignData);
-
-      // Call the advertiser service to create the campaign
+      // Step 2: Call the advertiser service to create the campaign
       const result = await advertiserService.createCampaign(campaignData);
+      
 
       if (result.success && result.campaign) {
-        onComplete(result.campaign);
+        let finalCampaign = result.campaign;
+      
+        // Step 3: Upload the file after campaign creation if there is one
+        if (formData.file && result.campaign.id) {
+          setUploadStep('uploading');
+          const uploadResult = await advertiserService.uploadCampaignFile(
+            formData.file,
+            result.campaign.id
+          );
+          if (!uploadResult.success) {
+            console.warn('Campaign created but file upload failed:', uploadResult.message);
+            // Campaign was created successfully, but file upload failed
+            // You might want to show a warning to the user here
+          } else {
+            // Use the updated campaign returned from the server
+            if (uploadResult.campaign) {
+              finalCampaign = uploadResult.campaign;
+            }
+          }
+        } else {
+          console.log('Skipping file upload - conditions not met');
+          console.log('Missing file:', !formData.file);
+          console.log('Missing campaign ID:', !result.campaign.id);
+        }
+        
+        onComplete(finalCampaign);
       } else {
         throw new Error(result.message || 'Failed to create campaign');
       }
@@ -339,6 +368,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
       // You might want to show an error message to the user here
     } finally {
       setIsSubmitting(false);
+      setUploadStep('idle');
     }
   };
 
@@ -406,7 +436,8 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
               {isSubmitting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Creating...
+                  {uploadStep === 'creating' ? 'Creating Campaign...' : 
+                   uploadStep === 'uploading' ? 'Uploading File...' : 'Creating...'}
                 </>
               ) : (
                 'Create Campaign'

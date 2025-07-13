@@ -14,7 +14,7 @@ export interface BaseCampaign {
   description: string;
   advertiserTypes?: AdvertiserType[];
   isPublic: boolean;
-  file: File; // Now required - file to be uploaded to server and converted to mediaUrl
+  mediaUrl?: string; // URL to uploaded media file
 
   requirements?: string[];
   targetAudience?: string;
