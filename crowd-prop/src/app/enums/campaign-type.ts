@@ -34,3 +34,10 @@ export enum MeetingPlan {
   BIWEEKLY = "BIWEEKLY",
   CUSTOM = "CUSTOM",
 }
+
+export enum PromoterCampaignStatus {
+  ONGOING = "ONGOING",
+  AWAITING_REVIEW = "AWAITING_REVIEW",
+  COMPLETED = "COMPLETED",
+  PAUSED = "PAUSED",
+}

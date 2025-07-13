@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { AdvertiserCampaign, PromoterApplication } from '@/app/interfaces/advertiser-campaign';
-import { CampaignType } from '@/app/enums/campaign-type';
-import { CampaignStatus } from '@/app/enums/campaign-type';
+import { CampaignAdvertiser, PromoterApplicationInfo } from '@/app/interfaces/advertiser-campaign';
+import { CampaignType, PromoterCampaignStatus, CampaignStatus } from '@/app/enums/campaign-type';
 import { ADVERTISER_CAMPAIGN_MOCKS } from '@/app/mocks/advertiser-campaign-mock';
 import ApplicationReviewModal from './ApplicationReviewModal';
 import { 
@@ -23,14 +22,14 @@ import {
 } from 'lucide-react';
 
 interface CampaignListProps {
-  campaigns: AdvertiserCampaign[];
+  campaigns: CampaignAdvertiser[];
 }
 
 export default function CampaignList({ campaigns }: CampaignListProps) {
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
-    campaign: AdvertiserCampaign | null;
-    applications: PromoterApplication[];
+    campaign: CampaignAdvertiser | null;
+    applications: PromoterApplicationInfo[];
   }>({
     isOpen: false,
     campaign: null,
@@ -111,7 +110,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     }
   };
 
-  const handleViewApplications = (campaign: AdvertiserCampaign) => {
+  const handleViewApplications = (campaign: CampaignAdvertiser) => {
     const applications = ADVERTISER_CAMPAIGN_MOCKS.helpers.getApplicationsByCampaignId(campaign.id);
     setModalState({
       isOpen: true,
@@ -132,7 +131,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     // Remove the application from the modal
     setModalState(prev => ({
       ...prev,
-      applications: prev.applications.filter(app => app.id !== applicationId)
+      applications: prev.applications.filter(app => app.promoter.id !== applicationId)
     }));
   };
 
@@ -144,18 +143,18 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     });
   };
 
-  const handleSendMessage = (campaign: AdvertiserCampaign) => {
+  const handleSendMessage = (campaign: CampaignAdvertiser) => {
     console.log('Send message for campaign:', campaign.id);
     // TODO: Open message modal or navigate to messages
   };
 
-  const handleJoinDiscord = (campaign: AdvertiserCampaign) => {
-    if (campaign.discordInviteLink) {
-      window.open(campaign.discordInviteLink, '_blank');
+  const handleJoinDiscord = (campaign: CampaignAdvertiser) => {
+    if (campaign.campaign.discordInviteLink) {
+      window.open(campaign.campaign.discordInviteLink, '_blank');
     }
   };
 
-  const handleViewPromoters = (campaign: AdvertiserCampaign) => {
+  const handleViewPromoters = (campaign: CampaignAdvertiser) => {
     console.log('View promoters for campaign:', campaign.id);
     // TODO: Open modal with promoters list
   };
@@ -182,7 +181,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       <div className="divide-y divide-gray-100">
         {campaigns.map((campaign) => {
           const Icon = getCampaignIcon(campaign.type);
-          const progressPercentage = getProgressPercentage(campaign.spentAmount, campaign.totalBudget);
+          const progressPercentage = getProgressPercentage(campaign.campaign.spentBudget, campaign.campaign.budgetHeld);
           
           return (
             <div
@@ -220,13 +219,13 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       <div>
                         <p className="text-xs text-gray-500">Budget</p>
                         <p className="text-sm font-medium text-gray-900">
-                          {formatCurrency(campaign.totalBudget)}
+                          {formatCurrency(campaign.campaign.budgetHeld)}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">Spent</p>
                         <p className="text-sm font-medium text-gray-900">
-                          {formatCurrency(campaign.spentAmount)}
+                          {formatCurrency(campaign.campaign.spentBudget)}
                         </p>
                       </div>
                       
@@ -235,50 +234,54 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         <div>
                           <p className="text-xs text-gray-500">Views</p>
                           <p className="text-sm font-medium text-gray-900">
-                            {formatNumber(campaign.currentViews || 0)}
+                            {formatNumber(campaign.campaign.type === CampaignType.VISIBILITY ? campaign.campaign.currentViews : 0)}
                           </p>
                         </div>
                       ) : (
                         // Non-visibility campaigns logic
                         (() => {
                           // For private campaigns (consultant, salesman, seller), don't show promoter count
-                          if (!campaign.isPublic) {
+                          if (!campaign.campaign.isPublic) {
                             // For private campaigns with ongoing promoter, show campaign-specific metric
-                            if (campaign.ongoingPromoter) {
-                              if (campaign.type === CampaignType.CONSULTANT) {
-                                return (
-                                  <div>
-                                    <p className="text-xs text-gray-500">Meetings</p>
-                                    <p className="text-sm font-medium text-gray-900">
-                                      {campaign.ongoingPromoter.meetingsCompleted || 0}/{campaign.ongoingPromoter.totalMeetings || 0}
-                                    </p>
-                                  </div>
-                                );
-                              } else if (campaign.type === CampaignType.SALESMAN) {
-                                return (
-                                  <div>
-                                    <p className="text-xs text-gray-500">Sales</p>
-                                    <p className="text-sm font-medium text-gray-900">
-                                      {campaign.ongoingPromoter.salesGenerated || 0}
-                                    </p>
-                                  </div>
-                                );
-                              } else if (campaign.type === CampaignType.SELLER) {
-                                return (
-                                  <div>
-                                    <p className="text-xs text-gray-500">Progress</p>
-                                    <p className="text-sm font-medium text-gray-900">
-                                      {campaign.ongoingPromoter.deliverableProgress || '0/0'}
-                                    </p>
-                                  </div>
-                                );
+                            if (campaign.promoters && campaign.promoters.length > 0) {
+                              const ongoingPromoter = campaign.promoters.find(p => p.status === PromoterCampaignStatus.ONGOING);
+                              if (ongoingPromoter) {
+                                if (campaign.type === CampaignType.CONSULTANT) {
+                                  return (
+                                    <div>
+                                      <p className="text-xs text-gray-500">Meetings</p>
+                                      <p className="text-sm font-medium text-gray-900">
+                                        {ongoingPromoter.numberMeetingsDone || 0}/8
+                                      </p>
+                                    </div>
+                                  );
+                                } else if (campaign.type === CampaignType.SALESMAN) {
+                                  return (
+                                    <div>
+                                      <p className="text-xs text-gray-500">Sales</p>
+                                      <p className="text-sm font-medium text-gray-900">
+                                        {campaign.performance.totalSalesMade || 0}
+                                      </p>
+                                    </div>
+                                  );
+                                } else if (campaign.type === CampaignType.SELLER) {
+                                  return (
+                                    <div>
+                                      <p className="text-xs text-gray-500">Progress</p>
+                                      <p className="text-sm font-medium text-gray-900">
+                                        In Progress
+                                      </p>
+                                    </div>
+                                  );
+                                }
                               }
                             }
                             // For private campaigns without ongoing promoter, return empty div
                             return <div></div>;
                           } else {
                             // For public campaigns, show promoters
-                            if (campaign.totalPromoters > 0) {
+                            const totalPromoters = campaign.promoters?.length || 0;
+                            if (totalPromoters > 0) {
                               // Make it clickable if there are promoters
                               return (
                                 <div>
@@ -287,7 +290,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     onClick={() => handleViewPromoters(campaign)}
                                     className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                                   >
-                                    {campaign.totalPromoters}
+                                    {totalPromoters}
                                   </button>
                                 </div>
                               );
@@ -297,7 +300,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                 <div>
                                   <p className="text-xs text-gray-500">Promoters</p>
                                   <p className="text-sm font-medium text-gray-900">
-                                    {campaign.totalPromoters}
+                                    {totalPromoters}
                                   </p>
                                 </div>
                               );
@@ -309,7 +312,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       <div>
                         <p className="text-xs text-gray-500">Deadline</p>
                         <p className="text-sm font-medium text-gray-900">
-                          {formatDate(campaign.deadline)}
+                          {formatDate(campaign.campaign.deadline)}
                         </p>
                       </div>
                     </div>
@@ -328,19 +331,21 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                             <div className="bg-white rounded-md p-3">
                               <p className="text-xs text-gray-500 mb-1">Cost Per View</p>
                               <p className="text-lg font-semibold text-gray-900">
-                                ${campaign.cpv?.toFixed(3) || '0.000'}
+                                ${campaign.campaign.type === CampaignType.VISIBILITY ? campaign.campaign.cpv.toFixed(3) : '0.000'}
                               </p>
                             </div>
                             <div className="bg-white rounded-md p-3">
                               <p className="text-xs text-gray-500 mb-1">Target Views</p>
                               <p className="text-lg font-semibold text-gray-900">
-                                {campaign.maxViews ? formatNumber(campaign.maxViews) : 'Unlimited'}
+                                {campaign.campaign.type === CampaignType.VISIBILITY && campaign.campaign.maxViews 
+                                  ? formatNumber(campaign.campaign.maxViews) 
+                                  : 'Unlimited'}
                               </p>
                             </div>
                           </div>
                           
                           {/* Promoters section */}
-                          {campaign.totalPromoters > 0 && (
+                          {campaign.promoters && campaign.promoters.length > 0 && (
                             <div className="bg-white rounded-md p-3 border border-blue-200">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
@@ -350,7 +355,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                       See who&apos;s promoting your campaign
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                      {campaign.totalPromoters} active promoter{campaign.totalPromoters !== 1 ? 's' : ''}
+                                      {campaign.promoters.length} active promoter{campaign.promoters.length !== 1 ? 's' : ''}
                                     </p>
                                   </div>
                                 </div>
@@ -368,11 +373,13 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                     )}
 
                     {/* Private Campaign State Management */}
-                    {!campaign.isPublic && (
+                    {!campaign.campaign.isPublic && (
                       <div className="mb-4 pt-2 border-t border-gray-100">
                         {(() => {
+                          const ongoingPromoter = campaign.promoters?.find(p => p.status === PromoterCampaignStatus.ONGOING);
+                          const pendingApplications = campaign.promoters?.filter(p => p.status === PromoterCampaignStatus.AWAITING_REVIEW) || [];
                           
-                          if (campaign.ongoingPromoter) {
+                          if (ongoingPromoter) {
                             // Show selected promoter info with campaign-specific details
                             return (
                               <div className="bg-blue-50 rounded-lg p-4">
@@ -384,14 +391,14 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     <div className="flex-1">
                                       <div className="flex items-center space-x-2 mb-1">
                                         <p className="text-sm font-medium text-gray-900">
-                                          {campaign.ongoingPromoter.name}
+                                          {ongoingPromoter.promoter.name}
                                         </p>
                                         <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
                                           Active
                                         </span>
                                       </div>
                                       <p className="text-xs text-gray-600 mb-2">
-                                        Joined {formatDate(campaign.ongoingPromoter.joinedAt)}
+                                        Joined {ongoingPromoter.joinedAt ? formatDate(ongoingPromoter.joinedAt) : 'Recently'}
                                       </p>
                                       
                                       {/* Campaign-specific information */}
@@ -401,13 +408,13 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                             <div>
                                               <span className="text-gray-500">Meetings:</span>
                                               <span className="ml-1 font-medium">
-                                                {campaign.ongoingPromoter.meetingsCompleted}/{campaign.ongoingPromoter.totalMeetings}
+                                                {ongoingPromoter.numberMeetingsDone || 0}/8
                                               </span>
                                             </div>
                                             <div>
                                               <span className="text-gray-500">Next:</span>
                                               <span className="ml-1 font-medium">
-                                                {campaign.ongoingPromoter.nextMeetingDate ? formatDate(campaign.ongoingPromoter.nextMeetingDate) : 'TBD'}
+                                                TBD
                                               </span>
                                             </div>
                                           </div>
@@ -420,13 +427,13 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                             <div>
                                               <span className="text-gray-500">Sales:</span>
                                               <span className="ml-1 font-medium">
-                                                {campaign.ongoingPromoter.salesGenerated || 0}
+                                                {campaign.performance.totalSalesMade || 0}
                                               </span>
                                             </div>
                                             <div>
                                               <span className="text-gray-500">Commission:</span>
                                               <span className="ml-1 font-medium">
-                                                ${campaign.ongoingPromoter.totalCommission?.toFixed(2) || '0.00'}
+                                                ${ongoingPromoter.earnings || 0}
                                               </span>
                                             </div>
                                           </div>
@@ -438,18 +445,8 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                           <div className="text-xs">
                                             <div className="mb-1">
                                               <span className="text-gray-500">Progress:</span>
-                                              <span className="ml-1 font-medium">
-                                                {campaign.ongoingPromoter.deliverableProgress}
-                                              </span>
+                                              <span className="ml-1 font-medium">In Progress</span>
                                             </div>
-                                            {campaign.ongoingPromoter.deliverables && (
-                                              <div>
-                                                <span className="text-gray-500">Deliverables:</span>
-                                                <span className="ml-1">
-                                                  {campaign.ongoingPromoter.deliverables.join(', ')}
-                                                </span>
-                                              </div>
-                                            )}
                                           </div>
                                         </div>
                                       )}
@@ -464,7 +461,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                       <MessageCircle className="h-3 w-3" />
                                       <span>Message</span>
                                     </button>
-                                    {campaign.discordInviteLink && (
+                                    {campaign.campaign.discordInviteLink && (
                                       <button
                                         onClick={() => handleJoinDiscord(campaign)}
                                         className="flex items-center space-x-1 px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-xs"
@@ -477,7 +474,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                 </div>
                               </div>
                             );
-                          } else if (campaign.pendingApplicationsCount && campaign.pendingApplicationsCount > 0) {
+                          } else if (pendingApplications.length > 0) {
                             // Show applications to review
                             return (
                               <div className="bg-amber-50 rounded-lg p-4">
@@ -488,7 +485,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     </div>
                                     <div>
                                       <p className="text-sm font-medium text-gray-900">
-                                        {campaign.pendingApplicationsCount} Application{campaign.pendingApplicationsCount !== 1 ? 's' : ''} Pending
+                                        {pendingApplications.length} Application{pendingApplications.length !== 1 ? 's' : ''} Pending
                                       </p>
                                       <p className="text-xs text-gray-600">
                                         Review and select a promoter for this campaign
@@ -555,9 +552,9 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       <div className="flex items-center space-x-4">
                         <span className="flex items-center space-x-1">
                           <Calendar className="h-3 w-3" />
-                          <span>Created {formatDate(campaign.createdAt)}</span>
+                          <span>Created {formatDate(campaign.campaign.createdAt)}</span>
                         </span>
-                        {campaign.isPublic && (
+                        {campaign.campaign.isPublic && (
                           <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
                             Public
                           </span>

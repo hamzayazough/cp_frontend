@@ -3,11 +3,11 @@ import {
   Deliverable,
   MeetingPlan,
   SalesTrackingMethod,
-  PromoterCampaignStatus,
 } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
 import { CampaignStatus } from "@/app/enums/campaign-type";
 import { Promoter } from "../user";
+import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 export enum AdvertiserCampaignSortField {
   CREATED_AT = "createdAt",

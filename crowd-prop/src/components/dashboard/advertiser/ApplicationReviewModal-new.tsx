@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { PromoterApplicationInfo } from '@/app/interfaces/advertiser-campaign';
 import { 
   X, 
   Star, 
   Clock, 
+  DollarSign, 
   Users, 
   ExternalLink,
   Check,
@@ -28,7 +30,13 @@ export default function ApplicationReviewModal({
   onAcceptApplication,
   onRejectApplication
 }: ApplicationReviewModalProps) {
+  const [selectedApplication, setSelectedApplication] = useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('en-US').format(num);
+  };
 
   const formatDate = (date: string | Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -91,7 +99,11 @@ export default function ApplicationReviewModal({
               {applications.map((app) => (
                 <div
                   key={app.promoter.id}
-                  className="border border-gray-200 rounded-xl p-6 transition-all hover:shadow-md hover:border-gray-300"
+                  className={`border rounded-xl p-6 transition-all hover:shadow-md ${
+                    selectedApplication === app.promoter.id 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
                 >
                   <div className="flex items-start space-x-4">
                     {/* Avatar */}

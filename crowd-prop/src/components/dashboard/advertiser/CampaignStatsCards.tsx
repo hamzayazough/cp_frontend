@@ -8,7 +8,8 @@ interface CampaignStatsCardsProps {
 }
 
 export default function CampaignStatsCards({ summary }: CampaignStatsCardsProps) {
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | undefined) => {
+    if (amount === undefined || amount === null || isNaN(amount)) return '$0';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -17,22 +18,19 @@ export default function CampaignStatsCards({ summary }: CampaignStatsCardsProps)
     }).format(amount);
   };
 
-  const formatNumber = (num: number) => {
+  const formatNumber = (num: number | undefined) => {
+    if (num === undefined || num === null || isNaN(num)) return '0';
     return new Intl.NumberFormat('en-US').format(num);
-  };
-
-  const formatPercentage = (num: number) => {
-    return `${num.toFixed(1)}%`;
   };
 
   const statsCards = [
     {
       title: 'Total Campaigns',
-      value: summary.totalCampaigns,
+      value: summary.totalCampaigns || 0,
       change: '+12%',
       changeType: 'positive' as const,
       icon: Target,
-      description: `${summary.activeCampaigns} active, ${summary.draftCampaigns} draft`,
+      description: `${summary.activeCampaigns || 0} active, ${summary.draftCampaigns || 0} draft`,
     },
     {
       title: 'Monthly Spend',
@@ -48,15 +46,15 @@ export default function CampaignStatsCards({ summary }: CampaignStatsCardsProps)
       change: '+15.3%',
       changeType: 'positive' as const,
       icon: BarChart3,
-      description: `${formatNumber(summary.totalClicks)} clicks`,
+      description: `${summary.totalSales || 0} conversions`,
     },
     {
-      title: 'Avg. CTR',
-      value: formatPercentage(summary.averageCTR),
-      change: '-2.1%',
-      changeType: 'negative' as const,
+      title: 'Total Sales',
+      value: formatNumber(summary.totalSales),
+      change: '+18.5%',
+      changeType: 'positive' as const,
       icon: Users,
-      description: `${summary.totalSales} conversions`,
+      description: `${formatCurrency(summary.totalRevenue)} revenue`,
     },
   ];
 
