@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { CampaignAdvertiser, PromoterApplicationInfo } from '@/app/interfaces/campaign/advertiser-campaign';
 import { CampaignType, CampaignStatus } from '@/app/enums/campaign-type';
 import { ADVERTISER_CAMPAIGN_MOCKS } from '@/app/mocks/advertiser-campaign-mock';
+import { useAdvertiserCampaigns } from '@/hooks/useAdvertiserCampaigns';
 import CreateCampaignWizard from './CreateCampaignWizard';
 import ApplicationReviewModal from './ApplicationReviewModal';
 
@@ -22,9 +23,12 @@ interface AdvertiserCampaignDetailsContentProps {
 
 export default function AdvertiserCampaignDetailsContent({ campaignId }: AdvertiserCampaignDetailsContentProps) {
   const router = useRouter();
+  const { getCampaignDetails, getCampaignApplications, reviewApplication } = useAdvertiserCampaigns();
+  
   const [isCreateMode, setIsCreateMode] = useState(false);
   const [campaign, setCampaign] = useState<CampaignAdvertiser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
@@ -45,15 +49,25 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
     }
 
     // Load campaign data
-    const loadCampaign = () => {
-      // In a real app, this would be an API call
-      const foundCampaign = ADVERTISER_CAMPAIGN_MOCKS.campaigns.find(c => c.id === campaignId);
-      setCampaign(foundCampaign || null);
-      setLoading(false);
+    const loadCampaign = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const campaignData = await getCampaignDetails(campaignId);
+        setCampaign(campaignData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load campaign');
+        console.error('Error loading campaign:', err);
+        // Fallback to mock data for now
+        const foundCampaign = ADVERTISER_CAMPAIGN_MOCKS.campaigns.find(c => c.id === campaignId);
+        setCampaign(foundCampaign || null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadCampaign();
-  }, [campaignId]);
+  }, [campaignId, getCampaignDetails]);
 
   const getStatusColor = (status: CampaignStatus) => {
     switch (status) {
@@ -83,12 +97,23 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
     }
   };
 
-  const handleViewApplications = (campaign: CampaignAdvertiser) => {
-    setModalState({
-      isOpen: true,
-      campaign,
-      applications: campaign.promoters || [],
-    });
+  const handleViewApplications = async (campaign: CampaignAdvertiser) => {
+    try {
+      const applications = await getCampaignApplications(campaign.id);
+      setModalState({
+        isOpen: true,
+        campaign,
+        applications,
+      });
+    } catch (error) {
+      console.error('Error loading applications:', error);
+      // Fallback to campaign promoters data
+      setModalState({
+        isOpen: true,
+        campaign,
+        applications: campaign.promoters || [],
+      });
+    }
   };
 
   const handleCloseModal = () => {
@@ -99,14 +124,58 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
     });
   };
 
-  const handleAcceptApplication = (applicationId: string) => {
-    // TODO: Implement accept application logic
-    console.log('Accept application:', applicationId);
+  const handleAcceptApplication = async (applicationId: string) => {
+    if (!modalState.campaign) return;
+    
+    try {
+      const result = await reviewApplication({
+        campaignId: modalState.campaign.id,
+        applicationId,
+        action: 'accept',
+      });
+      
+      if (result.success) {
+        // Refresh applications
+        const updatedApplications = await getCampaignApplications(modalState.campaign.id);
+        setModalState(prev => ({
+          ...prev,
+          applications: updatedApplications,
+        }));
+        
+        // Refresh campaign data
+        const updatedCampaign = await getCampaignDetails(modalState.campaign.id);
+        setCampaign(updatedCampaign);
+      }
+    } catch (error) {
+      console.error('Error accepting application:', error);
+    }
   };
 
-  const handleRejectApplication = (applicationId: string) => {
-    // TODO: Implement reject application logic
-    console.log('Reject application:', applicationId);
+  const handleRejectApplication = async (applicationId: string) => {
+    if (!modalState.campaign) return;
+    
+    try {
+      const result = await reviewApplication({
+        campaignId: modalState.campaign.id,
+        applicationId,
+        action: 'reject',
+      });
+      
+      if (result.success) {
+        // Refresh applications
+        const updatedApplications = await getCampaignApplications(modalState.campaign.id);
+        setModalState(prev => ({
+          ...prev,
+          applications: updatedApplications,
+        }));
+        
+        // Refresh campaign data
+        const updatedCampaign = await getCampaignDetails(modalState.campaign.id);
+        setCampaign(updatedCampaign);
+      }
+    } catch (error) {
+      console.error('Error rejecting application:', error);
+    }
   };
 
   const handleShareClick = () => {

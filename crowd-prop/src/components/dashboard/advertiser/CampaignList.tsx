@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { CampaignAdvertiser, PromoterApplicationInfo } from '@/app/interfaces/campaign/advertiser-campaign';
 import { CampaignType, PromoterCampaignStatus, CampaignStatus } from '@/app/enums/campaign-type';
 import { ADVERTISER_CAMPAIGN_MOCKS } from '@/app/mocks/advertiser-campaign-mock';
+import { useAdvertiserCampaigns } from '@/hooks/useAdvertiserCampaigns';
 import ApplicationReviewModal from './ApplicationReviewModal';
 import { 
   Eye, 
@@ -28,6 +29,8 @@ interface CampaignListProps {
 
 export default function CampaignList({ campaigns }: CampaignListProps) {
   const router = useRouter();
+  const { getCampaignApplications, reviewApplication } = useAdvertiserCampaigns();
+  
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     campaign: CampaignAdvertiser | null;
@@ -108,29 +111,77 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     }
   };
 
-  const handleViewApplications = (campaign: CampaignAdvertiser) => {
-    const applications = ADVERTISER_CAMPAIGN_MOCKS.helpers.getApplicationsByCampaignId(campaign.id);
-    setModalState({
-      isOpen: true,
-      campaign,
-      applications,
-    });
+  const handleViewApplications = async (campaign: CampaignAdvertiser) => {
+    try {
+      const applications = await getCampaignApplications(campaign.id);
+      setModalState({
+        isOpen: true,
+        campaign,
+        applications,
+      });
+    } catch (error) {
+      console.error('Error loading applications:', error);
+      // Fallback to mock data if API fails for now
+      const applications = ADVERTISER_CAMPAIGN_MOCKS.helpers.getApplicationsByCampaignId(campaign.id);
+      setModalState({
+        isOpen: true,
+        campaign,
+        applications,
+      });
+    }
   };
 
-  const handleAcceptApplication = (applicationId: string) => {
-    console.log('Accepting application:', applicationId);
-    // TODO: Implement accept logic
-    setModalState(prev => ({ ...prev, isOpen: false }));
+  const handleAcceptApplication = async (applicationId: string) => {
+    if (!modalState.campaign) return;
+    
+    try {
+      const result = await reviewApplication({
+        campaignId: modalState.campaign.id,
+        applicationId,
+        action: 'accept',
+      });
+      
+      if (result.success) {
+        // Refresh applications
+        const updatedApplications = await getCampaignApplications(modalState.campaign.id);
+        setModalState(prev => ({
+          ...prev,
+          applications: updatedApplications,
+        }));
+      }
+    } catch (error) {
+      console.error('Error accepting application:', error);
+      // For now, just close the modal on error
+      setModalState(prev => ({ ...prev, isOpen: false }));
+    }
   };
 
-  const handleRejectApplication = (applicationId: string) => {
-    console.log('Rejecting application:', applicationId);
-    // TODO: Implement reject logic
-    // Remove the application from the modal
-    setModalState(prev => ({
-      ...prev,
-      applications: prev.applications.filter(app => app.promoter.id !== applicationId)
-    }));
+  const handleRejectApplication = async (applicationId: string) => {
+    if (!modalState.campaign) return;
+    
+    try {
+      const result = await reviewApplication({
+        campaignId: modalState.campaign.id,
+        applicationId,
+        action: 'reject',
+      });
+      
+      if (result.success) {
+        // Refresh applications
+        const updatedApplications = await getCampaignApplications(modalState.campaign.id);
+        setModalState(prev => ({
+          ...prev,
+          applications: updatedApplications,
+        }));
+      }
+    } catch (error) {
+      console.error('Error rejecting application:', error);
+      // Fallback to removing from local state
+      setModalState(prev => ({
+        ...prev,
+        applications: prev.applications.filter(app => app.promoter.id !== applicationId)
+      }));
+    }
   };
 
   const closeModal = () => {

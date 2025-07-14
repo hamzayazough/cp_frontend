@@ -4,7 +4,7 @@ import { AdvertiserDashboardSummary } from '@/app/interfaces/campaign/advertiser
 import { TrendingUp, TrendingDown, DollarSign, Target, Users, BarChart3 } from 'lucide-react';
 
 interface CampaignStatsCardsProps {
-  summary: AdvertiserDashboardSummary;
+  summary: AdvertiserDashboardSummary | null;
 }
 
 export default function CampaignStatsCards({ summary }: CampaignStatsCardsProps) {
@@ -22,6 +22,23 @@ export default function CampaignStatsCards({ summary }: CampaignStatsCardsProps)
     if (num === undefined || num === null || isNaN(num)) return '0';
     return new Intl.NumberFormat('en-US').format(num);
   };
+
+  // Handle null summary
+  if (!summary) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-full"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const statsCards = [
     {

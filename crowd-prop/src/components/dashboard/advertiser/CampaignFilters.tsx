@@ -20,6 +20,8 @@ interface CampaignFiltersProps {
   onClearFilters: () => void;
   resultsCount: number;
   totalCount: number;
+  availableStatuses?: CampaignStatus[];
+  availableTypes?: CampaignType[];
 }
 
 export default function CampaignFilters({
@@ -36,6 +38,8 @@ export default function CampaignFilters({
   onClearFilters,
   resultsCount,
   totalCount,
+  availableStatuses = MOCK_CAMPAIGN_FILTERS.statuses,
+  availableTypes = MOCK_CAMPAIGN_FILTERS.types,
 }: CampaignFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
 
@@ -169,7 +173,7 @@ export default function CampaignFilters({
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">Status</label>
             <div className="flex flex-wrap gap-2">
-              {MOCK_CAMPAIGN_FILTERS.statuses.map((status) => (
+              {availableStatuses.map((status) => (
                 <button
                   key={status}
                   onClick={() => handleStatusToggle(status)}
@@ -189,7 +193,7 @@ export default function CampaignFilters({
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">Campaign Type</label>
             <div className="flex flex-wrap gap-2">
-              {MOCK_CAMPAIGN_FILTERS.types.map((type) => (
+              {availableTypes.map((type) => (
                 <button
                   key={type}
                   onClick={() => handleTypeToggle(type)}
