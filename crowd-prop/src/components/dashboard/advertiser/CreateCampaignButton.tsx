@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
+import routes from "@/lib/router";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CreateCampaignButton() {
+  const router = useRouter();
+
   const handleCreateCampaign = () => {
-    // TODO: Navigate to campaign creation page or open modal
-    console.log('Create new campaign');
+    router.push(routes.dashboardCampaigns + "/create");
   };
 
   return (

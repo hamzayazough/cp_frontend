@@ -252,7 +252,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
           const Icon = getCampaignIcon(campaign.type);
           const progressPercentage = getProgressPercentage(
             campaign.campaign.spentBudget,
-            campaign.campaign.budgetHeld
+            campaign.campaign.budgetAllocated
           );
 
           return (
@@ -296,7 +296,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       <div>
                         <p className="text-xs text-gray-500">Budget</p>
                         <p className="text-sm font-medium text-gray-900">
-                          {formatCurrency(campaign.campaign.budgetHeld)}
+                          {formatCurrency(campaign.campaign.budgetAllocated)}
                         </p>
                       </div>
                       <div>

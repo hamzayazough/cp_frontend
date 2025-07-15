@@ -47,6 +47,7 @@ export interface AdvertiserBaseCampaignDetails {
   deadline: string;
   startDate: string;
   isPublic: boolean; // Indicates if the campaign is visible to all promoters or if the advertiser has selected a specific promoter
+  budgetAllocated: number;
 
   discordInviteLink: string; // Discord invite link for the campaign.
 }

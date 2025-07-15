@@ -29,6 +29,7 @@ export interface BaseCampaign {
   updatedAt?: Date;
   advertiserId?: string;
   discordInviteLink?: string;
+  budgetAllocated?: number;
 }
 
 export interface VisibilityCampaign extends BaseCampaign {
