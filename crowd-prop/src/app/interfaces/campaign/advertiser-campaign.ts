@@ -180,11 +180,16 @@ export interface AdvertiserDashboardSummary {
   totalAllocated: number;
   remainingBudget: number;
   monthlySpend: number;
-
   // Performance metrics
   totalViews: number;
   totalSales: number;
   totalRevenue: number;
+
+  // Percentage changes for stats cards
+  campaignsPercentageChange?: number;
+  spendPercentageChange?: number;
+  viewsPercentageChange?: number;
+  salesPercentageChange?: number;
 
   // Recent activity
   recentApplications: PromoterApplicationInfo[];
@@ -214,6 +219,6 @@ export interface FundCampaignRequest {
 
 export interface ReviewPromoterApplicationRequest {
   campaignId: string;
-  promoterId: string;
-  status: PromoterCampaignStatus;
+  applicationId: string;
+  action: "accept" | "reject";
 }

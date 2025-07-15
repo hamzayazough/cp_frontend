@@ -341,6 +341,11 @@ export const MOCK_ADVERTISER_DASHBOARD_SUMMARY: AdvertiserDashboardSummary = {
   totalViews: 45230,
   totalSales: 0,
   totalRevenue: 0,
+  // Percentage changes for stats cards
+  campaignsPercentageChange: 12.0,
+  spendPercentageChange: 8.2,
+  viewsPercentageChange: 15.3,
+  salesPercentageChange: 18.5,
   recentApplications: MOCK_PROMOTER_APPLICATIONS,
   recentCompletions: [],
   topPerformingCampaigns: [

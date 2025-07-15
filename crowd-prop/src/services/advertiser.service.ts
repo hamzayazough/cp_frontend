@@ -4,10 +4,6 @@ import {
   GetAdvertiserDashboardRequest,
   GetAdvertiserDashboardResponse,
   GetAdvertiserStatsResponse,
-  GetAdvertiserCampaignsResponse,
-  GetAdvertiserTransactionsResponse,
-  GetAdvertiserMessagesResponse,
-  GetAdvertiserWalletResponse,
 } from "@/app/interfaces/dashboard/advertiser-dashboard";
 import { Campaign } from "@/app/interfaces/campaign/campaign";
 import {
@@ -18,7 +14,6 @@ import {
   PromoterApplicationInfo,
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
-import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 
 interface CreateCampaignResponse {
@@ -224,19 +219,19 @@ class AdvertiserService {
       );
     }
   }
-
   async deleteCampaign(
     campaignId: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await httpService.delete(
-        `${this.baseUrl}/campaigns/${campaignId}`,
-        true
-      );
-
+      const response = await httpService.delete<{
+        success: boolean;
+        message: string;
+      }>(`${this.baseUrl}/campaigns/${campaignId}`, true);
       return {
         success: true,
-        message: response.message || "Campaign deleted successfully",
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign deleted successfully",
       };
     } catch (error) {
       return {
@@ -246,21 +241,22 @@ class AdvertiserService {
       };
     }
   }
-
   async duplicateCampaign(
     campaignId: string
   ): Promise<{ success: boolean; message: string; campaign?: Campaign }> {
     try {
-      const response = await httpService.post(
-        `${this.baseUrl}/campaigns/${campaignId}/duplicate`,
-        {},
-        true
-      );
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+        campaign?: Campaign;
+      }>(`${this.baseUrl}/campaigns/${campaignId}/duplicate`, {}, true);
 
       return {
         success: true,
-        message: response.message || "Campaign duplicated successfully",
-        campaign: response.data?.campaign,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign duplicated successfully",
+        campaign: (response.data as { campaign?: Campaign })?.campaign,
       };
     } catch (error) {
       return {
@@ -272,22 +268,23 @@ class AdvertiserService {
       };
     }
   }
-
   async updateCampaign(
     campaignId: string,
     updateData: Partial<Campaign>
   ): Promise<{ success: boolean; message: string; campaign?: Campaign }> {
     try {
-      const response = await httpService.put(
-        `${this.baseUrl}/campaigns/${campaignId}`,
-        updateData,
-        true
-      );
+      const response = await httpService.put<{
+        success: boolean;
+        message: string;
+        campaign?: Campaign;
+      }>(`${this.baseUrl}/campaigns/${campaignId}`, updateData, true);
 
       return {
         success: true,
-        message: response.message || "Campaign updated successfully",
-        campaign: response.data?.campaign,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign updated successfully",
+        campaign: (response.data as { campaign?: Campaign })?.campaign,
       };
     } catch (error) {
       return {
@@ -297,22 +294,23 @@ class AdvertiserService {
       };
     }
   }
-
   async shareCampaign(
     campaignId: string,
     shareData: { platform: string; message?: string }
   ): Promise<{ success: boolean; message: string; shareUrl?: string }> {
     try {
-      const response = await httpService.post(
-        `${this.baseUrl}/campaigns/${campaignId}/share`,
-        shareData,
-        true
-      );
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+        shareUrl?: string;
+      }>(`${this.baseUrl}/campaigns/${campaignId}/share`, shareData, true);
 
       return {
         success: true,
-        message: response.message || "Campaign shared successfully",
-        shareUrl: response.data?.shareUrl,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign shared successfully",
+        shareUrl: (response.data as { shareUrl?: string })?.shareUrl,
       };
     } catch (error) {
       return {
@@ -323,47 +321,16 @@ class AdvertiserService {
     }
   }
 
-  async getCampaignAnalytics(
-    campaignId: string,
-    dateRange?: { startDate: string; endDate: string }
-  ): Promise<{
-    success: boolean;
-    data: {
-      views: number;
-      clicks: number;
-      conversions: number;
-      spend: number;
-      roi: number;
-      impressions: number;
-    };
-  }> {
-    try {
-      const params = dateRange
-        ? `?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`
-        : "";
-
-      const response = await httpService.get(
-        `${this.baseUrl}/campaigns/${campaignId}/analytics${params}`,
-        true
-      );
-
-      return response.data;
-    } catch (error) {
-      throw new Error(
-        error instanceof Error
-          ? error.message
-          : "Failed to retrieve campaign analytics"
-      );
-    }
-  }
-
   async fundCampaign(
     campaignId: string,
     amount: number,
     paymentMethodId?: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await httpService.post(
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+      }>(
         `${this.baseUrl}/campaigns/${campaignId}/fund`,
         { amount, paymentMethodId },
         true
@@ -371,7 +338,9 @@ class AdvertiserService {
 
       return {
         success: true,
-        message: response.message || "Campaign funded successfully",
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign funded successfully",
       };
     } catch (error) {
       return {
@@ -388,6 +357,36 @@ class AdvertiserService {
     );
 
     return response.data;
+  }
+  async uploadCampaignFile(
+    file: File,
+    campaignId: string
+  ): Promise<{ success: boolean; message: string; mediaUrl?: string }> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("campaignId", campaignId);
+
+      const response = await httpService.uploadFormData<{
+        success: boolean;
+        message: string;
+        mediaUrl?: string;
+      }>(`${this.baseUrl}/upload-file`, formData, true);
+
+      return {
+        success: true,
+        message:
+          (response.data as { message?: string })?.message ||
+          "File uploaded successfully",
+        mediaUrl: (response.data as { mediaUrl?: string })?.mediaUrl,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to upload file",
+      };
+    }
   }
 }
 
