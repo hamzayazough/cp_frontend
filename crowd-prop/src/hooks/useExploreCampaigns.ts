@@ -4,6 +4,7 @@ import { ExploreCampaignRequest } from "@/app/interfaces/campaign/explore-campai
 import { CampaignUnion } from "@/app/interfaces/campaign/explore-campaign";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { EXPLORE_CAMPAIGN_MOCK } from "@/app/mocks/explore-campaign-mock";
+import { exploreCampaignsStorage } from "@/utils/explore-campaigns-storage";
 
 interface UseExploreCampaignsParams {
   searchTerm?: string;
@@ -54,8 +55,10 @@ export const useExploreCampaigns = (
         page: 1,
         limit: 50, // Get all campaigns for now
       };
-
       const response = await promoterService.getExploreCampaigns(requestParams);
+
+      // Save the response to localStorage for the campaign details page
+      exploreCampaignsStorage.save(response);
 
       setCampaigns(response.campaigns);
       setPagination({
@@ -79,10 +82,12 @@ export const useExploreCampaigns = (
 
       if (isApiError && retryCount < 1) {
         console.warn("API not available, falling back to mock data");
-        setRetryCount((prev) => prev + 1);
-
-        // Use mock data as fallback
+        setRetryCount((prev) => prev + 1); // Use mock data as fallback
         const mockResponse = EXPLORE_CAMPAIGN_MOCK;
+
+        // Save mock data to localStorage as well
+        exploreCampaignsStorage.save(mockResponse);
+
         setCampaigns(mockResponse.campaigns);
         setPagination({
           page: mockResponse.page,

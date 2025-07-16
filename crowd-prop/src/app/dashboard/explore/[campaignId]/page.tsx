@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -19,7 +19,6 @@ import {
   AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
-import { EXPLORE_CAMPAIGN_MOCK } from "@/app/mocks/explore-campaign-mock";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 import {
   VisibilityCampaign,
@@ -29,6 +28,7 @@ import {
   CampaignUnion,
 } from "@/app/interfaces/campaign/explore-campaign";
 import { formatDate, getDaysLeft } from "@/utils/date";
+import { exploreCampaignsStorage } from "@/utils/explore-campaigns-storage";
 
 const getCampaignDisplayStatus = (
   campaign: CampaignUnion,
@@ -90,16 +90,24 @@ const formatBudgetInfo = (campaign: CampaignUnion) => {
   switch (campaign.type) {
     case CampaignType.VISIBILITY:
       const visibilityCampaign = campaign as VisibilityCampaign;
-      return `$${visibilityCampaign.cpv.toFixed(2)} per 100 view`;
+      return `$${Number(visibilityCampaign.cpv).toFixed(2)} per 100 view`;
     case CampaignType.SALESMAN:
       const salesmanCampaign = campaign as SalesmanCampaign;
-      return `${salesmanCampaign.commissionPerSale}% commission`;
+      return `${Number(salesmanCampaign.commissionPerSale * 100).toFixed(
+        0
+      )}% commission`;
     case CampaignType.CONSULTANT:
       const consultantCampaign = campaign as ConsultantCampaign;
-      return `$${consultantCampaign.minBudget} - $${consultantCampaign.maxBudget}`;
+      return `$${Number(
+        consultantCampaign.minBudget
+      ).toLocaleString()} - $${Number(
+        consultantCampaign.maxBudget
+      ).toLocaleString()}`;
     case CampaignType.SELLER:
       const sellerCampaign = campaign as SellerCampaign;
-      return `$${sellerCampaign.minBudget} - $${sellerCampaign.maxBudget}`;
+      return `$${Number(sellerCampaign.minBudget).toLocaleString()} - $${Number(
+        sellerCampaign.maxBudget
+      ).toLocaleString()}`;
     default:
       return "Contact for details";
   }
@@ -147,9 +155,9 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-sm text-blue-600 font-medium">
                   Target Views
-                </p>
+                </p>{" "}
                 <p className="text-2xl font-bold text-blue-900">
-                  {visibilityCampaign.maxViews.toLocaleString()}
+                  {Number(visibilityCampaign.maxViews).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -160,9 +168,9 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-sm text-green-600 font-medium">
                   Payment Per 100 Views
-                </p>
+                </p>{" "}
                 <p className="text-2xl font-bold text-green-900">
-                  ${visibilityCampaign.cpv.toFixed(2)}
+                  ${Number(visibilityCampaign.cpv).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -173,11 +181,12 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-sm text-purple-600 font-medium">
                   Campaign Budget
-                </p>
+                </p>{" "}
                 <p className="text-2xl font-bold text-purple-900">
                   $
                   {(
-                    visibilityCampaign.maxViews * visibilityCampaign.cpv
+                    Number(visibilityCampaign.maxViews) *
+                    Number(visibilityCampaign.cpv)
                   ).toLocaleString()}
                 </p>
               </div>
@@ -196,9 +205,9 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-sm text-green-600 font-medium">
                   Commission Rate
-                </p>
+                </p>{" "}
                 <p className="text-3xl font-bold text-green-900">
-                  {salesmanCampaign.commissionPerSale * 100}%
+                  {Number(salesmanCampaign.commissionPerSale * 100).toFixed(0)}%
                 </p>
               </div>
             </div>
@@ -239,10 +248,10 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-purple-600 font-medium">
                     Budget Range
-                  </p>
+                  </p>{" "}
                   <p className="text-lg font-bold text-purple-900">
-                    ${consultantCampaign.minBudget} - $
-                    {consultantCampaign.maxBudget}
+                    ${Number(consultantCampaign.minBudget).toLocaleString()} - $
+                    {Number(consultantCampaign.maxBudget).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -266,9 +275,9 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-green-600 font-medium">
                     Total Meetings
-                  </p>
+                  </p>{" "}
                   <p className="text-lg font-bold text-green-900">
-                    {consultantCampaign.meetingCount}
+                    {Number(consultantCampaign.meetingCount)}
                   </p>
                 </div>
               </div>
@@ -289,10 +298,10 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div className="bg-blue-50 p-6 rounded-lg">
                 <h4 className="text-lg font-semibold text-blue-900 mb-3">
                   Expected Deliverables
-                </h4>
+                </h4>{" "}
                 <div className="flex flex-wrap gap-2">
                   {consultantCampaign.expectedDeliverables.map(
-                    (deliverable, idx) => (
+                    (deliverable: string, idx: number) => (
                       <span
                         key={idx}
                         className="px-3 py-1 bg-blue-200 text-blue-800 rounded-full text-sm font-medium"
@@ -318,9 +327,10 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-orange-600 font-medium">
                     Budget Range
-                  </p>
+                  </p>{" "}
                   <p className="text-2xl font-bold text-orange-900">
-                    ${sellerCampaign.minBudget} - ${sellerCampaign.maxBudget}
+                    ${Number(sellerCampaign.minBudget).toLocaleString()} - $
+                    {Number(sellerCampaign.maxBudget).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -331,9 +341,11 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-blue-600 font-medium">
                     Min Followers
-                  </p>
+                  </p>{" "}
                   <p className="text-2xl font-bold text-blue-900">
-                    {sellerCampaign.minFollowers?.toLocaleString()}
+                    {sellerCampaign.minFollowers
+                      ? Number(sellerCampaign.minFollowers).toLocaleString()
+                      : "Not specified"}
                   </p>
                 </div>
               </div>
@@ -353,11 +365,11 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <span className="font-medium">
                   {sellerCampaign.meetingPlan}
                 </span>
-              </p>
+              </p>{" "}
               <p className="text-gray-700">
                 Total Meetings:{" "}
                 <span className="font-medium">
-                  {sellerCampaign.meetingCount}
+                  {Number(sellerCampaign.meetingCount)}
                 </span>
               </p>
             </div>
@@ -368,16 +380,18 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div className="bg-purple-50 p-6 rounded-lg">
                 <h4 className="text-lg font-semibold text-purple-900 mb-3">
                   Required Deliverables
-                </h4>
+                </h4>{" "}
                 <div className="flex flex-wrap gap-2">
-                  {sellerCampaign.deliverables.map((deliverable, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-medium"
-                    >
-                      {deliverable}
-                    </span>
-                  ))}
+                  {sellerCampaign.deliverables.map(
+                    (deliverable: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-medium"
+                      >
+                        {deliverable}
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
             )}
@@ -393,13 +407,40 @@ export default function CampaignDetailsPage({
   params,
 }: CampaignDetailsPageProps) {
   const resolvedParams = use(params);
-  const campaign = EXPLORE_CAMPAIGN_MOCK.campaigns.find(
-    (c) => c.id === resolvedParams.campaignId
-  );
+  const [campaign, setCampaign] = useState<CampaignUnion | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Try to get campaign from localStorage first
+    const storedCampaign = exploreCampaignsStorage.getCampaignById(
+      resolvedParams.campaignId
+    );
+
+    if (storedCampaign) {
+      setCampaign(storedCampaign);
+      setLoading(false);
+    } else {
+      // If not found in localStorage, redirect back to explore page
+      // This could happen if user navigates directly to URL or cache expired
+      setLoading(false);
+    }
+  }, [resolvedParams.campaignId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading campaign details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!campaign) {
     notFound();
   }
+
   const daysLeft = getDaysLeft(campaign.deadline);
   const isExpired = daysLeft === 0;
   const statusInfo = getCampaignDisplayStatus(campaign, isExpired);
@@ -476,23 +517,25 @@ export default function CampaignDetailsPage({
                 </div>
                 <div className="flex items-center space-x-4 mb-3">
                   <div className="flex items-center space-x-1">
-                    <StarIconSolid className="h-4 w-4 text-yellow-400" />
+                    <StarIconSolid className="h-4 w-4 text-yellow-400" />{" "}
                     <span className="text-sm font-medium text-gray-900">
-                      {campaign.advertiser.rating}
+                      {Number(campaign.advertiser.rating).toFixed(1)}
                     </span>
                     <span className="text-sm text-gray-600">
                       Company Rating
                     </span>
-                  </div>
+                  </div>{" "}
                   <div className="flex flex-wrap gap-2">
-                    {campaign.advertiser.advertiserTypes?.map((type) => (
-                      <span
-                        key={type}
-                        className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
-                      >
-                        {type}
-                      </span>
-                    ))}
+                    {campaign.advertiser.advertiserTypes?.map(
+                      (type: string) => (
+                        <span
+                          key={type}
+                          className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
+                        >
+                          {type}
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm mb-2">
@@ -513,11 +556,12 @@ export default function CampaignDetailsPage({
             <div className="text-right">
               <p className="text-sm text-gray-500 mb-1">Company Rating</p>
               <div className="flex items-center space-x-1">
+                {" "}
                 {[1, 2, 3, 4, 5].map((star) => (
                   <StarIconSolid
                     key={star}
                     className={`h-4 w-4 ${
-                      star <= Math.floor(campaign.advertiser.rating)
+                      star <= Math.floor(Number(campaign.advertiser.rating))
                         ? "text-yellow-400"
                         : "text-gray-300"
                     }`}
@@ -552,14 +596,16 @@ export default function CampaignDetailsPage({
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">
                   Requirements
-                </h3>
+                </h3>{" "}
                 <div className="space-y-3">
-                  {campaign.requirements.map((requirement, idx) => (
-                    <div key={idx} className="flex items-center space-x-3">
-                      <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-700">{requirement}</span>
-                    </div>
-                  ))}
+                  {campaign.requirements.map(
+                    (requirement: string, idx: number) => (
+                      <div key={idx} className="flex items-center space-x-3">
+                        <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span className="text-gray-700">{requirement}</span>
+                      </div>
+                    )
+                  )}
                   {/* Add min followers requirement for visibility campaigns */}
                   {campaign.type === CampaignType.VISIBILITY &&
                     (campaign as VisibilityCampaign).minFollowers && (
@@ -593,9 +639,9 @@ export default function CampaignDetailsPage({
                 <div>
                   <h4 className="font-medium text-gray-900 mb-2">
                     Preferred Platforms
-                  </h4>
+                  </h4>{" "}
                   <div className="flex flex-wrap gap-2">
-                    {campaign.preferredPlatforms?.map((platform) => (
+                    {campaign.preferredPlatforms?.map((platform: string) => (
                       <span
                         key={platform}
                         className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
@@ -615,9 +661,9 @@ export default function CampaignDetailsPage({
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Campaign Tags
-              </h3>
+              </h3>{" "}
               <div className="flex flex-wrap gap-2">
-                {campaign.tags.map((tag) => (
+                {campaign.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium"
