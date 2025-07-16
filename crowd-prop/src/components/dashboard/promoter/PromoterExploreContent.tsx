@@ -15,6 +15,7 @@ import {
   DocumentTextIcon,
   PaperAirplaneIcon,
   ArrowTopRightOnSquareIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import {
   TYPE_OPTIONS,
@@ -26,18 +27,212 @@ import {
   getFilteredAndSortedCampaigns,
 } from "./promoter-explore-content.constants";
 import { formatDate } from "@/utils/date";
+import { CampaignType } from "@/app/enums/campaign-type";
+import { CampaignUnion } from "@/app/interfaces/campaign/explore-campaign";
+import { promoterService } from "@/services/promoter.service";
+
+// Application Modal Component
+interface ApplicationModalProps {
+  campaign: CampaignUnion;
+  onClose: () => void;
+  onSubmit: (message: string) => Promise<void>;
+}
+
+function ApplicationModal({
+  campaign,
+  onClose,
+  onSubmit,
+}: ApplicationModalProps) {
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(message);
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to submit application:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Apply to Campaign
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="font-medium text-gray-900">{campaign.title}</h3>
+            <p className="text-sm text-gray-600">
+              {campaign.advertiser.companyName}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label
+                htmlFor="application-message"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Application Message
+              </label>
+              <textarea
+                id="application-message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Tell the advertiser why you're the perfect fit for this campaign..."
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                required
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !message.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <PaperAirplaneIcon className="h-4 w-4" />
+                    <span>Submit Application</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Helper function to get all requirements for a campaign
+const getAllRequirements = (campaign: CampaignUnion): string[] => {
+  const requirements: string[] = [];
+
+  // Add general requirements
+  if (campaign.requirements) {
+    requirements.push(...campaign.requirements);
+  }
+
+  // Add campaign-specific requirements
+  if ("minFollowers" in campaign && campaign.minFollowers) {
+    requirements.push(
+      `Minimum ${campaign.minFollowers.toLocaleString()} followers required`
+    );
+  }
+
+  if (
+    campaign.type === CampaignType.CONSULTANT &&
+    "expertiseRequired" in campaign &&
+    campaign.expertiseRequired
+  ) {
+    requirements.push(`Expertise required: ${campaign.expertiseRequired}`);
+  }
+
+  if (
+    campaign.type === CampaignType.SELLER &&
+    "needMeeting" in campaign &&
+    campaign.needMeeting
+  ) {
+    requirements.push("Meetings required");
+  }
+
+  return requirements;
+};
 
 export default function PromoterExploreContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+  const [applicationModal, setApplicationModal] = useState<{
+    isOpen: boolean;
+    campaign: CampaignUnion | null;
+  }>({ isOpen: false, campaign: null });
 
   const filteredAndSortedCampaigns = getFilteredAndSortedCampaigns(
     searchTerm,
     typeFilter,
     sortBy
   );
+
+  const handleApplyClick = (campaign: CampaignUnion) => {
+    if (campaign.isPublic) {
+      // Handle "Take Contract" for public campaigns
+      console.log("Taking contract for public campaign:", campaign.id);
+      // TODO: Implement take contract logic
+    } else {
+      // Open application modal for private campaigns
+      setApplicationModal({ isOpen: true, campaign });
+    }
+  };
+  const handleApplicationSubmit = async (message: string) => {
+    if (!applicationModal.campaign) return;
+
+    try {
+      const response = await promoterService.sendCampaignApplication({
+        campaignId: applicationModal.campaign.id,
+        applicationMessage: message,
+      });
+
+      console.log("Application submitted successfully:", response);
+
+      // Close modal and show success message
+      setApplicationModal({ isOpen: false, campaign: null });
+      // TODO: Show success toast/notification with response.message
+    } catch (error) {
+      console.error("Failed to submit application:", error);
+      // TODO: Show error toast/notification
+      // For now, we'll still close the modal, but in a real app you'd want to keep it open and show the error
+    }
+  };
+
+  const handleCloseModal = () => {
+    setApplicationModal({ isOpen: false, campaign: null });
+  };
 
   return (
     <div className="space-y-8">
@@ -57,7 +252,6 @@ export default function PromoterExploreContent() {
           </span>
         </div>
       </div>
-
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -105,7 +299,6 @@ export default function PromoterExploreContent() {
           </div>
         </div>
       </div>
-
       {/* Search and Filters */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
@@ -156,7 +349,6 @@ export default function PromoterExploreContent() {
           </div>
         </div>
       </div>
-
       {/* Campaigns Grid */}
       <div className="space-y-6">
         {" "}
@@ -164,7 +356,11 @@ export default function PromoterExploreContent() {
           <Link
             key={campaign.id}
             href={routes.dashboardExploreDetails(campaign.id)}
-            className="block bg-white rounded-xl shadow-sm border border-gray-200 transition-all hover:shadow-md hover:border-blue-200 relative group"
+            className={`block bg-white rounded-xl shadow-sm transition-all hover:shadow-md hover:border-blue-200 relative group ${
+              campaign.isPublic
+                ? "border border-gray-200"
+                : "border-2 border-amber-200 bg-amber-50/30"
+            }`}
           >
             {/* External Link Icon */}
             <div className="absolute top-4 right-4 w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -172,20 +368,27 @@ export default function PromoterExploreContent() {
             </div>
 
             <div className="p-6">
+              {" "}
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
-                <div className="flex-1 pr-12">
-                  {" "}
+                <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <h3 className="text-xl font-semibold text-gray-900">
                       {campaign.title}
                     </h3>
-                  </div>{" "}
+                    {!campaign.isPublic && (
+                      <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-2 py-1 rounded-lg">
+                        <LockClosedIcon className="h-4 w-4 text-amber-600" />
+                        <span className="text-xs font-medium text-amber-700">
+                          Private
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex items-center space-x-4 mb-3">
                     <div className="flex items-center space-x-2">
-                      <div className="w-10 h-10 bg-gray-200 rounded-md"></div>{" "}
+                      <div className="w-10 h-10 bg-gray-200 rounded-md"></div>
                       <div>
-                        {" "}
                         <div className="text-sm font-medium text-gray-900 flex items-center">
                           {campaign.advertiser.companyName}
                           {campaign.advertiser.verified && (
@@ -222,30 +425,52 @@ export default function PromoterExploreContent() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium text-green-600">
-                    {formatBudgetInfo(campaign)}
-                  </p>
-                  <div className="flex items-center text-xs text-gray-500 mt-1">
+                  <div className="flex items-center text-xs text-gray-500">
                     <CalendarIcon className="h-3 w-3 mr-1" />
                     {getDaysLeft(campaign.deadline)} days left
                   </div>
+                </div>
+              </div>{" "}
+              {/* Prominent Budget Information */}
+              <div className="bg-green-50 border-l-4 border-green-400 px-4 py-3 mb-4">
+                <div className="flex items-center space-x-2">
+                  <CurrencyDollarIcon className="h-4 w-4 text-green-600" />
+                  <p className="text-lg font-bold text-green-700">
+                    {formatBudgetInfo(campaign)}
+                  </p>
                 </div>
               </div>
               {/* Description */}
               <p className="text-gray-700 mb-4">{campaign.description}</p>{" "}
               {/* Requirements */}
-              {campaign.requirements && campaign.requirements.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">
-                    Requirements:
-                  </h4>
-                  <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                    {campaign.requirements.map((req, idx) => (
-                      <li key={idx}>{req}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {(() => {
+                const allRequirements = getAllRequirements(campaign);
+                const maxDisplayed = 4;
+                const displayedRequirements = allRequirements.slice(
+                  0,
+                  maxDisplayed
+                );
+                const hasMore = allRequirements.length > maxDisplayed;
+
+                return allRequirements.length > 0 ? (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      Requirements:
+                    </h4>
+                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                      {displayedRequirements.map((req, idx) => (
+                        <li key={idx}>{req}</li>
+                      ))}
+                      {hasMore && (
+                        <li className="text-blue-600 font-medium cursor-pointer hover:text-blue-700 transition-colors">
+                          +{allRequirements.length - maxDisplayed} more
+                          requirements - click to view details
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                ) : null;
+              })()}
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {campaign.tags.map((tag) => (
@@ -262,13 +487,13 @@ export default function PromoterExploreContent() {
                 {" "}
                 <div className="flex items-center space-x-4 text-sm text-gray-600">
                   <span>Posted {formatDate(campaign.createdAt)}</span>
-                </div>
+                </div>{" "}
                 <div className="flex space-x-3">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      // Handle apply/take contract action
+                      handleApplyClick(campaign);
                     }}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center space-x-2"
                   >
@@ -289,8 +514,7 @@ export default function PromoterExploreContent() {
             </div>
           </Link>
         ))}
-      </div>
-
+      </div>{" "}
       {/* Empty State */}
       {filteredAndSortedCampaigns.length === 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
@@ -313,6 +537,14 @@ export default function PromoterExploreContent() {
             Clear Filters
           </button>
         </div>
+      )}{" "}
+      {/* Application Modal */}
+      {applicationModal.isOpen && applicationModal.campaign && (
+        <ApplicationModal
+          campaign={applicationModal.campaign}
+          onClose={handleCloseModal}
+          onSubmit={handleApplicationSubmit}
+        />
       )}
     </div>
   );

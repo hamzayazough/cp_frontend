@@ -20,7 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { EXPLORE_CAMPAIGN_MOCK } from "@/app/mocks/explore-campaign-mock";
-import { CampaignType } from "@/app/enums/campaign-type";
+import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 import {
   VisibilityCampaign,
   SalesmanCampaign,
@@ -29,6 +29,56 @@ import {
   CampaignUnion,
 } from "@/app/interfaces/campaign/explore-campaign";
 import { formatDate, getDaysLeft } from "@/utils/date";
+
+const getCampaignDisplayStatus = (
+  campaign: CampaignUnion,
+  isExpired: boolean
+) => {
+  // First check if the campaign is expired (overrides all other statuses)
+  if (isExpired) {
+    return {
+      label: "Expired",
+      className:
+        "px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium",
+    };
+  }
+
+  // For now, we'll check if the campaign has a campaignStatus property
+  // If not available, we'll derive it from the current PromoterCampaignStatus
+  // This is a placeholder - in a real app, the backend should provide the CampaignStatus
+  const campaignWithStatus = campaign as CampaignUnion & {
+    campaignStatus?: CampaignStatus;
+  };
+  const campaignStatus =
+    campaignWithStatus.campaignStatus || CampaignStatus.ACTIVE;
+
+  switch (campaignStatus) {
+    case CampaignStatus.ACTIVE:
+      return {
+        label: "Active",
+        className:
+          "px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium",
+      };
+    case CampaignStatus.PAUSED:
+      return {
+        label: "Paused",
+        className:
+          "px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium",
+      };
+    case CampaignStatus.ENDED:
+      return {
+        label: "Ended",
+        className:
+          "px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium",
+      };
+    default:
+      return {
+        label: "Active",
+        className:
+          "px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium",
+      };
+  }
+};
 
 interface CampaignDetailsPageProps {
   params: Promise<{
@@ -40,7 +90,7 @@ const formatBudgetInfo = (campaign: CampaignUnion) => {
   switch (campaign.type) {
     case CampaignType.VISIBILITY:
       const visibilityCampaign = campaign as VisibilityCampaign;
-      return `$${visibilityCampaign.cpv.toFixed(2)} per view`;
+      return `$${visibilityCampaign.cpv.toFixed(2)} per 100 view`;
     case CampaignType.SALESMAN:
       const salesmanCampaign = campaign as SalesmanCampaign;
       return `${salesmanCampaign.commissionPerSale}% commission`;
@@ -103,29 +153,32 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 </p>
               </div>
             </div>
-          </div>
+          </div>{" "}
           <div className="bg-green-50 p-4 rounded-lg">
             <div className="flex items-center space-x-3">
               <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
               <div>
                 <p className="text-sm text-green-600 font-medium">
-                  Cost Per View
+                  Payment Per 100 Views
                 </p>
                 <p className="text-2xl font-bold text-green-900">
                   ${visibilityCampaign.cpv.toFixed(2)}
                 </p>
               </div>
             </div>
-          </div>
+          </div>{" "}
           <div className="bg-purple-50 p-4 rounded-lg">
             <div className="flex items-center space-x-3">
-              <UsersIcon className="h-8 w-8 text-purple-600" />
+              <CurrencyDollarIcon className="h-8 w-8 text-purple-600" />
               <div>
                 <p className="text-sm text-purple-600 font-medium">
-                  Min Followers
+                  Campaign Budget
                 </p>
                 <p className="text-2xl font-bold text-purple-900">
-                  {visibilityCampaign.minFollowers?.toLocaleString() || "N/A"}
+                  $
+                  {(
+                    visibilityCampaign.maxViews * visibilityCampaign.cpv
+                  ).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -145,7 +198,7 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                   Commission Rate
                 </p>
                 <p className="text-3xl font-bold text-green-900">
-                  {salesmanCampaign.commissionPerSale}%
+                  {salesmanCampaign.commissionPerSale * 100}%
                 </p>
               </div>
             </div>
@@ -347,9 +400,9 @@ export default function CampaignDetailsPage({
   if (!campaign) {
     notFound();
   }
-
   const daysLeft = getDaysLeft(campaign.deadline);
   const isExpired = daysLeft === 0;
+  const statusInfo = getCampaignDisplayStatus(campaign, isExpired);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -389,15 +442,7 @@ export default function CampaignDetailsPage({
               >
                 {campaign.type}
               </span>
-              {isExpired ? (
-                <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                  Expired
-                </span>
-              ) : (
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                  Active
-                </span>
-              )}
+              <span className={statusInfo.className}>{statusInfo.label}</span>
             </div>
           </div>
         </div>
@@ -501,8 +546,7 @@ export default function CampaignDetailsPage({
 
               {/* Campaign Specific Information */}
               {renderCampaignSpecificInfo(campaign)}
-            </div>
-
+            </div>{" "}
             {/* Requirements */}
             {campaign.requirements && campaign.requirements.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -516,10 +560,23 @@ export default function CampaignDetailsPage({
                       <span className="text-gray-700">{requirement}</span>
                     </div>
                   ))}
+                  {/* Add min followers requirement for visibility campaigns */}
+                  {campaign.type === CampaignType.VISIBILITY &&
+                    (campaign as VisibilityCampaign).minFollowers && (
+                      <div className="flex items-center space-x-3">
+                        <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span className="text-gray-700">
+                          Minimum{" "}
+                          {(
+                            campaign as VisibilityCampaign
+                          ).minFollowers?.toLocaleString()}{" "}
+                          followers required
+                        </span>
+                      </div>
+                    )}
                 </div>
               </div>
             )}
-
             {/* Target Audience & Platforms */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
@@ -554,7 +611,6 @@ export default function CampaignDetailsPage({
                 </div>
               </div>
             </div>
-
             {/* Tags */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
@@ -583,16 +639,22 @@ export default function CampaignDetailsPage({
                 </div>
                 <p className="text-gray-600">Compensation</p>
               </div>
-
               <div className="space-y-4 mb-6">
+                {" "}
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Status:</span>
                   <span
                     className={`font-medium ${
-                      isExpired ? "text-red-600" : "text-green-600"
+                      statusInfo.label === "Expired"
+                        ? "text-red-600"
+                        : statusInfo.label === "Active"
+                        ? "text-green-600"
+                        : statusInfo.label === "Paused"
+                        ? "text-yellow-600"
+                        : "text-gray-600"
                     }`}
                   >
-                    {isExpired ? "Expired" : "Active"}
+                    {statusInfo.label}
                   </span>
                 </div>{" "}
                 <div className="flex items-center justify-between text-sm">
@@ -611,12 +673,11 @@ export default function CampaignDetailsPage({
                     {isExpired ? "Expired" : `${daysLeft} days left`}
                   </span>
                 </div>
-              </div>
-
-              {!isExpired && (
+              </div>{" "}
+              {statusInfo.label === "Active" && (
                 <button
                   className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2"
-                  disabled={isExpired}
+                  disabled={statusInfo.label !== "Active"}
                 >
                   {campaign.isPublic ? (
                     <>

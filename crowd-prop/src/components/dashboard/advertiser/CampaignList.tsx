@@ -19,15 +19,12 @@ import {
   Users,
   DollarSign,
   Calendar,
-  MoreHorizontal,
-  PlayCircle,
-  PauseCircle,
-  Settings,
   BarChart3,
   MessageCircle,
   ExternalLink,
   UserCheck,
   Clock,
+  Edit,
 } from "lucide-react";
 
 interface CampaignListProps {
@@ -254,11 +251,11 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
             campaign.campaign.spentBudget,
             campaign.campaign.budgetAllocated
           );
-
           return (
             <div
               key={campaign.id}
-              className="p-6 hover:bg-gray-50 transition-colors"
+              className="p-6 hover:bg-gray-50 transition-colors cursor-pointer relative"
+              onClick={() => router.push(`/dashboard/campaigns/${campaign.id}`)}
             >
               <div className="flex items-start justify-between">
                 {/* Campaign Info */}
@@ -271,14 +268,9 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-3 mb-2">
-                      <button
-                        onClick={() =>
-                          router.push(`/dashboard/campaigns/${campaign.id}`)
-                        }
-                        className="text-lg font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
-                      >
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">
                         {campaign.title}
-                      </button>
+                      </h3>
                       <span className={getStatusBadge(campaign.status)}>
                         {campaign.status}
                       </span>
@@ -286,26 +278,58 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         {campaign.type}
                       </span>
                     </div>
-
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                       {campaign.description}
-                    </p>
-
+                    </p>{" "}
                     {/* Campaign Metrics */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <p className="text-xs text-gray-500">Budget</p>
-                        <p className="text-sm font-medium text-gray-900">
-                          {formatCurrency(campaign.campaign.budgetAllocated)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Spent</p>
-                        <p className="text-sm font-medium text-gray-900">
-                          {formatCurrency(campaign.campaign.spentBudget)}
-                        </p>
-                      </div>
-
+                      {campaign.type === CampaignType.SALESMAN ? (
+                        // For SALESMAN campaigns, show promo code, commission, and current sales
+                        <>
+                          <div>
+                            <p className="text-xs text-gray-500">Promo Code</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {campaign.campaign.type === CampaignType.SALESMAN
+                                ? campaign.campaign.codePrefix || "Not Set"
+                                : "N/A"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Commission</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {campaign.campaign.type === CampaignType.SALESMAN
+                                ? `${campaign.campaign.commissionPerSale}%`
+                                : "N/A"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">
+                              Current Sales
+                            </p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {campaign.performance.totalSalesMade || 0}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        // For other campaign types, show budget and spent
+                        <>
+                          <div>
+                            <p className="text-xs text-gray-500">Budget</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {formatCurrency(
+                                campaign.campaign.budgetAllocated
+                              )}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Spent</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {formatCurrency(campaign.campaign.spentBudget)}
+                            </p>
+                          </div>
+                        </>
+                      )}
                       {/* Visibility campaigns - show views instead of promoters in main metrics */}
                       {campaign.type === CampaignType.VISIBILITY ? (
                         <div>
@@ -415,15 +439,44 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                           }
                         })()
                       )}
-
                       <div>
                         <p className="text-xs text-gray-500">Deadline</p>
                         <p className="text-sm font-medium text-gray-900">
                           {formatDate(campaign.campaign.deadline)}
                         </p>
-                      </div>
+                      </div>{" "}
                     </div>
+                    {/* Deliverables - For CONSULTANT and SELLER */}
+                    {(campaign.type === CampaignType.CONSULTANT ||
+                      campaign.type === CampaignType.SELLER) && (
+                      <div className="mb-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Deliverables:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {(() => {
+                            const deliverables =
+                              campaign.type === CampaignType.CONSULTANT
+                                ? campaign.campaign.type ===
+                                  CampaignType.CONSULTANT
+                                  ? campaign.campaign.expectedDeliverables || []
+                                  : []
+                                : campaign.campaign.type === CampaignType.SELLER
+                                ? campaign.campaign.deliverables || []
+                                : [];
 
+                            return deliverables.map((deliverable, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                              >
+                                {deliverable.replace(/_/g, " ")}
+                              </span>
+                            ));
+                          })()}
+                        </div>
+                      </div>
+                    )}
                     {/* Visibility campaigns - organized additional metrics */}
                     {campaign.type === CampaignType.VISIBILITY && (
                       <div className="mb-4 pt-3 border-t border-gray-100">
@@ -438,7 +491,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                             {" "}
                             <div className="bg-white rounded-md p-3">
                               <p className="text-xs text-gray-500 mb-1">
-                                Cost Per View
+                                Cost Per 100 Views
                               </p>
                               <p className="text-lg font-semibold text-gray-900">
                                 $
@@ -497,7 +550,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         </div>
                       </div>
                     )}
-
                     {/* Private Campaign State Management */}
                     {!campaign.campaign.isPublic && (
                       <div className="mb-4 pt-2 border-t border-gray-100">
@@ -688,32 +740,32 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                           }
                         })()}
                       </div>
+                    )}{" "}
+                    {/* Progress Bar - Hide for SALESMAN campaigns */}
+                    {campaign.type !== CampaignType.SALESMAN && (
+                      <div className="mb-3">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs text-gray-500">
+                            Budget Usage
+                          </span>
+                          <span className="text-xs text-gray-700">
+                            {progressPercentage.toFixed(1)}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all ${
+                              progressPercentage > 80
+                                ? "bg-red-500"
+                                : progressPercentage > 60
+                                ? "bg-yellow-500"
+                                : "bg-green-500"
+                            }`}
+                            style={{ width: `${progressPercentage}%` }}
+                          />
+                        </div>
+                      </div>
                     )}
-
-                    {/* Progress Bar */}
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-500">
-                          Budget Usage
-                        </span>
-                        <span className="text-xs text-gray-700">
-                          {progressPercentage.toFixed(1)}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full transition-all ${
-                            progressPercentage > 80
-                              ? "bg-red-500"
-                              : progressPercentage > 60
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
-                          }`}
-                          style={{ width: `${progressPercentage}%` }}
-                        />
-                      </div>
-                    </div>
-
                     {/* Footer Info */}
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <div className="flex items-center space-x-4">
@@ -731,36 +783,19 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center space-x-2 ml-4">
-                  <button
-                    onClick={() =>
-                      router.push(`/dashboard/campaigns/${campaign.id}`)
-                    }
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    title="View Details"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
-                  {campaign.status === CampaignStatus.ACTIVE && (
-                    <button className="p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors">
-                      <PauseCircle className="h-4 w-4" />
-                    </button>
-                  )}
-                  {campaign.status === CampaignStatus.PAUSED && (
-                    <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                      <PlayCircle className="h-4 w-4" />
-                    </button>
-                  )}
-                  <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                    <Settings className="h-4 w-4" />
-                  </button>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
-                </div>
+                </div>{" "}
+                {/* Edit Icon */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    // TODO: Add edit functionality
+                    console.log("Edit campaign:", campaign.id);
+                  }}
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Edit Campaign"
+                >
+                  <Edit className="h-4 w-4" />
+                </button>
               </div>
             </div>
           );

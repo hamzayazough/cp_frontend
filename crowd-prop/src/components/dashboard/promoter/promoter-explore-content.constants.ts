@@ -40,11 +40,9 @@ export const getTypeColor = (type: string): string => {
 export const formatBudgetInfo = (campaign: CampaignUnion): string => {
   switch (campaign.type) {
     case CampaignType.VISIBILITY:
-      return `$${
-        campaign.cpv
-      } per view • ${campaign.maxViews.toLocaleString()} target views`;
+      return `$${campaign.cpv} per 100 views`;
     case CampaignType.SALESMAN:
-      return `${campaign.commissionPerSale}% commission per sale`;
+      return `${campaign.commissionPerSale * 100}% commission`;
     case CampaignType.CONSULTANT:
       return `$${campaign.minBudget} - $${campaign.maxBudget} budget`;
     case CampaignType.SELLER:

@@ -1,6 +1,7 @@
 import { AdvertiserType } from "@/app/enums/advertiser-type";
 import {
   CampaignType,
+  CampaignStatus,
   Deliverable,
   MeetingPlan,
   SalesTrackingMethod,
@@ -35,6 +36,7 @@ export interface BaseCampaignDetails {
   startDate: string;
   isPublic: boolean;
   tags: AdvertiserType[]; //getting them from Advertiser user -> user.advertiserType
+  campaignStatus?: CampaignStatus; // Optional campaign status that overrides default behavior
 }
 
 export interface ConsultantCampaign extends BaseCampaignDetails {

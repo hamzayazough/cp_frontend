@@ -1,3 +1,7 @@
+import {
+  SendApplicationRequest,
+  SendApplicationResponse,
+} from "@/app/interfaces/campaign/campaign-application";
 import { HttpService } from "./http.service";
 import {
   GetPromoterDashboardRequest,
@@ -194,9 +198,9 @@ export class PromoterService {
 
     return response.data;
   }
-
   /**
    * Apply to a campaign
+   * @deprecated Use sendCampaignApplication instead
    */
   async applyCampaign(
     campaignId: string,
@@ -210,6 +214,27 @@ export class PromoterService {
       { message },
       true // requiresAuth
     );
+
+    return response.data;
+  }
+
+  /**
+   * Send campaign application with proper request interface
+   */
+  async sendCampaignApplication(
+    request: SendApplicationRequest
+  ): Promise<SendApplicationResponse> {
+    const response = await this.httpService.post<SendApplicationResponse>(
+      `/promoter/campaigns/${request.campaignId}/apply`,
+      { applicationMessage: request.applicationMessage },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to send campaign application"
+      );
+    }
 
     return response.data;
   }
