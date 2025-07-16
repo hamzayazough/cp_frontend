@@ -4,6 +4,10 @@ import {
 } from "@/app/interfaces/campaign/campaign-application";
 import { ExploreCampaignRequest } from "@/app/interfaces/campaign/explore-campaign-request";
 import { ExploreCampaignResponse } from "@/app/interfaces/campaign/explore-campaign";
+import {
+  GetPromoterCampaignsRequest,
+  GetPromoterCampaignsResponse as PromoterCampaignsListResponse,
+} from "@/app/interfaces/campaign/promoter-campaigns-request";
 import { HttpService } from "./http.service";
 import {
   GetPromoterDashboardRequest,
@@ -303,7 +307,6 @@ export class PromoterService {
 
     return response.data.data.count;
   }
-
   /**
    * Explore available campaigns
    */
@@ -323,6 +326,31 @@ export class PromoterService {
     if (!response.data.success) {
       throw new Error(
         response.data.message || "Failed to fetch explore campaigns"
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Get promoter's campaigns list
+   */
+  async getPromoterCampaigns(
+    params: GetPromoterCampaignsRequest = {}
+  ): Promise<PromoterCampaignsListResponse> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      data: PromoterCampaignsListResponse;
+      message?: string;
+    }>(
+      "/promoter/campaigns/list",
+      params,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch promoter campaigns"
       );
     }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { routes } from "@/lib/router";
@@ -17,12 +17,12 @@ import {
   DocumentArrowUpIcon,
   PlayIcon,
 } from "@heroicons/react/24/outline";
-import { MOCK_CAMPAIGN_PROMOTERS } from "@/app/mocks/campaign-promoter-mock";
 import {
   ConsultantCampaignDetails,
   SellerCampaignDetails,
 } from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
+import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 import {
   statusOptions,
   typeOptions,
@@ -31,26 +31,55 @@ import {
   getTypeColor,
   getEarningsInfo,
 } from "@/app/const/promoter-campaign-content-const";
-
-// Mock data
-const mockCampaigns = MOCK_CAMPAIGN_PROMOTERS;
+import { usePromoterCampaigns } from "@/hooks/usePromoterCampaigns";
+import { GetPromoterCampaignsRequest } from "@/app/interfaces/campaign/promoter-campaigns-request";
 
 export default function PromoterCampaignsContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [typeFilter, setTypeFilter] = useState("ALL");
-  const filteredCampaigns = mockCampaigns.filter((campaign) => {
-    const matchesSearch =
-      campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.advertiser.companyName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      campaign.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      statusFilter === "ALL" || campaign.status === statusFilter;
-    const matchesType = typeFilter === "ALL" || campaign.type === typeFilter;
-    return matchesSearch && matchesStatus && matchesType;
-  });
+
+  // Use the hook to manage campaigns data
+  const { campaigns, loading, error, summary, fetchCampaigns } =
+    usePromoterCampaigns();
+  // Update filters when they change
+  useEffect(() => {
+    const params: GetPromoterCampaignsRequest = {};
+
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
+
+    if (statusFilter !== "ALL") {
+      params.status = [statusFilter as PromoterCampaignStatus];
+    }
+
+    if (typeFilter !== "ALL") {
+      params.type = [typeFilter as CampaignType];
+    }
+
+    fetchCampaigns(params);
+  }, [searchTerm, statusFilter, typeFilter, fetchCampaigns]);
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">Error loading campaigns: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -71,8 +100,7 @@ export default function PromoterCampaignsContent() {
             Explore New Campaigns
           </Link>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -83,7 +111,7 @@ export default function PromoterCampaignsContent() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Active</p>
               <p className="text-2xl font-bold text-gray-900">
-                {mockCampaigns.filter((c) => c.status === "ONGOING").length}
+                {summary.totalActive}
               </p>
             </div>
           </div>
@@ -97,11 +125,7 @@ export default function PromoterCampaignsContent() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p className="text-2xl font-bold text-gray-900">
-                {" "}
-                {
-                  mockCampaigns.filter((c) => c.status === "AWAITING_REVIEW")
-                    .length
-                }
+                {summary.totalPending}
               </p>
             </div>
           </div>
@@ -113,11 +137,9 @@ export default function PromoterCampaignsContent() {
               <EyeIcon className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Views</p>{" "}
+              <p className="text-sm font-medium text-gray-600">Total Views</p>
               <p className="text-2xl font-bold text-gray-900">
-                {mockCampaigns
-                  .reduce((sum, c) => sum + (c.earnings.viewsGenerated || 0), 0)
-                  .toLocaleString()}
+                {summary.totalViews.toLocaleString()}
               </p>
             </div>
           </div>
@@ -133,17 +155,12 @@ export default function PromoterCampaignsContent() {
                 Total Earnings
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {" "}
-                $
-                {mockCampaigns
-                  .reduce((sum, c) => sum + c.earnings.totalEarned, 0)
-                  .toLocaleString()}
+                ${summary.totalEarnings.toLocaleString()}
               </p>
             </div>
           </div>
         </div>
       </div>
-
       {/* Filters */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
@@ -189,11 +206,10 @@ export default function PromoterCampaignsContent() {
             </select>
           </div>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Campaigns List */}
       <div className="space-y-6">
-        {filteredCampaigns.length === 0 ? (
+        {campaigns.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
             <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <MagnifyingGlassIcon className="h-12 w-12 text-gray-400" />
@@ -203,7 +219,7 @@ export default function PromoterCampaignsContent() {
             </h3>
             <p className="text-gray-600 mb-6">
               Try adjusting your search or filters
-            </p>{" "}
+            </p>
             <Link
               href={routes.dashboardExplore}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
@@ -213,7 +229,7 @@ export default function PromoterCampaignsContent() {
             </Link>
           </div>
         ) : (
-          filteredCampaigns.map((campaign) => (
+          campaigns.map((campaign) => (
             <Link
               key={campaign.id}
               href={routes.dashboardCampaignDetails(campaign.id)}
