@@ -2,6 +2,8 @@ import {
   SendApplicationRequest,
   SendApplicationResponse,
 } from "@/app/interfaces/campaign/campaign-application";
+import { ExploreCampaignRequest } from "@/app/interfaces/campaign/explore-campaign-request";
+import { ExploreCampaignResponse } from "@/app/interfaces/campaign/explore-campaign";
 import { HttpService } from "./http.service";
 import {
   GetPromoterDashboardRequest,
@@ -280,7 +282,6 @@ export class PromoterService {
 
     return response.data;
   }
-
   /**
    * Get unread message count
    */
@@ -301,6 +302,31 @@ export class PromoterService {
     }
 
     return response.data.data.count;
+  }
+
+  /**
+   * Explore available campaigns
+   */
+  async getExploreCampaigns(
+    params: ExploreCampaignRequest = {}
+  ): Promise<ExploreCampaignResponse> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      data: ExploreCampaignResponse;
+      message?: string;
+    }>(
+      "/promoter/campaigns/explore",
+      params,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch explore campaigns"
+      );
+    }
+
+    return response.data.data;
   }
 }
 

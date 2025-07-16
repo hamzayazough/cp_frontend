@@ -1,5 +1,4 @@
 import { CampaignType } from "@/app/enums/campaign-type";
-import { EXPLORE_CAMPAIGN_MOCK } from "@/app/mocks/explore-campaign-mock";
 import { CampaignUnion } from "@/app/interfaces/campaign/explore-campaign";
 
 // Filter and sort options
@@ -17,9 +16,6 @@ export const SORT_OPTIONS = [
   { value: "budget", label: "Highest Budget" },
   { value: "applicants", label: "Least Competition" },
 ] as const;
-
-// Mock data for available campaigns (extract campaigns from response)
-export const MOCK_CAMPAIGNS = EXPLORE_CAMPAIGN_MOCK.campaigns;
 
 // Utility functions
 export const getTypeColor = (type: string): string => {
@@ -58,67 +54,4 @@ export const getDaysLeft = (deadline: string): number => {
       (1000 * 60 * 60 * 24)
   );
   return days;
-};
-
-// Sorting function
-export const sortCampaigns = (
-  campaigns: CampaignUnion[],
-  sortBy: string
-): CampaignUnion[] => {
-  return [...campaigns].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      case "deadline":
-        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-      case "budget":
-        // Use maxBudget for campaigns that have it, or maxViews for visibility campaigns
-        const aBudget =
-          "maxBudget" in a ? a.maxBudget : "maxViews" in a ? a.maxViews : 0;
-        const bBudget =
-          "maxBudget" in b ? b.maxBudget : "maxViews" in b ? b.maxViews : 0;
-        return bBudget - aBudget;
-      case "applicants":
-        // Since applicants don't exist in the new interface, sort by creation date as fallback
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      default:
-        return 0;
-    }
-  });
-};
-
-// Filtering function
-export const filterCampaigns = (
-  campaigns: CampaignUnion[],
-  searchTerm: string,
-  typeFilter: string
-): CampaignUnion[] => {
-  return campaigns.filter((campaign) => {
-    const matchesSearch =
-      campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.advertiser.companyName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      campaign.tags.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    const matchesType = typeFilter === "ALL" || campaign.type === typeFilter;
-
-    return matchesSearch && matchesType;
-  });
-};
-
-// Combined filter and sort function
-export const getFilteredAndSortedCampaigns = (
-  searchTerm: string,
-  typeFilter: string,
-  sortBy: string
-): CampaignUnion[] => {
-  const filtered = filterCampaigns(MOCK_CAMPAIGNS, searchTerm, typeFilter);
-  return sortCampaigns(filtered, sortBy);
 };

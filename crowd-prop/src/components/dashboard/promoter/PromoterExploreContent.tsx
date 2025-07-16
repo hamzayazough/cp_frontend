@@ -20,16 +20,15 @@ import {
 import {
   TYPE_OPTIONS,
   SORT_OPTIONS,
-  MOCK_CAMPAIGNS,
   getTypeColor,
   formatBudgetInfo,
   getDaysLeft,
-  getFilteredAndSortedCampaigns,
 } from "./promoter-explore-content.constants";
 import { formatDate } from "@/utils/date";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { CampaignUnion } from "@/app/interfaces/campaign/explore-campaign";
 import { promoterService } from "@/services/promoter.service";
+import { useExploreCampaigns } from "@/hooks/useExploreCampaigns";
 
 // Application Modal Component
 interface ApplicationModalProps {
@@ -193,11 +192,12 @@ export default function PromoterExploreContent() {
     campaign: CampaignUnion | null;
   }>({ isOpen: false, campaign: null });
 
-  const filteredAndSortedCampaigns = getFilteredAndSortedCampaigns(
+  // Use the hook to get campaigns data
+  const { campaigns, loading, error } = useExploreCampaigns({
     searchTerm,
     typeFilter,
-    sortBy
-  );
+    sortBy,
+  });
 
   const handleApplyClick = (campaign: CampaignUnion) => {
     if (campaign.isPublic) {
@@ -233,7 +233,6 @@ export default function PromoterExploreContent() {
   const handleCloseModal = () => {
     setApplicationModal({ isOpen: false, campaign: null });
   };
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -248,10 +247,23 @@ export default function PromoterExploreContent() {
         </div>
         <div className="mt-4 sm:mt-0 flex items-center space-x-3">
           <span className="text-sm text-gray-600">
-            {filteredAndSortedCampaigns.length} campaigns available
+            {campaigns.length} campaigns available
           </span>
+          {loading && (
+            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          )}
         </div>
       </div>
+      {/* Error Message */}
+      {error && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="ml-3">
+              <p className="text-sm text-amber-700">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -260,7 +272,11 @@ export default function PromoterExploreContent() {
             <div className="ml-3">
               <p className="text-sm text-gray-600">Visibility</p>{" "}
               <p className="text-lg font-semibold">
-                {MOCK_CAMPAIGNS.filter((c) => c.type === "VISIBILITY").length}
+                {
+                  campaigns.filter(
+                    (c: CampaignUnion) => c.type === "VISIBILITY"
+                  ).length
+                }
               </p>
             </div>
           </div>
@@ -271,7 +287,10 @@ export default function PromoterExploreContent() {
             <div className="ml-3">
               <p className="text-sm text-gray-600">Sales</p>
               <p className="text-lg font-semibold">
-                {MOCK_CAMPAIGNS.filter((c) => c.type === "SALESMAN").length}
+                {
+                  campaigns.filter((c: CampaignUnion) => c.type === "SALESMAN")
+                    .length
+                }
               </p>
             </div>
           </div>
@@ -282,7 +301,11 @@ export default function PromoterExploreContent() {
             <div className="ml-3">
               <p className="text-sm text-gray-600">Consulting</p>
               <p className="text-lg font-semibold">
-                {MOCK_CAMPAIGNS.filter((c) => c.type === "CONSULTANT").length}
+                {
+                  campaigns.filter(
+                    (c: CampaignUnion) => c.type === "CONSULTANT"
+                  ).length
+                }
               </p>
             </div>
           </div>
@@ -293,7 +316,10 @@ export default function PromoterExploreContent() {
             <div className="ml-3">
               <p className="text-sm text-gray-600">Content</p>
               <p className="text-lg font-semibold">
-                {MOCK_CAMPAIGNS.filter((c) => c.type === "SELLER").length}
+                {
+                  campaigns.filter((c: CampaignUnion) => c.type === "SELLER")
+                    .length
+                }
               </p>
             </div>
           </div>
@@ -348,11 +374,11 @@ export default function PromoterExploreContent() {
             </button>
           </div>
         </div>
-      </div>
+      </div>{" "}
       {/* Campaigns Grid */}
       <div className="space-y-6">
         {" "}
-        {filteredAndSortedCampaigns.map((campaign) => (
+        {campaigns.map((campaign) => (
           <Link
             key={campaign.id}
             href={routes.dashboardExploreDetails(campaign.id)}
@@ -516,7 +542,7 @@ export default function PromoterExploreContent() {
         ))}
       </div>{" "}
       {/* Empty State */}
-      {filteredAndSortedCampaigns.length === 0 && (
+      {campaigns.length === 0 && !loading && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
           <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <MagnifyingGlassIcon className="h-12 w-12 text-gray-400" />
