@@ -11,7 +11,6 @@ import {
   AdvertiserCampaignListResponse,
   AdvertiserCampaignListRequest,
   AdvertiserDashboardSummary,
-  PromoterApplicationInfo,
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
@@ -25,12 +24,6 @@ interface CreateCampaignResponse {
 interface GetCampaignDetailsResponse {
   success: boolean;
   data: CampaignAdvertiser;
-  message?: string;
-}
-
-interface GetCampaignApplicationsResponse {
-  success: boolean;
-  data: PromoterApplicationInfo[];
   message?: string;
 }
 
@@ -142,25 +135,6 @@ class AdvertiserService {
         error instanceof Error
           ? error.message
           : "Failed to retrieve campaign details"
-      );
-    }
-  }
-
-  async getCampaignApplications(
-    campaignId: string
-  ): Promise<PromoterApplicationInfo[]> {
-    try {
-      const response = await httpService.get<GetCampaignApplicationsResponse>(
-        `${this.baseUrl}/campaigns/${campaignId}/applications`,
-        true
-      );
-
-      return response.data.data;
-    } catch (error) {
-      throw new Error(
-        error instanceof Error
-          ? error.message
-          : "Failed to retrieve campaign applications"
       );
     }
   }

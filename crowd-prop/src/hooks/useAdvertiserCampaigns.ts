@@ -4,7 +4,6 @@ import {
   CampaignAdvertiser,
   AdvertiserCampaignListRequest,
   AdvertiserDashboardSummary,
-  PromoterApplicationInfo,
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
@@ -36,9 +35,6 @@ interface UseAdvertiserCampaignsReturn {
   };
   refetch: () => Promise<void>;
   getCampaignDetails: (campaignId: string) => Promise<CampaignAdvertiser>;
-  getCampaignApplications: (
-    campaignId: string
-  ) => Promise<PromoterApplicationInfo[]>;
   reviewApplication: (
     params: ReviewPromoterApplicationRequest
   ) => Promise<{ success: boolean; message: string }>;
@@ -152,21 +148,6 @@ export const useAdvertiserCampaigns = (
       );
     },
     [campaigns]
-  );
-
-  const getCampaignApplications = useCallback(
-    async (campaignId: string): Promise<PromoterApplicationInfo[]> => {
-      try {
-        return await advertiserService.getCampaignApplications(campaignId);
-      } catch (err) {
-        throw new Error(
-          err instanceof Error
-            ? err.message
-            : "Failed to fetch campaign applications"
-        );
-      }
-    },
-    []
   );
 
   const reviewApplication = useCallback(
@@ -328,12 +309,12 @@ export const useAdvertiserCampaigns = (
     };
 
     initializeData();
-
     return () => {
       mounted = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array to run only once
+
   return {
     campaigns,
     loading,
@@ -344,7 +325,6 @@ export const useAdvertiserCampaigns = (
     filters,
     refetch,
     getCampaignDetails,
-    getCampaignApplications,
     reviewApplication,
     deleteCampaign,
     duplicateCampaign,

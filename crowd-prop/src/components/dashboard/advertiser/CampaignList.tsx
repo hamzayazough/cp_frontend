@@ -29,8 +29,7 @@ interface CampaignListProps {
 
 export default function CampaignList({ campaigns }: CampaignListProps) {
   const router = useRouter();
-  const { getCampaignApplications, reviewApplication } =
-    useAdvertiserCampaigns();
+  const { reviewApplication } = useAdvertiserCampaigns();
 
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
@@ -111,10 +110,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
         return Eye;
     }
   };
-
   const handleViewApplications = async (campaign: CampaignAdvertiser) => {
     try {
-      const applications = await getCampaignApplications(campaign.id);
+      // Use the applicants from the campaign object directly
+      const applications = campaign.applicants || [];
       setModalState({
         isOpen: true,
         campaign,
@@ -134,7 +133,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       });
     }
   };
-
   const handleAcceptApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
 
@@ -146,13 +144,12 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       });
 
       if (result.success) {
-        // Refresh applications
-        const updatedApplications = await getCampaignApplications(
-          modalState.campaign.id
-        );
+        // Remove the application from local state since it was accepted
         setModalState((prev) => ({
           ...prev,
-          applications: updatedApplications,
+          applications: prev.applications.filter(
+            (app) => app.promoter.id !== applicationId
+          ),
         }));
       }
     } catch (error) {
@@ -161,7 +158,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       setModalState((prev) => ({ ...prev, isOpen: false }));
     }
   };
-
   const handleRejectApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
 
@@ -173,13 +169,12 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       });
 
       if (result.success) {
-        // Refresh applications
-        const updatedApplications = await getCampaignApplications(
-          modalState.campaign.id
-        );
+        // Remove the application from local state since it was rejected
         setModalState((prev) => ({
           ...prev,
-          applications: updatedApplications,
+          applications: prev.applications.filter(
+            (app) => app.promoter.id !== applicationId
+          ),
         }));
       }
     } catch (error) {

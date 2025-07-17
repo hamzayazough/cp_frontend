@@ -28,8 +28,7 @@ export default function AdvertiserCampaignDetailsContent({
   campaignId,
 }: AdvertiserCampaignDetailsContentProps) {
   const router = useRouter();
-  const { getCampaignDetails, getCampaignApplications, reviewApplication } =
-    useAdvertiserCampaigns();
+  const { getCampaignDetails, reviewApplication } = useAdvertiserCampaigns();
 
   const [isCreateMode, setIsCreateMode] = useState(false);
   const [campaign, setCampaign] = useState<CampaignAdvertiser | null>(null);
@@ -108,7 +107,8 @@ export default function AdvertiserCampaignDetailsContent({
   };
   const handleViewApplications = async (campaign: CampaignAdvertiser) => {
     try {
-      const applications = await getCampaignApplications(campaign.id);
+      // Use the applicants from the campaign object directly
+      const applications = campaign.applicants || [];
       setModalState({
         isOpen: true,
         campaign,
@@ -132,7 +132,6 @@ export default function AdvertiserCampaignDetailsContent({
       applications: [],
     });
   };
-
   const handleAcceptApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
 
@@ -144,13 +143,12 @@ export default function AdvertiserCampaignDetailsContent({
       });
 
       if (result.success) {
-        // Refresh applications
-        const updatedApplications = await getCampaignApplications(
-          modalState.campaign.id
-        );
+        // Remove the application from local state since it was accepted
         setModalState((prev) => ({
           ...prev,
-          applications: updatedApplications,
+          applications: prev.applications.filter(
+            (app) => app.promoter.id !== applicationId
+          ),
         }));
 
         // Refresh campaign data
@@ -163,7 +161,6 @@ export default function AdvertiserCampaignDetailsContent({
       console.error("Error accepting application:", error);
     }
   };
-
   const handleRejectApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
 
@@ -175,13 +172,12 @@ export default function AdvertiserCampaignDetailsContent({
       });
 
       if (result.success) {
-        // Refresh applications
-        const updatedApplications = await getCampaignApplications(
-          modalState.campaign.id
-        );
+        // Remove the application from local state since it was rejected
         setModalState((prev) => ({
           ...prev,
-          applications: updatedApplications,
+          applications: prev.applications.filter(
+            (app) => app.promoter.id !== applicationId
+          ),
         }));
 
         // Refresh campaign data
