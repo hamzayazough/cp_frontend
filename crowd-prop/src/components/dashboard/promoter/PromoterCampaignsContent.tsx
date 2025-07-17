@@ -15,7 +15,6 @@ import {
   ArrowTopRightOnSquareIcon,
   ChatBubbleLeftRightIcon,
   DocumentArrowUpIcon,
-  PlayIcon,
 } from "@heroicons/react/24/outline";
 import {
   ConsultantCampaignDetails,
@@ -283,18 +282,42 @@ export default function PromoterCampaignsContent() {
                     <div className="flex items-center justify-center w-10 h-10 bg-blue-50 group-hover:bg-blue-100 rounded-lg transition-colors">
                       <ArrowTopRightOnSquareIcon className="h-5 w-5 text-blue-600" />
                     </div>
-                  </div>
+                  </div>{" "}
                   {/* Campaign Media */}
                   {campaign.mediaUrl && campaign.mediaUrl !== "undefined" && (
                     <div className="mb-4">
                       <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
                         {campaign.mediaUrl.endsWith(".mp4") ||
-                        campaign.mediaUrl.endsWith(".webm") ? (
+                        campaign.mediaUrl.endsWith(".webm") ||
+                        campaign.mediaUrl.endsWith(".mov") ||
+                        campaign.mediaUrl.endsWith(".avi") ? (
                           <video
                             src={campaign.mediaUrl}
                             className="w-full h-full object-cover"
                             controls
                           />
+                        ) : campaign.mediaUrl.toLowerCase().endsWith(".pdf") ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center space-y-3 bg-gray-50">
+                            <svg
+                              className="h-12 w-12 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                            </svg>
+                            <p className="text-gray-600 text-sm font-medium">
+                              PDF Document
+                            </p>
+                            <a
+                              href={campaign.mediaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              View PDF
+                            </a>
+                          </div>
                         ) : (
                           <div className="w-full h-full overflow-hidden">
                             <Image
@@ -304,6 +327,17 @@ export default function PromoterCampaignsContent() {
                               width={400}
                               height={192}
                               style={{ width: "100%", height: "100%" }}
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                                e.currentTarget.parentElement!.innerHTML = `
+                                  <div class="w-full h-full flex flex-col items-center justify-center space-y-3 bg-gray-100">
+                                    <svg class="h-12 w-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                    </svg>
+                                    <p class="text-gray-500 text-sm font-medium">Media unavailable</p>
+                                  </div>
+                                `;
+                              }}
                             />
                           </div>
                         )}

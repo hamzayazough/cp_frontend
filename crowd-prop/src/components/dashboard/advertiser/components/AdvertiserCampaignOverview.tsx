@@ -16,6 +16,7 @@ import {
   Linkedin,
   Facebook,
   Globe,
+  FileText,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -222,17 +223,35 @@ export default function AdvertiserCampaignOverview({
   };
   return (
     <div className="space-y-6">
+      {" "}
       {/* Campaign Media */}
       {campaign.mediaUrl && (
         <div>
           <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
             {campaign.mediaUrl.endsWith(".mp4") ||
-            campaign.mediaUrl.endsWith(".webm") ? (
+            campaign.mediaUrl.endsWith(".webm") ||
+            campaign.mediaUrl.endsWith(".mov") ||
+            campaign.mediaUrl.endsWith(".avi") ? (
               <video
                 src={campaign.mediaUrl}
                 controls
                 className="w-full h-full object-cover"
-              />
+              >
+                Your browser does not support the video tag.
+              </video>
+            ) : campaign.mediaUrl.endsWith(".pdf") ? (
+              <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
+                <FileText className="h-16 w-16 text-gray-400" />
+                <p className="text-gray-600 text-center">PDF Document</p>
+                <a
+                  href={campaign.mediaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  View PDF
+                </a>
+              </div>
             ) : (
               <Image
                 src={campaign.mediaUrl}
@@ -240,12 +259,24 @@ export default function AdvertiserCampaignOverview({
                 width={800}
                 height={400}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.parentElement!.innerHTML = `
+                    <div class="flex flex-col items-center justify-center space-y-4">
+                      <div class="h-16 w-16 text-gray-400">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                      </div>
+                      <p class="text-gray-600 text-center">Media unavailable</p>
+                    </div>
+                  `;
+                }}
               />
             )}
           </div>
         </div>
       )}
-
       {/* Three cards section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Campaign Details Card */}
@@ -339,7 +370,6 @@ export default function AdvertiserCampaignOverview({
           </div>
         </div>
       </div>
-
       {/* Campaign Timeline */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center space-x-3 mb-6">
@@ -385,7 +415,6 @@ export default function AdvertiserCampaignOverview({
           </div>
         </div>
       </div>
-
       {/* Campaign Channel Footer */}
       {campaign.campaign.discordInviteLink && (
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-6">
