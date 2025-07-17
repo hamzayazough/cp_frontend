@@ -389,9 +389,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     Applicants
                                   </p>
                                   <button
-                                    onClick={() =>
-                                      handleViewApplications(campaign)
-                                    }
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleViewApplications(campaign);
+                                    }}
                                     className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                                   >
                                     {totalApplicants}
@@ -455,20 +456,20 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                     {/* Visibility campaigns - organized additional metrics */}
                     {campaign.type === CampaignType.VISIBILITY && (
                       <div className="mb-4 pt-3 border-t border-gray-100">
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-sm font-medium text-gray-900 flex items-center">
-                              <Eye className="h-4 w-4 text-blue-600 mr-2" />
+                        {/* Campaign Performance */}
+                        <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6 mb-6">
+                          <div className="flex items-center mb-4">
+                            <Eye className="h-5 w-5 text-blue-600 mr-2" />
+                            <h3 className="text-lg font-semibold text-gray-900">
                               Campaign Performance
-                            </h4>
+                            </h3>
                           </div>
-                          <div className="grid grid-cols-2 gap-4 mb-4">
-                            {" "}
-                            <div className="bg-white rounded-md p-3">
-                              <p className="text-xs text-gray-500 mb-1">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <p className="text-sm text-gray-500">
                                 Cost Per 100 Views
                               </p>
-                              <p className="text-lg font-semibold text-gray-900">
+                              <p className="mt-1 text-2xl font-bold text-blue-600">
                                 $
                                 {campaign.campaign.type ===
                                   CampaignType.VISIBILITY &&
@@ -477,11 +478,11 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                   : "0.000"}
                               </p>
                             </div>
-                            <div className="bg-white rounded-md p-3">
-                              <p className="text-xs text-gray-500 mb-1">
+                            <div>
+                              <p className="text-sm text-gray-500">
                                 Target Views
                               </p>
-                              <p className="text-lg font-semibold text-gray-900">
+                              <p className="mt-1 text-2xl font-bold text-blue-600">
                                 {campaign.campaign.type ===
                                   CampaignType.VISIBILITY &&
                                 campaign.campaign.maxViews
@@ -489,34 +490,52 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                   : "Unlimited"}
                               </p>
                             </div>
-                          </div>{" "}
-                          {/* Chosen Promoters section - for visibility campaigns */}
-                          {campaign.chosenPromoters && (
-                            <div className="bg-white rounded-md p-3 border border-blue-200">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                  <Users className="h-4 w-4 text-blue-600" />
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                      Active Promoter
-                                    </p>
-                                    <p className="text-xs text-gray-500">
+                          </div>
+                        </div>
+
+                        {/* Chosen Promoter (Visibility Campaigns Only) */}
+                        {campaign.chosenPromoters && (
+                          <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6 mb-6">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                <div className="flex-shrink-0 bg-blue-50 p-3 rounded-full">
+                                  <Users className="h-5 w-5 text-blue-600" />
+                                </div>
+                                <div>
+                                  <div className="flex items-center space-x-2">
+                                    <p className="text-base font-medium text-gray-900">
                                       {campaign.chosenPromoters.promoter.name}
                                     </p>
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                      Active
+                                    </span>
                                   </div>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    Joined{" "}
+                                    {campaign.chosenPromoters.joinedAt
+                                      ? formatDate(
+                                          campaign.chosenPromoters.joinedAt
+                                        )
+                                      : "Recently"}
+                                  </p>
                                 </div>
-                                <button
-                                  onClick={() =>
-                                    handleViewApplications(campaign)
-                                  }
-                                  className="px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
-                                >
-                                  View Details
-                                </button>
                               </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (campaign.chosenPromoters?.promoter?.id) {
+                                    router.push(
+                                      `/user/${campaign.chosenPromoters.promoter.id}`
+                                    );
+                                  }
+                                }}
+                                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+                              >
+                                View Details
+                              </button>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
                     )}{" "}
                     {/* Private Campaign State Management */}
@@ -626,9 +645,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
 
                                   <div className="flex items-center space-x-2 ml-4">
                                     <button
-                                      onClick={() =>
-                                        handleSendMessage(campaign)
-                                      }
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSendMessage(campaign);
+                                      }}
                                       className="flex items-center space-x-1 px-3 py-1 bg-white text-blue-600 border border-blue-200 rounded-md hover:bg-blue-50 transition-colors text-xs"
                                     >
                                       <MessageCircle className="h-3 w-3" />
@@ -636,9 +656,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     </button>
                                     {campaign.campaign.discordInviteLink && (
                                       <button
-                                        onClick={() =>
-                                          handleJoinDiscord(campaign)
-                                        }
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleJoinDiscord(campaign);
+                                        }}
                                         className="flex items-center space-x-1 px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-xs"
                                       >
                                         <ExternalLink className="h-3 w-3" />
