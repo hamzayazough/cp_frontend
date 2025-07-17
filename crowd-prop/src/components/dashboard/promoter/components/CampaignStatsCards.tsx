@@ -88,7 +88,7 @@ export default function CampaignStatsCards({
                     (campaign.campaign.spentBudget /
                       campaign.campaign.budgetHeld) *
                       100
-                  )}
+                  ) || 0}
                   %
                 </p>
               </div>

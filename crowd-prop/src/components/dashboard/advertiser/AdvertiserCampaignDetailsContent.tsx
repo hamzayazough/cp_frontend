@@ -1,30 +1,36 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { CampaignAdvertiser, PromoterApplicationInfo } from '@/app/interfaces/campaign/advertiser-campaign';
-import { CampaignType, CampaignStatus } from '@/app/enums/campaign-type';
-import { ADVERTISER_CAMPAIGN_MOCKS } from '@/app/mocks/advertiser-campaign-mock';
-import { useAdvertiserCampaigns } from '@/hooks/useAdvertiserCampaigns';
-import CreateCampaignWizard from './CreateCampaignWizard';
-import ApplicationReviewModal from './ApplicationReviewModal';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  CampaignAdvertiser,
+  PromoterApplicationInfo,
+} from "@/app/interfaces/campaign/advertiser-campaign";
+import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { ADVERTISER_CAMPAIGN_MOCKS } from "@/app/mocks/advertiser-campaign-mock";
+import { useAdvertiserCampaigns } from "@/hooks/useAdvertiserCampaigns";
+import CreateCampaignWizard from "./CreateCampaignWizard";
+import ApplicationReviewModal from "./ApplicationReviewModal";
 
 // Import new components
-import AdvertiserCampaignHeader from './components/AdvertiserCampaignHeader';
-import AdvertiserCampaignStatsCards from './components/AdvertiserCampaignStatsCards';
-import AdvertiserCampaignTabs from './components/AdvertiserCampaignTabs';
-import AdvertiserCampaignOverview from './components/AdvertiserCampaignOverview';
-import AdvertiserCampaignPromoters from './components/AdvertiserCampaignPromoters';
-import AdvertiserCampaignRequirements from './components/AdvertiserCampaignRequirements';
+import AdvertiserCampaignHeader from "./components/AdvertiserCampaignHeader";
+import AdvertiserCampaignStatsCards from "./components/AdvertiserCampaignStatsCards";
+import AdvertiserCampaignTabs from "./components/AdvertiserCampaignTabs";
+import AdvertiserCampaignOverview from "./components/AdvertiserCampaignOverview";
+import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoters";
+import AdvertiserCampaignRequirements from "./components/AdvertiserCampaignRequirements";
 
 interface AdvertiserCampaignDetailsContentProps {
   campaignId: string;
 }
 
-export default function AdvertiserCampaignDetailsContent({ campaignId }: AdvertiserCampaignDetailsContentProps) {
+export default function AdvertiserCampaignDetailsContent({
+  campaignId,
+}: AdvertiserCampaignDetailsContentProps) {
   const router = useRouter();
-  const { getCampaignDetails, getCampaignApplications, reviewApplication } = useAdvertiserCampaigns();
-  
+  const { getCampaignDetails, getCampaignApplications, reviewApplication } =
+    useAdvertiserCampaigns();
+
   const [isCreateMode, setIsCreateMode] = useState(false);
   const [campaign, setCampaign] = useState<CampaignAdvertiser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +48,7 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
 
   useEffect(() => {
     // Check if this is the create route
-    if (campaignId === 'create') {
+    if (campaignId === "create") {
       setIsCreateMode(true);
       setLoading(false);
       return;
@@ -56,10 +62,14 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
         const campaignData = await getCampaignDetails(campaignId);
         setCampaign(campaignData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load campaign');
-        console.error('Error loading campaign:', err);
+        setError(
+          err instanceof Error ? err.message : "Failed to load campaign"
+        );
+        console.error("Error loading campaign:", err);
         // Fallback to mock data for now
-        const foundCampaign = ADVERTISER_CAMPAIGN_MOCKS.campaigns.find(c => c.id === campaignId);
+        const foundCampaign = ADVERTISER_CAMPAIGN_MOCKS.campaigns.find(
+          (c) => c.id === campaignId
+        );
         setCampaign(foundCampaign || null);
       } finally {
         setLoading(false);
@@ -72,31 +82,30 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
   const getStatusColor = (status: CampaignStatus) => {
     switch (status) {
       case CampaignStatus.ACTIVE:
-        return 'bg-green-100 text-green-800';
+        return "bg-green-100 text-green-800";
       case CampaignStatus.PAUSED:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
       case CampaignStatus.ENDED:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getTypeColor = (type: CampaignType) => {
     switch (type) {
       case CampaignType.VISIBILITY:
-        return 'bg-purple-100 text-purple-800';
+        return "bg-purple-100 text-purple-800";
       case CampaignType.CONSULTANT:
-        return 'bg-blue-100 text-blue-800';
+        return "bg-blue-100 text-blue-800";
       case CampaignType.SELLER:
-        return 'bg-orange-100 text-orange-800';
+        return "bg-orange-100 text-orange-800";
       case CampaignType.SALESMAN:
-        return 'bg-green-100 text-green-800';
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
-
   const handleViewApplications = async (campaign: CampaignAdvertiser) => {
     try {
       const applications = await getCampaignApplications(campaign.id);
@@ -106,12 +115,12 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
         applications,
       });
     } catch (error) {
-      console.error('Error loading applications:', error);
-      // Fallback to campaign promoters data
+      console.error("Error loading applications:", error);
+      // Fallback to campaign applicants data
       setModalState({
         isOpen: true,
         campaign,
-        applications: campaign.promoters || [],
+        applications: campaign.applicants || [],
       });
     }
   };
@@ -126,67 +135,76 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
 
   const handleAcceptApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
-    
+
     try {
       const result = await reviewApplication({
         campaignId: modalState.campaign.id,
         applicationId,
-        action: 'accept',
+        action: "ACCEPTED",
       });
-      
+
       if (result.success) {
         // Refresh applications
-        const updatedApplications = await getCampaignApplications(modalState.campaign.id);
-        setModalState(prev => ({
+        const updatedApplications = await getCampaignApplications(
+          modalState.campaign.id
+        );
+        setModalState((prev) => ({
           ...prev,
           applications: updatedApplications,
         }));
-        
+
         // Refresh campaign data
-        const updatedCampaign = await getCampaignDetails(modalState.campaign.id);
+        const updatedCampaign = await getCampaignDetails(
+          modalState.campaign.id
+        );
         setCampaign(updatedCampaign);
       }
     } catch (error) {
-      console.error('Error accepting application:', error);
+      console.error("Error accepting application:", error);
     }
   };
 
   const handleRejectApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
-    
+
     try {
       const result = await reviewApplication({
         campaignId: modalState.campaign.id,
         applicationId,
-        action: 'reject',
+        action: "REJECTED",
       });
-      
+
       if (result.success) {
         // Refresh applications
-        const updatedApplications = await getCampaignApplications(modalState.campaign.id);
-        setModalState(prev => ({
+        const updatedApplications = await getCampaignApplications(
+          modalState.campaign.id
+        );
+        setModalState((prev) => ({
           ...prev,
           applications: updatedApplications,
         }));
-        
+
         // Refresh campaign data
-        const updatedCampaign = await getCampaignDetails(modalState.campaign.id);
+        const updatedCampaign = await getCampaignDetails(
+          modalState.campaign.id
+        );
         setCampaign(updatedCampaign);
       }
     } catch (error) {
-      console.error('Error rejecting application:', error);
+      console.error("Error rejecting application:", error);
     }
   };
 
   const handleShareClick = () => {
     // TODO: Implement share functionality
-    console.log('Share campaign:', campaign?.id);
+    console.log("Share campaign:", campaign?.id);
   };
 
   const getDaysLeft = () => {
     if (!campaign) return 0;
     return Math.ceil(
-      (new Date(campaign.campaign.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      (new Date(campaign.campaign.deadline).getTime() - new Date().getTime()) /
+        (1000 * 60 * 60 * 24)
     );
   };
 
@@ -197,12 +215,21 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
       case "overview":
         return <AdvertiserCampaignOverview campaign={campaign} />;
       case "promoters":
-        return <AdvertiserCampaignPromoters campaign={campaign} onViewApplications={handleViewApplications} />;
+        return (
+          <AdvertiserCampaignPromoters
+            campaign={campaign}
+            onViewApplications={handleViewApplications}
+          />
+        );
       case "performance":
         return (
           <div className="text-center py-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Performance Analytics</h3>
-            <p className="text-gray-600">Performance analytics coming soon...</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Performance Analytics
+            </h3>
+            <p className="text-gray-600">
+              Performance analytics coming soon...
+            </p>
           </div>
         );
       case "requirements":
@@ -210,7 +237,9 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
       case "messages":
         return (
           <div className="text-center py-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Campaign Messages</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Campaign Messages
+            </h3>
             <p className="text-gray-600">Messaging system coming soon...</p>
           </div>
         );
@@ -229,14 +258,14 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
 
   if (isCreateMode) {
     return (
-      <CreateCampaignWizard 
+      <CreateCampaignWizard
         onComplete={(createdCampaign) => {
           // Navigate to the newly created campaign
           router.push(`/dashboard/campaigns/${createdCampaign.id}`);
         }}
         onCancel={() => {
           // Navigate back to campaigns list
-          router.push('/dashboard/campaigns');
+          router.push("/dashboard/campaigns");
         }}
       />
     );
@@ -250,10 +279,11 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
             Campaign Not Found
           </h2>
           <p className="text-gray-600 mb-4">
-            The campaign you&apos;re looking for doesn&apos;t exist or has been removed.
+            The campaign you&apos;re looking for doesn&apos;t exist or has been
+            removed.
           </p>
           <button
-            onClick={() => router.push('/dashboard/campaigns')}
+            onClick={() => router.push("/dashboard/campaigns")}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             Back to Campaigns
@@ -288,9 +318,7 @@ export default function AdvertiserCampaignDetailsContent({ campaignId }: Adverti
 
       {/* Tab Content */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="p-6">
-          {renderTabContent()}
-        </div>
+        <div className="p-6">{renderTabContent()}</div>
       </div>
 
       {/* Application Review Modal */}

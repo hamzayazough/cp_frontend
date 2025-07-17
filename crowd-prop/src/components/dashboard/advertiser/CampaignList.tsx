@@ -6,11 +6,7 @@ import {
   CampaignAdvertiser,
   PromoterApplicationInfo,
 } from "@/app/interfaces/campaign/advertiser-campaign";
-import {
-  CampaignType,
-  PromoterCampaignStatus,
-  CampaignStatus,
-} from "@/app/enums/campaign-type";
+import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 import { ADVERTISER_CAMPAIGN_MOCKS } from "@/app/mocks/advertiser-campaign-mock";
 import { useAdvertiserCampaigns } from "@/hooks/useAdvertiserCampaigns";
 import ApplicationReviewModal from "./ApplicationReviewModal";
@@ -146,7 +142,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       const result = await reviewApplication({
         campaignId: modalState.campaign.id,
         applicationId,
-        action: "accept",
+        action: "ACCEPTED",
       });
 
       if (result.success) {
@@ -173,7 +169,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       const result = await reviewApplication({
         campaignId: modalState.campaign.id,
         applicationId,
-        action: "reject",
+        action: "REJECTED",
       });
 
       if (result.success) {
@@ -210,16 +206,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     console.log("Send message for campaign:", campaign.id);
     // TODO: Open message modal or navigate to messages
   };
-
   const handleJoinDiscord = (campaign: CampaignAdvertiser) => {
     if (campaign.campaign.discordInviteLink) {
       window.open(campaign.campaign.discordInviteLink, "_blank");
     }
-  };
-
-  const handleViewPromoters = (campaign: CampaignAdvertiser) => {
-    console.log("View promoters for campaign:", campaign.id);
-    // TODO: Open modal with promoters list
   };
 
   if (campaigns.length === 0) {
@@ -347,91 +337,81 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         (() => {
                           // For private campaigns (consultant, salesman, seller), don't show promoter count
                           if (!campaign.campaign.isPublic) {
-                            // For private campaigns with ongoing promoter, show campaign-specific metric
-                            if (
-                              campaign.promoters &&
-                              campaign.promoters.length > 0
-                            ) {
-                              const ongoingPromoter = campaign.promoters.find(
-                                (p) =>
-                                  p.status === PromoterCampaignStatus.ONGOING
-                              );
-                              if (ongoingPromoter) {
-                                if (campaign.type === CampaignType.CONSULTANT) {
-                                  return (
-                                    <div>
-                                      <p className="text-xs text-gray-500">
-                                        Meetings
-                                      </p>
-                                      <p className="text-sm font-medium text-gray-900">
-                                        {ongoingPromoter.numberMeetingsDone ||
-                                          0}
-                                        /8
-                                      </p>
-                                    </div>
-                                  );
-                                } else if (
-                                  campaign.type === CampaignType.SALESMAN
-                                ) {
-                                  return (
-                                    <div>
-                                      <p className="text-xs text-gray-500">
-                                        Sales
-                                      </p>
-                                      <p className="text-sm font-medium text-gray-900">
-                                        {campaign.performance.totalSalesMade ||
-                                          0}
-                                      </p>
-                                    </div>
-                                  );
-                                } else if (
-                                  campaign.type === CampaignType.SELLER
-                                ) {
-                                  return (
-                                    <div>
-                                      <p className="text-xs text-gray-500">
-                                        Progress
-                                      </p>
-                                      <p className="text-sm font-medium text-gray-900">
-                                        In Progress
-                                      </p>
-                                    </div>
-                                  );
-                                }
+                            // For private campaigns with chosen promoter, show campaign-specific metric
+                            if (campaign.chosenPromoters) {
+                              if (campaign.type === CampaignType.CONSULTANT) {
+                                return (
+                                  <div>
+                                    <p className="text-xs text-gray-500">
+                                      Meetings
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">
+                                      {campaign.chosenPromoters
+                                        .numberMeetingsDone || 0}
+                                      /8
+                                    </p>
+                                  </div>
+                                );
+                              } else if (
+                                campaign.type === CampaignType.SALESMAN
+                              ) {
+                                return (
+                                  <div>
+                                    <p className="text-xs text-gray-500">
+                                      Sales
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">
+                                      {campaign.performance.totalSalesMade || 0}
+                                    </p>
+                                  </div>
+                                );
+                              } else if (
+                                campaign.type === CampaignType.SELLER
+                              ) {
+                                return (
+                                  <div>
+                                    <p className="text-xs text-gray-500">
+                                      Progress
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-900">
+                                      In Progress
+                                    </p>
+                                  </div>
+                                );
                               }
                             }
-                            // For private campaigns without ongoing promoter, return empty div
+                            // For private campaigns without chosen promoter, return empty div
                             return <div></div>;
                           } else {
-                            // For public campaigns, show promoters
-                            const totalPromoters =
-                              campaign.promoters?.length || 0;
-                            if (totalPromoters > 0) {
-                              // Make it clickable if there are promoters
+                            // For public campaigns, show applicants
+                            const totalApplicants =
+                              campaign.applicants?.length || 0;
+                            if (totalApplicants > 0) {
+                              // Make it clickable if there are applicants
                               return (
                                 <div>
                                   <p className="text-xs text-gray-500">
-                                    Promoters
+                                    Applicants
                                   </p>
                                   <button
                                     onClick={() =>
-                                      handleViewPromoters(campaign)
+                                      handleViewApplications(campaign)
                                     }
                                     className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                                   >
-                                    {totalPromoters}
+                                    {totalApplicants}
                                   </button>
                                 </div>
                               );
                             } else {
-                              // Show regular count if no promoters
+                              // Show regular count if no applicants
                               return (
                                 <div>
                                   <p className="text-xs text-gray-500">
-                                    Promoters
+                                    Applicants
                                   </p>
                                   <p className="text-sm font-medium text-gray-900">
-                                    {totalPromoters}
+                                    {totalApplicants}
                                   </p>
                                 </div>
                               );
@@ -514,57 +494,47 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                   : "Unlimited"}
                               </p>
                             </div>
-                          </div>
-
-                          {/* Promoters section */}
-                          {campaign.promoters &&
-                            campaign.promoters.length > 0 && (
-                              <div className="bg-white rounded-md p-3 border border-blue-200">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-2">
-                                    <Users className="h-4 w-4 text-blue-600" />
-                                    <div>
-                                      <p className="text-sm font-medium text-gray-900">
-                                        See who&apos;s promoting your campaign
-                                      </p>
-                                      <p className="text-xs text-gray-500">
-                                        {campaign.promoters.length} active
-                                        promoter
-                                        {campaign.promoters.length !== 1
-                                          ? "s"
-                                          : ""}
-                                      </p>
-                                    </div>
+                          </div>{" "}
+                          {/* Chosen Promoters section - for visibility campaigns */}
+                          {campaign.chosenPromoters && (
+                            <div className="bg-white rounded-md p-3 border border-blue-200">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                  <Users className="h-4 w-4 text-blue-600" />
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-900">
+                                      Active Promoter
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      {campaign.chosenPromoters.promoter.name}
+                                    </p>
                                   </div>
-                                  <button
-                                    onClick={() =>
-                                      handleViewPromoters(campaign)
-                                    }
-                                    className="px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
-                                  >
-                                    View All
-                                  </button>
                                 </div>
+                                <button
+                                  onClick={() =>
+                                    handleViewApplications(campaign)
+                                  }
+                                  className="px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
+                                >
+                                  View Details
+                                </button>
                               </div>
-                            )}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
+                    )}{" "}
                     {/* Private Campaign State Management */}
                     {!campaign.campaign.isPublic && (
                       <div className="mb-4 pt-2 border-t border-gray-100">
                         {(() => {
-                          const ongoingPromoter = campaign.promoters?.find(
-                            (p) => p.status === PromoterCampaignStatus.ONGOING
-                          );
+                          const chosenPromoter = campaign.chosenPromoters;
                           const pendingApplications =
-                            campaign.promoters?.filter(
-                              (p) =>
-                                p.status ===
-                                PromoterCampaignStatus.AWAITING_REVIEW
+                            campaign.applicants?.filter(
+                              (app) => app.applicationStatus === "PENDING"
                             ) || [];
 
-                          if (ongoingPromoter) {
+                          if (chosenPromoter) {
                             // Show selected promoter info with campaign-specific details
                             return (
                               <div className="bg-blue-50 rounded-lg p-4">
@@ -576,7 +546,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     <div className="flex-1">
                                       <div className="flex items-center space-x-2 mb-1">
                                         <p className="text-sm font-medium text-gray-900">
-                                          {ongoingPromoter.promoter.name}
+                                          {chosenPromoter.promoter.name}
                                         </p>
                                         <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
                                           Active
@@ -584,8 +554,8 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                       </div>
                                       <p className="text-xs text-gray-600 mb-2">
                                         Joined{" "}
-                                        {ongoingPromoter.joinedAt
-                                          ? formatDate(ongoingPromoter.joinedAt)
+                                        {chosenPromoter.joinedAt
+                                          ? formatDate(chosenPromoter.joinedAt)
                                           : "Recently"}
                                       </p>
 
@@ -599,7 +569,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                                 Meetings:
                                               </span>
                                               <span className="ml-1 font-medium">
-                                                {ongoingPromoter.numberMeetingsDone ||
+                                                {chosenPromoter.numberMeetingsDone ||
                                                   0}
                                                 /8
                                               </span>
@@ -634,7 +604,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                                 Commission:
                                               </span>
                                               <span className="ml-1 font-medium">
-                                                ${ongoingPromoter.earnings || 0}
+                                                ${chosenPromoter.earnings || 0}
                                               </span>
                                             </div>
                                           </div>

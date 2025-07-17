@@ -3,6 +3,7 @@ import { promoterService } from "@/services/promoter.service";
 import { MOCK_CAMPAIGN_PROMOTERS } from "@/app/mocks/campaign-promoter-mock";
 import { GetPromoterCampaignsRequest } from "@/app/interfaces/campaign/promoter-campaigns-request";
 import { CampaignPromoter } from "@/app/interfaces/campaign/promoter-campaign-details";
+import { savePromoterCampaignsToStorage } from "@/utils/promoter-campaigns-storage";
 
 interface UsePromoterCampaignsState {
   campaigns: CampaignPromoter[];
@@ -55,9 +56,11 @@ export function usePromoterCampaigns(
     async (params: GetPromoterCampaignsRequest = {}) => {
       setState((prev) => ({ ...prev, loading: true, error: null }));
       setLastParams(params);
-
       try {
         const response = await promoterService.getPromoterCampaigns(params);
+
+        // Save campaigns to localStorage for details page access
+        savePromoterCampaignsToStorage(response.campaigns);
 
         setState((prev) => ({
           ...prev,
@@ -160,6 +163,9 @@ export function usePromoterCampaigns(
           startIndex,
           startIndex + limit
         );
+
+        // Save mock campaigns to localStorage for details page access
+        savePromoterCampaignsToStorage(filteredCampaigns);
 
         setState((prev) => ({
           ...prev,

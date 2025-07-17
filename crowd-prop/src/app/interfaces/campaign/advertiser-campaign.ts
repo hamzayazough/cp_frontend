@@ -9,6 +9,7 @@ import { SocialPlatform } from "@/app/enums/social-platform";
 import { CampaignStatus } from "@/app/enums/campaign-type";
 import { Promoter } from "../user";
 import { AdvertiserType } from "@/app/enums/advertiser-type";
+import { ApplicationStatus } from "../campaign-application";
 
 export enum AdvertiserCampaignSortField {
   CREATED_AT = "createdAt",
@@ -24,6 +25,12 @@ export enum AdvertiserCampaignSortField {
 
 export interface PromoterApplicationInfo {
   promoter: Promoter;
+  applicationStatus: ApplicationStatus;
+  applicationMessage?: string;
+}
+
+export interface ChosenPromoterInfo {
+  promoter: Promoter;
   status: PromoterCampaignStatus;
 
   // If promoter is in ONGOING or COMPLETED status
@@ -34,6 +41,7 @@ export interface PromoterApplicationInfo {
   // if campaign is CONSULTANT or SELLER + is in ONGOING or COMPLETED
   numberMeetingsDone?: number; // Number of meetings done by the promoter
   promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
+  budgetAllocated: number; // Amount currently reserved/held from advertiser
 }
 
 export interface AdvertiserBaseCampaignDetails {
@@ -122,7 +130,8 @@ export interface CampaignAdvertiser {
   tags: AdvertiserType[]; //getting them from Advertiser user -> user.advertiserType
   meetingDone?: boolean; // Indicates if the meeting is done for campaigns that require it. from PromoterCampaign
 
-  promoters?: PromoterApplicationInfo[];
+  applicants?: PromoterApplicationInfo[];
+  chosenPromoters?: ChosenPromoterInfo; // Promoter who have been selected for the campaign
 }
 
 // Pagination and filtering interfaces
@@ -221,5 +230,5 @@ export interface FundCampaignRequest {
 export interface ReviewPromoterApplicationRequest {
   campaignId: string;
   applicationId: string;
-  action: "accept" | "reject";
+  action: "ACCEPTED" | "REJECTED";
 }

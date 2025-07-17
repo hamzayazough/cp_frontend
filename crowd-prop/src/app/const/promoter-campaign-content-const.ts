@@ -77,19 +77,17 @@ export const getTypeColor = (type: string) => {
 export const getEarningsInfo = (campaign: CampaignPromoter) => {
   switch (campaign.type) {
     case CampaignType.VISIBILITY:
-      return `$${
-        (campaign.campaign as VisibilityCampaignDetails).cpv
-      }/100 views`;
+      const cpv = (campaign.campaign as VisibilityCampaignDetails).cpv;
+      const cpvNumber = typeof cpv === "number" ? cpv : parseFloat(cpv) || 0;
+      return `$${cpvNumber.toFixed(2)}/100 views`;
     case CampaignType.SALESMAN:
       return `${
         (campaign.campaign as SalesmanCampaignDetails).commissionPerSale
       }% commission`;
     case CampaignType.CONSULTANT:
-      // For consultant campaigns, show budget range since there's no hourly rate
       const consultantDetails = campaign.campaign as ConsultantCampaignDetails;
       return `$${consultantDetails.minBudget}-$${consultantDetails.maxBudget}`;
     case CampaignType.SELLER:
-      // For seller campaigns, show budget range or fixed price if available
       const sellerDetails = campaign.campaign as SellerCampaignDetails;
       return sellerDetails.fixedPrice
         ? `$${sellerDetails.fixedPrice} fixed`

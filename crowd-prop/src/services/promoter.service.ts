@@ -2,6 +2,10 @@ import {
   SendApplicationRequest,
   SendApplicationResponse,
 } from "@/app/interfaces/campaign/campaign-application";
+import {
+  AcceptContractRequest,
+  AcceptContractResponse,
+} from "@/app/interfaces/campaign/accept-contract";
 import { ExploreCampaignRequest } from "@/app/interfaces/campaign/explore-campaign-request";
 import { ExploreCampaignResponse } from "@/app/interfaces/campaign/explore-campaign";
 import {
@@ -355,6 +359,25 @@ export class PromoterService {
     }
 
     return response.data.data;
+  }
+
+  /**
+   * Accept a public campaign contract
+   */
+  async acceptContract(
+    params: AcceptContractRequest
+  ): Promise<AcceptContractResponse> {
+    const response = await this.httpService.post<AcceptContractResponse>(
+      "/promoter/campaigns/accept-contract",
+      params,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to accept contract");
+    }
+
+    return response.data;
   }
 }
 

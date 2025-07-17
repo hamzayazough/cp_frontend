@@ -497,18 +497,6 @@ export default function PromoterCampaignsContent() {
                           Submit Work
                         </button>
                       )}
-                    {campaign.mediaUrl && campaign.mediaUrl !== "undefined" && (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          // Handle preview media action
-                        }}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-medium rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-                      >
-                        <PlayIcon className="h-4 w-4" />
-                        Preview Media
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>

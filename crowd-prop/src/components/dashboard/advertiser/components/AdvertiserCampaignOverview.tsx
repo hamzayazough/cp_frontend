@@ -2,12 +2,12 @@
 
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType } from "@/app/enums/campaign-type";
-import { SocialPlatform } from '@/app/enums/social-platform';
-import { AdvertiserType } from '@/app/enums/advertiser-type';
-import { 
-  DollarSign, 
-  Target, 
-  Tag, 
+import { SocialPlatform } from "@/app/enums/social-platform";
+import { AdvertiserType } from "@/app/enums/advertiser-type";
+import {
+  DollarSign,
+  Target,
+  Tag,
   Calendar,
   MessageCircle,
   Instagram,
@@ -15,32 +15,35 @@ import {
   Youtube,
   Linkedin,
   Facebook,
-  Globe
-} from 'lucide-react';
+  Globe,
+} from "lucide-react";
+import Image from "next/image";
 
 interface AdvertiserCampaignOverviewProps {
   campaign: CampaignAdvertiser;
 }
 
-export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampaignOverviewProps) {
+export default function AdvertiserCampaignOverview({
+  campaign,
+}: AdvertiserCampaignOverviewProps) {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('en-US').format(num);
+    return new Intl.NumberFormat("en-US").format(num);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -64,28 +67,28 @@ export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampa
   const getAdvertiserTypeColor = (type: AdvertiserType) => {
     switch (type) {
       case AdvertiserType.EVENTS:
-        return 'bg-purple-100 text-purple-800';
+        return "bg-purple-100 text-purple-800";
       case AdvertiserType.SPORTS:
-        return 'bg-pink-100 text-pink-800';
+        return "bg-pink-100 text-pink-800";
       case AdvertiserType.TECH:
-        return 'bg-blue-100 text-blue-800';
+        return "bg-blue-100 text-blue-800";
       case AdvertiserType.HEALTH:
-        return 'bg-green-100 text-green-800';
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getAdvertiserTypeLabel = (type: AdvertiserType) => {
     switch (type) {
       case AdvertiserType.EVENTS:
-        return 'EVENTS';
+        return "EVENTS";
       case AdvertiserType.SPORTS:
-        return 'SPORTS';
+        return "SPORTS";
       case AdvertiserType.TECH:
-        return 'TECH';
+        return "TECH";
       case AdvertiserType.HEALTH:
-        return 'HEALTH';
+        return "HEALTH";
       default:
         return type.toUpperCase();
     }
@@ -97,93 +100,152 @@ export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampa
         return (
           <>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Cost per 100 Views</span>
+              <span className="text-sm font-medium text-gray-600">
+                Cost per 100 Views
+              </span>
               <span className="text-lg font-semibold text-pink-600">
-                {campaign.campaign.type === CampaignType.VISIBILITY ? formatCurrency(campaign.campaign.cpv * 100) : 'N/A'}
+                {campaign.campaign.type === CampaignType.VISIBILITY
+                  ? formatCurrency(campaign.campaign.cpv * 100)
+                  : "N/A"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Max Views</span>
+              <span className="text-sm font-medium text-gray-600">
+                Max Views
+              </span>
               <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.VISIBILITY ? formatNumber(campaign.campaign.maxViews) : 'N/A'}
+                {campaign.campaign.type === CampaignType.VISIBILITY
+                  ? formatNumber(campaign.campaign.maxViews)
+                  : "N/A"}
               </span>
             </div>
-            {campaign.campaign.type === CampaignType.VISIBILITY && campaign.campaign.minFollowers && (
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600">Min Followers</span>
-                <span className="text-lg font-semibold text-gray-900">{formatNumber(campaign.campaign.minFollowers)}</span>
-              </div>
-            )}
+            {campaign.campaign.type === CampaignType.VISIBILITY &&
+              campaign.campaign.minFollowers && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-600">
+                    Min Followers
+                  </span>
+                  <span className="text-lg font-semibold text-gray-900">
+                    {formatNumber(campaign.campaign.minFollowers)}
+                  </span>
+                </div>
+              )}
           </>
         );
-      
+
       case CampaignType.CONSULTANT:
         return (
           <>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Budget Range</span>
+              <span className="text-sm font-medium text-gray-600">
+                Budget Range
+              </span>
               <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.CONSULTANT ? 
-                  `${formatCurrency(campaign.campaign.minBudget)} - ${formatCurrency(campaign.campaign.maxBudget)}` : 
-                  'N/A'
-                }
+                {campaign.campaign.type === CampaignType.CONSULTANT
+                  ? `${formatCurrency(
+                      campaign.campaign.minBudget
+                    )} - ${formatCurrency(campaign.campaign.maxBudget)}`
+                  : "N/A"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Meeting Count</span>
+              <span className="text-sm font-medium text-gray-600">
+                Meeting Count
+              </span>
               <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.CONSULTANT ? campaign.campaign.meetingCount : 'N/A'}
+                {campaign.campaign.type === CampaignType.CONSULTANT
+                  ? campaign.campaign.meetingCount
+                  : "N/A"}
               </span>
             </div>
           </>
         );
-      
+
       case CampaignType.SELLER:
         return (
           <>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Budget Range</span>
+              <span className="text-sm font-medium text-gray-600">
+                Budget Range
+              </span>
               <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.SELLER ? 
-                  `${formatCurrency(campaign.campaign.minBudget)} - ${formatCurrency(campaign.campaign.maxBudget)}` : 
-                  'N/A'
-                }
+                {campaign.campaign.type === CampaignType.SELLER
+                  ? `${formatCurrency(
+                      campaign.campaign.minBudget
+                    )} - ${formatCurrency(campaign.campaign.maxBudget)}`
+                  : "N/A"}
               </span>
             </div>
-            {campaign.campaign.type === CampaignType.SELLER && campaign.campaign.fixedPrice && (
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600">Fixed Price</span>
-                <span className="text-lg font-semibold text-gray-900">{formatCurrency(campaign.campaign.fixedPrice)}</span>
-              </div>
-            )}
+            {campaign.campaign.type === CampaignType.SELLER &&
+              campaign.campaign.fixedPrice && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-600">
+                    Fixed Price
+                  </span>
+                  <span className="text-lg font-semibold text-gray-900">
+                    {formatCurrency(campaign.campaign.fixedPrice)}
+                  </span>
+                </div>
+              )}
           </>
         );
-      
+
       case CampaignType.SALESMAN:
         return (
           <>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Commission per Sale</span>
+              <span className="text-sm font-medium text-gray-600">
+                Commission per Sale
+              </span>
               <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.SALESMAN ? formatCurrency(campaign.campaign.commissionPerSale) : 'N/A'}
+                {campaign.campaign.type === CampaignType.SALESMAN
+                  ? formatCurrency(campaign.campaign.commissionPerSale)
+                  : "N/A"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Sales Tracking</span>
+              <span className="text-sm font-medium text-gray-600">
+                Sales Tracking
+              </span>
               <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.SALESMAN ? campaign.campaign.trackSalesVia : 'N/A'}
+                {campaign.campaign.type === CampaignType.SALESMAN
+                  ? campaign.campaign.trackSalesVia
+                  : "N/A"}
               </span>
             </div>
           </>
         );
-      
+
       default:
         return null;
     }
   };
-
   return (
     <div className="space-y-6">
+      {/* Campaign Media */}
+      {campaign.mediaUrl && (
+        <div>
+          <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
+            {campaign.mediaUrl.endsWith(".mp4") ||
+            campaign.mediaUrl.endsWith(".webm") ? (
+              <video
+                src={campaign.mediaUrl}
+                controls
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={campaign.mediaUrl}
+                alt="Campaign Media"
+                width={800}
+                height={400}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Three cards section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Campaign Details Card */}
@@ -192,12 +254,16 @@ export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampa
             <div className="p-2 bg-blue-100 rounded-lg">
               <DollarSign className="h-5 w-5 text-blue-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Campaign Details</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Campaign Details
+            </h3>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-600">Budget</span>
-              <span className="text-lg font-semibold text-green-600">{formatCurrency(campaign.campaign.budgetHeld)}</span>
+              <span className="text-lg font-semibold text-green-600">
+                {formatCurrency(campaign.campaign.budgetHeld)}
+              </span>
             </div>
             {renderCampaignSpecificDetails()}
           </div>
@@ -209,7 +275,9 @@ export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampa
             <div className="p-2 bg-green-100 rounded-lg">
               <Target className="h-5 w-5 text-green-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Target Audience</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Target Audience
+            </h3>
           </div>
           <div className="space-y-3">
             {campaign.campaign.targetAudience && (
@@ -217,19 +285,29 @@ export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampa
                 {campaign.campaign.targetAudience}
               </p>
             )}
-            {campaign.campaign.preferredPlatforms && campaign.campaign.preferredPlatforms.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">Preferred Platforms:</p>
-                <div className="flex flex-wrap gap-2">
-                  {campaign.campaign.preferredPlatforms.map((platform, index) => (
-                    <div key={index} className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full">
-                      {getSocialPlatformIcon(platform)}
-                      <span className="text-xs font-medium text-green-700">{platform}</span>
-                    </div>
-                  ))}
+            {campaign.campaign.preferredPlatforms &&
+              campaign.campaign.preferredPlatforms.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-2">
+                    Preferred Platforms:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {campaign.campaign.preferredPlatforms.map(
+                      (platform, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full"
+                        >
+                          {getSocialPlatformIcon(platform)}
+                          <span className="text-xs font-medium text-green-700">
+                            {platform}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
 
@@ -239,13 +317,20 @@ export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampa
             <div className="p-2 bg-purple-100 rounded-lg">
               <Tag className="h-5 w-5 text-purple-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Campaign Tags</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Campaign Tags
+            </h3>
           </div>
           <div className="space-y-3">
             {campaign.tags && campaign.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {campaign.tags.map((tag, index) => (
-                  <span key={index} className={`px-3 py-1 rounded-full text-xs font-medium ${getAdvertiserTypeColor(tag)}`}>
+                  <span
+                    key={index}
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getAdvertiserTypeColor(
+                      tag
+                    )}`}
+                  >
                     {getAdvertiserTypeLabel(tag)}
                   </span>
                 ))}
@@ -261,28 +346,39 @@ export default function AdvertiserCampaignOverview({ campaign }: AdvertiserCampa
           <div className="p-2 bg-blue-100 rounded-lg">
             <Calendar className="h-5 w-5 text-blue-600" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">Campaign Timeline</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Campaign Timeline
+          </h3>
         </div>
-        
+
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium text-gray-900">Start Date</p>
-              <p className="text-sm text-gray-600">{formatDate(campaign.campaign.startDate)}</p>
+              <p className="text-sm text-gray-600">
+                {formatDate(campaign.campaign.startDate)}
+              </p>
             </div>
             <div className="text-right">
               <p className="text-sm font-medium text-gray-900">Deadline</p>
-              <p className="text-sm text-gray-600">{formatDate(campaign.campaign.deadline)}</p>
+              <p className="text-sm text-gray-600">
+                {formatDate(campaign.campaign.deadline)}
+              </p>
             </div>
           </div>
-          
+
           {/* Progress bar */}
           <div className="relative">
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${Math.min(100, (campaign.campaign.spentBudget / campaign.campaign.budgetHeld) * 100)}%` 
+                style={{
+                  width: `${Math.min(
+                    100,
+                    (campaign.campaign.spentBudget /
+                      campaign.campaign.budgetHeld) *
+                      100
+                  )}%`,
                 }}
               ></div>
             </div>

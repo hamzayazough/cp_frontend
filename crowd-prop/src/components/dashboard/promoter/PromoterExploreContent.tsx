@@ -187,23 +187,69 @@ export default function PromoterExploreContent() {
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+  const [acceptingContract, setAcceptingContract] = useState<string | null>(
+    null
+  );
   const [applicationModal, setApplicationModal] = useState<{
     isOpen: boolean;
     campaign: CampaignUnion | null;
   }>({ isOpen: false, campaign: null });
 
-  // Use the hook to get campaigns data
-  const { campaigns, loading, error } = useExploreCampaigns({
+  // Notification state
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: "success",
+    title: "",
+    message: "",
+  }); // Use the hook to get campaigns data
+  const { campaigns, loading, error, refetch } = useExploreCampaigns({
     searchTerm,
     typeFilter,
     sortBy,
   });
-
-  const handleApplyClick = (campaign: CampaignUnion) => {
+  const handleApplyClick = async (campaign: CampaignUnion) => {
     if (campaign.isPublic) {
       // Handle "Take Contract" for public campaigns
-      console.log("Taking contract for public campaign:", campaign.id);
-      // TODO: Implement take contract logic
+      setAcceptingContract(campaign.id);
+      try {
+        const response = await promoterService.acceptContract({
+          campaignId: campaign.id,
+        });
+
+        console.log("Contract accepted successfully:", response);
+
+        // Show success notification
+        setNotification({
+          isOpen: true,
+          type: "success",
+          title: "Contract Accepted!",
+          message:
+            response.message || "You have successfully joined this campaign.",
+        });
+
+        // Refresh campaigns to remove the accepted campaign
+        await refetch();
+      } catch (error) {
+        console.error("Failed to accept contract:", error);
+
+        // Show error notification
+        setNotification({
+          isOpen: true,
+          type: "error",
+          title: "Failed to Accept Contract",
+          message:
+            error instanceof Error
+              ? error.message
+              : "An error occurred while accepting the contract. Please try again.",
+        });
+      } finally {
+        setAcceptingContract(null);
+      }
     } else {
       // Open application modal for private campaigns
       setApplicationModal({ isOpen: true, campaign });
@@ -222,11 +268,29 @@ export default function PromoterExploreContent() {
 
       // Close modal and show success message
       setApplicationModal({ isOpen: false, campaign: null });
-      // TODO: Show success toast/notification with response.message
+
+      // Show success notification
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Application Submitted!",
+        message:
+          response.message ||
+          "Your application has been submitted successfully.",
+      });
     } catch (error) {
       console.error("Failed to submit application:", error);
-      // TODO: Show error toast/notification
-      // For now, we'll still close the modal, but in a real app you'd want to keep it open and show the error
+
+      // Show error notification but keep modal open
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Failed to Submit Application",
+        message:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while submitting your application. Please try again.",
+      });
     }
   };
 
@@ -521,9 +585,17 @@ export default function PromoterExploreContent() {
                       e.stopPropagation();
                       handleApplyClick(campaign);
                     }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center space-x-2"
+                    disabled={acceptingContract === campaign.id}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2"
                   >
-                    {campaign.isPublic ? (
+                    {acceptingContract === campaign.id ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>
+                          {campaign.isPublic ? "Accepting..." : "Submitting..."}
+                        </span>
+                      </>
+                    ) : campaign.isPublic ? (
                       <>
                         <DocumentTextIcon className="h-4 w-4" />
                         <span>Take Contract</span>
@@ -571,6 +643,88 @@ export default function PromoterExploreContent() {
           onClose={handleCloseModal}
           onSubmit={handleApplicationSubmit}
         />
+      )}
+      {/* Notification Modal */}
+      {notification.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  {notification.type === "success" ? (
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                      <svg
+                        className="w-5 h-5 text-green-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                      <svg
+                        className="w-5 h-5 text-red-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {notification.title}
+                  </h2>
+                </div>
+                <button
+                  onClick={() =>
+                    setNotification({ ...notification, isOpen: false })
+                  }
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <p className="text-gray-700 mb-6">{notification.message}</p>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() =>
+                    setNotification({ ...notification, isOpen: false })
+                  }
+                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                    notification.type === "success"
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-red-600 text-white hover:bg-red-700"
+                  }`}
+                >
+                  Got it
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

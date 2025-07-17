@@ -392,6 +392,8 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               <Image
                 src={campaign.mediaUrl}
                 alt="Campaign Media"
+                width={800}
+                height={400}
                 className="w-full h-full object-cover"
               />
             )}
@@ -431,11 +433,14 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
         </div>{" "}
         <div className="bg-white p-4 rounded-lg shadow-sm">
           <div className="flex items-start space-x-4">
+            {" "}
             <div className="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
               {campaign.advertiser.profileUrl ? (
                 <Image
                   src={campaign.advertiser.profileUrl}
                   alt={campaign.advertiser.companyName}
+                  width={48}
+                  height={48}
                   className="w-full h-full object-cover rounded-lg"
                 />
               ) : (

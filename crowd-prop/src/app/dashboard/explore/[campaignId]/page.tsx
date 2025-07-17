@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
@@ -17,6 +17,7 @@ import {
   VideoCameraIcon,
   PresentationChartLineIcon,
   AcademicCapIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
@@ -29,6 +30,7 @@ import {
 } from "@/app/interfaces/campaign/explore-campaign";
 import { formatDate, getDaysLeft } from "@/utils/date";
 import { exploreCampaignsStorage } from "@/utils/explore-campaigns-storage";
+import { promoterService } from "@/services/promoter.service";
 
 const getCampaignDisplayStatus = (
   campaign: CampaignUnion,
@@ -403,12 +405,138 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
   }
 };
 
+// Application Modal Component
+interface ApplicationModalProps {
+  campaign: CampaignUnion;
+  onClose: () => void;
+  onSubmit: (message: string) => Promise<void>;
+}
+
+function ApplicationModal({
+  campaign,
+  onClose,
+  onSubmit,
+}: ApplicationModalProps) {
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(message);
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to submit application:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Apply to Campaign
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="font-medium text-gray-900">{campaign.title}</h3>
+            <p className="text-sm text-gray-600">
+              {campaign.advertiser.companyName}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label
+                htmlFor="application-message"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Application Message
+              </label>
+              <textarea
+                id="application-message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Tell the advertiser why you're the perfect fit for this campaign..."
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                required
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !message.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <PaperAirplaneIcon className="h-4 w-4" />
+                    <span>Submit Application</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CampaignDetailsPage({
   params,
 }: CampaignDetailsPageProps) {
   const resolvedParams = use(params);
+  const router = useRouter();
   const [campaign, setCampaign] = useState<CampaignUnion | null>(null);
   const [loading, setLoading] = useState(true);
+  const [acceptingContract, setAcceptingContract] = useState<string | null>(
+    null
+  );
+  const [applicationModal, setApplicationModal] = useState<{
+    isOpen: boolean;
+    campaign: CampaignUnion | null;
+  }>({ isOpen: false, campaign: null });
+
+  // Notification state
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: "success",
+    title: "",
+    message: "",
+  });
 
   useEffect(() => {
     // Try to get campaign from localStorage first
@@ -425,6 +553,96 @@ export default function CampaignDetailsPage({
       setLoading(false);
     }
   }, [resolvedParams.campaignId]);
+
+  const handleApplyClick = async (campaign: CampaignUnion) => {
+    if (campaign.isPublic) {
+      // Handle "Take Contract" for public campaigns
+      setAcceptingContract(campaign.id);
+      try {
+        const response = await promoterService.acceptContract({
+          campaignId: campaign.id,
+        });
+
+        console.log("Contract accepted successfully:", response); // Show success notification
+        setNotification({
+          isOpen: true,
+          type: "success",
+          title: "Contract Accepted!",
+          message:
+            response.message || "You have successfully joined this campaign.",
+        });
+
+        // Redirect to campaigns page after a short delay
+        setTimeout(() => {
+          router.push("/dashboard/campaigns");
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to accept contract:", error);
+
+        // Show error notification
+        setNotification({
+          isOpen: true,
+          type: "error",
+          title: "Failed to Accept Contract",
+          message:
+            error instanceof Error
+              ? error.message
+              : "An error occurred while accepting the contract. Please try again.",
+        });
+      } finally {
+        setAcceptingContract(null);
+      }
+    } else {
+      // Open application modal for private campaigns
+      setApplicationModal({ isOpen: true, campaign });
+    }
+  };
+
+  const handleApplicationSubmit = async (message: string) => {
+    if (!applicationModal.campaign) return;
+
+    try {
+      const response = await promoterService.sendCampaignApplication({
+        campaignId: applicationModal.campaign.id,
+        applicationMessage: message,
+      });
+
+      console.log("Application submitted successfully:", response);
+
+      // Close modal and show success message
+      setApplicationModal({ isOpen: false, campaign: null }); // Show success notification
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Application Submitted!",
+        message:
+          response.message ||
+          "Your application has been submitted successfully.",
+      });
+
+      // Redirect to explore page after a short delay
+      setTimeout(() => {
+        router.push("/dashboard/explore");
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to submit application:", error);
+
+      // Show error notification but keep modal open
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Failed to Submit Application",
+        message:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while submitting your application. Please try again.",
+      });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setApplicationModal({ isOpen: false, campaign: null });
+  };
 
   if (loading) {
     return (
@@ -722,10 +940,18 @@ export default function CampaignDetailsPage({
               </div>{" "}
               {statusInfo.label === "Active" && (
                 <button
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2"
-                  disabled={statusInfo.label !== "Active"}
+                  onClick={() => handleApplyClick(campaign)}
+                  disabled={acceptingContract === campaign.id}
+                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2"
                 >
-                  {campaign.isPublic ? (
+                  {acceptingContract === campaign.id ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>
+                        {campaign.isPublic ? "Accepting..." : "Submitting..."}
+                      </span>
+                    </>
+                  ) : campaign.isPublic ? (
                     <>
                       <DocumentTextIcon className="h-5 w-5" />
                       <span>Take Contract</span>
@@ -739,7 +965,6 @@ export default function CampaignDetailsPage({
                 </button>
               )}
             </div>
-
             {/* Timeline */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -788,7 +1013,6 @@ export default function CampaignDetailsPage({
                 </div>
               </div>
             </div>
-
             {/* Contact */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -805,10 +1029,78 @@ export default function CampaignDetailsPage({
                   <span className="text-sm text-gray-700">View Guidelines</span>
                 </button>
               </div>
-            </div>
+            </div>{" "}
           </div>
         </div>
       </div>
+      {/* Application Modal */}
+      {applicationModal.isOpen && applicationModal.campaign && (
+        <ApplicationModal
+          campaign={applicationModal.campaign}
+          onClose={handleCloseModal}
+          onSubmit={handleApplicationSubmit}
+        />
+      )}
+      {/* Notification Modal */}
+      {notification.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  {notification.type === "success" ? (
+                    <CheckCircleIcon className="h-6 w-6 text-green-600 mr-3" />
+                  ) : (
+                    <XMarkIcon className="h-6 w-6 text-red-600 mr-3" />
+                  )}
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {notification.title}
+                  </h3>
+                </div>{" "}
+                <button
+                  onClick={() => {
+                    setNotification({ ...notification, isOpen: false });
+                    // If it's a success notification, redirect immediately
+                    if (notification.type === "success") {
+                      if (notification.title === "Contract Accepted!") {
+                        router.push("/dashboard/campaigns");
+                      } else if (
+                        notification.title === "Application Submitted!"
+                      ) {
+                        router.push("/dashboard/explore");
+                      }
+                    }
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <XMarkIcon className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-700 mb-6">{notification.message}</p>{" "}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    setNotification({ ...notification, isOpen: false });
+                    // If it's a success notification, redirect immediately
+                    if (notification.type === "success") {
+                      if (notification.title === "Contract Accepted!") {
+                        router.push("/dashboard/campaigns");
+                      } else if (
+                        notification.title === "Application Submitted!"
+                      ) {
+                        router.push("/dashboard/explore");
+                      }
+                    }
+                  }}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
