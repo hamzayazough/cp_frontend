@@ -457,30 +457,6 @@ export class PromoterService {
 
     return response.data;
   }
-
-  /**
-   * Get all campaign links
-   */
-  async getCampaignLinks(
-    campaignId: string
-  ): Promise<{ success: boolean; message: string; data: string[] }> {
-    const response = await this.httpService.get<{
-      success: boolean;
-      message: string;
-      data: string[];
-    }>(
-      `/promoter/campaigns/${campaignId}/links`,
-      true // requiresAuth
-    );
-
-    if (!response.data.success) {
-      throw new Error(
-        response.data.message || "Failed to fetch campaign links"
-      );
-    }
-
-    return response.data;
-  }
 }
 
 // Export singleton instance

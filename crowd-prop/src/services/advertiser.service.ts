@@ -362,29 +362,6 @@ class AdvertiserService {
       };
     }
   }
-
-  async getCampaignPromoterLinks(
-    campaignId: string
-  ): Promise<{ success: boolean; data?: string[]; message?: string }> {
-    try {
-      const response = await httpService.get<string[]>(
-        `${this.baseUrl}/campaigns/${campaignId}/promoter-links`
-      );
-
-      return {
-        success: true,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch promoter links",
-      };
-    }
-  }
 }
 
 export const advertiserService = new AdvertiserService();

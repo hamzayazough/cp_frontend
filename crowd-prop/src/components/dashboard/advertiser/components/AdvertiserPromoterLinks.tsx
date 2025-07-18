@@ -11,7 +11,6 @@ import {
   CampaignAdvertiser,
   ChosenPromoterInfo,
 } from "@/app/interfaces/campaign/advertiser-campaign";
-import { advertiserService } from "@/services/advertiser.service";
 
 interface AdvertiserPromoterLinksProps {
   campaign: CampaignAdvertiser;
@@ -47,15 +46,7 @@ export default function AdvertiserPromoterLinks({
           setPromoterLinks(allLinks);
         } else {
           // TODO: remove or replace this else statement
-          try {
-            const response = await advertiserService.getCampaignPromoterLinks(
-              campaign.id
-            );
-            setPromoterLinks(response.data || []);
-          } catch {
-            console.log("No API endpoint available yet, showing empty state");
-            setPromoterLinks([]);
-          }
+          
         }
       } catch (err) {
         console.error("Error loading promoter links:", err);

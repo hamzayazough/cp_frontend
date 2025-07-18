@@ -50,9 +50,7 @@ export default function PromoterLinks({
           if (campaignDetails.promoterLinks) {
             setPromoterLinks(campaignDetails.promoterLinks);
           } else {
-            // Fetch from API if not in campaign object
-            const response = await promoterService.getCampaignLinks(campaign.id);
-            setPromoterLinks(response.data);
+            // TODO: do something in this case
           }
         }
       } catch (err) {
