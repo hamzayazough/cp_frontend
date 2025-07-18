@@ -10,7 +10,15 @@ interface AdvertiserCampaignRequirementsProps {
 export default function AdvertiserCampaignRequirements({ 
   campaign 
 }: AdvertiserCampaignRequirementsProps) {
-  const requirements = campaign.campaign.requirements || [];
+  const baseRequirements = campaign.campaign.requirements || [];
+  
+  // Create a copy of requirements and add minFollowers if it exists and is greater than 0
+  const requirements = [...baseRequirements];
+  
+  // Check if minFollowers is defined and greater than 0
+  if ('minFollowers' in campaign.campaign && campaign.campaign.minFollowers && campaign.campaign.minFollowers > 0) {
+    requirements.push(`Minimum ${campaign.campaign.minFollowers.toLocaleString()} followers required`);
+  }
 
   if (requirements.length === 0) {
     return (

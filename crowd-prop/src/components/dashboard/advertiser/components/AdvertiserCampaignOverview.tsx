@@ -106,7 +106,7 @@ export default function AdvertiserCampaignOverview({
               </span>
               <span className="text-lg font-semibold text-pink-600">
                 {campaign.campaign.type === CampaignType.VISIBILITY
-                  ? formatCurrency(campaign.campaign.cpv * 100)
+                  ? formatCurrency(campaign.campaign.cpv )
                   : "N/A"}
               </span>
             </div>
@@ -293,7 +293,7 @@ export default function AdvertiserCampaignOverview({
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-600">Budget</span>
               <span className="text-lg font-semibold text-green-600">
-                {formatCurrency(campaign.campaign.budgetHeld)}
+                {formatCurrency(campaign.campaign.budgetAllocated)}
               </span>
             </div>
             {renderCampaignSpecificDetails()}
