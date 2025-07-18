@@ -48,20 +48,21 @@ export default function AdvertiserCampaignOverview({
     });
   };
 
-  const getSocialPlatformIcon = (platform: SocialPlatform) => {
+  const getSocialPlatformIcon = (platform: SocialPlatform, color?: string) => {
+    const iconClass = color === "black" ? "h-4 w-4 text-gray-800" : "h-4 w-4";
     switch (platform) {
       case SocialPlatform.INSTAGRAM:
-        return <Instagram className="h-4 w-4" />;
+        return <Instagram className={iconClass} />;
       case SocialPlatform.TWITTER:
-        return <Twitter className="h-4 w-4" />;
+        return <Twitter className={iconClass} />;
       case SocialPlatform.YOUTUBE:
-        return <Youtube className="h-4 w-4" />;
+        return <Youtube className={iconClass} />;
       case SocialPlatform.LINKEDIN:
-        return <Linkedin className="h-4 w-4" />;
+        return <Linkedin className={iconClass} />;
       case SocialPlatform.FACEBOOK:
-        return <Facebook className="h-4 w-4" />;
+        return <Facebook className={iconClass} />;
       default:
-        return <Globe className="h-4 w-4" />;
+        return <Globe className={iconClass} />;
     }
   };
 
@@ -322,21 +323,21 @@ export default function AdvertiserCampaignOverview({
                   <p className="text-sm font-medium text-gray-600 mb-2">
                     Preferred Platforms:
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2">
                     {campaign.campaign.preferredPlatforms.map(
                       (platform, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full"
-                        >
-                          {getSocialPlatformIcon(platform)}
-                          <span className="text-xs font-medium text-green-700">
-                            {platform}
-                          </span>
-                        </div>
+                      <div
+                        key={index}
+                        className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full"
+                      >
+                        {getSocialPlatformIcon(platform, "black")}
+                        <span className="text-xs font-medium text-green-700">
+                        {platform}
+                        </span>
+                      </div>
                       )
                     )}
-                  </div>
+                    </div>
                 </div>
               )}
           </div>
