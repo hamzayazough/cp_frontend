@@ -350,7 +350,7 @@ export default function AdvertiserCampaignPromoters({
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Budget Allocated</p>
+                        <p className="text-xs text-gray-500">Money paid</p>
                         <p className="font-medium text-gray-900">
                           {formatCurrency(Number(chosenPromoter.budgetAllocated) || 0)}
                         </p>

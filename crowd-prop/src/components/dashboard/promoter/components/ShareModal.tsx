@@ -34,16 +34,16 @@ export default function ShareModal({
             </label>
             <div className="flex items-center space-x-2">
               <input
-                type="text"
-                value={campaign.campaign.trackingLink}
-                readOnly
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"
+              type="text"
+              value={campaign.campaign.trackingLink}
+              readOnly
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm text-black"
               />
               <button
-                onClick={copyToClipboard}
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              onClick={copyToClipboard}
+              className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
               >
-                Copy
+              Copy
               </button>
             </div>
           </div>

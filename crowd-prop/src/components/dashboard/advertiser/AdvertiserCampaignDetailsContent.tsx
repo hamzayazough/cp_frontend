@@ -19,6 +19,7 @@ import AdvertiserCampaignTabs from "./components/AdvertiserCampaignTabs";
 import AdvertiserCampaignOverview from "./components/AdvertiserCampaignOverview";
 import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoters";
 import AdvertiserCampaignRequirements from "./components/AdvertiserCampaignRequirements";
+import AdvertiserCampaignPerformance from "./components/AdvertiserCampaignPerformance";
 
 interface AdvertiserCampaignDetailsContentProps {
   campaignId: string;
@@ -218,16 +219,7 @@ export default function AdvertiserCampaignDetailsContent({
           />
         );
       case "performance":
-        return (
-          <div className="text-center py-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Performance Analytics
-            </h3>
-            <p className="text-gray-600">
-              Performance analytics coming soon...
-            </p>
-          </div>
-        );
+        return <AdvertiserCampaignPerformance campaign={campaign} />;
       case "requirements":
         return <AdvertiserCampaignRequirements campaign={campaign} />;
       case "messages":
