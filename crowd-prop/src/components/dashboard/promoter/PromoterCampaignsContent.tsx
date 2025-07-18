@@ -179,28 +179,28 @@ export default function PromoterCampaignsContent() {
           <div className="flex space-x-4">
             <div className="relative">
               <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <select
+                <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
+                className="pl-10 pr-8 py-2 border border-gray-400 text-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                >
                 {statusOptions.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                  {option.label}
                   </option>
                 ))}
-              </select>
+                </select>
             </div>
 
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="px-4 py-2 border border-gray-400 text-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
               {typeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
               ))}
             </select>
           </div>
@@ -362,7 +362,6 @@ export default function PromoterCampaignsContent() {
                       <ArrowTopRightOnSquareIcon className="h-5 w-5 text-blue-600" />
                     </div>
                   </div>{" "}
-                  Campaign Media
                   {/* Type-specific Stats Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     {/* Always show Total Earned */}

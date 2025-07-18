@@ -83,10 +83,10 @@ export default function ExplorePage() {
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Explore Promoters
+              Error
             </h2>
             <p className="text-gray-600">
-              Here you can explore and discover promoters for your campaigns.
+              Your role do not grant you access to this page.
             </p>
           </div>
         );

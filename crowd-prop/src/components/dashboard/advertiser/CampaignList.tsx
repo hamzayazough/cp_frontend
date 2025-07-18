@@ -237,6 +237,14 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
             campaign.campaign.spentBudget,
             campaign.campaign.budgetAllocated
           );
+          
+          // Handle both single object and array for chosenPromoters
+          const chosenPromotersArray = Array.isArray(campaign.chosenPromoters) 
+            ? campaign.chosenPromoters 
+            : campaign.chosenPromoters 
+              ? [campaign.chosenPromoters] 
+              : [];
+          
           return (
             <div
               key={campaign.id}
@@ -496,13 +504,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
 
                         {/* Chosen Promoters (Visibility Campaigns Only) */}
                         {(() => {
-                          // Handle both single object and array for chosenPromoters
-                          const chosenPromotersArray = Array.isArray(campaign.chosenPromoters) 
-                            ? campaign.chosenPromoters 
-                            : campaign.chosenPromoters 
-                              ? [campaign.chosenPromoters] 
-                              : [];
-                          
                           if (chosenPromotersArray.length === 0) return null;
                           
                           return (
@@ -588,12 +589,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                     {!campaign.campaign.isPublic && (
                       <div className="mb-4 pt-2 border-t border-gray-100">
                         {(() => {
-                          // Handle both single object and array for chosenPromoters
-                          const chosenPromotersArray = Array.isArray(campaign.chosenPromoters) 
-                            ? campaign.chosenPromoters 
-                            : campaign.chosenPromoters 
-                              ? [campaign.chosenPromoters] 
-                              : [];
                           const chosenPromoter = chosenPromotersArray[0]; // For private campaigns, there should only be one
                           
                           const pendingApplications =
@@ -757,9 +752,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     </div>
                                   </div>
                                   <button
-                                    onClick={() =>
-                                      handleViewApplications(campaign)
-                                    }
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleViewApplications(campaign);
+                                    }}
                                     className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors text-sm font-medium"
                                   >
                                     Review Applications

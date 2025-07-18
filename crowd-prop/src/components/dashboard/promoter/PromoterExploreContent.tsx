@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { routes } from "@/lib/router";
 import {
   MagnifyingGlassIcon,
@@ -333,14 +334,14 @@ export default function PromoterExploreContent() {
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center">
             <EyeIcon className="h-8 w-8 text-blue-500" />
-            <div className="ml-3">
-              <p className="text-sm text-gray-600">Visibility</p>{" "}
+            <div className="ml-3 text-black">
+              <p className="text-sm text-gray-600">Visibility</p>
               <p className="text-lg font-semibold">
-                {
-                  campaigns.filter(
-                    (c: CampaignUnion) => c.type === "VISIBILITY"
-                  ).length
-                }
+              {
+                campaigns.filter(
+                (c: CampaignUnion) => c.type === "VISIBILITY"
+                ).length
+              }
               </p>
             </div>
           </div>
@@ -348,7 +349,7 @@ export default function PromoterExploreContent() {
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center">
             <CurrencyDollarIcon className="h-8 w-8 text-green-500" />
-            <div className="ml-3">
+            <div className="ml-3 text-black">
               <p className="text-sm text-gray-600">Sales</p>
               <p className="text-lg font-semibold">
                 {
@@ -362,7 +363,7 @@ export default function PromoterExploreContent() {
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center">
             <BuildingOfficeIcon className="h-8 w-8 text-purple-500" />
-            <div className="ml-3">
+            <div className="ml-3 text-black">
               <p className="text-sm text-gray-600">Consulting</p>
               <p className="text-lg font-semibold">
                 {
@@ -377,7 +378,7 @@ export default function PromoterExploreContent() {
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center">
             <TagIcon className="h-8 w-8 text-orange-500" />
-            <div className="ml-3">
+            <div className="ml-3 text-black">
               <p className="text-sm text-gray-600">Content</p>
               <p className="text-lg font-semibold">
                 {
@@ -409,7 +410,7 @@ export default function PromoterExploreContent() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
             >
               {TYPE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -421,12 +422,12 @@ export default function PromoterExploreContent() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
             >
               {SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
               ))}
             </select>
 
@@ -477,7 +478,13 @@ export default function PromoterExploreContent() {
                   </div>
                   <div className="flex items-center space-x-4 mb-3">
                     <div className="flex items-center space-x-2">
-                      <div className="w-10 h-10 bg-gray-200 rounded-md"></div>
+                      <Image 
+                        src={campaign.advertiser.profileUrl} 
+                        alt={campaign.advertiser.companyName}
+                        width={40}
+                        height={40}
+                        className="rounded-md object-cover"
+                      />
                       <div>
                         <div className="text-sm font-medium text-gray-900 flex items-center">
                           {campaign.advertiser.companyName}

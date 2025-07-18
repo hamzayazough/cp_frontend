@@ -126,7 +126,7 @@ export default function CampaignFilters({
           <select
             value={sortBy}
             onChange={(e) => onSortByChange(e.target.value as AdvertiserCampaignSortField)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
           >
             <option value={AdvertiserCampaignSortField.UPDATED_AT}>Last Updated</option>
             <option value={AdvertiserCampaignSortField.CREATED_AT}>Created Date</option>
@@ -142,9 +142,9 @@ export default function CampaignFilters({
             className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             {sortOrder === 'asc' ? (
-              <SortAsc className="h-4 w-4" />
+              <SortAsc className="h-4 w-4 text-black" />
             ) : (
-              <SortDesc className="h-4 w-4" />
+              <SortDesc className="h-4 w-4 text-black" />
             )}
           </button>
         </div>

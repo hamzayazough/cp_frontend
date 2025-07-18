@@ -110,6 +110,8 @@ export default function ApplicationReviewModal({
                         <Image
                           src={app.promoter.avatarUrl}
                           alt={app.promoter.name}
+                          width={64}
+                          height={64}
                           className="w-full h-full rounded-full object-cover"
                         />
                       ) : (
