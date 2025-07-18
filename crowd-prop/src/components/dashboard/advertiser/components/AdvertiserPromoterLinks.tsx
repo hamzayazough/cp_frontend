@@ -7,7 +7,10 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
-import { CampaignAdvertiser, ChosenPromoterInfo } from "@/app/interfaces/campaign/advertiser-campaign";
+import {
+  CampaignAdvertiser,
+  ChosenPromoterInfo,
+} from "@/app/interfaces/campaign/advertiser-campaign";
 import { advertiserService } from "@/services/advertiser.service";
 
 interface AdvertiserPromoterLinksProps {
@@ -29,20 +32,25 @@ export default function AdvertiserPromoterLinks({
       try {
         setLoading(true);
         setError(null);
-        
+
         // First check if we have a selected promoter with links
         if (selectedPromoter?.promoterLinks) {
           setPromoterLinks(selectedPromoter.promoterLinks);
-        } else if (campaign.chosenPromoters && campaign.chosenPromoters.length > 0) {
+        } else if (
+          campaign.chosenPromoters &&
+          campaign.chosenPromoters.length > 0
+        ) {
           // If no specific promoter selected, get links from all promoters
           const allLinks = campaign.chosenPromoters
-            .flatMap(promoter => promoter.promoterLinks || [])
-            .filter(link => link); // Remove empty links
+            .flatMap((promoter) => promoter.promoterLinks || [])
+            .filter((link) => link); // Remove empty links
           setPromoterLinks(allLinks);
         } else {
-          // Fetch from API if not in campaign object
+          // TODO: remove or replace this else statement
           try {
-            const response = await advertiserService.getCampaignPromoterLinks(campaign.id);
+            const response = await advertiserService.getCampaignPromoterLinks(
+              campaign.id
+            );
             setPromoterLinks(response.data || []);
           } catch {
             console.log("No API endpoint available yet, showing empty state");
@@ -61,12 +69,22 @@ export default function AdvertiserPromoterLinks({
   }, [campaign, selectedPromoter]);
 
   // Only show for consultant and seller campaigns
-  if (!(campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER)) {
+  if (
+    !(
+      campaign.type === CampaignType.CONSULTANT ||
+      campaign.type === CampaignType.SELLER
+    )
+  ) {
     return null;
   }
 
   // Only show if campaign status is ACTIVE or ENDED (ongoing or completed)
-  if (!(campaign.status === CampaignStatus.ACTIVE || campaign.status === CampaignStatus.ENDED)) {
+  if (
+    !(
+      campaign.status === CampaignStatus.ACTIVE ||
+      campaign.status === CampaignStatus.ENDED
+    )
+  ) {
     return null;
   }
 
@@ -92,31 +110,31 @@ export default function AdvertiserPromoterLinks({
           Promoter Work Links
         </h3>
         <span className="text-sm text-gray-600">
-          {selectedPromoter 
+          {selectedPromoter
             ? `Links from ${selectedPromoter.promoter.firstName} ${selectedPromoter.promoter.lastName}`
-            : `Links from all promoters`
-          }
+            : `Links from all promoters`}
         </span>
       </div>
-      
+
       {/* Error Message */}
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
-      
+
       {/* Links List */}
       <div className="space-y-3">
         {promoterLinks.length === 0 ? (
           <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
             <LinkIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-500 font-medium">No work links shared yet</p>
+            <p className="text-gray-500 font-medium">
+              No work links shared yet
+            </p>
             <p className="text-gray-400 text-sm">
               {selectedPromoter
                 ? "This promoter hasn't shared any work links yet"
-                : "Your promoters haven't shared any work links yet"
-              }
+                : "Your promoters haven't shared any work links yet"}
             </p>
           </div>
         ) : (
@@ -154,7 +172,8 @@ export default function AdvertiserPromoterLinks({
           <InformationCircleIcon className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div>
             <p className="text-blue-700 text-sm">
-              <strong>About these links:</strong> These are work deliverables and progress updates shared by your promoter(s).
+              <strong>About these links:</strong> These are work deliverables
+              and progress updates shared by your promoter(s).
             </p>
             {campaign.type === CampaignType.CONSULTANT ? (
               <ul className="text-blue-700 text-sm mt-2 ml-4 space-y-1">
