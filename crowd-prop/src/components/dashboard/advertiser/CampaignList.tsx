@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   CampaignAdvertiser,
   PromoterApplicationInfo,
@@ -333,7 +334,8 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                           // For private campaigns (consultant, salesman, seller), don't show promoter count
                           if (!campaign.campaign.isPublic) {
                             // For private campaigns with chosen promoter, show campaign-specific metric
-                            if (campaign.chosenPromoters) {
+                            if (chosenPromotersArray.length > 0) {
+                              const chosenPromoter = chosenPromotersArray[0];
                               if (campaign.type === CampaignType.CONSULTANT) {
                                 return (
                                   <div>
@@ -341,8 +343,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                       Meetings
                                     </p>
                                     <p className="text-sm font-medium text-gray-900">
-                                      {campaign.chosenPromoters
-                                        .numberMeetingsDone || 0}
+                                      {chosenPromoter.numberMeetingsDone || 0}
                                       /8
                                     </p>
                                   </div>
@@ -493,56 +494,108 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                           </div>
                         </div>
 
-                        {/* Chosen Promoter (Visibility Campaigns Only) */}
-                        {campaign.chosenPromoters && (
-                          <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6 mb-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4">
+                        {/* Chosen Promoters (Visibility Campaigns Only) */}
+                        {(() => {
+                          // Handle both single object and array for chosenPromoters
+                          const chosenPromotersArray = Array.isArray(campaign.chosenPromoters) 
+                            ? campaign.chosenPromoters 
+                            : campaign.chosenPromoters 
+                              ? [campaign.chosenPromoters] 
+                              : [];
+                          
+                          if (chosenPromotersArray.length === 0) return null;
+                          
+                          return (
+                            <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6 mb-6">
+                              <div className="flex items-center mb-4">
                                 <div className="flex-shrink-0 bg-blue-50 p-3 rounded-full">
                                   <Users className="h-5 w-5 text-blue-600" />
                                 </div>
-                                <div>
-                                  <div className="flex items-center space-x-2">
-                                    <p className="text-base font-medium text-gray-900">
-                                      {campaign.chosenPromoters.promoter.name}
-                                    </p>
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                      Active
-                                    </span>
-                                  </div>
-                                  <p className="mt-1 text-sm text-gray-500">
-                                    Joined{" "}
-                                    {campaign.chosenPromoters.joinedAt
-                                      ? formatDate(
-                                          campaign.chosenPromoters.joinedAt
-                                        )
-                                      : "Recently"}
-                                  </p>
-                                </div>
-                              </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (campaign.chosenPromoters?.promoter?.id) {
-                                    router.push(
-                                      `/user/${campaign.chosenPromoters.promoter.id}`
-                                    );
+                                <h3 className="ml-3 text-lg font-semibold text-gray-900">
+                                  {campaign.campaign.isPublic 
+                                    ? `Active Promoters (${chosenPromotersArray.length})`
+                                    : 'Selected Promoter'
                                   }
-                                }}
-                                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-                              >
-                                View Details
-                              </button>
+                                </h3>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                {chosenPromotersArray.map((chosenPromoter, index) => (
+                                  <div key={chosenPromoter.promoter.id || index} className={`${index > 0 ? 'border-t border-gray-100 pt-4' : ''}`}>
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center space-x-4">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
+                                          {chosenPromoter.promoter.avatarUrl ? (
+                                            <Image
+                                              src={chosenPromoter.promoter.avatarUrl}
+                                              alt={chosenPromoter.promoter.name}
+                                              width={40}
+                                              height={40}
+                                              className="w-full h-full object-cover rounded-full"
+                                            />
+                                          ) : (
+                                            chosenPromoter.promoter.name
+                                              .split(" ")
+                                              .map((n) => n[0])
+                                              .join("")
+                                          )}
+                                        </div>
+                                        <div>
+                                          <div className="flex items-center space-x-2">
+                                            <p className="text-base font-medium text-gray-900">
+                                              {chosenPromoter.promoter.name}
+                                            </p>
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                              {chosenPromoter.status || 'Active'}
+                                            </span>
+                                          </div>
+                                          <p className="mt-1 text-sm text-gray-500">
+                                            Joined{" "}
+                                            {chosenPromoter.joinedAt
+                                              ? formatDate(chosenPromoter.joinedAt)
+                                              : "Recently"}
+                                          </p>
+                                          {/* Show earnings and views for public campaigns */}
+                                          {campaign.campaign.isPublic && (
+                                            <div className="mt-2 flex items-center space-x-4 text-xs text-gray-600">
+                                              <span>Views: {formatNumber(chosenPromoter.viewsGenerated || 0)}</span>
+                                              <span>Earnings: {formatCurrency(Number(chosenPromoter.earnings) || 0)}</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (chosenPromoter.promoter?.id) {
+                                            router.push(`/user/${chosenPromoter.promoter.id}`);
+                                          }
+                                        }}
+                                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+                                      >
+                                        View Details
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          );
+                        })()}
                       </div>
                     )}{" "}
                     {/* Private Campaign State Management */}
                     {!campaign.campaign.isPublic && (
                       <div className="mb-4 pt-2 border-t border-gray-100">
                         {(() => {
-                          const chosenPromoter = campaign.chosenPromoters;
+                          // Handle both single object and array for chosenPromoters
+                          const chosenPromotersArray = Array.isArray(campaign.chosenPromoters) 
+                            ? campaign.chosenPromoters 
+                            : campaign.chosenPromoters 
+                              ? [campaign.chosenPromoters] 
+                              : [];
+                          const chosenPromoter = chosenPromotersArray[0]; // For private campaigns, there should only be one
+                          
                           const pendingApplications =
                             campaign.applicants?.filter(
                               (app) => app.applicationStatus === "PENDING"
@@ -554,8 +607,18 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                               <div className="bg-blue-50 rounded-lg p-4">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-start space-x-3 flex-1">
-                                    <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
-                                      <UserCheck className="h-5 w-5 text-blue-600" />
+                                    <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center overflow-hidden">
+                                      {chosenPromoter.promoter.avatarUrl ? (
+                                        <Image
+                                          src={chosenPromoter.promoter.avatarUrl}
+                                          alt={chosenPromoter.promoter.name}
+                                          width={40}
+                                          height={40}
+                                          className="w-full h-full object-cover rounded-full"
+                                        />
+                                      ) : (
+                                        <UserCheck className="h-5 w-5 text-blue-600" />
+                                      )}
                                     </div>
                                     <div className="flex-1">
                                       <div className="flex items-center space-x-2 mb-1">
@@ -618,7 +681,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                                 Commission:
                                               </span>
                                               <span className="ml-1 font-medium">
-                                                ${chosenPromoter.earnings || 0}
+                                                {formatCurrency(Number(chosenPromoter.earnings) || 0)}
                                               </span>
                                             </div>
                                           </div>
