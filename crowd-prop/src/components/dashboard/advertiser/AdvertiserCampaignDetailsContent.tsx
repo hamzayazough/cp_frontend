@@ -20,6 +20,7 @@ import AdvertiserCampaignOverview from "./components/AdvertiserCampaignOverview"
 import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoters";
 import AdvertiserCampaignRequirements from "./components/AdvertiserCampaignRequirements";
 import AdvertiserCampaignPerformance from "./components/AdvertiserCampaignPerformance";
+import AdvertiserPromoterLinks from "./components/AdvertiserPromoterLinks";
 
 interface AdvertiserCampaignDetailsContentProps {
   campaignId: string;
@@ -297,6 +298,9 @@ export default function AdvertiserCampaignDetailsContent({
         campaign={campaign}
         daysLeft={getDaysLeft()}
       />
+
+      {/* Promoter Links */}
+      <AdvertiserPromoterLinks campaign={campaign} />
 
       {/* Tabs */}
       <AdvertiserCampaignTabs
