@@ -379,6 +379,108 @@ export class PromoterService {
 
     return response.data;
   }
+
+  /**
+   * Add a new link to a campaign
+   */
+  async addCampaignLink(
+    campaignId: string,
+    link: string
+  ): Promise<{ success: boolean; message: string; data?: string[] }> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      message: string;
+      data?: string[];
+    }>(
+      `/promoter/campaigns/${campaignId}/links`,
+      { link },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to add campaign link");
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Update an existing campaign link
+   */
+  async updateCampaignLink(
+    campaignId: string,
+    oldLink: string,
+    newLink: string
+  ): Promise<{ success: boolean; message: string; data?: string[] }> {
+    const response = await this.httpService.put<{
+      success: boolean;
+      message: string;
+      data?: string[];
+    }>(
+      `/promoter/campaigns/${campaignId}/links`,
+      { oldLink, newLink },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to update campaign link"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Delete a campaign link
+   */
+  async deleteCampaignLink(
+    campaignId: string,
+    link: string
+  ): Promise<{ success: boolean; message: string; data?: string[] }> {
+    console.log("link:", link);
+    const response = await this.httpService.post<{
+      success: boolean;
+      message: string;
+      data?: string[];
+    }>(
+      `/promoter/campaigns/${campaignId}/links/delete`,
+      { link },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to delete campaign link"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Get all campaign links
+   */
+  async getCampaignLinks(
+    campaignId: string
+  ): Promise<{ success: boolean; message: string; data: string[] }> {
+    const response = await this.httpService.get<{
+      success: boolean;
+      message: string;
+      data: string[];
+    }>(
+      `/promoter/campaigns/${campaignId}/links`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch campaign links"
+      );
+    }
+
+    return response.data;
+  }
 }
 
 // Export singleton instance

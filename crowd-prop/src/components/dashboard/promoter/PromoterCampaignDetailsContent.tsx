@@ -151,6 +151,7 @@ export default function PromoterCampaignDetailsContent({
       <CampaignProgress campaign={campaign} />
       {/* PromoterLinks Section - Only for Consultant Campaigns */}
       <PromoterLinks
+        campaign={campaign}
         campaignType={campaign.campaign.type}
         campaignStatus={campaign.status}
       />
