@@ -182,26 +182,23 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Cover Photo */}
         <div className="relative h-32 overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600"></div>
+          {/* Background gradient - this will be visible if image fails */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 z-0"></div>
           
-          {/* Background image - using fallback image for now */}
-          <Image
-            src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-            alt="Profile background"
-            fill
-            className="object-cover z-10"
-            unoptimized
-            onLoad={() => console.log('Background image loaded successfully')}
-            onError={(e) => {
-              console.log('Background image failed to load');
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          {/* Pattern overlay for visual interest */}
+          <div className="absolute inset-0 opacity-20 z-10">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundSize: '30px 30px'
+            }}></div>
+          </div>
+          
+          {/* Company-themed overlay pattern */}
+          <div className="absolute inset-0 bg-black bg-opacity-10 z-20"></div>
         </div>
 
         {/* Profile Info */}
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 relative z-30">
           <div className="flex items-start justify-between -mt-12 mb-4">
             <div className="flex items-end space-x-4">
               {/* Profile Picture */}
