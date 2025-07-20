@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { routes } from "@/lib/router";
@@ -184,6 +185,7 @@ const getAllRequirements = (campaign: CampaignUnion): string[] => {
 };
 
 export default function PromoterExploreContent() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("newest");
@@ -478,13 +480,22 @@ export default function PromoterExploreContent() {
                   </div>
                   <div className="flex items-center space-x-4 mb-3">
                     <div className="flex items-center space-x-2">
-                      <Image 
-                        src={campaign.advertiser.profileUrl} 
-                        alt={campaign.advertiser.companyName}
-                        width={40}
-                        height={40}
-                        className="rounded-md object-cover"
-                      />
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(`/user/${campaign.advertiser.id}`);
+                        }}
+                        className="hover:ring-2 hover:ring-blue-500 rounded-md transition-all"
+                      >
+                        <Image 
+                          src={campaign.advertiser.profileUrl} 
+                          alt={campaign.advertiser.companyName}
+                          width={40}
+                          height={40}
+                          className="rounded-md object-cover"
+                        />
+                      </button>
                       <div>
                         <div className="text-sm font-medium text-gray-900 flex items-center">
                           {campaign.advertiser.companyName}
