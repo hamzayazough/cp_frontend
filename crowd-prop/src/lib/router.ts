@@ -16,6 +16,18 @@ export const routes = {
   // User profile routes
   userProfile: (userId: string) => `/user/${userId}`,
 
+  // Campaign routes
+  campaignDetails: (id: string) => `/campaigns/${id}`,
+  campaignEdit: (id: string) => `/campaigns/${id}/edit`,
+  campaignCreate: "/campaigns/create",
+
+  // Promoter profile routes
+  promoterProfile: (id: string) => `/promoter/${id}`,
+
+  // Message routes
+  messages: "/messages",
+  messageThread: (id: string) => `/messages/${id}`,
+
   // Unified Dashboard routes (role-based content)
   dashboard: "/dashboard",
   dashboardCampaigns: "/dashboard/campaigns",

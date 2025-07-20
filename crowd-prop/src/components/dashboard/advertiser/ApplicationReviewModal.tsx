@@ -11,6 +11,7 @@ import {
   XIcon,
 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface ApplicationReviewModalProps {
   isOpen: boolean;
@@ -29,6 +30,8 @@ export default function ApplicationReviewModal({
   onAcceptApplication,
   onRejectApplication,
 }: ApplicationReviewModalProps) {
+  const router = useRouter();
+  
   if (!isOpen) return null;
 
   const formatDate = (date: string | Date) => {
@@ -53,6 +56,11 @@ export default function ApplicationReviewModal({
   const handleReject = (applicationId: string) => {
     onRejectApplication(applicationId);
     // Don't close modal, just remove this application from view
+  };
+
+  const handleUserClick = (userId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/user/${userId}`);
   };
 
   return (
@@ -105,7 +113,11 @@ export default function ApplicationReviewModal({
                 >
                   <div className="flex items-start space-x-4">
                     {/* Avatar */}
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+                    <button
+                      onClick={(e) => handleUserClick(app.promoter.id, e)}
+                      className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                      title={`View ${app.promoter.name}'s profile`}
+                    >
                       {app.promoter.avatarUrl ? (
                         <Image
                           src={app.promoter.avatarUrl}
@@ -120,7 +132,7 @@ export default function ApplicationReviewModal({
                           .map((n) => n[0])
                           .join("")
                       )}
-                    </div>
+                    </button>
 
                     {/* Main Content */}
                     <div className="flex-1 min-w-0">

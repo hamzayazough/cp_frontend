@@ -3,6 +3,7 @@
 import { use, useState, useEffect } from "react";
 import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeftIcon,
   EyeIcon,
@@ -725,7 +726,35 @@ export default function CampaignDetailsPage({
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
+              <button 
+                onClick={() => router.push(`/user/${campaign.advertiser.id}`)}
+                className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+              >
+                {campaign.advertiser.profileUrl ? (
+                  <Image
+                    src={campaign.advertiser.profileUrl}
+                    alt={campaign.advertiser.companyName}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
+                    unoptimized
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      e.currentTarget.parentElement!.innerHTML = `
+                        <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                          <span class="text-gray-500 text-sm font-medium">${campaign.advertiser.companyName.charAt(0).toUpperCase()}</span>
+                        </div>
+                      `;
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500 text-sm font-medium">
+                      {campaign.advertiser.companyName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+              </button>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                   <h2 className="text-xl font-semibold text-gray-900">

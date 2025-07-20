@@ -42,6 +42,11 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     applications: [],
   });
 
+  const handleUserClick = (userId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent campaign card click
+    router.push(`/user/${userId}`);
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -555,7 +560,11 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                   <div key={chosenPromoter.promoter.id || index} className={`${index > 0 ? 'border-t border-gray-100 pt-4' : ''}`}>
                                     <div className="flex items-center justify-between">
                                       <div className="flex items-center space-x-4">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
+                                        <button
+                                          onClick={(e) => handleUserClick(chosenPromoter.promoter.id, e)}
+                                          className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                                          title={`View ${chosenPromoter.promoter.name}'s profile`}
+                                        >
                                           {chosenPromoter.promoter.avatarUrl ? (
                                             <Image
                                               src={chosenPromoter.promoter.avatarUrl}
@@ -570,7 +579,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                               .map((n) => n[0])
                                               .join("")
                                           )}
-                                        </div>
+                                        </button>
                                         <div>
                                           <div className="flex items-center space-x-2">
                                             <p className="text-base font-medium text-gray-900">
@@ -632,7 +641,11 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                               <div className="bg-blue-50 rounded-lg p-4">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-start space-x-3 flex-1">
-                                    <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center overflow-hidden">
+                                    <button
+                                      onClick={(e) => handleUserClick(chosenPromoter.promoter.id, e)}
+                                      className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                                      title={`View ${chosenPromoter.promoter.name}'s profile`}
+                                    >
                                       {chosenPromoter.promoter.avatarUrl ? (
                                         <Image
                                           src={chosenPromoter.promoter.avatarUrl}
@@ -644,7 +657,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                       ) : (
                                         <UserCheck className="h-5 w-5 text-blue-600" />
                                       )}
-                                    </div>
+                                    </button>
                                     <div className="flex-1">
                                       <div className="flex items-center space-x-2 mb-1">
                                         <p className="text-sm font-medium text-gray-900">
