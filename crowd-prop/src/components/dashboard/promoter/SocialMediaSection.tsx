@@ -15,6 +15,7 @@ interface SocialMediaSectionProps {
     websiteUrl: string;
   };
   onEditDataChange: (field: string, value: string) => void;
+  isViewOnly?: boolean;
 }
 
 export default function SocialMediaSection({
@@ -22,6 +23,7 @@ export default function SocialMediaSection({
   isEditing,
   editData,
   onEditDataChange,
+  isViewOnly = false,
 }: SocialMediaSectionProps) {
   const socialMediaItems = [
     {

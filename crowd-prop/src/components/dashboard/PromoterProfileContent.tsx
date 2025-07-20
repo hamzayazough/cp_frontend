@@ -18,11 +18,13 @@ import PortfolioDetailModal from "./PortfolioDetailModal";
 interface PromoterProfileContentProps {
   user: User;
   onUserUpdate: (user: User) => void;
+  isViewOnly?: boolean;
 }
 
 export default function PromoterProfileContent({
   user,
   onUserUpdate,
+  isViewOnly = false,
 }: PromoterProfileContentProps) {
   const [showPortfolioManager, setShowPortfolioManager] = useState(false);
   const [selectedWork, setSelectedWork] = useState<PromoterWork | null>(null);
@@ -49,6 +51,7 @@ export default function PromoterProfileContent({
         onEditClick={() => setIsEditing(true)}
         onSaveClick={handleSave}
         onCancelClick={handleCancel}
+        isViewOnly={isViewOnly}
       />
 
       {/* Bio and Location Section */}
@@ -58,6 +61,7 @@ export default function PromoterProfileContent({
           isEditing={isEditing}
           editData={editData}
           onEditDataChange={handleEditDataChange}
+          isViewOnly={isViewOnly}
         />
 
         {/* Social Media Links */}
@@ -66,6 +70,7 @@ export default function PromoterProfileContent({
           isEditing={isEditing}
           editData={editData}
           onEditDataChange={handleEditDataChange}
+          isViewOnly={isViewOnly}
         />
       </div>
 
@@ -79,6 +84,7 @@ export default function PromoterProfileContent({
         editData={editData}
         onLanguageToggle={handleLanguageToggle}
         onSkillToggle={handleSkillToggle}
+        isViewOnly={isViewOnly}
       />
 
       {/* Portfolio */}
@@ -86,6 +92,7 @@ export default function PromoterProfileContent({
         user={user}
         onPortfolioManagerOpen={() => setShowPortfolioManager(true)}
         onWorkSelect={setSelectedWork}
+        isViewOnly={isViewOnly}
       />
 
       {/* Portfolio Manager Modal */}

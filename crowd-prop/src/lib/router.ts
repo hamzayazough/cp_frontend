@@ -12,6 +12,10 @@ export const routes = {
 
   // Explore routes
   exploreCampaigns: "/explore/campaigns",
+
+  // User profile routes
+  userProfile: (userId: string) => `/user/${userId}`,
+
   // Unified Dashboard routes (role-based content)
   dashboard: "/dashboard",
   dashboardCampaigns: "/dashboard/campaigns",
@@ -22,19 +26,6 @@ export const routes = {
   dashboardMessages: "/dashboard/messages",
   dashboardProfile: "/dashboard/profile",
   dashboardSettings: "/dashboard/settings",
-
-  // Campaign routes (legacy)
-  campaigns: "/campaigns",
-  campaignCreate: "/campaigns/create",
-  campaignDetails: (id: string) => `/campaigns/${id}`,
-  campaignEdit: (id: string) => `/campaigns/${id}/edit`,
-
-  promoters: "/promoters",
-  promoterProfile: (id: string) => `/promoters/${id}`,
-
-  // Chat routes (legacy)
-  messages: "/messages",
-  messageThread: (id: string) => `/messages/${id}`,
 
   // API routes
   api: {
@@ -69,6 +60,10 @@ export class Router {
 
   static messageThread(id: string): string {
     return routes.messageThread(id);
+  }
+
+  static userProfile(userId: string): string {
+    return routes.userProfile(userId);
   }
 
   static dashboardCampaignDetails(id: string): string {

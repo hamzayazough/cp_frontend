@@ -12,9 +12,10 @@ import AdvertiserPortfolioDetailModal from './AdvertiserPortfolioDetailModal';
 interface AdvertiserProfileContentProps {
   user: User;
   onUserUpdate: (user: User) => void;
+  isViewOnly?: boolean;
 }
 
-export default function AdvertiserProfileContent({ user, onUserUpdate }: AdvertiserProfileContentProps) {
+export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnly = false }: AdvertiserProfileContentProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showPortfolioManager, setShowPortfolioManager] = useState(false);
@@ -237,44 +238,46 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
             </div>
 
             {/* Edit Button */}
-            <div className="pt-8">
-              {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  title="Edit Profile"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </button>
-              ) : (
-                <div className="flex space-x-2">
+            {!isViewOnly && (
+              <div className="pt-8">
+                {!isEditing ? (
                   <button
-                    onClick={handleCancel}
-                    className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    onClick={() => setIsEditing(true)}
+                    className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    title="Edit Profile"
                   >
-                    Cancel
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
                   </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                    title={isSaving ? 'Saving...' : 'Save Changes'}
-                  >
-                    {isSaving ? (
-                      <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleCancel}
+                      className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                      title={isSaving ? 'Saving...' : 'Save Changes'}
+                    >
+                      {isSaving ? (
+                        <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Company Info and Bio - Side by side */}
@@ -580,15 +583,17 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
       <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-semibold text-gray-900">Products & Services</h3>
-          <button 
-            onClick={() => setShowPortfolioManager(true)}
-            className="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            title="Manage Products & Services"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-            </svg>
-          </button>
+          {!isViewOnly && (
+            <button 
+              onClick={() => setShowPortfolioManager(true)}
+              className="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              title="Manage Products & Services"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+              </svg>
+            </button>
+          )}
         </div>
         
         {user.advertiserDetails?.advertiserWork && user.advertiserDetails.advertiserWork.length > 0 ? (
@@ -645,13 +650,20 @@ export default function AdvertiserProfileContent({ user, onUserUpdate }: Adverti
               </svg>
             </div>
             <h4 className="text-base font-medium text-gray-900 mb-1">No products or services yet</h4>
-            <p className="text-gray-500 mb-3 text-sm">Showcase your products and services to attract promoters</p>
-            <button 
-              onClick={() => setShowPortfolioManager(true)}
-              className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-            >
-              Add Product/Service
-            </button>
+            <p className="text-gray-500 mb-3 text-sm">
+              {isViewOnly 
+                ? "This advertiser hasn't added any products or services yet" 
+                : "Showcase your products and services to attract promoters"
+              }
+            </p>
+            {!isViewOnly && (
+              <button 
+                onClick={() => setShowPortfolioManager(true)}
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              >
+                Add Product/Service
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -10,24 +10,27 @@ interface PortfolioSectionProps {
   user: User;
   onPortfolioManagerOpen: () => void;
   onWorkSelect: (work: PromoterWork) => void;
+  isViewOnly?: boolean;
 }
 
 export default function PortfolioSection({
   user,
   onPortfolioManagerOpen,
   onWorkSelect,
+  isViewOnly = false,
 }: PortfolioSectionProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold text-gray-900">Portfolio</h3>
-        <button
-          onClick={onPortfolioManagerOpen}
-          className="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          title="Manage Portfolio"
-        >
-          <svg
-            className="w-4 h-4"
+        {!isViewOnly && (
+          <button
+            onClick={onPortfolioManagerOpen}
+            className="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            title="Manage Portfolio"
+          >
+            <svg
+              className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -39,7 +42,8 @@ export default function PortfolioSection({
               d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
             />
           </svg>
-        </button>
+          </button>
+        )}
       </div>
 
       {user.promoterDetails?.works && user.promoterDetails.works.length > 0 ? (
@@ -144,14 +148,19 @@ export default function PortfolioSection({
             No portfolio items yet
           </h4>
           <p className="text-gray-500 mb-3 text-sm">
-            Showcase your best work to attract more clients
+            {isViewOnly 
+              ? "This promoter hasn't added any portfolio items yet" 
+              : "Showcase your best work to attract more clients"
+            }
           </p>
-          <button
-            onClick={onPortfolioManagerOpen}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-          >
-            Add Portfolio Item
-          </button>
+          {!isViewOnly && (
+            <button
+              onClick={onPortfolioManagerOpen}
+              className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            >
+              Add Portfolio Item
+            </button>
+          )}
         </div>
       )}
     </div>

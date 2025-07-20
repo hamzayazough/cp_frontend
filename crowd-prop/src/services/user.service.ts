@@ -124,6 +124,45 @@ export class UserService {
       throw new Error("Failed to load user profile. Please try again.");
     }
   }
+
+  /**
+   * Get user profile by ID
+   */
+  async getUserById(userId: string): Promise<User> {
+    try {
+      if (!userId || userId.trim().length === 0) {
+        throw new Error("User ID is required");
+      }
+
+      const response = await httpService.get<{
+        success: boolean;
+        user: User;
+        message?: string;
+      }>(`/user/${userId.trim()}`, true);
+
+      if (!response.data.success) {
+        throw new Error("Failed to fetch user profile");
+      }
+
+      return response.data.user;
+    } catch (error) {
+      console.error(`Failed to get user profile for ID ${userId}:`, error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Invalid user ID provided");
+        }
+        if (error.message.includes("404")) {
+          throw new Error("User not found");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required to view user profile");
+        }
+      }
+
+      throw new Error("Failed to load user profile. Please try again.");
+    }
+  }
 }
 
 // Create and export a singleton instance

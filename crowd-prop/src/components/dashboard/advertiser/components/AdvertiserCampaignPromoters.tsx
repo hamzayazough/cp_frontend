@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { ApplicationStatus } from "@/app/interfaces/campaign-application";
 import { PromoterCampaignStatus } from "@/app/enums/campaign-type";
+import { Router } from "@/lib/router";
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -20,6 +22,12 @@ export default function AdvertiserCampaignPromoters({
   campaign,
   onViewApplications,
 }: AdvertiserCampaignPromotersProps) {
+  const router = useRouter();
+
+  const handleUserClick = (userId: string) => {
+    router.push(Router.userProfile(userId));
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -114,7 +122,14 @@ export default function AdvertiserCampaignPromoters({
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUserClick(chosenPromoter.promoter.id);
+                }}
+                className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                title={`View ${chosenPromoter.promoter.name}'s profile`}
+              >
                 {chosenPromoter.promoter.avatarUrl ? (
                   <Image
                     src={chosenPromoter.promoter.avatarUrl}
@@ -129,7 +144,7 @@ export default function AdvertiserCampaignPromoters({
                     .map((n) => n[0])
                     .join("")
                 )}
-              </div>
+              </button>
               <div className="flex-1">
                 <h4 className="text-lg font-medium text-gray-900">
                   {chosenPromoter.promoter.name}
@@ -300,7 +315,14 @@ export default function AdvertiserCampaignPromoters({
             {chosenPromotersArray.map((chosenPromoter) => (
               <div key={chosenPromoter.promoter.id} className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUserClick(chosenPromoter.promoter.id);
+                    }}
+                    className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                    title={`View ${chosenPromoter.promoter.name}'s profile`}
+                  >
                     {chosenPromoter.promoter.avatarUrl ? (
                       <Image
                         src={chosenPromoter.promoter.avatarUrl}
@@ -315,7 +337,7 @@ export default function AdvertiserCampaignPromoters({
                         .map((n) => n[0])
                         .join("")
                     )}
-                  </div>
+                  </button>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-lg font-medium text-gray-900">
@@ -389,7 +411,14 @@ export default function AdvertiserCampaignPromoters({
               <div key={applicant.promoter.id} className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUserClick(applicant.promoter.id);
+                      }}
+                      className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                      title={`View ${applicant.promoter.name}'s profile`}
+                    >
                       {applicant.promoter.avatarUrl ? (
                         <Image
                           src={applicant.promoter.avatarUrl}
@@ -404,7 +433,7 @@ export default function AdvertiserCampaignPromoters({
                           .map((n) => n[0])
                           .join("")
                       )}
-                    </div>
+                    </button>
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <h4 className="text-lg font-medium text-gray-900">

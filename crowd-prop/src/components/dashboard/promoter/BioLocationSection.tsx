@@ -11,6 +11,7 @@ interface BioLocationSectionProps {
     location: string;
   };
   onEditDataChange: (field: string, value: string) => void;
+  isViewOnly?: boolean;
 }
 
 export default function BioLocationSection({
@@ -18,6 +19,7 @@ export default function BioLocationSection({
   isEditing,
   editData,
   onEditDataChange,
+  isViewOnly = false,
 }: BioLocationSectionProps) {
   return (
     <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
