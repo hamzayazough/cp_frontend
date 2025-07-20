@@ -152,7 +152,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
 
   const renderCampaignDetails = () => {
     const baseDetails = (
-      <div className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+      <div key="baseDetails" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
         <div className="flex items-center">
           <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
           <span className="text-sm text-gray-600">Budget</span>

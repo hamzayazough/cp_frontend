@@ -140,6 +140,29 @@ class AdvertiserService {
     }
   }
 
+  /**
+   * Get campaign by ID
+   */
+  async getCampaignById(campaignId: string): Promise<CampaignAdvertiser> {
+    try {
+      const response = await httpService.get<{
+        success: boolean;
+        data: CampaignAdvertiser;
+        message?: string;
+      }>(`${this.baseUrl}/campaigns/${campaignId}`, true);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to fetch campaign");
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to retrieve campaign"
+      );
+    }
+  }
+
   async reviewPromoterApplication(
     params: ReviewPromoterApplicationRequest
   ): Promise<ReviewApplicationResponse> {

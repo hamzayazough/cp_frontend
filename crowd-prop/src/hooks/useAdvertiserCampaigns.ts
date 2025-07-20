@@ -142,10 +142,20 @@ export const useAdvertiserCampaigns = (
         return Promise.resolve(campaign);
       }
 
-      // Campaign not found - wait for campaigns to load or indicates data inconsistency
-      throw new Error(
-        `Campaign with ID ${campaignId} not found in campaigns list`
-      );
+      // Campaign not found in local list, try to fetch from API
+      try {
+        console.log("Campaign not found in local list, fetching from API");
+        const campaignData = await advertiserService.getCampaignById(
+          campaignId
+        );
+        return campaignData;
+      } catch (error) {
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : `Campaign with ID ${campaignId} not found`
+        );
+      }
     },
     [campaigns]
   );

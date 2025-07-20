@@ -13,6 +13,7 @@ import {
   MOCK_CAMPAIGN_PROMOTER4,
 } from "@/app/mocks/campaign-promoter-mock";
 import { getPromoterCampaignById } from "@/utils/promoter-campaigns-storage";
+import { promoterService } from "@/services/promoter.service";
 
 // Import all the smaller components
 import CampaignHeader from "./components/CampaignHeader";
@@ -48,23 +49,42 @@ export default function PromoterCampaignDetailsContent({
   const [campaign, setCampaign] = useState<CampaignPromoter | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load campaign data from localStorage or fallback to mock
+  // Load campaign data from localStorage, API, or fallback to mock
   useEffect(() => {
-    const loadCampaign = () => {
+    const loadCampaign = async () => {
       setLoading(true);
 
-      // First try to get from localStorage
-      let campaignData = getPromoterCampaignById(campaignId);
+      try {
+        // First try to get from localStorage
+        let campaignData = getPromoterCampaignById(campaignId);
 
-      // If not found in localStorage, fallback to mock data
-      if (!campaignData) {
-        console.log("Campaign not found in localStorage, using mock data");
-        campaignData =
-          mockCampaignData[campaignId as keyof typeof mockCampaignData];
+        if (campaignData) {
+          setCampaign(campaignData);
+          setLoading(false);
+          return;
+        }
+
+        // If not found in localStorage, try API call
+        try {
+          console.log("Campaign not found in localStorage, fetching from API");
+          campaignData = await promoterService.getPromoterCampaignById(campaignId);
+          setCampaign(campaignData);
+          setLoading(false);
+          return;
+        } catch (apiError) {
+          console.error("Failed to fetch campaign from API:", apiError);
+        }
+
+        // If API call fails, fallback to mock data
+        console.log("Using mock data as fallback");
+        campaignData = mockCampaignData[campaignId as keyof typeof mockCampaignData];
+        setCampaign(campaignData || null);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading campaign:", error);
+        setCampaign(null);
+        setLoading(false);
       }
-
-      setCampaign(campaignData || null);
-      setLoading(false);
     };
 
     loadCampaign();

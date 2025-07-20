@@ -8,11 +8,15 @@ import {
   AcceptContractResponse,
 } from "@/app/interfaces/campaign/accept-contract";
 import { ExploreCampaignRequest } from "@/app/interfaces/campaign/explore-campaign-request";
-import { ExploreCampaignResponse } from "@/app/interfaces/campaign/explore-campaign";
+import {
+  ExploreCampaignResponse,
+  CampaignUnion,
+} from "@/app/interfaces/campaign/explore-campaign";
 import {
   GetPromoterCampaignsRequest,
   GetPromoterCampaignsResponse as PromoterCampaignsListResponse,
 } from "@/app/interfaces/campaign/promoter-campaigns-request";
+import { CampaignPromoter } from "@/app/interfaces/campaign/promoter-campaign-details";
 import { HttpService } from "./http.service";
 import {
   GetPromoterDashboardRequest,
@@ -338,6 +342,26 @@ export class PromoterService {
   }
 
   /**
+   * Get campaign by ID
+   */
+  async getCampaignById(campaignId: string): Promise<CampaignUnion> {
+    const response = await this.httpService.get<{
+      success: boolean;
+      data: CampaignUnion;
+      message?: string;
+    }>(
+      `/promoter/campaigns/explore/${campaignId}`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch campaign");
+    }
+
+    return response.data.data;
+  }
+
+  /**
    * Get promoter's campaigns list
    */
   async getPromoterCampaigns(
@@ -356,6 +380,28 @@ export class PromoterService {
     if (!response.data.success) {
       throw new Error(
         response.data.message || "Failed to fetch promoter campaigns"
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Get promoter campaign by ID
+   */
+  async getPromoterCampaignById(campaignId: string): Promise<CampaignPromoter> {
+    const response = await this.httpService.get<{
+      success: boolean;
+      data: CampaignPromoter;
+      message?: string;
+    }>(
+      `/promoter/campaigns/list/${campaignId}`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch promoter campaign"
       );
     }
 

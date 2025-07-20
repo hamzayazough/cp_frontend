@@ -539,20 +539,34 @@ export default function CampaignDetailsPage({
   });
 
   useEffect(() => {
-    // Try to get campaign from localStorage first
-    const storedCampaign = exploreCampaignsStorage.getCampaignById(
-      resolvedParams.campaignId
-    );
+    const fetchCampaign = async () => {
+      // Try to get campaign from localStorage first
+      const storedCampaign = exploreCampaignsStorage.getCampaignById(
+        resolvedParams.campaignId
+      );
 
-    if (storedCampaign) {
-      setCampaign(storedCampaign);
-      setLoading(false);
-    } else {
-      // If not found in localStorage, redirect back to explore page
-      // This could happen if user navigates directly to URL or cache expired
-      setLoading(false);
-    }
-  }, [resolvedParams.campaignId]);
+      if (storedCampaign) {
+        setCampaign(storedCampaign);
+        setLoading(false);
+      } else {
+        // If not found in localStorage, fetch from API
+        try {
+          const campaignData = await promoterService.getCampaignById(
+            resolvedParams.campaignId
+          );
+          setCampaign(campaignData);
+          setLoading(false);
+        } catch (error) {
+          console.error("Failed to fetch campaign:", error);
+          // If API call fails, redirect to explore page
+          setLoading(false);
+          router.push("/dashboard/explore");
+        }
+      }
+    };
+
+    fetchCampaign();
+  }, [resolvedParams.campaignId, router]);
 
   const handleApplyClick = async (campaign: CampaignUnion) => {
     if (campaign.isPublic) {
