@@ -664,23 +664,23 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                       {/* Campaign-specific information */}
                                       {campaign.type ===
                                         CampaignType.CONSULTANT && (
-                                        <div className="bg-white rounded p-2 mb-2">
-                                          <div className="grid grid-cols-2 gap-3 text-xs">
+                                        <div className="bg-white rounded-md p-3 mb-2 border border-gray-200">
+                                          <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
-                                              <span className="text-gray-500">
+                                              <span className="text-gray-600 font-medium">
                                                 Meetings:
                                               </span>
-                                              <span className="ml-1 font-medium">
+                                              <span className="ml-2 font-semibold text-gray-900">
                                                 {chosenPromoter.numberMeetingsDone ||
                                                   0}
                                                 /8
                                               </span>
                                             </div>
                                             <div>
-                                              <span className="text-gray-500">
+                                              <span className="text-gray-600 font-medium">
                                                 Next:
                                               </span>
-                                              <span className="ml-1 font-medium">
+                                              <span className="ml-2 font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-md text-xs">
                                                 TBD
                                               </span>
                                             </div>

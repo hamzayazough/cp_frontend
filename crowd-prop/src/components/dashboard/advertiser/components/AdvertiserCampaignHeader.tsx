@@ -109,7 +109,7 @@ export default function AdvertiserCampaignHeader({
           </Link>
         )}
         {/* Delete Icon Button - only if no chosenPromoters */}
-        {!campaign.chosenPromoters && (
+        {!campaign.chosenPromoters && campaign.chosenPromoters.length === 0 && (
           <>
             <button
               onClick={() => setShowDeleteModal(true)}

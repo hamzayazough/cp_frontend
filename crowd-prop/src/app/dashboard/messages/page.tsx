@@ -83,11 +83,9 @@ export default function MessagesPage() {
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Messages
+              Comming soon
             </h2>
-            <p className="text-gray-600">
-              Here you can communicate with promoters and manage your conversations.
-            </p>
+
           </div>
         );
       case 'ADMIN':
