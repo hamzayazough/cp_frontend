@@ -438,7 +438,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         <p className="text-sm font-medium text-gray-700 mb-2">
                           Deliverables:
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="space-y-2">
                           {(() => {
                             const deliverables =
                               campaign.type === CampaignType.CONSULTANT
@@ -451,12 +451,42 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                 : [];
 
                             return deliverables.map((deliverable, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                              <div
+                                key={deliverable.id || index}
+                                className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200"
                               >
-                                {deliverable.replace(/_/g, " ")}
-                              </span>
+                                <div className="flex items-center space-x-3">
+                                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                    {deliverable.deliverable.replace(/_/g, " ")}
+                                  </span>
+                                  <div className="flex items-center space-x-2 text-xs">
+                                    <span
+                                      className={`px-2 py-0.5 rounded-full font-medium ${
+                                        deliverable.isSubmitted
+                                          ? "bg-green-100 text-green-800"
+                                          : "bg-yellow-100 text-yellow-800"
+                                      }`}
+                                    >
+                                      {deliverable.isSubmitted ? "Submitted" : "Pending"}
+                                    </span>
+                                    <span
+                                      className={`px-2 py-0.5 rounded-full font-medium ${
+                                        deliverable.isFinished
+                                          ? "bg-green-100 text-green-800"
+                                          : "bg-gray-100 text-gray-600"
+                                      }`}
+                                    >
+                                      {deliverable.isFinished ? "Finished" : "In Progress"}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2 text-xs text-gray-600">
+                                  <span className="flex items-center space-x-1">
+                                    <span>{deliverable.promoterWork?.length || 0}</span>
+                                    <span>work{(deliverable.promoterWork?.length || 0) !== 1 ? 's' : ''}</span>
+                                  </span>
+                                </div>
+                              </div>
                             ));
                           })()}
                         </div>

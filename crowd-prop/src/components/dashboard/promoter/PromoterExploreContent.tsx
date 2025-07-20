@@ -110,7 +110,7 @@ function ApplicationModal({
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Tell the advertiser why you're the perfect fit for this campaign..."
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-black"
                 required
               />
             </div>

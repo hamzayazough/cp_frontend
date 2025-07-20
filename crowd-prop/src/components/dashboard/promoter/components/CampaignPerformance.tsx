@@ -186,29 +186,115 @@ export default function CampaignPerformance({
 
     const consultantDetails = campaign.campaign as ConsultantCampaignDetails;
 
+    if (!consultantDetails.expectedDeliverables || consultantDetails.expectedDeliverables.length === 0) {
+      return (
+        <div className="space-y-4">
+          <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
+          <div className="text-center text-gray-500 py-4">
+            No specific deliverables defined yet
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-4">
         <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {consultantDetails.expectedDeliverables?.map((deliverable, index) => (
-            <div
-              key={index}
-              className="bg-purple-50 p-4 rounded-lg border border-purple-200"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-purple-900">
-                  {deliverable}
-                </span>
-                <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
-                  In Progress
-                </span>
+        <div className="space-y-3">
+          {consultantDetails.expectedDeliverables.map((deliverable, index) => {
+            const completionPercentage = deliverable.isFinished ? 100 : deliverable.isSubmitted ? 75 : 0;
+            const workCount = deliverable.promoterWork?.length || 0;
+            
+            return (
+              <div
+                key={deliverable.id || index}
+                className="bg-purple-50 p-4 rounded-lg border border-purple-200"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h5 className="text-sm font-medium text-purple-900 mb-1">
+                      {deliverable.deliverable.replace(/_/g, " ")}
+                    </h5>
+                    <div className="flex items-center space-x-2 text-xs text-purple-700">
+                      <span>Created: {new Date(deliverable.createdAt).toLocaleDateString()}</span>
+                      <span>•</span>
+                      <span>Updated: {new Date(deliverable.updatedAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        deliverable.isFinished
+                          ? "bg-green-100 text-green-800"
+                          : deliverable.isSubmitted
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {deliverable.isFinished ? "Completed" : deliverable.isSubmitted ? "Under Review" : "Pending"}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="mb-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-purple-600">Progress</span>
+                    <span className="text-xs text-purple-600 font-medium">{completionPercentage}%</span>
+                  </div>
+                  <div className="w-full bg-purple-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        deliverable.isFinished
+                          ? "bg-green-500"
+                          : deliverable.isSubmitted
+                          ? "bg-yellow-500"
+                          : "bg-gray-400"
+                      }`}
+                      style={{ width: `${completionPercentage}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Work Submissions */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-xs text-purple-700">
+                    <span className="font-medium">Work Submissions:</span>
+                    <span className="bg-purple-100 px-2 py-1 rounded-full">
+                      {workCount} item{workCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  {workCount > 0 && (
+                    <button className="text-xs text-purple-600 hover:text-purple-800 underline">
+                      View Submissions
+                    </button>
+                  )}
+                </div>
+
+                {/* Work Items Preview */}
+                {workCount > 0 && (
+                  <div className="mt-3 pt-3 border-t border-purple-200">
+                    <div className="space-y-2">
+                      {deliverable.promoterWork?.slice(0, 2).map((work, workIndex) => (
+                        <div key={work.id || workIndex} className="flex items-center space-x-2 text-xs text-purple-700">
+                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                          <span className="flex-1 truncate">{work.description || 'Work submission'}</span>
+                          <span className="text-purple-500">
+                            {new Date(work.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                      {workCount > 2 && (
+                        <div className="text-xs text-purple-600 pl-4">
+                          +{workCount - 2} more submission{workCount - 2 !== 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )) || (
-            <div className="col-span-2 text-center text-gray-500 py-4">
-              No specific deliverables defined yet
-            </div>
-          )}
+            );
+          })}
         </div>
       </div>
     );
@@ -219,29 +305,115 @@ export default function CampaignPerformance({
 
     const sellerDetails = campaign.campaign as SellerCampaignDetails;
 
+    if (!sellerDetails.deliverables || sellerDetails.deliverables.length === 0) {
+      return (
+        <div className="space-y-4">
+          <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
+          <div className="text-center text-gray-500 py-4">
+            No specific deliverables defined yet
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-4">
         <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sellerDetails.deliverables?.map((deliverable, index) => (
-            <div
-              key={index}
-              className="bg-orange-50 p-4 rounded-lg border border-orange-200"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-orange-900">
-                  {deliverable}
-                </span>
-                <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
-                  In Progress
-                </span>
+        <div className="space-y-3">
+          {sellerDetails.deliverables.map((deliverable, index) => {
+            const completionPercentage = deliverable.isFinished ? 100 : deliverable.isSubmitted ? 75 : 0;
+            const workCount = deliverable.promoterWork?.length || 0;
+            
+            return (
+              <div
+                key={deliverable.id || index}
+                className="bg-orange-50 p-4 rounded-lg border border-orange-200"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h5 className="text-sm font-medium text-orange-900 mb-1">
+                      {deliverable.deliverable.replace(/_/g, " ")}
+                    </h5>
+                    <div className="flex items-center space-x-2 text-xs text-orange-700">
+                      <span>Created: {new Date(deliverable.createdAt).toLocaleDateString()}</span>
+                      <span>•</span>
+                      <span>Updated: {new Date(deliverable.updatedAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        deliverable.isFinished
+                          ? "bg-green-100 text-green-800"
+                          : deliverable.isSubmitted
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {deliverable.isFinished ? "Completed" : deliverable.isSubmitted ? "Under Review" : "Pending"}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="mb-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-orange-600">Progress</span>
+                    <span className="text-xs text-orange-600 font-medium">{completionPercentage}%</span>
+                  </div>
+                  <div className="w-full bg-orange-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        deliverable.isFinished
+                          ? "bg-green-500"
+                          : deliverable.isSubmitted
+                          ? "bg-yellow-500"
+                          : "bg-gray-400"
+                      }`}
+                      style={{ width: `${completionPercentage}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Work Submissions */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-xs text-orange-700">
+                    <span className="font-medium">Work Submissions:</span>
+                    <span className="bg-orange-100 px-2 py-1 rounded-full">
+                      {workCount} item{workCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  {workCount > 0 && (
+                    <button className="text-xs text-orange-600 hover:text-orange-800 underline">
+                      View Submissions
+                    </button>
+                  )}
+                </div>
+
+                {/* Work Items Preview */}
+                {workCount > 0 && (
+                  <div className="mt-3 pt-3 border-t border-orange-200">
+                    <div className="space-y-2">
+                      {deliverable.promoterWork?.slice(0, 2).map((work, workIndex) => (
+                        <div key={work.id || workIndex} className="flex items-center space-x-2 text-xs text-orange-700">
+                          <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                          <span className="flex-1 truncate">{work.description || 'Work submission'}</span>
+                          <span className="text-orange-500">
+                            {new Date(work.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                      {workCount > 2 && (
+                        <div className="text-xs text-orange-600 pl-4">
+                          +{workCount - 2} more submission{workCount - 2 !== 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )) || (
-            <div className="col-span-2 text-center text-gray-500 py-4">
-              No specific deliverables defined yet
-            </div>
-          )}
+            );
+          })}
         </div>
       </div>
     );

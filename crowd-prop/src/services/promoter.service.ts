@@ -1,3 +1,4 @@
+import { CampaignWork } from "@/app/interfaces/campaign-work";
 import {
   SendApplicationRequest,
   SendApplicationResponse,
@@ -385,15 +386,16 @@ export class PromoterService {
    */
   async addCampaignLink(
     campaignId: string,
-    link: string
-  ): Promise<{ success: boolean; message: string; data?: string[] }> {
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
     const response = await this.httpService.post<{
       success: boolean;
       message: string;
-      data?: string[];
+      data?: CampaignWork[];
     }>(
       `/promoter/campaigns/${campaignId}/links`,
-      { link },
+      { promoterLink, description },
       true // requiresAuth
     );
 
@@ -409,16 +411,17 @@ export class PromoterService {
    */
   async updateCampaignLink(
     campaignId: string,
-    oldLink: string,
-    newLink: string
-  ): Promise<{ success: boolean; message: string; data?: string[] }> {
+    workId: string,
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
     const response = await this.httpService.put<{
       success: boolean;
       message: string;
-      data?: string[];
+      data?: CampaignWork[];
     }>(
-      `/promoter/campaigns/${campaignId}/links`,
-      { oldLink, newLink },
+      `/promoter/campaigns/${campaignId}/links/${workId}`,
+      { promoterLink, description },
       true // requiresAuth
     );
 
@@ -436,16 +439,14 @@ export class PromoterService {
    */
   async deleteCampaignLink(
     campaignId: string,
-    link: string
-  ): Promise<{ success: boolean; message: string; data?: string[] }> {
-    console.log("link:", link);
-    const response = await this.httpService.post<{
+    workId: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.delete<{
       success: boolean;
       message: string;
-      data?: string[];
+      data?: CampaignWork[];
     }>(
-      `/promoter/campaigns/${campaignId}/links/delete`,
-      { link },
+      `/promoter/campaigns/${campaignId}/links/${workId}`,
       true // requiresAuth
     );
 
@@ -453,6 +454,115 @@ export class PromoterService {
       throw new Error(
         response.data.message || "Failed to delete campaign link"
       );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Add a new work item to a specific deliverable
+   */
+  async addCampaignWorkToDeliverable(
+    campaignId: string,
+    deliverableId: string,
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work`,
+      { promoterLink, description },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to add work to deliverable"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Update an existing work item in a specific deliverable
+   */
+  async updateCampaignWorkInDeliverable(
+    campaignId: string,
+    deliverableId: string,
+    workId: string,
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.put<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}`,
+      { promoterLink, description },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to update work in deliverable"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Delete a work item from a specific deliverable
+   */
+  async deleteCampaignWorkFromDeliverable(
+    campaignId: string,
+    deliverableId: string,
+    workId: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.delete<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to delete work from deliverable"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Add a comment to a work item in a specific deliverable
+   */
+  async addCommentToWork(
+    campaignId: string,
+    deliverableId: string,
+    workId: string,
+    commentMessage: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}/comments`,
+      { commentMessage },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to add comment to work");
     }
 
     return response.data;

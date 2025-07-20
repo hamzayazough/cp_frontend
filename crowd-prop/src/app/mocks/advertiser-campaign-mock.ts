@@ -19,6 +19,7 @@ import {
   AdvertiserSalesmanCampaignDetails,
 } from "../interfaces/campaign/advertiser-campaign";
 import { Promoter } from "../interfaces/user";
+import { CampaignDeliverable } from "../interfaces/campaign-work";
 
 // Mock Promoters
 const MOCK_PROMOTERS: Promoter[] = [
@@ -145,7 +146,18 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     campaign: {
       type: CampaignType.CONSULTANT,
       meetingPlan: MeetingPlan.WEEKLY,
-      expectedDeliverables: [Deliverable.CONTENT_PLAN],
+      expectedDeliverables: [
+        {
+          id: "deliverable-1",
+          campaignId: "campaign-7",
+          deliverable: Deliverable.CONTENT_PLAN,
+          isSubmitted: false,
+          isFinished: false,
+          createdAt: new Date("2024-06-30"),
+          updatedAt: new Date("2024-06-30"),
+          promoterWork: [],
+        },
+      ] as CampaignDeliverable[],
       expertiseRequired: "Creative Strategy, Brand Development",
       meetingCount: 4,
       maxBudget: 5000,

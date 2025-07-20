@@ -14,6 +14,7 @@ import {
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignWork } from "@/app/interfaces/campaign-work";
 
 interface CreateCampaignResponse {
   success: boolean;
@@ -360,6 +361,78 @@ class AdvertiserService {
         message:
           error instanceof Error ? error.message : "Failed to upload file",
       };
+    }
+  }
+
+  /**
+   * Add a comment to a work item in a specific deliverable
+   */
+  async addCommentToWork(
+    campaignId: string,
+    deliverableId: string,
+    workId: string,
+    commentMessage: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+        data?: CampaignWork[];
+      }>(
+        `${this.baseUrl}/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}/comments`,
+        { commentMessage },
+        true // requiresAuth
+      );
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "Failed to add comment to work"
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to add comment"
+      );
+    }
+  }
+
+  /**
+   * Mark a campaign deliverable as finished
+   */
+  async markDeliverableAsFinished(
+    campaignId: string,
+    deliverableId: string
+  ): Promise<{
+    success: boolean;
+    message: string;
+    data?: { deliverableId: string; isFinished: boolean };
+  }> {
+    try {
+      const response = await httpService.put<{
+        success: boolean;
+        message: string;
+        data?: { deliverableId: string; isFinished: boolean };
+      }>(
+        `${this.baseUrl}/campaigns/${campaignId}/deliverables/${deliverableId}/finish`,
+        {},
+        true // requiresAuth
+      );
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "Failed to mark deliverable as finished"
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to mark deliverable as finished"
+      );
     }
   }
 }

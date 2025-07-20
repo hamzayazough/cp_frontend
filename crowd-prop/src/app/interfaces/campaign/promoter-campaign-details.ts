@@ -7,6 +7,7 @@ import {
 } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
 import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
+import { CampaignDeliverable } from "@/app/interfaces/campaign-work";
 
 export interface Advertiser {
   id: string; // Optional ID for the advertiser
@@ -46,22 +47,20 @@ export interface VisibilityCampaignDetails extends BaseCampaignDetails {
 export interface ConsultantCampaignDetails extends BaseCampaignDetails {
   type: CampaignType.CONSULTANT;
   meetingPlan: MeetingPlan;
-  expectedDeliverables?: Deliverable[];
+  expectedDeliverables?: CampaignDeliverable[];
   expertiseRequired?: string;
   meetingCount: number;
   maxBudget: number;
   minBudget: number;
-  promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones
 }
 
 export interface SellerCampaignDetails extends BaseCampaignDetails {
   type: CampaignType.SELLER;
   sellerRequirements?: Deliverable[];
-  deliverables?: Deliverable[];
+  deliverables?: CampaignDeliverable[];
   fixedPrice?: number;
   maxBudget: number;
   minBudget: number;
-  promoterLinks?: string[]; // Promoter added links for the campaign (example Instagram post, TikTok video, drive doc, etc.) Promoter can add new links, update or delete existing ones¸ field available from PromoterCampaign interface
   minFollowers?: number;
 
   //new

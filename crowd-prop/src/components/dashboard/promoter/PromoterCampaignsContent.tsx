@@ -15,6 +15,9 @@ import {
   ArrowTopRightOnSquareIcon,
   ChatBubbleLeftRightIcon,
   DocumentArrowUpIcon,
+  XCircleIcon,
+  CloudArrowUpIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 import {
   ConsultantCampaignDetails,
@@ -494,7 +497,7 @@ export default function PromoterCampaignsContent() {
                       <p className="text-sm font-medium text-gray-700 mb-2">
                         Deliverables:
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="space-y-2">
                         {(() => {
                           const details = campaign.campaign as
                             | ConsultantCampaignDetails
@@ -506,14 +509,78 @@ export default function PromoterCampaignsContent() {
                               : (details as SellerCampaignDetails)
                                   .deliverables || [];
 
-                          return deliverables.map((deliverable, index) => (
-                            <span
-                              key={index}
-                              className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-                            >
-                              {deliverable.replace(/_/g, " ")}
-                            </span>
-                          ));
+                          const visibleDeliverables = deliverables.slice(0, 3);
+                          const hasMore = deliverables.length > 3;
+                          const remainingCount = deliverables.length - 3;
+
+                          return (
+                            <>
+                              {visibleDeliverables.map((deliverable, index) => (
+                                <div
+                                  key={deliverable.id || index}
+                                  className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200"
+                                >
+                                  <div className="flex items-center space-x-3">
+                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                      {deliverable.deliverable.replace(/_/g, " ")}
+                                    </span>
+                                    <div className="flex items-center space-x-2 text-xs">
+                                      <span
+                                        className={`px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${
+                                          deliverable.isSubmitted
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-yellow-100 text-yellow-800"
+                                        }`}
+                                      >
+                                        {deliverable.isSubmitted ? (
+                                          <>
+                                            <CloudArrowUpIcon className="h-3 w-3" />
+                                            <span>Submitted</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <ClockIcon className="h-3 w-3" />
+                                            <span>Pending</span>
+                                          </>
+                                        )}
+                                      </span>
+                                      <span
+                                        className={`px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${
+                                          deliverable.isFinished
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-gray-100 text-gray-600"
+                                        }`}
+                                      >
+                                        {deliverable.isFinished ? (
+                                          <>
+                                            <CheckCircleIcon className="h-3 w-3" />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <XCircleIcon className="h-3 w-3" />
+                                          </>
+                                        )}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-2 text-xs text-gray-600">
+                                    <span className="flex items-center space-x-1">
+                                      <span>{deliverable.promoterWork?.length || 0}</span>
+                                      <span>work{(deliverable.promoterWork?.length || 0) !== 1 ? 's' : ''}</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              {hasMore && (
+                                <div className="flex items-center justify-center bg-gray-50 rounded-lg p-3 border border-gray-200 border-dashed">
+                                  <span className="text-sm text-gray-500 font-medium">
+                                    +{remainingCount} more deliverable{remainingCount > 1 ? 's' : ''}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          );
                         })()}
                       </div>
                     </div>
@@ -541,7 +608,7 @@ export default function PromoterCampaignsContent() {
                         <button
                           onClick={(e) => {
                             e.preventDefault();
-                            // Handle submit work action
+                            //TODO: Handle submit work action
                           }}
                           className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                         >

@@ -19,6 +19,12 @@ export type {
   UserProfileResponse,
 } from "./user.service";
 
+// Campaign Work - Campaign work management
+export type {
+  CampaignWork,
+  CampaignWorkComment,
+} from "../app/interfaces/campaign-work";
+
 // Promoter Service - Promoter dashboard and campaign management
 export { PromoterService, promoterService } from "./promoter.service";
 export type {

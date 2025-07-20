@@ -7,6 +7,7 @@ import {
 } from "../../enums/campaign-type";
 import { AdvertiserType } from "../../enums/advertiser-type";
 import { SocialPlatform } from "../../enums/social-platform";
+import { CampaignDeliverable } from "../campaign-work";
 
 // Base Campaign interface - now abstract, not used directly
 export interface BaseCampaign {
@@ -45,7 +46,7 @@ export interface ConsultantCampaign extends BaseCampaign {
   type: CampaignType.CONSULTANT;
   meetingPlan: MeetingPlan;
   expertiseRequired?: string;
-  expectedDeliverables: Deliverable[];
+  expectedDeliverables: CampaignDeliverable[];
   meetingCount: number;
   maxBudget: number;
   minBudget: number;
@@ -55,7 +56,7 @@ export interface ConsultantCampaign extends BaseCampaign {
 export interface SellerCampaign extends BaseCampaign {
   type: CampaignType.SELLER;
   sellerRequirements: Deliverable[];
-  deliverables: Deliverable[];
+  deliverables: CampaignDeliverable[];
   maxBudget: number;
   minBudget: number;
   // isPublic is always false for seller campaigns - inherited from BaseCampaign

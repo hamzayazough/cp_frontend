@@ -2,11 +2,12 @@
 
 import { useState, useCallback } from 'react';
 import { Campaign } from '@/app/interfaces/campaign/campaign';
-import { CampaignType } from '@/app/enums/campaign-type';
+import { CampaignType, Deliverable } from '@/app/enums/campaign-type';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
 import { SocialPlatform } from '@/app/enums/social-platform';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { advertiserService } from '@/services/advertiser.service';
+import { CampaignDeliverable } from '@/app/interfaces/campaign-work';
 import StepIndicator from './StepIndicator';
 import CampaignTypeStep from './steps/CampaignTypeStep';
 import { BasicInfoStep } from './steps';
@@ -106,6 +107,23 @@ const initialFormData: CampaignWizardFormData = {
   trackSalesVia: undefined,
   codePrefix: '',
   salesmanMinFollowers: undefined,
+};
+
+// Helper function to transform Deliverable[] to CampaignDeliverable[]
+const transformDeliverablesForCreation = (
+  deliverables: Deliverable[],
+  campaignId?: string
+): CampaignDeliverable[] => {
+  return deliverables.map((deliverable, index) => ({
+    id: `temp-${index}-${Date.now()}`, // Temporary ID for creation
+    campaignId: campaignId,
+    deliverable: deliverable,
+    isSubmitted: false,
+    isFinished: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    promoterWork: [],
+  }));
 };
 
 export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCampaignWizardProps) {
@@ -284,7 +302,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
             type: CampaignType.CONSULTANT,
             meetingPlan: formData.meetingPlan!,
             expertiseRequired: formData.expertiseRequired,
-            expectedDeliverables: formData.expectedDeliverables!,
+            expectedDeliverables: transformDeliverablesForCreation(formData.expectedDeliverables!),
             meetingCount: formData.meetingCount!,
             maxBudget: formData.maxBudget!,
             minBudget: formData.minBudget!,
@@ -297,7 +315,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
             ...baseData,
             type: CampaignType.SELLER,
             sellerRequirements: formData.sellerRequirements ?? [],
-            deliverables: formData.deliverables ?? [],
+            deliverables: transformDeliverablesForCreation(formData.deliverables ?? []),
             maxBudget: formData.sellerMaxBudget!,
             minBudget: formData.sellerMinBudget!,
             isPublic: false,

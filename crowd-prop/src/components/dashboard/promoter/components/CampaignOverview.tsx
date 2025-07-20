@@ -257,15 +257,17 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   Expected Deliverables
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="space-y-2">
                 {consultantDetails.expectedDeliverables.map(
                   (deliverable, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full"
+                    <div
+                      key={deliverable.id || index}
+                      className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                     >
-                      {deliverable}
-                    </span>
+                      <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
+                        {deliverable.deliverable.replace(/_/g, " ")}
+                      </span>
+                    </div>
                   )
                 )}
               </div>
@@ -338,14 +340,16 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   Required Deliverables
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="space-y-2">
                 {sellerDetails.deliverables.map((deliverable, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full"
+                  <div
+                    key={deliverable.id || index}
+                    className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                   >
-                    {deliverable}
-                  </span>
+                    <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
+                      {deliverable.deliverable.replace(/_/g, " ")}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
