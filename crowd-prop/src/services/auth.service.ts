@@ -478,10 +478,11 @@ export class AuthService {
         "video/mp4",
         "video/webm",
         "video/quicktime",
+        "application/pdf",
       ];
       if (!allowedTypes.includes(file.type)) {
         throw new Error(
-          "Invalid file type. Only images (JPEG, PNG, WebP, GIF) and videos (MP4, WebM, MOV) are allowed."
+          "Invalid file type. Only images (JPEG, PNG, WebP, GIF), videos (MP4, WebM, MOV), and PDFs are allowed."
         );
       }
 
@@ -565,10 +566,11 @@ export class AuthService {
           "video/mp4",
           "video/webm",
           "video/quicktime",
+          "application/pdf",
         ];
         if (!allowedTypes.includes(file.type)) {
           throw new Error(
-            "Invalid file type. Only images (JPEG, PNG, WebP, GIF) and videos (MP4, WebM, MOV) are allowed."
+            "Invalid file type. Only images (JPEG, PNG, WebP, GIF), videos (MP4, WebM, MOV), and PDFs are allowed."
           );
         }
 

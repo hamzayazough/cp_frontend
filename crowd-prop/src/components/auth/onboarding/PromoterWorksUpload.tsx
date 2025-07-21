@@ -1,10 +1,9 @@
+"use client";
 
-'use client';
-
-import { useState } from 'react';
-import Image from 'next/image';
-import { authService } from '@/services/auth.service';
-import { OnboardingData } from '../UserOnboarding';
+import { useState } from "react";
+import Image from "next/image";
+import { authService } from "@/services/auth.service";
+import { OnboardingData } from "../UserOnboarding";
 
 interface PromoterWorksUploadProps {
   data: OnboardingData;
@@ -26,8 +25,8 @@ export default function PromoterWorksUpload({
   onBack,
 }: PromoterWorksUploadProps) {
   const [workFormData, setWorkFormData] = useState<WorkFormData>({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     file: null,
   });
   const [isUploading, setIsUploading] = useState(false);
@@ -37,16 +36,16 @@ export default function PromoterWorksUpload({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setWorkFormData(prev => ({ ...prev, file }));
+      setWorkFormData((prev) => ({ ...prev, file }));
     }
   };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
@@ -55,20 +54,22 @@ export default function PromoterWorksUpload({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setWorkFormData(prev => ({ ...prev, file: e.dataTransfer.files[0] }));
+      setWorkFormData((prev) => ({ ...prev, file: e.dataTransfer.files[0] }));
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setWorkFormData(prev => ({ ...prev, [name]: value }));
+    setWorkFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddWork = async () => {
     if (!workFormData.title.trim() || !workFormData.file) {
-      setError('Title and file are required');
+      setError("Title and file are required");
       return;
     }
 
@@ -88,19 +89,23 @@ export default function PromoterWorksUpload({
 
       // Reset form
       setWorkFormData({
-        title: '',
-        description: '',
+        title: "",
+        description: "",
         file: null,
       });
 
       // Reset file input
-      const fileInput = document.getElementById('work-file') as HTMLInputElement;
+      const fileInput = document.getElementById(
+        "work-file"
+      ) as HTMLInputElement;
       if (fileInput) {
-        fileInput.value = '';
+        fileInput.value = "";
       }
     } catch (error) {
-      console.error('Failed to upload work:', error);
-      setError(error instanceof Error ? error.message : 'Failed to upload work');
+      console.error("Failed to upload work:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to upload work"
+      );
     } finally {
       setIsUploading(false);
     }
@@ -108,16 +113,18 @@ export default function PromoterWorksUpload({
 
   const handleRemoveWork = async (index: number) => {
     const work = data.promoterWorks[index];
-    
+
     try {
       await authService.deletePromoterWork(work.title);
-      
+
       // Remove from local state after successful API call
       const updatedWorks = data.promoterWorks.filter((_, i) => i !== index);
       onUpdate({ promoterWorks: updatedWorks });
     } catch (error) {
-      console.error('Failed to delete work:', error);
-      setError(error instanceof Error ? error.message : 'Failed to delete work');
+      console.error("Failed to delete work:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to delete work"
+      );
     }
   };
 
@@ -130,15 +137,27 @@ export default function PromoterWorksUpload({
       {/* Header */}
       <div className="text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          <svg
+            className="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+            />
           </svg>
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-3">
           Showcase Your Content
         </h2>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Share examples of your best work - marketing videos, editing skills, design projects, or any content that showcases your talents to your potential clients
+          Share examples of your best work - marketing videos, editing skills,
+          design projects, or any content that showcases your talents to your
+          potential clients
         </p>
       </div>
 
@@ -146,13 +165,25 @@ export default function PromoterWorksUpload({
       <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg
+              className="w-5 h-5 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">Add Content Sample</h3>
+          <h3 className="text-xl font-semibold text-gray-900">
+            Add Content Sample
+          </h3>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column */}
           <div className="space-y-6">
@@ -195,48 +226,70 @@ export default function PromoterWorksUpload({
               <div
                 className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all ${
                   dragActive
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-300 hover:border-gray-400 bg-gray-50"
                 }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
               >
+                {" "}
                 <input
                   type="file"
                   id="work-file"
-                  accept="image/*,video/*"
+                  accept="image/*,video/*,.pdf"
                   onChange={handleFileChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 {workFormData.file ? (
                   <div className="flex items-center justify-center space-x-3">
                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      <svg
+                        className="w-4 h-4 text-green-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
-                    <span className="text-green-700 text-sm font-semibold">{workFormData.file.name}</span>
+                    <span className="text-green-700 text-sm font-semibold">
+                      {workFormData.file.name}
+                    </span>
                   </div>
                 ) : (
                   <div>
                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      <svg
+                        className="w-6 h-6 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
                       </svg>
                     </div>
                     <p className="text-gray-700 font-medium mb-1">
-                      Drop files here or <span className="text-blue-600">click to browse</span>
-                    </p>
+                      Drop files here or{" "}
+                      <span className="text-blue-600">click to browse</span>
+                    </p>{" "}
                     <p className="text-gray-500 text-sm">
-                      Images & Videos up to 50MB
+                      Images, Videos & PDFs up to 50MB
                     </p>
                   </div>
                 )}
-              </div>
+              </div>{" "}
               <p className="text-sm text-gray-500 mt-2">
-                Supported formats: JPEG, PNG, WebP, GIF, MP4, WebM, MOV
+                Supported formats: JPEG, PNG, WebP, GIF, MP4, WebM, MOV, PDF
               </p>
             </div>
           </div>
@@ -245,8 +298,16 @@ export default function PromoterWorksUpload({
         {error && (
           <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-red-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg
+                className="w-5 h-5 text-red-600 mr-3"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
               <p className="text-red-700 text-sm font-medium">{error}</p>
             </div>
@@ -255,19 +316,37 @@ export default function PromoterWorksUpload({
 
         <button
           onClick={handleAddWork}
-          disabled={isUploading || !workFormData.title.trim() || !workFormData.file}
+          disabled={
+            isUploading || !workFormData.title.trim() || !workFormData.file
+          }
           className="w-full mt-8 px-6 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           {isUploading ? (
             <div className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Uploading...
             </div>
           ) : (
-            'Add Content Sample'
+            "Add Content Sample"
           )}
         </button>
       </div>
@@ -278,54 +357,109 @@ export default function PromoterWorksUpload({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 text-green-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">Your Content Portfolio</h3>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Your Content Portfolio
+              </h3>
             </div>
             <span className="px-4 py-2 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
-              {data.promoterWorks.length} {data.promoterWorks.length === 1 ? 'sample' : 'samples'}
+              {data.promoterWorks.length}{" "}
+              {data.promoterWorks.length === 1 ? "sample" : "samples"}
             </span>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {data.promoterWorks.map((work, index) => (
-              <div key={index} className="bg-gray-50 border border-gray-200 rounded-xl p-6 group hover:shadow-md transition-all">
+              <div
+                key={index}
+                className="bg-gray-50 border border-gray-200 rounded-xl p-6 group hover:shadow-md transition-all"
+              >
                 <div className="flex justify-between items-start mb-4">
-                  <h4 className="font-semibold text-gray-900 text-lg pr-4">{work.title}</h4>
+                  <h4 className="font-semibold text-gray-900 text-lg pr-4">
+                    {work.title}
+                  </h4>
                   <button
                     onClick={() => handleRemoveWork(index)}
                     className="flex-shrink-0 p-1.5 rounded-md transition-all shadow-sm"
-                    style={{ backgroundColor: '#ef4444', borderColor: '#ef4444', border: '2px solid #ef4444' }}
+                    style={{
+                      backgroundColor: "#ef4444",
+                      borderColor: "#ef4444",
+                      border: "2px solid #ef4444",
+                    }}
                     title="Delete work"
                   >
-                    <svg className="w-4 h-4" fill="white" stroke="white" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="white"
+                      stroke="white"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </button>
                 </div>
-                
+
                 {work.description && (
-                  <p className="text-gray-700 text-sm mb-4 leading-relaxed h-12 overflow-hidden text-ellipsis" style={{ 
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical' as const,
-                    textOverflow: 'ellipsis'
-                  }}>
+                  <p
+                    className="text-gray-700 text-sm mb-4 leading-relaxed h-12 overflow-hidden text-ellipsis"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical" as const,
+                      textOverflow: "ellipsis",
+                    }}
+                  >
                     {work.description}
                   </p>
                 )}
-                
                 <div className="mt-4">
-                  <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-100" style={{ height: '192px' }}>
-                    {work.mediaUrl.includes('video') ? (
-                      <video 
-                        src={work.mediaUrl} 
-                        controls 
+                  <div
+                    className="rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
+                    style={{ height: "192px" }}
+                  >
+                    {work.mediaUrl.includes("video") ? (
+                      <video
+                        src={work.mediaUrl}
+                        controls
                         className="w-full h-full object-cover"
-                        style={{ height: '192px' }}
+                        style={{ height: "192px" }}
                       />
+                    ) : work.mediaUrl.toLowerCase().endsWith(".pdf") ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center space-y-3 bg-gray-50">
+                        <svg
+                          className="h-12 w-12 text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                        </svg>
+                        <p className="text-gray-600 text-sm font-medium">
+                          PDF Document
+                        </p>
+                        <a
+                          href={work.mediaUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                          View PDF
+                        </a>
+                      </div>
                     ) : (
                       <Image
                         src={work.mediaUrl}
@@ -333,8 +467,19 @@ export default function PromoterWorksUpload({
                         width={384}
                         height={192}
                         className="w-full h-full object-cover"
-                        style={{ height: '192px' }}
+                        style={{ height: "192px" }}
                         unoptimized
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                          e.currentTarget.parentElement!.innerHTML = `
+                            <div class="w-full h-full flex flex-col items-center justify-center space-y-3 bg-gray-100">
+                              <svg class="h-12 w-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                              </svg>
+                              <p class="text-gray-500 text-sm font-medium">Media unavailable</p>
+                            </div>
+                          `;
+                        }}
                       />
                     )}
                   </div>

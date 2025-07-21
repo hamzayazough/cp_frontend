@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { promoterService } from "@/services/promoter.service";
 import { PromoterDashboardData } from "@/app/interfaces/dashboard/promoter-dashboard";
 
@@ -20,7 +20,7 @@ export const usePromoterDashboard = (): UsePromoterDashboardReturn => {
   const [error, setError] = useState<string | null>(null);
   const [useTemplate, setUseTemplate] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (useTemplate) {
       setLoading(false);
       return;
@@ -49,7 +49,7 @@ export const usePromoterDashboard = (): UsePromoterDashboardReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [useTemplate]);
 
   const requestPayout = async (amount?: number) => {
     try {
@@ -68,7 +68,7 @@ export const usePromoterDashboard = (): UsePromoterDashboardReturn => {
 
   useEffect(() => {
     fetchData();
-  }, [useTemplate]); // Add useTemplate as dependency since fetchData depends on it
+  }, [fetchData]); // fetchData is now memoized with useCallback
 
   return {
     data,

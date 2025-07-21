@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Campaign } from '@/app/interfaces/campaign';
-import { CampaignType } from '@/app/enums/campaign-type';
+import { Campaign } from '@/app/interfaces/campaign/campaign';
+import { CampaignType, Deliverable } from '@/app/enums/campaign-type';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
 import { SocialPlatform } from '@/app/enums/social-platform';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { advertiserService } from '@/services/advertiser.service';
+import { CampaignDeliverable } from '@/app/interfaces/campaign-work';
 import StepIndicator from './StepIndicator';
 import CampaignTypeStep from './steps/CampaignTypeStep';
 import { BasicInfoStep } from './steps';
@@ -106,9 +107,23 @@ const initialFormData: CampaignWizardFormData = {
   trackSalesVia: undefined,
   codePrefix: '',
   salesmanMinFollowers: undefined,
+};
 
-  // UI-only
-  file: null,
+// Helper function to transform Deliverable[] to CampaignDeliverable[]
+const transformDeliverablesForCreation = (
+  deliverables: Deliverable[],
+  campaignId?: string
+): CampaignDeliverable[] => {
+  return deliverables.map((deliverable, index) => ({
+    id: `temp-${index}-${Date.now()}`, // Temporary ID for creation
+    campaignId: campaignId,
+    deliverable: deliverable,
+    isSubmitted: false,
+    isFinished: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    promoterWork: [],
+  }));
 };
 
 export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCampaignWizardProps) {
@@ -255,13 +270,12 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
 
     try {
       // Step 1: Create the campaign object first without media
-      let campaignData: Omit<Campaign, 'file'> & { mediaUrl?: string };
+      let campaignData: Campaign;
 
       const baseData = {
         title: formData.title,
         description: formData.description,
         advertiserTypes: formData.advertiserTypes,
-        isPublic: formData.type === CampaignType.VISIBILITY ? formData.isPublic : false,
         requirements: formData.requirements,
         targetAudience: formData.targetAudience,
         preferredPlatforms: formData.preferredPlatforms,
@@ -274,7 +288,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           campaignData = {
             ...baseData,
             type: CampaignType.VISIBILITY,
-            cpv: formData.cpv!,
+            cpv: formData.cpv !== undefined ? formData.cpv : 0, 
             maxViews: formData.maxViews!, // Now required
             trackingLink: formData.trackingLink!,
             minFollowers: formData.minFollowers,
@@ -288,7 +302,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
             type: CampaignType.CONSULTANT,
             meetingPlan: formData.meetingPlan!,
             expertiseRequired: formData.expertiseRequired,
-            expectedDeliverables: formData.expectedDeliverables!,
+            expectedDeliverables: transformDeliverablesForCreation(formData.expectedDeliverables!),
             meetingCount: formData.meetingCount!,
             maxBudget: formData.maxBudget!,
             minBudget: formData.minBudget!,
@@ -300,8 +314,8 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           campaignData = {
             ...baseData,
             type: CampaignType.SELLER,
-            sellerRequirements: formData.sellerRequirements,
-            deliverables: formData.deliverables,
+            sellerRequirements: formData.sellerRequirements ?? [],
+            deliverables: transformDeliverablesForCreation(formData.deliverables ?? []),
             maxBudget: formData.sellerMaxBudget!,
             minBudget: formData.sellerMinBudget!,
             isPublic: false,

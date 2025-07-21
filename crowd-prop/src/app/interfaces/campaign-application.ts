@@ -1,9 +1,8 @@
-export type ApplicationStatus =
-  | "PENDING"
-  | "ACCEPTED"
-  | "REJECTED"
-  | "WITHDRAWN"
-  | "CANCELLED";
+export enum ApplicationStatus {
+  PENDING = "PENDING",
+  ACCEPTED = "ACCEPTED",
+  REJECTED = "REJECTED",
+}
 
 export interface CampaignApplication {
   id: string;

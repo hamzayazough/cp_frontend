@@ -152,7 +152,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
 
   const renderCampaignDetails = () => {
     const baseDetails = (
-      <div className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+      <div key="baseDetails" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
         <div className="flex items-center">
           <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
           <span className="text-sm text-gray-600">Budget</span>
@@ -257,15 +257,17 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   Expected Deliverables
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="space-y-2">
                 {consultantDetails.expectedDeliverables.map(
                   (deliverable, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full"
+                    <div
+                      key={deliverable.id || index}
+                      className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                     >
-                      {deliverable}
-                    </span>
+                      <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
+                        {deliverable.deliverable.replace(/_/g, " ")}
+                      </span>
+                    </div>
                   )
                 )}
               </div>
@@ -338,14 +340,16 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   Required Deliverables
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="space-y-2">
                 {sellerDetails.deliverables.map((deliverable, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full"
+                  <div
+                    key={deliverable.id || index}
+                    className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                   >
-                    {deliverable}
-                  </span>
+                    <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
+                      {deliverable.deliverable.replace(/_/g, " ")}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
@@ -377,31 +381,68 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
 
   return (
     <div className="space-y-6">
+      {" "}
       {/* Campaign Media */}
       {campaign.mediaUrl && (
         <div>
           <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
             {campaign.mediaUrl.endsWith(".mp4") ||
-            campaign.mediaUrl.endsWith(".webm") ? (
+            campaign.mediaUrl.endsWith(".webm") ||
+            campaign.mediaUrl.endsWith(".mov") ||
+            campaign.mediaUrl.endsWith(".avi") ? (
               <video
                 src={campaign.mediaUrl}
                 controls
                 className="w-full h-full object-cover"
-              />
+              >
+                Your browser does not support the video tag.
+              </video>
+            ) : campaign.mediaUrl.toLowerCase().endsWith(".pdf") ? (
+              <div className="w-full h-full flex flex-col items-center justify-center space-y-4 bg-gray-50">
+                <svg
+                  className="h-16 w-16 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                </svg>
+                <p className="text-gray-600 text-lg font-medium">
+                  PDF Document
+                </p>
+                <a
+                  href={campaign.mediaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+                >
+                  View PDF
+                </a>
+              </div>
             ) : (
               <Image
                 src={campaign.mediaUrl}
                 alt="Campaign Media"
+                width={800}
+                height={400}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.parentElement!.innerHTML = `
+                    <div class="w-full h-full flex flex-col items-center justify-center space-y-4 bg-gray-100">
+                      <svg class="h-16 w-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                      </svg>
+                      <p class="text-gray-500 text-lg font-medium">Media unavailable</p>
+                    </div>
+                  `;
+                }}
               />
             )}
           </div>
         </div>
       )}
-
       {/* Tips Section */}
       {renderCampaignTips()}
-
       {/* Campaign Description */}
       <div className="bg-gradient-to-br from-amber-50 to-yellow-50 p-6 rounded-xl border border-amber-100">
         <div className="flex items-center mb-4">
@@ -418,7 +459,6 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           </p>
         </div>
       </div>
-
       {/* Advertiser Information */}
       <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-6 rounded-xl border border-cyan-100">
         <div className="flex items-center mb-4">
@@ -431,11 +471,14 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
         </div>{" "}
         <div className="bg-white p-4 rounded-lg shadow-sm">
           <div className="flex items-start space-x-4">
+            {" "}
             <div className="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
               {campaign.advertiser.profileUrl ? (
                 <Image
                   src={campaign.advertiser.profileUrl}
                   alt={campaign.advertiser.companyName}
+                  width={48}
+                  height={48}
                   className="w-full h-full object-cover rounded-lg"
                 />
               ) : (
@@ -510,7 +553,6 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           </div>
         </div>
       </div>
-
       {/* Campaign Information Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Campaign Details Card */}
@@ -606,7 +648,6 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           </div>
         </div>
       </div>
-
       {/* Timeline Section */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-6">
         <div className="text-center">
@@ -658,7 +699,6 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           )}
         </div>
       </div>
-
       {/* Campaign Channel Footer */}
       {campaign.campaign.discordInviteLink && (
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-6">

@@ -51,7 +51,7 @@ export const isValidUrl = (url: string): boolean => {
  * @param data - The form data object
  * @returns Cleaned data object with undefined/empty values removed
  */
-export const cleanFormData = <T extends Record<string, any>>(
+export const cleanFormData = <T extends Record<string, unknown>>(
   data: T
 ): Partial<T> => {
   const cleanedData: Partial<T> = {};

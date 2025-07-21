@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CampaignPromoter,
   VisibilityCampaignDetails,
@@ -12,6 +12,8 @@ import {
   MOCK_CAMPAIGN_PROMOTER3,
   MOCK_CAMPAIGN_PROMOTER4,
 } from "@/app/mocks/campaign-promoter-mock";
+import { getPromoterCampaignById } from "@/utils/promoter-campaigns-storage";
+import { promoterService } from "@/services/promoter.service";
 
 // Import all the smaller components
 import CampaignHeader from "./components/CampaignHeader";
@@ -44,9 +46,49 @@ export default function PromoterCampaignDetailsContent({
 }: PromoterCampaignDetailsContentProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [showShareModal, setShowShareModal] = useState(false);
+  const [campaign, setCampaign] = useState<CampaignPromoter | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const campaign =
-    mockCampaignData[campaignId as keyof typeof mockCampaignData];
+  // Load campaign data from localStorage, API, or fallback to mock
+  useEffect(() => {
+    const loadCampaign = async () => {
+      setLoading(true);
+
+      try {
+        // First try to get from localStorage
+        let campaignData = getPromoterCampaignById(campaignId);
+
+        if (campaignData) {
+          setCampaign(campaignData);
+          setLoading(false);
+          return;
+        }
+
+        // If not found in localStorage, try API call
+        try {
+          console.log("Campaign not found in localStorage, fetching from API");
+          campaignData = await promoterService.getPromoterCampaignById(campaignId);
+          setCampaign(campaignData);
+          setLoading(false);
+          return;
+        } catch (apiError) {
+          console.error("Failed to fetch campaign from API:", apiError);
+        }
+
+        // If API call fails, fallback to mock data
+        console.log("Using mock data as fallback");
+        campaignData = mockCampaignData[campaignId as keyof typeof mockCampaignData];
+        setCampaign(campaignData || null);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading campaign:", error);
+        setCampaign(null);
+        setLoading(false);
+      }
+    };
+
+    loadCampaign();
+  }, [campaignId]);
 
   // Helper functions for styling
   const getStatusColor = (status: string) => {
@@ -76,7 +118,6 @@ export default function PromoterCampaignDetailsContent({
         return "bg-gray-100 text-gray-800";
     }
   };
-
   const daysLeft = campaign?.campaign.deadline
     ? Math.ceil(
         (new Date(campaign.campaign.deadline).getTime() -
@@ -84,6 +125,16 @@ export default function PromoterCampaignDetailsContent({
           (1000 * 60 * 60 * 24)
       )
     : "N/A";
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!campaign) {
     return <CampaignNotFound />;
@@ -120,6 +171,7 @@ export default function PromoterCampaignDetailsContent({
       <CampaignProgress campaign={campaign} />
       {/* PromoterLinks Section - Only for Consultant Campaigns */}
       <PromoterLinks
+        campaign={campaign}
         campaignType={campaign.campaign.type}
         campaignStatus={campaign.status}
       />

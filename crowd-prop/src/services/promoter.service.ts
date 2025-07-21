@@ -1,3 +1,22 @@
+import { CampaignWork } from "@/app/interfaces/campaign-work";
+import {
+  SendApplicationRequest,
+  SendApplicationResponse,
+} from "@/app/interfaces/campaign/campaign-application";
+import {
+  AcceptContractRequest,
+  AcceptContractResponse,
+} from "@/app/interfaces/campaign/accept-contract";
+import { ExploreCampaignRequest } from "@/app/interfaces/campaign/explore-campaign-request";
+import {
+  ExploreCampaignResponse,
+  CampaignUnion,
+} from "@/app/interfaces/campaign/explore-campaign";
+import {
+  GetPromoterCampaignsRequest,
+  GetPromoterCampaignsResponse as PromoterCampaignsListResponse,
+} from "@/app/interfaces/campaign/promoter-campaigns-request";
+import { CampaignPromoter } from "@/app/interfaces/campaign/promoter-campaign-details";
 import { HttpService } from "./http.service";
 import {
   GetPromoterDashboardRequest,
@@ -194,9 +213,9 @@ export class PromoterService {
 
     return response.data;
   }
-
   /**
    * Apply to a campaign
+   * @deprecated Use sendCampaignApplication instead
    */
   async applyCampaign(
     campaignId: string,
@@ -210,6 +229,27 @@ export class PromoterService {
       { message },
       true // requiresAuth
     );
+
+    return response.data;
+  }
+
+  /**
+   * Send campaign application with proper request interface
+   */
+  async sendCampaignApplication(
+    request: SendApplicationRequest
+  ): Promise<SendApplicationResponse> {
+    const response = await this.httpService.post<SendApplicationResponse>(
+      `/promoter/campaigns/${request.campaignId}/apply`,
+      { applicationMessage: request.applicationMessage },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to send campaign application"
+      );
+    }
 
     return response.data;
   }
@@ -255,7 +295,6 @@ export class PromoterService {
 
     return response.data;
   }
-
   /**
    * Get unread message count
    */
@@ -276,6 +315,303 @@ export class PromoterService {
     }
 
     return response.data.data.count;
+  }
+  /**
+   * Explore available campaigns
+   */
+  async getExploreCampaigns(
+    params: ExploreCampaignRequest = {}
+  ): Promise<ExploreCampaignResponse> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      data: ExploreCampaignResponse;
+      message?: string;
+    }>(
+      "/promoter/campaigns/explore",
+      params,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch explore campaigns"
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Get campaign by ID
+   */
+  async getCampaignById(campaignId: string): Promise<CampaignUnion> {
+    const response = await this.httpService.get<{
+      success: boolean;
+      data: CampaignUnion;
+      message?: string;
+    }>(
+      `/promoter/campaigns/explore/${campaignId}`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to fetch campaign");
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Get promoter's campaigns list
+   */
+  async getPromoterCampaigns(
+    params: GetPromoterCampaignsRequest = {}
+  ): Promise<PromoterCampaignsListResponse> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      data: PromoterCampaignsListResponse;
+      message?: string;
+    }>(
+      "/promoter/campaigns/list",
+      params,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch promoter campaigns"
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Get promoter campaign by ID
+   */
+  async getPromoterCampaignById(campaignId: string): Promise<CampaignPromoter> {
+    const response = await this.httpService.get<{
+      success: boolean;
+      data: CampaignPromoter;
+      message?: string;
+    }>(
+      `/promoter/campaigns/list/${campaignId}`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to fetch promoter campaign"
+      );
+    }
+
+    return response.data.data;
+  }
+
+  /**
+   * Accept a public campaign contract
+   */
+  async acceptContract(
+    params: AcceptContractRequest
+  ): Promise<AcceptContractResponse> {
+    const response = await this.httpService.post<AcceptContractResponse>(
+      "/promoter/campaigns/accept-contract",
+      params,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to accept contract");
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Add a new link to a campaign
+   */
+  async addCampaignLink(
+    campaignId: string,
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/links`,
+      { promoterLink, description },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to add campaign link");
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Update an existing campaign link
+   */
+  async updateCampaignLink(
+    campaignId: string,
+    workId: string,
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.put<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/links/${workId}`,
+      { promoterLink, description },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to update campaign link"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Delete a campaign link
+   */
+  async deleteCampaignLink(
+    campaignId: string,
+    workId: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.delete<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/links/${workId}`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to delete campaign link"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Add a new work item to a specific deliverable
+   */
+  async addCampaignWorkToDeliverable(
+    campaignId: string,
+    deliverableId: string,
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work`,
+      { promoterLink, description },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to add work to deliverable"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Update an existing work item in a specific deliverable
+   */
+  async updateCampaignWorkInDeliverable(
+    campaignId: string,
+    deliverableId: string,
+    workId: string,
+    promoterLink: string,
+    description?: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.put<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}`,
+      { promoterLink, description },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to update work in deliverable"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Delete a work item from a specific deliverable
+   */
+  async deleteCampaignWorkFromDeliverable(
+    campaignId: string,
+    deliverableId: string,
+    workId: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.delete<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}`,
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(
+        response.data.message || "Failed to delete work from deliverable"
+      );
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Add a comment to a work item in a specific deliverable
+   */
+  async addCommentToWork(
+    campaignId: string,
+    deliverableId: string,
+    workId: string,
+    commentMessage: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    const response = await this.httpService.post<{
+      success: boolean;
+      message: string;
+      data?: CampaignWork[];
+    }>(
+      `/promoter/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}/comments`,
+      { commentMessage },
+      true // requiresAuth
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Failed to add comment to work");
+    }
+
+    return response.data;
   }
 }
 

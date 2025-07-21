@@ -428,7 +428,7 @@ export default function PromoterDashboardContent({
                       {campaign.type === "VISIBILITY" && campaign.cpv && (
                         <p className="text-sm text-gray-600">
                           <span className="font-medium">${campaign.cpv}</span>{" "}
-                          per view
+                          per 100 views
                           {campaign.budget && (
                             <span>
                               {" "}

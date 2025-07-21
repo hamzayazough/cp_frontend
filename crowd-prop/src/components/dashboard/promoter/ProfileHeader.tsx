@@ -14,6 +14,7 @@ interface ProfileHeaderProps {
   onEditClick: () => void;
   onSaveClick: () => void;
   onCancelClick: () => void;
+  isViewOnly?: boolean;
 }
 
 export default function ProfileHeader({
@@ -23,6 +24,7 @@ export default function ProfileHeader({
   onEditClick,
   onSaveClick,
   onCancelClick,
+  isViewOnly = false,
 }: ProfileHeaderProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -92,60 +94,61 @@ export default function ProfileHeader({
             </div>
           </div>{" "}
           {/* Edit Button */}
-          <div className="pt-8 relative z-20">
-            {!isEditing ? (
-              <button
-                onClick={onEditClick}
-                className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                title="Edit Profile"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-              </button>
-            ) : (
-              <div className="flex space-x-2">
+          {!isViewOnly && (
+            <div className="pt-8 relative z-20">
+              {!isEditing ? (
                 <button
-                  onClick={onCancelClick}
-                  className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                  onClick={onEditClick}
+                  className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  title="Edit Profile"
                 >
-                  Cancel
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
                 </button>
-                <button
-                  onClick={onSaveClick}
-                  disabled={isSaving}
-                  className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                  title={isSaving ? "Saving..." : "Save Changes"}
-                >
-                  {isSaving ? (
-                    <svg
-                      className="w-5 h-5 animate-spin"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
+              ) : (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={onCancelClick}
+                    className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={onSaveClick}
+                    disabled={isSaving}
+                    className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                    title={isSaving ? "Saving..." : "Save Changes"}
+                  >
+                    {isSaving ? (
+                      <svg
+                        className="w-5 h-5 animate-spin"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path
@@ -159,7 +162,8 @@ export default function ProfileHeader({
                 </button>
               </div>
             )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

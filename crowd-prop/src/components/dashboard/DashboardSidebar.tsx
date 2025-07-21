@@ -115,13 +115,6 @@ export default function DashboardSidebar({ role, isOpen, onClose }: SidebarProps
           description: 'Manage campaigns'
         },
         {
-          name: 'Explore Promoters',
-          href: routes.dashboardExplore,
-          icon: MagnifyingGlassIcon,
-          activeIcon: SearchIconSolid,
-          description: 'Find promoters for your campaigns'
-        },
-        {
           name: 'Create Campaign',
           href: routes.dashboardCampaigns + '/create',
           icon: PlusCircleIcon,

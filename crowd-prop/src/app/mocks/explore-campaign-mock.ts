@@ -1,6 +1,7 @@
 import { AdvertiserType } from "@/app/enums/advertiser-type";
 import {
   CampaignType,
+  CampaignStatus,
   Deliverable,
   MeetingPlan,
   SalesTrackingMethod,
@@ -53,7 +54,8 @@ const mockCampaigns: CampaignUnion[] = [
     currentViews: 0,
     cpv: 0.05,
     minFollowers: 1000,
-  } as VisibilityCampaign,
+    campaignStatus: CampaignStatus.ACTIVE,
+  } as VisibilityCampaign & { campaignStatus: CampaignStatus },
   {
     id: "2",
     advertiser: {
@@ -85,11 +87,12 @@ const mockCampaigns: CampaignUnion[] = [
     startDate: "2025-06-25",
     isPublic: true,
     tags: [AdvertiserType.ENERGY, AdvertiserType.HOME_SERVICES],
-    commissionPerSale: 15,
+    commissionPerSale: 0.15,
     trackSalesVia: SalesTrackingMethod.REF_LINK,
     refLink: "https://greentech.com/ref/promoter",
     minFollowers: 500,
-  } as SalesmanCampaign,
+    campaignStatus: CampaignStatus.PAUSED,
+  } as SalesmanCampaign & { campaignStatus: CampaignStatus },
   {
     id: "3",
     advertiser: {
@@ -127,7 +130,8 @@ const mockCampaigns: CampaignUnion[] = [
     meetingCount: 6,
     maxBudget: 8000,
     minBudget: 5000,
-  } as ConsultantCampaign,
+    campaignStatus: CampaignStatus.ENDED,
+  } as ConsultantCampaign & { campaignStatus: CampaignStatus },
   {
     id: "4",
     advertiser: {

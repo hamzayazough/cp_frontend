@@ -4,17 +4,42 @@ import {
   GetAdvertiserDashboardRequest,
   GetAdvertiserDashboardResponse,
   GetAdvertiserStatsResponse,
-  GetAdvertiserCampaignsResponse,
-  GetAdvertiserTransactionsResponse,
-  GetAdvertiserMessagesResponse,
-  GetAdvertiserWalletResponse,
 } from "@/app/interfaces/dashboard/advertiser-dashboard";
-import { Campaign } from "@/app/interfaces/campaign";
+import { Campaign } from "@/app/interfaces/campaign/campaign";
+import {
+  CampaignAdvertiser,
+  AdvertiserCampaignListResponse,
+  AdvertiserCampaignListRequest,
+  AdvertiserDashboardSummary,
+  ReviewPromoterApplicationRequest,
+} from "@/app/interfaces/campaign/advertiser-campaign";
+import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignWork } from "@/app/interfaces/campaign-work";
 
 interface CreateCampaignResponse {
   success: boolean;
   message: string;
   campaign?: Campaign;
+}
+
+interface GetCampaignDetailsResponse {
+  success: boolean;
+  data: CampaignAdvertiser;
+  message?: string;
+}
+
+interface ReviewApplicationResponse {
+  success: boolean;
+  message: string;
+}
+
+interface GetCampaignFiltersResponse {
+  success: boolean;
+  data: {
+    statuses: CampaignStatus[];
+    types: CampaignType[];
+  };
+  message?: string;
 }
 
 class AdvertiserService {
@@ -40,192 +65,6 @@ class AdvertiserService {
     }
   }
 
-  async getStats(): Promise<GetAdvertiserStatsResponse> {
-    const response = await httpService.get<GetAdvertiserStatsResponse>(
-      `${this.baseUrl}/stats`,
-      true
-    );
-
-    return response.data;
-  }
-
-  async getCampaigns(limit?: number): Promise<GetAdvertiserCampaignsResponse> {
-    const endpoint = limit
-      ? `${this.baseUrl}/campaigns?limit=${limit}`
-      : `${this.baseUrl}/campaigns`;
-
-    const response = await httpService.get<GetAdvertiserCampaignsResponse>(
-      endpoint,
-      true
-    );
-
-    return response.data;
-  }
-  async getTransactions(
-    limit?: number
-  ): Promise<GetAdvertiserTransactionsResponse> {
-    const endpoint = limit
-      ? `${this.baseUrl}/transactions?limit=${limit}`
-      : `${this.baseUrl}/transactions`;
-
-    const response = await httpService.get<GetAdvertiserTransactionsResponse>(
-      endpoint,
-      true
-    );
-
-    return response.data;
-  }
-
-  async getMessages(limit?: number): Promise<GetAdvertiserMessagesResponse> {
-    const endpoint = limit
-      ? `${this.baseUrl}/messages?limit=${limit}`
-      : `${this.baseUrl}/messages`;
-
-    const response = await httpService.get<GetAdvertiserMessagesResponse>(
-      endpoint,
-      true
-    );
-
-    return response.data;
-  }
-
-  async getWallet(): Promise<GetAdvertiserWalletResponse> {
-    const response = await httpService.get<GetAdvertiserWalletResponse>(
-      `${this.baseUrl}/wallet`,
-      true
-    );
-
-    return response.data;
-  }
-
-  async addFunds(
-    amount: number
-  ): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await httpService.post(
-        `${this.baseUrl}/wallet/add-funds`,
-        { amount },
-        true
-      );
-
-      return {
-        success: true,
-        message: response.message || "Funds added successfully",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : "Failed to add funds",
-      };
-    }
-  }
-
-  async pauseCampaign(
-    campaignId: string
-  ): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await httpService.post(
-        `${this.baseUrl}/campaigns/${campaignId}/pause`,
-        undefined,
-        true
-      );
-
-      return {
-        success: true,
-        message: response.message || "Campaign paused successfully",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to pause campaign",
-      };
-    }
-  }
-
-  async resumeCampaign(
-    campaignId: string
-  ): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await httpService.post(
-        `${this.baseUrl}/campaigns/${campaignId}/resume`,
-        undefined,
-        true
-      );
-
-      return {
-        success: true,
-        message: response.message || "Campaign resumed successfully",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to resume campaign",
-      };
-    }
-  }
-
-  async contactPromoter(
-    promoterId: string,
-    message: string
-  ): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await httpService.post(
-        `${this.baseUrl}/promoters/${promoterId}/contact`,
-        { message },
-        true
-      );
-
-      return {
-        success: true,
-        message: response.message || "Message sent successfully",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to contact promoter",
-      };
-    }
-  }
-
-  async uploadCampaignFile(
-    file: File,
-    campaignId: string
-  ): Promise<{
-    success: boolean;
-    message: string;
-    fileUrl?: string;
-    campaign?: Campaign;
-  }> {
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("campaignId", campaignId);
-      formData.append("type", "campaign-media");
-
-      const response = await httpService.uploadFormData(
-        `${this.baseUrl}/upload-file`,
-        formData,
-        true
-      );
-
-      return {
-        success: true,
-        message: response.message || "File uploaded successfully",
-        fileUrl: response.data.fileUrl,
-        campaign: response.data.campaign as Campaign,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to upload file",
-      };
-    }
-  }
-
   async createCampaign(
     campaignData: Omit<Campaign, "file"> & {
       mediaUrl?: string;
@@ -242,13 +81,19 @@ class AdvertiserService {
       console.log("Raw API response:", response);
       console.log("Response data:", response.data);
 
+      // Type assertion for the response data
+      const responseData = response.data as {
+        message?: string;
+        campaign?: Campaign;
+      };
+
       return {
         success: true,
         message:
-          response.data?.message ||
+          responseData.message ||
           response.message ||
           "Campaign created successfully",
-        campaign: response.data?.campaign || (response.data as Campaign),
+        campaign: responseData.campaign || (response.data as Campaign),
       };
     } catch (error) {
       return {
@@ -256,6 +101,361 @@ class AdvertiserService {
         message:
           error instanceof Error ? error.message : "Failed to create campaign",
       };
+    }
+  }
+
+  // New methods for campaign management
+  async getCampaignsList(
+    params: AdvertiserCampaignListRequest = {}
+  ): Promise<AdvertiserCampaignListResponse> {
+    try {
+      const response = await httpService.post<AdvertiserCampaignListResponse>(
+        `${this.baseUrl}/campaigns/list`,
+        params,
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to retrieve campaigns"
+      );
+    }
+  }
+
+  async getCampaignDetails(campaignId: string): Promise<CampaignAdvertiser> {
+    try {
+      const response = await httpService.get<GetCampaignDetailsResponse>(
+        `${this.baseUrl}/campaigns/${campaignId}`,
+        true
+      );
+
+      return response.data.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to retrieve campaign details"
+      );
+    }
+  }
+
+  /**
+   * Get campaign by ID
+   */
+  async getCampaignById(campaignId: string): Promise<CampaignAdvertiser> {
+    try {
+      const response = await httpService.get<{
+        success: boolean;
+        data: CampaignAdvertiser;
+        message?: string;
+      }>(`${this.baseUrl}/campaigns/${campaignId}`, true);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to fetch campaign");
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to retrieve campaign"
+      );
+    }
+  }
+
+  async reviewPromoterApplication(
+    params: ReviewPromoterApplicationRequest
+  ): Promise<ReviewApplicationResponse> {
+    try {
+      const response = await httpService.post<ReviewApplicationResponse>(
+        `${this.baseUrl}/campaigns/${params.campaignId}/applications/${params.applicationId}/review`,
+        { action: params.action },
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to review application"
+      );
+    }
+  }
+
+  async getDashboardSummary(): Promise<AdvertiserDashboardSummary> {
+    try {
+      const response = await httpService.get<{
+        success: boolean;
+        data: AdvertiserDashboardSummary;
+      }>(`${this.baseUrl}/dashboard/summary`, true);
+
+      return response.data.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to retrieve dashboard summary"
+      );
+    }
+  }
+
+  async getCampaignFilters(): Promise<{
+    statuses: CampaignStatus[];
+    types: CampaignType[];
+  }> {
+    try {
+      const response = await httpService.get<GetCampaignFiltersResponse>(
+        `${this.baseUrl}/campaigns/filters`,
+        true
+      );
+
+      return response.data.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to retrieve campaign filters"
+      );
+    }
+  }
+  async deleteCampaign(
+    campaignId: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await httpService.delete<{
+        success: boolean;
+        message: string;
+      }>(`${this.baseUrl}/campaigns/${campaignId}`, true);
+      return {
+        success: true,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign deleted successfully",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to delete campaign",
+      };
+    }
+  }
+  async duplicateCampaign(
+    campaignId: string
+  ): Promise<{ success: boolean; message: string; campaign?: Campaign }> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+        campaign?: Campaign;
+      }>(`${this.baseUrl}/campaigns/${campaignId}/duplicate`, {}, true);
+
+      return {
+        success: true,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign duplicated successfully",
+        campaign: (response.data as { campaign?: Campaign })?.campaign,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to duplicate campaign",
+      };
+    }
+  }
+  async updateCampaign(
+    campaignId: string,
+    updateData: Partial<Campaign>
+  ): Promise<{ success: boolean; message: string; campaign?: Campaign }> {
+    try {
+      const response = await httpService.put<{
+        success: boolean;
+        message: string;
+        campaign?: Campaign;
+      }>(`${this.baseUrl}/campaigns/${campaignId}`, updateData, true);
+
+      return {
+        success: true,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign updated successfully",
+        campaign: (response.data as { campaign?: Campaign })?.campaign,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to update campaign",
+      };
+    }
+  }
+  async shareCampaign(
+    campaignId: string,
+    shareData: { platform: string; message?: string }
+  ): Promise<{ success: boolean; message: string; shareUrl?: string }> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+        shareUrl?: string;
+      }>(`${this.baseUrl}/campaigns/${campaignId}/share`, shareData, true);
+
+      return {
+        success: true,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign shared successfully",
+        shareUrl: (response.data as { shareUrl?: string })?.shareUrl,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to share campaign",
+      };
+    }
+  }
+
+  async fundCampaign(
+    campaignId: string,
+    amount: number,
+    paymentMethodId?: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+      }>(
+        `${this.baseUrl}/campaigns/${campaignId}/fund`,
+        { amount, paymentMethodId },
+        true
+      );
+
+      return {
+        success: true,
+        message:
+          (response.data as { message?: string })?.message ||
+          "Campaign funded successfully",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to fund campaign",
+      };
+    }
+  }
+  async getStats(): Promise<GetAdvertiserStatsResponse> {
+    const response = await httpService.get<GetAdvertiserStatsResponse>(
+      `${this.baseUrl}/stats`,
+      true
+    );
+
+    return response.data;
+  }
+  async uploadCampaignFile(
+    file: File,
+    campaignId: string
+  ): Promise<{ success: boolean; message: string; mediaUrl?: string }> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("campaignId", campaignId);
+
+      const response = await httpService.uploadFormData<{
+        success: boolean;
+        message: string;
+        mediaUrl?: string;
+      }>(`${this.baseUrl}/upload-file`, formData, true);
+
+      return {
+        success: true,
+        message:
+          (response.data as { message?: string })?.message ||
+          "File uploaded successfully",
+        mediaUrl: (response.data as { mediaUrl?: string })?.mediaUrl,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to upload file",
+      };
+    }
+  }
+
+  /**
+   * Add a comment to a work item in a specific deliverable
+   */
+  async addCommentToWork(
+    campaignId: string,
+    deliverableId: string,
+    workId: string,
+    commentMessage: string
+  ): Promise<{ success: boolean; message: string; data?: CampaignWork[] }> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        message: string;
+        data?: CampaignWork[];
+      }>(
+        `${this.baseUrl}/campaigns/${campaignId}/deliverables/${deliverableId}/work/${workId}/comments`,
+        { commentMessage },
+        true // requiresAuth
+      );
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "Failed to add comment to work"
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to add comment"
+      );
+    }
+  }
+
+  /**
+   * Mark a campaign deliverable as finished
+   */
+  async markDeliverableAsFinished(
+    campaignId: string,
+    deliverableId: string
+  ): Promise<{
+    success: boolean;
+    message: string;
+    data?: { deliverableId: string; isFinished: boolean };
+  }> {
+    try {
+      const response = await httpService.put<{
+        success: boolean;
+        message: string;
+        data?: { deliverableId: string; isFinished: boolean };
+      }>(
+        `${this.baseUrl}/campaigns/${campaignId}/deliverables/${deliverableId}/finish`,
+        {},
+        true // requiresAuth
+      );
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "Failed to mark deliverable as finished"
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to mark deliverable as finished"
+      );
     }
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { routes } from "@/lib/router";
@@ -15,14 +15,16 @@ import {
   ArrowTopRightOnSquareIcon,
   ChatBubbleLeftRightIcon,
   DocumentArrowUpIcon,
-  PlayIcon,
+  XCircleIcon,
+  CloudArrowUpIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
-import { MOCK_CAMPAIGN_PROMOTERS } from "@/app/mocks/campaign-promoter-mock";
 import {
   ConsultantCampaignDetails,
   SellerCampaignDetails,
 } from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
+import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 import {
   statusOptions,
   typeOptions,
@@ -31,26 +33,55 @@ import {
   getTypeColor,
   getEarningsInfo,
 } from "@/app/const/promoter-campaign-content-const";
-
-// Mock data
-const mockCampaigns = MOCK_CAMPAIGN_PROMOTERS;
+import { usePromoterCampaigns } from "@/hooks/usePromoterCampaigns";
+import { GetPromoterCampaignsRequest } from "@/app/interfaces/campaign/promoter-campaigns-request";
 
 export default function PromoterCampaignsContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [typeFilter, setTypeFilter] = useState("ALL");
-  const filteredCampaigns = mockCampaigns.filter((campaign) => {
-    const matchesSearch =
-      campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      campaign.advertiser.companyName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      campaign.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      statusFilter === "ALL" || campaign.status === statusFilter;
-    const matchesType = typeFilter === "ALL" || campaign.type === typeFilter;
-    return matchesSearch && matchesStatus && matchesType;
-  });
+
+  // Use the hook to manage campaigns data
+  const { campaigns, loading, error, summary, fetchCampaigns } =
+    usePromoterCampaigns();
+  // Update filters when they change
+  useEffect(() => {
+    const params: GetPromoterCampaignsRequest = {};
+
+    if (searchTerm) {
+      params.searchTerm = searchTerm;
+    }
+
+    if (statusFilter !== "ALL") {
+      params.status = [statusFilter as PromoterCampaignStatus];
+    }
+
+    if (typeFilter !== "ALL") {
+      params.type = [typeFilter as CampaignType];
+    }
+
+    fetchCampaigns(params);
+  }, [searchTerm, statusFilter, typeFilter, fetchCampaigns]);
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">Error loading campaigns: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -71,8 +102,7 @@ export default function PromoterCampaignsContent() {
             Explore New Campaigns
           </Link>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -83,7 +113,7 @@ export default function PromoterCampaignsContent() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Active</p>
               <p className="text-2xl font-bold text-gray-900">
-                {mockCampaigns.filter((c) => c.status === "ONGOING").length}
+                {summary.totalActive}
               </p>
             </div>
           </div>
@@ -97,11 +127,7 @@ export default function PromoterCampaignsContent() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p className="text-2xl font-bold text-gray-900">
-                {" "}
-                {
-                  mockCampaigns.filter((c) => c.status === "AWAITING_REVIEW")
-                    .length
-                }
+                {summary.totalPending}
               </p>
             </div>
           </div>
@@ -113,11 +139,9 @@ export default function PromoterCampaignsContent() {
               <EyeIcon className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Views</p>{" "}
+              <p className="text-sm font-medium text-gray-600">Total Views</p>
               <p className="text-2xl font-bold text-gray-900">
-                {mockCampaigns
-                  .reduce((sum, c) => sum + (c.earnings.viewsGenerated || 0), 0)
-                  .toLocaleString()}
+                {summary.totalViews.toLocaleString()}
               </p>
             </div>
           </div>
@@ -133,17 +157,12 @@ export default function PromoterCampaignsContent() {
                 Total Earnings
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {" "}
-                $
-                {mockCampaigns
-                  .reduce((sum, c) => sum + c.earnings.totalEarned, 0)
-                  .toLocaleString()}
+                ${summary.totalEarnings.toLocaleString()}
               </p>
             </div>
           </div>
         </div>
       </div>
-
       {/* Filters */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
@@ -163,37 +182,36 @@ export default function PromoterCampaignsContent() {
           <div className="flex space-x-4">
             <div className="relative">
               <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <select
+                <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
+                className="pl-10 pr-8 py-2 border border-gray-400 text-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                >
                 {statusOptions.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                  {option.label}
                   </option>
                 ))}
-              </select>
+                </select>
             </div>
 
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="px-4 py-2 border border-gray-400 text-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
               {typeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
               ))}
             </select>
           </div>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Campaigns List */}
       <div className="space-y-6">
-        {filteredCampaigns.length === 0 ? (
+        {campaigns.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
             <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <MagnifyingGlassIcon className="h-12 w-12 text-gray-400" />
@@ -203,7 +221,7 @@ export default function PromoterCampaignsContent() {
             </h3>
             <p className="text-gray-600 mb-6">
               Try adjusting your search or filters
-            </p>{" "}
+            </p>
             <Link
               href={routes.dashboardExplore}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
@@ -213,7 +231,7 @@ export default function PromoterCampaignsContent() {
             </Link>
           </div>
         ) : (
-          filteredCampaigns.map((campaign) => (
+          campaigns.map((campaign) => (
             <Link
               key={campaign.id}
               href={routes.dashboardCampaignDetails(campaign.id)}
@@ -243,11 +261,90 @@ export default function PromoterCampaignsContent() {
                           )}`}
                         >
                           {campaign.type}
-                        </span>
+                        </span>{" "}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        {campaign.advertiser.companyName}
-                      </p>
+
+                      {/* Enhanced Advertiser Info */}
+                      <div className="flex items-center space-x-3 mb-3">
+                        {/* Advertiser Avatar */}
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                          {campaign.advertiser.profileUrl ? (
+                            <Image
+                              src={campaign.advertiser.profileUrl}
+                              alt={campaign.advertiser.companyName}
+                              width={40}
+                              height={40}
+                              className="w-full h-full object-cover"
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                              <span className="text-white font-semibold text-sm">
+                                {campaign.advertiser.companyName
+                                  .charAt(0)
+                                  .toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Advertiser Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="text-sm font-semibold text-gray-900 truncate">
+                              {campaign.advertiser.companyName}
+                            </h4>
+                            {/* Verification Badge */}
+                            {campaign.advertiser.verified && (
+                              <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg
+                                  className="w-2.5 h-2.5 text-white"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          {/* Rating */}
+                          <div className="flex items-center space-x-1 mt-1">
+                            <div className="flex items-center">
+                              <svg
+                                className="w-3 h-3 text-yellow-400 fill-current"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                              <span className="text-xs font-medium text-gray-700 ml-1">
+                                {Number(campaign.advertiser.rating).toFixed(1)}
+                              </span>
+                            </div>
+                            {/* Advertiser Type Badges */}
+                            {campaign.advertiser.advertiserTypes &&
+                              campaign.advertiser.advertiserTypes.length >
+                                0 && (
+                                <div className="flex items-center space-x-1">
+                                  <span className="text-gray-400">•</span>
+                                  <span className="text-xs text-gray-500">
+                                    {campaign.advertiser.advertiserTypes[0]}
+                                    {campaign.advertiser.advertiserTypes
+                                      .length > 1 &&
+                                      ` +${
+                                        campaign.advertiser.advertiserTypes
+                                          .length - 1
+                                      }`}
+                                  </span>
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                      </div>
+
                       <p className="text-gray-700 mb-3">
                         {campaign.description}
                       </p>
@@ -267,33 +364,7 @@ export default function PromoterCampaignsContent() {
                     <div className="flex items-center justify-center w-10 h-10 bg-blue-50 group-hover:bg-blue-100 rounded-lg transition-colors">
                       <ArrowTopRightOnSquareIcon className="h-5 w-5 text-blue-600" />
                     </div>
-                  </div>
-                  {/* Campaign Media */}
-                  {campaign.mediaUrl && campaign.mediaUrl !== "undefined" && (
-                    <div className="mb-4">
-                      <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
-                        {campaign.mediaUrl.endsWith(".mp4") ||
-                        campaign.mediaUrl.endsWith(".webm") ? (
-                          <video
-                            src={campaign.mediaUrl}
-                            className="w-full h-full object-cover"
-                            controls
-                          />
-                        ) : (
-                          <div className="w-full h-full overflow-hidden">
-                            <Image
-                              src={campaign.mediaUrl}
-                              alt={campaign.title}
-                              className="object-cover"
-                              width={400}
-                              height={192}
-                              style={{ width: "100%", height: "100%" }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}{" "}
+                  </div>{" "}
                   {/* Type-specific Stats Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     {/* Always show Total Earned */}
@@ -426,7 +497,7 @@ export default function PromoterCampaignsContent() {
                       <p className="text-sm font-medium text-gray-700 mb-2">
                         Deliverables:
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="space-y-2">
                         {(() => {
                           const details = campaign.campaign as
                             | ConsultantCampaignDetails
@@ -438,14 +509,78 @@ export default function PromoterCampaignsContent() {
                               : (details as SellerCampaignDetails)
                                   .deliverables || [];
 
-                          return deliverables.map((deliverable, index) => (
-                            <span
-                              key={index}
-                              className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-                            >
-                              {deliverable.replace(/_/g, " ")}
-                            </span>
-                          ));
+                          const visibleDeliverables = deliverables.slice(0, 3);
+                          const hasMore = deliverables.length > 3;
+                          const remainingCount = deliverables.length - 3;
+
+                          return (
+                            <>
+                              {visibleDeliverables.map((deliverable, index) => (
+                                <div
+                                  key={deliverable.id || index}
+                                  className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200"
+                                >
+                                  <div className="flex items-center space-x-3">
+                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                      {deliverable.deliverable.replace(/_/g, " ")}
+                                    </span>
+                                    <div className="flex items-center space-x-2 text-xs">
+                                      <span
+                                        className={`px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${
+                                          deliverable.isSubmitted
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-yellow-100 text-yellow-800"
+                                        }`}
+                                      >
+                                        {deliverable.isSubmitted ? (
+                                          <>
+                                            <CloudArrowUpIcon className="h-3 w-3" />
+                                            <span>Submitted</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <ClockIcon className="h-3 w-3" />
+                                            <span>Pending</span>
+                                          </>
+                                        )}
+                                      </span>
+                                      <span
+                                        className={`px-2 py-0.5 rounded-full font-medium flex items-center gap-1 ${
+                                          deliverable.isFinished
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-gray-100 text-gray-600"
+                                        }`}
+                                      >
+                                        {deliverable.isFinished ? (
+                                          <>
+                                            <CheckCircleIcon className="h-3 w-3" />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <XCircleIcon className="h-3 w-3" />
+                                          </>
+                                        )}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-2 text-xs text-gray-600">
+                                    <span className="flex items-center space-x-1">
+                                      <span>{deliverable.promoterWork?.length || 0}</span>
+                                      <span>work{(deliverable.promoterWork?.length || 0) !== 1 ? 's' : ''}</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              {hasMore && (
+                                <div className="flex items-center justify-center bg-gray-50 rounded-lg p-3 border border-gray-200 border-dashed">
+                                  <span className="text-sm text-gray-500 font-medium">
+                                    +{remainingCount} more deliverable{remainingCount > 1 ? 's' : ''}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          );
                         })()}
                       </div>
                     </div>
@@ -473,7 +608,7 @@ export default function PromoterCampaignsContent() {
                         <button
                           onClick={(e) => {
                             e.preventDefault();
-                            // Handle submit work action
+                            //TODO: Handle submit work action
                           }}
                           className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                         >
@@ -481,18 +616,6 @@ export default function PromoterCampaignsContent() {
                           Submit Work
                         </button>
                       )}
-                    {campaign.mediaUrl && campaign.mediaUrl !== "undefined" && (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          // Handle preview media action
-                        }}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-medium rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-                      >
-                        <PlayIcon className="h-4 w-4" />
-                        Preview Media
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>

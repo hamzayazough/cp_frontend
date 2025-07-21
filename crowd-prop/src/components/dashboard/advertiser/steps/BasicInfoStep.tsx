@@ -33,7 +33,7 @@ export default function BasicInfoStep({ formData, updateFormData }: BasicInfoSte
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.startDate]); // updateFormData is memoized with useCallback, safe to omit
 
-  const handleInputChange = (field: keyof CampaignWizardFormData, value: string | number | Date | null | string[] | File) => {
+  const handleInputChange = (field: keyof CampaignWizardFormData, value: string | number | Date | null | string[] | File | boolean) => {
     updateFormData({ [field]: value });
     
     // Clear error when user starts typing

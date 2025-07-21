@@ -69,25 +69,71 @@ export default function PortfolioDetailModal({
           }}
         >
           <div className="space-y-10">
+            {" "}
             {/* Media Section */}
             {work.mediaUrl && (
               <div className="flex justify-center">
                 <div className="w-full max-w-2xl">
                   <div className="relative w-full max-h-80 rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                    <Image
-                      src={work.mediaUrl || "/placeholder.svg"}
-                      alt={work.title}
-                      width={800}
-                      height={320}
-                      className="object-contain"
-                      style={{ width: "100%", height: "auto" }}
-                      unoptimized
-                    />
+                    {work.mediaUrl.toLowerCase().includes(".mp4") ||
+                    work.mediaUrl.toLowerCase().includes(".webm") ||
+                    work.mediaUrl.toLowerCase().includes(".mov") ||
+                    work.mediaUrl.toLowerCase().includes(".avi") ? (
+                      <video
+                        src={work.mediaUrl}
+                        controls
+                        className="w-full h-full object-contain"
+                        style={{ maxHeight: "320px" }}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : work.mediaUrl.toLowerCase().endsWith(".pdf") ? (
+                      <div className="w-full h-80 flex flex-col items-center justify-center space-y-4 bg-gray-50">
+                        <svg
+                          className="h-16 w-16 text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                        </svg>
+                        <p className="text-gray-600 text-lg font-medium">
+                          PDF Document
+                        </p>
+                        <a
+                          href={work.mediaUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+                        >
+                          View PDF
+                        </a>
+                      </div>
+                    ) : (
+                      <Image
+                        src={work.mediaUrl || "/placeholder.svg"}
+                        alt={work.title}
+                        width={800}
+                        height={320}
+                        className="object-contain"
+                        style={{ width: "100%", height: "auto" }}
+                        unoptimized
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                          e.currentTarget.parentElement!.innerHTML = `
+                            <div class="w-full h-80 flex flex-col items-center justify-center space-y-4 bg-gray-100">
+                              <svg class="h-16 w-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                              </svg>
+                              <p class="text-gray-500 text-lg font-medium">Media unavailable</p>
+                            </div>
+                          `;
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
             )}
-
             {/* Content Section */}
             <div className="text-center space-y-8 max-w-4xl mx-auto">
               {/* Title */}

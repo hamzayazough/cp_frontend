@@ -1,8 +1,9 @@
 "use client";
 
-import { use } from "react";
-import { notFound } from "next/navigation";
+import { use, useState, useEffect } from "react";
+import { notFound, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeftIcon,
   EyeIcon,
@@ -17,10 +18,10 @@ import {
   VideoCameraIcon,
   PresentationChartLineIcon,
   AcademicCapIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
-import { EXPLORE_CAMPAIGN_MOCK } from "@/app/mocks/explore-campaign-mock";
-import { CampaignType } from "@/app/enums/campaign-type";
+import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 import {
   VisibilityCampaign,
   SalesmanCampaign,
@@ -29,6 +30,58 @@ import {
   CampaignUnion,
 } from "@/app/interfaces/campaign/explore-campaign";
 import { formatDate, getDaysLeft } from "@/utils/date";
+import { exploreCampaignsStorage } from "@/utils/explore-campaigns-storage";
+import { promoterService } from "@/services/promoter.service";
+
+const getCampaignDisplayStatus = (
+  campaign: CampaignUnion,
+  isExpired: boolean
+) => {
+  // First check if the campaign is expired (overrides all other statuses)
+  if (isExpired) {
+    return {
+      label: "Expired",
+      className:
+        "px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium",
+    };
+  }
+
+  // For now, we'll check if the campaign has a campaignStatus property
+  // If not available, we'll derive it from the current PromoterCampaignStatus
+  // This is a placeholder - in a real app, the backend should provide the CampaignStatus
+  const campaignWithStatus = campaign as CampaignUnion & {
+    campaignStatus?: CampaignStatus;
+  };
+  const campaignStatus =
+    campaignWithStatus.campaignStatus || CampaignStatus.ACTIVE;
+
+  switch (campaignStatus) {
+    case CampaignStatus.ACTIVE:
+      return {
+        label: "Active",
+        className:
+          "px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium",
+      };
+    case CampaignStatus.PAUSED:
+      return {
+        label: "Paused",
+        className:
+          "px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium",
+      };
+    case CampaignStatus.ENDED:
+      return {
+        label: "Ended",
+        className:
+          "px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium",
+      };
+    default:
+      return {
+        label: "Active",
+        className:
+          "px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium",
+      };
+  }
+};
 
 interface CampaignDetailsPageProps {
   params: Promise<{
@@ -40,16 +93,24 @@ const formatBudgetInfo = (campaign: CampaignUnion) => {
   switch (campaign.type) {
     case CampaignType.VISIBILITY:
       const visibilityCampaign = campaign as VisibilityCampaign;
-      return `$${visibilityCampaign.cpv.toFixed(2)} per view`;
+      return `$${Number(visibilityCampaign.cpv).toFixed(2)} per 100 view`;
     case CampaignType.SALESMAN:
       const salesmanCampaign = campaign as SalesmanCampaign;
-      return `${salesmanCampaign.commissionPerSale}% commission`;
+      return `${Number(salesmanCampaign.commissionPerSale * 100).toFixed(
+        0
+      )}% commission`;
     case CampaignType.CONSULTANT:
       const consultantCampaign = campaign as ConsultantCampaign;
-      return `$${consultantCampaign.minBudget} - $${consultantCampaign.maxBudget}`;
+      return `$${Number(
+        consultantCampaign.minBudget
+      ).toLocaleString()} - $${Number(
+        consultantCampaign.maxBudget
+      ).toLocaleString()}`;
     case CampaignType.SELLER:
       const sellerCampaign = campaign as SellerCampaign;
-      return `$${sellerCampaign.minBudget} - $${sellerCampaign.maxBudget}`;
+      return `$${Number(sellerCampaign.minBudget).toLocaleString()} - $${Number(
+        sellerCampaign.maxBudget
+      ).toLocaleString()}`;
     default:
       return "Contact for details";
   }
@@ -97,35 +158,39 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-sm text-blue-600 font-medium">
                   Target Views
-                </p>
+                </p>{" "}
                 <p className="text-2xl font-bold text-blue-900">
-                  {visibilityCampaign.maxViews.toLocaleString()}
+                  {Number(visibilityCampaign.maxViews).toLocaleString()}
                 </p>
               </div>
             </div>
-          </div>
+          </div>{" "}
           <div className="bg-green-50 p-4 rounded-lg">
             <div className="flex items-center space-x-3">
               <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
               <div>
                 <p className="text-sm text-green-600 font-medium">
-                  Cost Per View
-                </p>
+                  Payment Per 100 Views
+                </p>{" "}
                 <p className="text-2xl font-bold text-green-900">
-                  ${visibilityCampaign.cpv.toFixed(2)}
+                  ${Number(visibilityCampaign.cpv).toFixed(2)}
                 </p>
               </div>
             </div>
-          </div>
+          </div>{" "}
           <div className="bg-purple-50 p-4 rounded-lg">
             <div className="flex items-center space-x-3">
-              <UsersIcon className="h-8 w-8 text-purple-600" />
+              <CurrencyDollarIcon className="h-8 w-8 text-purple-600" />
               <div>
                 <p className="text-sm text-purple-600 font-medium">
-                  Min Followers
-                </p>
+                  Campaign Budget
+                </p>{" "}
                 <p className="text-2xl font-bold text-purple-900">
-                  {visibilityCampaign.minFollowers?.toLocaleString() || "N/A"}
+                  $
+                  {(
+                    Number(visibilityCampaign.maxViews) *
+                    Number(visibilityCampaign.cpv)
+                  ).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -143,9 +208,9 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-sm text-green-600 font-medium">
                   Commission Rate
-                </p>
+                </p>{" "}
                 <p className="text-3xl font-bold text-green-900">
-                  {salesmanCampaign.commissionPerSale}%
+                  {Number(salesmanCampaign.commissionPerSale * 100).toFixed(0)}%
                 </p>
               </div>
             </div>
@@ -186,10 +251,10 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-purple-600 font-medium">
                     Budget Range
-                  </p>
+                  </p>{" "}
                   <p className="text-lg font-bold text-purple-900">
-                    ${consultantCampaign.minBudget} - $
-                    {consultantCampaign.maxBudget}
+                    ${Number(consultantCampaign.minBudget).toLocaleString()} - $
+                    {Number(consultantCampaign.maxBudget).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -213,9 +278,9 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-green-600 font-medium">
                     Total Meetings
-                  </p>
+                  </p>{" "}
                   <p className="text-lg font-bold text-green-900">
-                    {consultantCampaign.meetingCount}
+                    {Number(consultantCampaign.meetingCount)}
                   </p>
                 </div>
               </div>
@@ -236,10 +301,10 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div className="bg-blue-50 p-6 rounded-lg">
                 <h4 className="text-lg font-semibold text-blue-900 mb-3">
                   Expected Deliverables
-                </h4>
+                </h4>{" "}
                 <div className="flex flex-wrap gap-2">
                   {consultantCampaign.expectedDeliverables.map(
-                    (deliverable, idx) => (
+                    (deliverable: string, idx: number) => (
                       <span
                         key={idx}
                         className="px-3 py-1 bg-blue-200 text-blue-800 rounded-full text-sm font-medium"
@@ -265,9 +330,10 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-orange-600 font-medium">
                     Budget Range
-                  </p>
+                  </p>{" "}
                   <p className="text-2xl font-bold text-orange-900">
-                    ${sellerCampaign.minBudget} - ${sellerCampaign.maxBudget}
+                    ${Number(sellerCampaign.minBudget).toLocaleString()} - $
+                    {Number(sellerCampaign.maxBudget).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -278,9 +344,11 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-sm text-blue-600 font-medium">
                     Min Followers
-                  </p>
+                  </p>{" "}
                   <p className="text-2xl font-bold text-blue-900">
-                    {sellerCampaign.minFollowers?.toLocaleString()}
+                    {sellerCampaign.minFollowers
+                      ? Number(sellerCampaign.minFollowers).toLocaleString()
+                      : "Not specified"}
                   </p>
                 </div>
               </div>
@@ -300,11 +368,11 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <span className="font-medium">
                   {sellerCampaign.meetingPlan}
                 </span>
-              </p>
+              </p>{" "}
               <p className="text-gray-700">
                 Total Meetings:{" "}
                 <span className="font-medium">
-                  {sellerCampaign.meetingCount}
+                  {Number(sellerCampaign.meetingCount)}
                 </span>
               </p>
             </div>
@@ -315,16 +383,18 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div className="bg-purple-50 p-6 rounded-lg">
                 <h4 className="text-lg font-semibold text-purple-900 mb-3">
                   Required Deliverables
-                </h4>
+                </h4>{" "}
                 <div className="flex flex-wrap gap-2">
-                  {sellerCampaign.deliverables.map((deliverable, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-medium"
-                    >
-                      {deliverable}
-                    </span>
-                  ))}
+                  {sellerCampaign.deliverables.map(
+                    (deliverable: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-medium"
+                      >
+                        {deliverable}
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
             )}
@@ -336,13 +406,269 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
   }
 };
 
+// Application Modal Component
+interface ApplicationModalProps {
+  campaign: CampaignUnion;
+  onClose: () => void;
+  onSubmit: (message: string) => Promise<void>;
+}
+
+function ApplicationModal({
+  campaign,
+  onClose,
+  onSubmit,
+}: ApplicationModalProps) {
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await onSubmit(message);
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to submit application:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Apply to Campaign
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="font-medium text-gray-900">{campaign.title}</h3>
+            <p className="text-sm text-gray-600">
+              {campaign.advertiser.companyName}
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label
+              htmlFor="application-message"
+              className="block text-sm font-medium text-gray-700 mb-2"
+              >
+              Application Message
+              </label>
+              <textarea
+              id="application-message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Tell the advertiser why you're the perfect fit for this campaign..."
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-black"
+              required
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !message.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <PaperAirplaneIcon className="h-4 w-4" />
+                    <span>Submit Application</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CampaignDetailsPage({
   params,
 }: CampaignDetailsPageProps) {
   const resolvedParams = use(params);
-  const campaign = EXPLORE_CAMPAIGN_MOCK.campaigns.find(
-    (c) => c.id === resolvedParams.campaignId
+  const router = useRouter();
+  const [campaign, setCampaign] = useState<CampaignUnion | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [acceptingContract, setAcceptingContract] = useState<string | null>(
+    null
   );
+  const [applicationModal, setApplicationModal] = useState<{
+    isOpen: boolean;
+    campaign: CampaignUnion | null;
+  }>({ isOpen: false, campaign: null });
+
+  // Notification state
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: "success",
+    title: "",
+    message: "",
+  });
+
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      // Try to get campaign from localStorage first
+      const storedCampaign = exploreCampaignsStorage.getCampaignById(
+        resolvedParams.campaignId
+      );
+
+      if (storedCampaign) {
+        setCampaign(storedCampaign);
+        setLoading(false);
+      } else {
+        // If not found in localStorage, fetch from API
+        try {
+          const campaignData = await promoterService.getCampaignById(
+            resolvedParams.campaignId
+          );
+          setCampaign(campaignData);
+          setLoading(false);
+        } catch (error) {
+          console.error("Failed to fetch campaign:", error);
+          // If API call fails, redirect to explore page
+          setLoading(false);
+          router.push("/dashboard/explore");
+        }
+      }
+    };
+
+    fetchCampaign();
+  }, [resolvedParams.campaignId, router]);
+
+  const handleApplyClick = async (campaign: CampaignUnion) => {
+    if (campaign.isPublic) {
+      // Handle "Take Contract" for public campaigns
+      setAcceptingContract(campaign.id);
+      try {
+        const response = await promoterService.acceptContract({
+          campaignId: campaign.id,
+        });
+
+        console.log("Contract accepted successfully:", response); // Show success notification
+        setNotification({
+          isOpen: true,
+          type: "success",
+          title: "Contract Accepted!",
+          message:
+            response.message || "You have successfully joined this campaign.",
+        });
+
+        // Redirect to campaigns page after a short delay
+        setTimeout(() => {
+          router.push("/dashboard/campaigns");
+        }, 2000);
+      } catch (error) {
+        console.error("Failed to accept contract:", error);
+
+        // Show error notification
+        setNotification({
+          isOpen: true,
+          type: "error",
+          title: "Failed to Accept Contract",
+          message:
+            error instanceof Error
+              ? error.message
+              : "An error occurred while accepting the contract. Please try again.",
+        });
+      } finally {
+        setAcceptingContract(null);
+      }
+    } else {
+      // Open application modal for private campaigns
+      setApplicationModal({ isOpen: true, campaign });
+    }
+  };
+
+  const handleApplicationSubmit = async (message: string) => {
+    if (!applicationModal.campaign) return;
+
+    try {
+      const response = await promoterService.sendCampaignApplication({
+        campaignId: applicationModal.campaign.id,
+        applicationMessage: message,
+      });
+
+      console.log("Application submitted successfully:", response);
+
+      // Close modal and show success message
+      setApplicationModal({ isOpen: false, campaign: null }); // Show success notification
+      setNotification({
+        isOpen: true,
+        type: "success",
+        title: "Application Submitted!",
+        message:
+          response.message ||
+          "Your application has been submitted successfully.",
+      });
+
+      // Redirect to explore page after a short delay
+      setTimeout(() => {
+        router.push("/dashboard/explore");
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to submit application:", error);
+
+      // Show error notification but keep modal open
+      setNotification({
+        isOpen: true,
+        type: "error",
+        title: "Failed to Submit Application",
+        message:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while submitting your application. Please try again.",
+      });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setApplicationModal({ isOpen: false, campaign: null });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading campaign details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!campaign) {
     notFound();
@@ -350,6 +676,7 @@ export default function CampaignDetailsPage({
 
   const daysLeft = getDaysLeft(campaign.deadline);
   const isExpired = daysLeft === 0;
+  const statusInfo = getCampaignDisplayStatus(campaign, isExpired);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -389,15 +716,7 @@ export default function CampaignDetailsPage({
               >
                 {campaign.type}
               </span>
-              {isExpired ? (
-                <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                  Expired
-                </span>
-              ) : (
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                  Active
-                </span>
-              )}
+              <span className={statusInfo.className}>{statusInfo.label}</span>
             </div>
           </div>
         </div>
@@ -407,7 +726,35 @@ export default function CampaignDetailsPage({
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
+              <button 
+                onClick={() => router.push(`/user/${campaign.advertiser.id}`)}
+                className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+              >
+                {campaign.advertiser.profileUrl ? (
+                  <Image
+                    src={campaign.advertiser.profileUrl}
+                    alt={campaign.advertiser.companyName}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
+                    unoptimized
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      e.currentTarget.parentElement!.innerHTML = `
+                        <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                          <span class="text-gray-500 text-sm font-medium">${campaign.advertiser.companyName.charAt(0).toUpperCase()}</span>
+                        </div>
+                      `;
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500 text-sm font-medium">
+                      {campaign.advertiser.companyName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+              </button>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                   <h2 className="text-xl font-semibold text-gray-900">
@@ -431,23 +778,25 @@ export default function CampaignDetailsPage({
                 </div>
                 <div className="flex items-center space-x-4 mb-3">
                   <div className="flex items-center space-x-1">
-                    <StarIconSolid className="h-4 w-4 text-yellow-400" />
+                    <StarIconSolid className="h-4 w-4 text-yellow-400" />{" "}
                     <span className="text-sm font-medium text-gray-900">
-                      {campaign.advertiser.rating}
+                      {Number(campaign.advertiser.rating).toFixed(1)}
                     </span>
                     <span className="text-sm text-gray-600">
                       Company Rating
                     </span>
-                  </div>
+                  </div>{" "}
                   <div className="flex flex-wrap gap-2">
-                    {campaign.advertiser.advertiserTypes?.map((type) => (
-                      <span
-                        key={type}
-                        className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
-                      >
-                        {type}
-                      </span>
-                    ))}
+                    {campaign.advertiser.advertiserTypes?.map(
+                      (type: string) => (
+                        <span
+                          key={type}
+                          className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
+                        >
+                          {type}
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm mb-2">
@@ -468,11 +817,12 @@ export default function CampaignDetailsPage({
             <div className="text-right">
               <p className="text-sm text-gray-500 mb-1">Company Rating</p>
               <div className="flex items-center space-x-1">
+                {" "}
                 {[1, 2, 3, 4, 5].map((star) => (
                   <StarIconSolid
                     key={star}
                     className={`h-4 w-4 ${
-                      star <= Math.floor(campaign.advertiser.rating)
+                      star <= Math.floor(Number(campaign.advertiser.rating))
                         ? "text-yellow-400"
                         : "text-gray-300"
                     }`}
@@ -497,29 +847,96 @@ export default function CampaignDetailsPage({
                     {campaign.description}
                   </p>
                 </div>
-              </div>
-
+              </div>{" "}
               {/* Campaign Specific Information */}
               {renderCampaignSpecificInfo(campaign)}
             </div>
-
+            {/* Campaign Media */}
+            {campaign.mediaUrl && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  Campaign Media
+                </h3>
+                <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
+                  {campaign.mediaUrl.endsWith(".mp4") ||
+                  campaign.mediaUrl.endsWith(".webm") ||
+                  campaign.mediaUrl.endsWith(".mov") ||
+                  campaign.mediaUrl.endsWith(".avi") ? (
+                    <video
+                      src={campaign.mediaUrl}
+                      controls
+                      className="w-full h-full object-cover"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : campaign.mediaUrl.endsWith(".pdf") ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
+                      <DocumentTextIcon className="h-16 w-16 text-gray-400" />
+                      <p className="text-gray-600 text-center">PDF Document</p>
+                      <a
+                        href={campaign.mediaUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        View PDF
+                      </a>
+                    </div>
+                  ) : (
+                    <img
+                      src={campaign.mediaUrl}
+                      alt="Campaign Media"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                        e.currentTarget.parentElement!.innerHTML = `
+                          <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="h-16 w-16 text-gray-400">
+                              <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                              </svg>
+                            </div>
+                            <p class="text-gray-600 text-center">Media unavailable</p>
+                          </div>
+                        `;
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            )}{" "}
             {/* Requirements */}
             {campaign.requirements && campaign.requirements.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">
                   Requirements
-                </h3>
+                </h3>{" "}
                 <div className="space-y-3">
-                  {campaign.requirements.map((requirement, idx) => (
-                    <div key={idx} className="flex items-center space-x-3">
-                      <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-700">{requirement}</span>
-                    </div>
-                  ))}
+                  {campaign.requirements.map(
+                    (requirement: string, idx: number) => (
+                      <div key={idx} className="flex items-center space-x-3">
+                        <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span className="text-gray-700">{requirement}</span>
+                      </div>
+                    )
+                  )}
+                  {/* Add min followers requirement for visibility campaigns */}
+                  {campaign.type === CampaignType.VISIBILITY &&
+                    (campaign as VisibilityCampaign).minFollowers && (
+                      <div className="flex items-center space-x-3">
+                        <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span className="text-gray-700">
+                          Minimum{" "}
+                          {(
+                            campaign as VisibilityCampaign
+                          ).minFollowers?.toLocaleString()}{" "}
+                          followers required
+                        </span>
+                      </div>
+                    )}
                 </div>
               </div>
             )}
-
             {/* Target Audience & Platforms */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
@@ -536,9 +953,9 @@ export default function CampaignDetailsPage({
                 <div>
                   <h4 className="font-medium text-gray-900 mb-2">
                     Preferred Platforms
-                  </h4>
+                  </h4>{" "}
                   <div className="flex flex-wrap gap-2">
-                    {campaign.preferredPlatforms?.map((platform) => (
+                    {campaign.preferredPlatforms?.map((platform: string) => (
                       <span
                         key={platform}
                         className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
@@ -554,14 +971,13 @@ export default function CampaignDetailsPage({
                 </div>
               </div>
             </div>
-
             {/* Tags */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Campaign Tags
-              </h3>
+              </h3>{" "}
               <div className="flex flex-wrap gap-2">
-                {campaign.tags.map((tag) => (
+                {campaign.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium"
@@ -583,16 +999,22 @@ export default function CampaignDetailsPage({
                 </div>
                 <p className="text-gray-600">Compensation</p>
               </div>
-
               <div className="space-y-4 mb-6">
+                {" "}
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Status:</span>
                   <span
                     className={`font-medium ${
-                      isExpired ? "text-red-600" : "text-green-600"
+                      statusInfo.label === "Expired"
+                        ? "text-red-600"
+                        : statusInfo.label === "Active"
+                        ? "text-green-600"
+                        : statusInfo.label === "Paused"
+                        ? "text-yellow-600"
+                        : "text-gray-600"
                     }`}
                   >
-                    {isExpired ? "Expired" : "Active"}
+                    {statusInfo.label}
                   </span>
                 </div>{" "}
                 <div className="flex items-center justify-between text-sm">
@@ -611,14 +1033,21 @@ export default function CampaignDetailsPage({
                     {isExpired ? "Expired" : `${daysLeft} days left`}
                   </span>
                 </div>
-              </div>
-
-              {!isExpired && (
+              </div>{" "}
+              {statusInfo.label === "Active" && (
                 <button
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2"
-                  disabled={isExpired}
+                  onClick={() => handleApplyClick(campaign)}
+                  disabled={acceptingContract === campaign.id}
+                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2"
                 >
-                  {campaign.isPublic ? (
+                  {acceptingContract === campaign.id ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>
+                        {campaign.isPublic ? "Accepting..." : "Submitting..."}
+                      </span>
+                    </>
+                  ) : campaign.isPublic ? (
                     <>
                       <DocumentTextIcon className="h-5 w-5" />
                       <span>Take Contract</span>
@@ -632,7 +1061,6 @@ export default function CampaignDetailsPage({
                 </button>
               )}
             </div>
-
             {/* Timeline */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -681,7 +1109,6 @@ export default function CampaignDetailsPage({
                 </div>
               </div>
             </div>
-
             {/* Contact */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -698,10 +1125,78 @@ export default function CampaignDetailsPage({
                   <span className="text-sm text-gray-700">View Guidelines</span>
                 </button>
               </div>
-            </div>
+            </div>{" "}
           </div>
         </div>
       </div>
+      {/* Application Modal */}
+      {applicationModal.isOpen && applicationModal.campaign && (
+        <ApplicationModal
+          campaign={applicationModal.campaign}
+          onClose={handleCloseModal}
+          onSubmit={handleApplicationSubmit}
+        />
+      )}
+      {/* Notification Modal */}
+      {notification.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  {notification.type === "success" ? (
+                    <CheckCircleIcon className="h-6 w-6 text-green-600 mr-3" />
+                  ) : (
+                    <XMarkIcon className="h-6 w-6 text-red-600 mr-3" />
+                  )}
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {notification.title}
+                  </h3>
+                </div>{" "}
+                <button
+                  onClick={() => {
+                    setNotification({ ...notification, isOpen: false });
+                    // If it's a success notification, redirect immediately
+                    if (notification.type === "success") {
+                      if (notification.title === "Contract Accepted!") {
+                        router.push("/dashboard/campaigns");
+                      } else if (
+                        notification.title === "Application Submitted!"
+                      ) {
+                        router.push("/dashboard/explore");
+                      }
+                    }
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <XMarkIcon className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-700 mb-6">{notification.message}</p>{" "}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    setNotification({ ...notification, isOpen: false });
+                    // If it's a success notification, redirect immediately
+                    if (notification.type === "success") {
+                      if (notification.title === "Contract Accepted!") {
+                        router.push("/dashboard/campaigns");
+                      } else if (
+                        notification.title === "Application Submitted!"
+                      ) {
+                        router.push("/dashboard/explore");
+                      }
+                    }
+                  }}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -48,7 +48,6 @@ export default function PortfolioManager({
       });
     };
   }, [newWorkFile, editingFiles]);
-
   const validateFile = (file: File): { isValid: boolean; error?: string } => {
     const allowedTypes = [
       "image/jpeg",
@@ -58,13 +57,14 @@ export default function PortfolioManager({
       "video/mp4",
       "video/webm",
       "video/quicktime",
+      "application/pdf",
     ];
 
     if (!allowedTypes.includes(file.type)) {
       return {
         isValid: false,
         error:
-          "Invalid file type. Only images (JPEG, PNG, WebP, GIF) and videos (MP4, WebM, MOV) are allowed.",
+          "Invalid file type. Only images (JPEG, PNG, WebP, GIF), videos (MP4, WebM, MOV), and PDFs are allowed.",
       };
     }
 
@@ -202,7 +202,7 @@ export default function PortfolioManager({
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full"
+              className="text-black p-2 hover:bg-gray-100 rounded-full"
             >
               <svg
                 className="w-5 h-5"
@@ -293,10 +293,10 @@ export default function PortfolioManager({
                           style={{ color: "#000000" }}
                         >
                           Media File
-                        </label>
+                        </label>{" "}
                         <input
                           type="file"
-                          accept="image/*,video/*"
+                          accept="image/*,video/*,.pdf"
                           data-index={index}
                           onChange={(e) => {
                             const file = e.target.files?.[0];
@@ -332,13 +332,27 @@ export default function PortfolioManager({
                               <span className="text-sm font-semibold text-gray-800 break-all">
                                 Selected file: {editingFiles[index]?.name}
                               </span>
-                            </div>
+                            </div>{" "}
                             {editingFiles[index]!.type.startsWith("video/") ? (
                               <video
                                 src={URL.createObjectURL(editingFiles[index]!)}
                                 className="w-32 h-24 object-cover rounded-lg border border-gray-200"
                                 controls
                               />
+                            ) : editingFiles[index]!.type ===
+                              "application/pdf" ? (
+                              <div className="w-32 h-24 rounded-lg border border-gray-200 flex flex-col items-center justify-center space-y-1 bg-gray-50">
+                                <svg
+                                  className="h-8 w-8 text-gray-400"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                <p className="text-xs text-gray-600 text-center">
+                                  PDF
+                                </p>
+                              </div>
                             ) : (
                               <div className="w-32 h-24 rounded-lg border border-gray-200 overflow-hidden">
                                 <Image
@@ -354,7 +368,6 @@ export default function PortfolioManager({
                                 />
                               </div>
                             )}
-
                             {/* Save Button - Simple Icon */}
                             <div
                               style={{
@@ -446,7 +459,7 @@ export default function PortfolioManager({
                         />
                       </svg>
                     </button>
-                  </div>
+                  </div>{" "}
                   {work.mediaUrl && !editingFiles[index] && (
                     <div className="mt-3">
                       {work.mediaUrl.toLowerCase().includes(".mp4") ||
@@ -457,6 +470,25 @@ export default function PortfolioManager({
                           className="w-32 h-24 object-cover rounded-lg border border-gray-200"
                           controls
                         />
+                      ) : work.mediaUrl.toLowerCase().endsWith(".pdf") ? (
+                        <div className="w-32 h-24 rounded-lg border border-gray-200 flex flex-col items-center justify-center space-y-2 bg-gray-50">
+                          <svg
+                            className="h-8 w-8 text-gray-400"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                          </svg>
+                          <p className="text-xs text-gray-600">PDF</p>
+                          <a
+                            href={work.mediaUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-700 underline"
+                          >
+                            View
+                          </a>
+                        </div>
                       ) : (
                         <div className="w-32 h-24 rounded-lg border border-gray-200 overflow-hidden">
                           <Image
@@ -467,6 +499,17 @@ export default function PortfolioManager({
                             className="object-cover"
                             style={{ width: "100%", height: "100%" }}
                             unoptimized
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                              e.currentTarget.parentElement!.innerHTML = `
+                                <div class="w-32 h-24 rounded-lg border border-gray-200 flex flex-col items-center justify-center space-y-1 bg-gray-50">
+                                  <svg class="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                  </svg>
+                                  <p class="text-xs text-gray-600">Unavailable</p>
+                                </div>
+                              `;
+                            }}
                           />
                         </div>
                       )}
@@ -522,10 +565,10 @@ export default function PortfolioManager({
                       style={{ color: "#000000" }}
                     >
                       Media File
-                    </label>
+                    </label>{" "}
                     <input
                       type="file"
-                      accept="image/*,video/*"
+                      accept="image/*,video/*,.pdf"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -552,6 +595,19 @@ export default function PortfolioManager({
                               className="w-32 h-24 object-cover rounded-lg border border-gray-200"
                               controls
                             />
+                          ) : newWorkFile.type === "application/pdf" ? (
+                            <div className="w-32 h-24 rounded-lg border border-gray-200 flex flex-col items-center justify-center space-y-1 bg-gray-50">
+                              <svg
+                                className="h-8 w-8 text-gray-400"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                              </svg>
+                              <p className="text-xs text-gray-600 text-center">
+                                PDF
+                              </p>
+                            </div>
                           ) : (
                             <div className="w-32 h-24 rounded-lg border border-gray-200 overflow-hidden">
                               <Image
@@ -624,16 +680,8 @@ export default function PortfolioManager({
           </div>
         </div>
 
-        {/* Fixed Footer with Action Buttons */}
         <div className="p-4 border-t border-gray-200 flex-shrink-0">
           <div className="flex justify-end space-x-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              style={{ color: "#000000" }}
-            >
-              Cancel
-            </button>
           </div>
         </div>
       </div>
