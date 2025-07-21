@@ -625,7 +625,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       </div>
                     )}{" "}
                     {/* Private Campaign State Management */}
-                    {!campaign.campaign.isPublic && (
+                    {campaign.campaign.type !== CampaignType.VISIBILITY && (
                       <div className="mb-4 pt-2 border-t border-gray-100">
                         {(() => {
                           const chosenPromoter = chosenPromotersArray[0]; // For private campaigns, there should only be one
