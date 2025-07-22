@@ -67,7 +67,8 @@ export default function CampaignStatsCards({
                   Earning per 100 views
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${(campaign.campaign as VisibilityCampaignDetails).cpv}
+                  $
+                  {Number((campaign.campaign as VisibilityCampaignDetails).cpv || 0).toFixed(2)}
                 </p>
               </div>
             </div>

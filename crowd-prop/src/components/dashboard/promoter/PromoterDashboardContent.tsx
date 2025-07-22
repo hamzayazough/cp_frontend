@@ -320,7 +320,7 @@ export default function PromoterDashboardContent({
                   <div className="grid grid-cols-3 gap-4 mb-3">
                     <div>
                       <p className="text-xs text-gray-500">Views Generated</p>
-                      <p className="font-semibold">
+                      <p className="font-semibold text-gray-600">
                         {campaign.views.toLocaleString()}
                       </p>
                     </div>
@@ -331,8 +331,8 @@ export default function PromoterDashboardContent({
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">Deadline</p>
-                      <p className="font-semibold">
+                      <p className="text-xs text-gray-700">Deadline</p>
+                      <p className="font-semibold text-gray-600">
                         {new Date(campaign.deadline).toLocaleDateString()}
                       </p>
                     </div>
