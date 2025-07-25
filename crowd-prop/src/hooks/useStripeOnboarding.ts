@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { stripeService } from "@/services/stripe.service";
+import { userService } from "@/services/user.service";
 import {
   CreateConnectAccountRequest,
   OnboardingStatusResponse,
@@ -18,6 +19,7 @@ interface UseStripeOnboardingResult {
   getOnboardingLink: () => Promise<string>;
   checkOnboardingStatus: (userId: string) => Promise<OnboardingStatusResponse>;
   getAccountStatus: () => Promise<StripeConnectAccount | null>;
+  refreshAccountStatus: () => Promise<void>;
   isAccountReady: () => Promise<boolean>;
   clearError: () => void;
   reset: () => void;
@@ -115,6 +117,27 @@ export function useStripeOnboarding(): UseStripeOnboardingResult {
     []
   );
 
+  const refreshAccountStatus = useCallback(async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      console.log("useStripeOnboarding: Refreshing account status");
+      const account = await stripeService.getAccountStatus();
+      console.log("useStripeOnboarding: Account status refreshed:", account);
+      setAccountData(account);
+    } catch (err) {
+      console.log("useStripeOnboarding: Error refreshing account status:", err);
+      // Only set error if it's not a 404 (account doesn't exist)
+      if (err instanceof Error && !err.message.includes("404")) {
+        setError(err.message);
+      }
+      // For 404, just leave accountData as null (no account exists)
+      setAccountData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const getAccountStatus =
     useCallback(async (): Promise<StripeConnectAccount | null> => {
       try {
@@ -152,6 +175,46 @@ export function useStripeOnboarding(): UseStripeOnboardingResult {
     }
   }, []);
 
+  // Automatically fetch account status on mount
+  useEffect(() => {
+    const fetchInitialAccountStatus = async () => {
+      // Check if user is authenticated before making the request
+      const currentUser = userService.getCurrentUserSync();
+      if (!currentUser) {
+        console.log(
+          "useStripeOnboarding: User not authenticated, skipping account status fetch"
+        );
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        console.log(
+          "useStripeOnboarding: Fetching account status on mount for user:",
+          currentUser.uid
+        );
+        const account = await stripeService.getAccountStatus();
+        console.log("useStripeOnboarding: Account status fetched:", account);
+        setAccountData(account);
+      } catch (err) {
+        console.log("useStripeOnboarding: Error fetching account status:", err);
+        // Only set error if it's not a 404 (account doesn't exist)
+        if (err instanceof Error && !err.message.includes("404")) {
+          setError(err.message);
+        }
+        // For 404, just leave accountData as null (no account exists)
+        setAccountData(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Small delay to ensure user is loaded
+    const timer = setTimeout(fetchInitialAccountStatus, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   return {
     // State
     isLoading,
@@ -164,6 +227,7 @@ export function useStripeOnboarding(): UseStripeOnboardingResult {
     getOnboardingLink,
     checkOnboardingStatus,
     getAccountStatus,
+    refreshAccountStatus,
     isAccountReady,
     clearError,
     reset,

@@ -4,6 +4,9 @@ import Link from "next/link";
 import { routes } from "@/lib/router";
 import { usePromoterDashboard } from "@/hooks/usePromoterDashboard";
 import PromoterDashboardTemplate from "./PromoterDashboardTemplate";
+import StripeStatusCard from "./StripeStatusCard";
+import { userService } from "@/services/user.service";
+import { useStripeOnboarding } from "@/hooks/useStripeOnboarding";
 import {
   formatWalletValue,
   meetsThreshold,
@@ -39,6 +42,13 @@ export default function PromoterDashboardContent({
     useTemplate,
     setUseTemplate,
   } = usePromoterDashboard();
+
+  const currentUser = userService.getCurrentUserSync();
+  const isPromoter = currentUser?.role === 'PROMOTER';
+  
+  // Get Stripe status for promoters
+  const { accountData } = useStripeOnboarding();
+  const canReceivePayouts = isPromoter && accountData?.payoutsEnabled;
 
   const handleRequestPayout = async () => {
     try {
@@ -248,24 +258,50 @@ export default function PromoterDashboardContent({
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">
-                Active Campaigns
-              </p>
-              <p className="text-3xl font-bold text-gray-900">
-                {dashboardData.stats.activeCampaigns}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                {dashboardData.stats.pendingReviewCampaigns} pending review
-              </p>
-            </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <RectangleStackIcon className="h-6 w-6 text-orange-600" />
+        {/* Payment Status Card for Promoters */}
+        {isPromoter ? (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Payment Status
+                </p>
+                <p className={`text-lg font-bold ${canReceivePayouts ? 'text-green-600' : 'text-orange-600'}`}>
+                  {canReceivePayouts ? 'Ready' : 'Setup Required'}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {canReceivePayouts ? 'Payouts enabled' : 'Complete Stripe setup'}
+                </p>
+              </div>
+              <div className={`p-3 rounded-full ${canReceivePayouts ? 'bg-green-100' : 'bg-orange-100'}`}>
+                {canReceivePayouts ? (
+                  <CheckCircleIcon className="h-6 w-6 text-green-600" />
+                ) : (
+                  <ExclamationTriangleIcon className="h-6 w-6 text-orange-600" />
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Active Campaigns
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {dashboardData.stats.activeCampaigns}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {dashboardData.stats.pendingReviewCampaigns} pending review
+                </p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-full">
+                <RectangleStackIcon className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Active Campaigns Section */}
@@ -496,6 +532,9 @@ export default function PromoterDashboardContent({
 
         {/* Wallet & Messages */}
         <div className="space-y-8">
+          {/* Stripe Connect Status - Only for Promoters */}
+          {isPromoter && <StripeStatusCard />}
+
           {/* Wallet Overview */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="p-6 border-b border-gray-200">
@@ -511,6 +550,22 @@ export default function PromoterDashboardContent({
                   <ArrowRightIcon className="h-4 w-4 ml-1" />
                 </Link>
               </div>
+              {/* Stripe Setup Warning for Promoters */}
+              {isPromoter && !canReceivePayouts && (
+                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-start space-x-2">
+                    <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">
+                        Payment Setup Required
+                      </p>
+                      <p className="text-sm text-yellow-700">
+                        Complete your Stripe Connect setup above to enable payouts and receive earnings.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="p-6">
               <div className="mb-6">
@@ -590,28 +645,32 @@ export default function PromoterDashboardContent({
                     !meetsThreshold(
                       dashboardData.wallet.viewEarnings.currentBalance,
                       dashboardData.wallet.viewEarnings.minimumThreshold
-                    )
+                    ) || (isPromoter && !canReceivePayouts)
                   }
                   className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
                     meetsThreshold(
                       dashboardData.wallet.viewEarnings.currentBalance,
                       dashboardData.wallet.viewEarnings.minimumThreshold
-                    )
+                    ) && (!isPromoter || canReceivePayouts)
                       ? "bg-blue-600 text-white hover:bg-blue-700"
                       : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
                 >
-                  {meetsThreshold(
-                    dashboardData.wallet.viewEarnings.currentBalance,
-                    dashboardData.wallet.viewEarnings.minimumThreshold
-                  )
-                    ? "Request Monthly Payout"
-                    : `Need $${formatWalletValue(
-                        amountNeededForThreshold(
-                          dashboardData.wallet.viewEarnings.currentBalance,
-                          dashboardData.wallet.viewEarnings.minimumThreshold
-                        )
-                      )} more`}
+                  {!isPromoter || canReceivePayouts ? (
+                    meetsThreshold(
+                      dashboardData.wallet.viewEarnings.currentBalance,
+                      dashboardData.wallet.viewEarnings.minimumThreshold
+                    )
+                      ? "Request Monthly Payout"
+                      : `Need $${formatWalletValue(
+                          amountNeededForThreshold(
+                            dashboardData.wallet.viewEarnings.currentBalance,
+                            dashboardData.wallet.viewEarnings.minimumThreshold
+                          )
+                        )} more`
+                  ) : (
+                    "Complete Stripe Setup to Enable Payouts"
+                  )}
                 </button>
               </div>
               <div>
