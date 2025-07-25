@@ -19,6 +19,9 @@ export type {
   UserProfileResponse,
 } from "./user.service";
 
+// Stripe Service - Stripe Connect and payment operations
+export { stripeService } from "./stripe.service";
+
 // Campaign Work - Campaign work management
 export type {
   CampaignWork,
@@ -58,6 +61,7 @@ import { authService } from "./auth.service";
 import { userService } from "./user.service";
 import { promoterService } from "./promoter.service";
 import { advertiserService } from "./advertiser.service";
+import { stripeService } from "./stripe.service";
 
 // Re-export commonly used service instances for convenience
 export const services = {
@@ -66,4 +70,5 @@ export const services = {
   user: userService,
   promoter: promoterService,
   advertiser: advertiserService,
+  stripe: stripeService,
 } as const;
