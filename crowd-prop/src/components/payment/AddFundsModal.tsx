@@ -30,14 +30,22 @@ export default function AddFundsModal({
   useEffect(() => {
     if (isOpen) {
       refreshPaymentMethods();
-      // Select default payment method if available
+      setError(null);
+    }
+  }, [isOpen]); // Only depend on isOpen
+
+  // Separate effect to select default payment method when payment methods change
+  useEffect(() => {
+    if (isOpen && paymentMethods.length > 0 && !selectedPaymentMethod) {
       const defaultMethod = paymentMethods.find(m => m.isDefault);
       if (defaultMethod) {
         setSelectedPaymentMethod(defaultMethod.id);
+      } else {
+        // If no default, select the first one
+        setSelectedPaymentMethod(paymentMethods[0].id);
       }
-      setError(null);
     }
-  }, [isOpen, paymentMethods, refreshPaymentMethods]);
+  }, [isOpen, paymentMethods, selectedPaymentMethod]);
 
   const handleAddFunds = async () => {
     if (!selectedPaymentMethod) {
