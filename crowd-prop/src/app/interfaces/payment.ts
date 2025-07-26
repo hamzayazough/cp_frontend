@@ -151,3 +151,127 @@ export interface PaymentDashboard {
   prepaidBalance: number;
   recentCharges: AdvertiserCharge[];
 }
+
+// Stripe Customer Management
+export interface StripeCustomer {
+  id: string;
+  customerId: string;
+  userId: string;
+  email: string;
+  name?: string;
+  defaultPaymentMethodId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: string;
+  card?: {
+    brand: string;
+    last4: string;
+    expMonth: number;
+    expYear: number;
+    funding: string;
+  };
+  billingDetails?: {
+    name?: string;
+    email?: string;
+    address?: {
+      line1?: string;
+      line2?: string;
+      city?: string;
+      state?: string;
+      postalCode?: string;
+      country?: string;
+    };
+  };
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export interface PaymentSetupStatus {
+  hasStripeCustomer: boolean;
+  paymentMethodsCount: number;
+  setupComplete: boolean;
+  stripeCustomerId?: string;
+}
+
+// Wallet Management
+export interface WalletTransaction {
+  id: string;
+  type: "DEPOSIT" | "WITHDRAWAL" | "CAMPAIGN_FUNDING" | "REFUND";
+  amount: number;
+  description: string;
+  campaignId?: string;
+  campaignTitle?: string;
+  status: "PENDING" | "COMPLETED" | "FAILED";
+  createdAt: string;
+  paymentIntentId?: string;
+}
+
+export interface WalletBalance {
+  currentBalance: number;
+  pendingCharges: number;
+  totalDeposited: number;
+  totalSpent: number;
+  availableForWithdrawal: number;
+}
+
+// Payment Requests and Responses
+export interface AddFundsRequest {
+  amount: number;
+  paymentMethodId?: string;
+  description?: string;
+}
+
+export interface AddFundsResponse {
+  success: boolean;
+  paymentIntentId?: string;
+  clientSecret?: string;
+  message: string;
+}
+
+export interface CreatePaymentIntentRequest {
+  campaignId?: string;
+  amount: number;
+  currency?: string;
+  description?: string;
+  paymentFlowType: PaymentFlowType;
+}
+
+export interface PaymentIntentResponse {
+  paymentIntentId: string;
+  clientSecret: string;
+  amount: number;
+  currency: string;
+  status: string;
+}
+
+export interface ConfirmPaymentRequest {
+  paymentMethodId: string;
+}
+
+export interface PaymentConfirmationResponse {
+  success: boolean;
+  paymentIntentId: string;
+  status: string;
+  message?: string;
+}
+
+// Campaign Funding
+export interface CampaignFundingStatus {
+  campaignId: string;
+  totalBudget: number;
+  spentAmount: number;
+  remainingBudget: number;
+  pendingPayments: number;
+  lastPaymentDate?: string;
+  paymentHistory: WalletTransaction[];
+}
+
+export enum PaymentFlowType {
+  WALLET_FUNDING = "WALLET_FUNDING",
+  CAMPAIGN_FUNDING = "CAMPAIGN_FUNDING",
+  DIRECT_PAYMENT = "DIRECT_PAYMENT",
+}

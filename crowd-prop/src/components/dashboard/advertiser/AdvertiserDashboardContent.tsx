@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { useAdvertiserDashboard } from "@/hooks/useAdvertiserDashboard";
+import { usePaymentManagement } from "@/hooks/usePaymentManagement";
 import { formatWalletValue } from "@/utils/wallet";
+import PaymentStatusCard from "@/components/payment/PaymentStatusCard";
+import PaymentMethodsCard from "@/components/payment/PaymentMethodsCard";
+import AddFundsModal from "@/components/payment/AddFundsModal";
 import {
   EyeIcon,
   CurrencyDollarIcon,
@@ -29,6 +34,8 @@ interface AdvertiserDashboardContentProps {
 export default function AdvertiserDashboardContent({
   userName,
 }: AdvertiserDashboardContentProps) {
+  const [showAddFundsModal, setShowAddFundsModal] = useState(false);
+  
   const {
     data: dashboardData,
     loading,
@@ -39,11 +46,15 @@ export default function AdvertiserDashboardContent({
     resumeCampaign,
   } = useAdvertiserDashboard();
 
+  // Add payment status check
+  const { paymentStatus } = usePaymentManagement();
+
   const handleAddFunds = async (amount: number) => {
     try {
       const result = await addFunds(amount);
       if (result.success) {
-        alert("Funds added successfully!");
+        // Show success message and refresh data
+        refetch();
       } else {
         alert(`Failed to add funds: ${result.message}`);
       }
@@ -288,17 +299,17 @@ export default function AdvertiserDashboardContent({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
-                Active Campaigns
+                Payment Status
               </p>
-              <p className="text-3xl font-bold text-gray-900">
-                {dashboardData.stats.activeCampaigns}
+              <p className="text-3xl font-bold text-green-600">
+                Ready
               </p>
               <p className="text-sm text-gray-600 mt-1">
-                {dashboardData.stats.pendingApprovalCampaigns} pending approval
+                {dashboardData.stats.activeCampaigns} active campaigns
               </p>
             </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <RectangleStackIcon className="h-6 w-6 text-orange-600" />
+            <div className="p-3 bg-green-100 rounded-full">
+              <CheckCircleIcon className="h-6 w-6 text-green-600" />
             </div>
           </div>
         </div>
@@ -420,119 +431,150 @@ export default function AdvertiserDashboardContent({
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-
-        {/* Wallet & Messages */}
+        {/* Left Column - Payment Management */}
         <div className="space-y-8">
-          {/* Wallet Overview */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
-                  Wallet Overview
-                </h2>
-                <button
-                  onClick={() => {
-                    const amount = prompt("Enter amount to add:");
-                    if (amount && !isNaN(Number(amount))) {
-                      handleAddFunds(Number(amount));
-                    }
-                  }}
-                  className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
-                >
-                  <PlusIcon className="h-4 w-4 mr-1" />
-                  Add Funds
-                </button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-2xl font-bold text-green-600">
-                        {formatWalletValue(
-                          dashboardData.wallet.balance.currentBalance
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Available Balance
-                      </div>
-                    </div>
-                    <BanknotesIcon className="h-8 w-8 text-green-600" />
-                  </div>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-2xl font-bold text-blue-600">
-                        {formatWalletValue(
-                          dashboardData.wallet.campaignBudgets.totalAllocated
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Total Allocated
-                      </div>
-                    </div>
-                    <RectangleStackIcon className="h-8 w-8 text-blue-600" />
-                  </div>
-                </div>
-              </div>
+          {/* Payment Status Card */}
+          <PaymentStatusCard />
+          
+          {/* Payment Methods Management */}
+          <PaymentMethodsCard />
+        </div>
 
-              <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-3">
-                  Recent Transactions
-                </h3>
-                <div className="space-y-3">
-                  {dashboardData.recentTransactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`p-2 rounded-full ${
-                            transaction.amount > 0
-                              ? "bg-green-100"
-                              : "bg-red-100"
-                          }`}
-                        >
-                          {transaction.amount > 0 ? (
-                            <ArrowUpIcon className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <CurrencyDollarIcon className="h-4 w-4 text-red-600" />
+        {/* Right Column - Wallet & Messages */}
+        <div className="space-y-8">
+          {/* Wallet Overview - Only show if payment setup is complete */}
+          {paymentStatus?.setupComplete && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Wallet Overview
+                  </h2>
+                  <button
+                    onClick={() => setShowAddFundsModal(true)}
+                    className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+                  >
+                    <PlusIcon className="h-4 w-4 mr-1" />
+                    Add Funds
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-2xl font-bold text-green-600">
+                          {formatWalletValue(
+                            dashboardData.wallet.balance.currentBalance
                           )}
                         </div>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {transaction.campaign}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {transaction.description}
-                          </div>
+                        <div className="text-sm text-gray-600">
+                          Available Balance
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div
-                          className={`font-medium ${
-                            transaction.amount > 0
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {transaction.amount > 0 ? "+" : ""}
-                          {formatCurrency(transaction.amount)}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {new Date(transaction.date).toLocaleDateString()}
-                        </div>
-                      </div>
+                      <BanknotesIcon className="h-8 w-8 text-green-600" />
                     </div>
-                  ))}
+                  </div>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-2xl font-bold text-blue-600">
+                          {formatWalletValue(
+                            dashboardData.wallet.campaignBudgets.totalAllocated
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Total Allocated
+                        </div>
+                      </div>
+                      <RectangleStackIcon className="h-8 w-8 text-blue-600" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h3 className="font-medium text-gray-900 mb-3">
+                    Recent Transactions
+                  </h3>
+                  <div className="space-y-3">
+                    {dashboardData.recentTransactions.map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div
+                            className={`p-2 rounded-full ${
+                              transaction.amount > 0
+                                ? "bg-green-100"
+                                : "bg-red-100"
+                            }`}
+                          >
+                            {transaction.amount > 0 ? (
+                              <ArrowUpIcon className="h-4 w-4 text-green-600" />
+                            ) : (
+                              <CurrencyDollarIcon className="h-4 w-4 text-red-600" />
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {transaction.campaign}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {transaction.description}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div
+                            className={`font-medium ${
+                              transaction.amount > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {transaction.amount > 0 ? "+" : ""}
+                            {formatCurrency(transaction.amount)}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {new Date(transaction.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Setup Required Message - Show when payment setup is not complete */}
+          {paymentStatus && !paymentStatus.setupComplete && (
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 bg-amber-100 rounded-full">
+                  <BanknotesIcon className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-amber-900">
+                    Complete Payment Setup
+                  </h3>
+                  <p className="text-sm text-amber-700">
+                    Add a payment method to access your wallet and fund campaigns
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white/50 rounded-lg p-4">
+                <h4 className="font-medium text-amber-900 mb-2">Next Steps:</h4>
+                <ul className="text-sm text-amber-800 space-y-1">
+                  <li>• Add a payment method using the card above</li>
+                  <li>• Fund your wallet to start campaigns</li>
+                  <li>• Monitor your spending and ROI</li>
+                </ul>
+              </div>
+            </div>
+          )}
 
           {/* Messages Preview */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -602,6 +644,16 @@ export default function AdvertiserDashboardContent({
           </div>
         </div>
       </div>
+
+      {/* Add Funds Modal */}
+      <AddFundsModal
+        isOpen={showAddFundsModal}
+        onClose={() => setShowAddFundsModal(false)}
+        onSuccess={(amount) => {
+          handleAddFunds(amount);
+          setShowAddFundsModal(false);
+        }}
+      />
     </div>
   );
 }

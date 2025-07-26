@@ -55,6 +55,9 @@ export type {
   GetAdvertiserDashboardResponse,
 } from "../app/interfaces/dashboard/advertiser-dashboard";
 
+// Advertiser Payment Service - Payment management for advertisers
+export { advertiserPaymentService } from "./advertiser-payment.service";
+
 // Import service instances separately for the services object
 import { httpService } from "./http.service";
 import { authService } from "./auth.service";
