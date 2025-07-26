@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { useAdvertiserDashboard } from "@/hooks/useAdvertiserDashboard";
 import { usePaymentManagement } from "@/hooks/usePaymentManagement";
-import { formatWalletValue } from "@/utils/wallet";
 import PaymentStatusCard from "@/components/payment/PaymentStatusCard";
 import PaymentMethodsCard from "@/components/payment/PaymentMethodsCard";
 import AddFundsModal from "@/components/payment/AddFundsModal";
@@ -47,14 +46,15 @@ export default function AdvertiserDashboardContent({
   } = useAdvertiserDashboard();
 
   // Add payment status check
-  const { paymentStatus } = usePaymentManagement();
+  const { paymentStatus, walletBalance, isWalletLoading, refreshWallet } = usePaymentManagement();
 
   const handleAddFunds = async (amount: number) => {
     try {
       const result = await addFunds(amount);
       if (result.success) {
         // Show success message and refresh data
-        refetch();
+        await refreshWallet(); // Refresh wallet balance from /balance endpoint
+        refetch(); // Refresh dashboard data
       } else {
         alert(`Failed to add funds: ${result.message}`);
       }
@@ -460,91 +460,137 @@ export default function AdvertiserDashboardContent({
                 </div>
               </div>
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-2xl font-bold text-green-600">
-                          {formatWalletValue(
-                            dashboardData.wallet.balance.currentBalance
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Available Balance
-                        </div>
-                      </div>
-                      <BanknotesIcon className="h-8 w-8 text-green-600" />
+                {isWalletLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gray-200 h-20 rounded-lg"></div>
+                      <div className="bg-gray-200 h-20 rounded-lg"></div>
                     </div>
                   </div>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">
-                          {formatWalletValue(
-                            dashboardData.wallet.campaignBudgets.totalAllocated
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Total Allocated
-                        </div>
-                      </div>
-                      <RectangleStackIcon className="h-8 w-8 text-blue-600" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-3">
-                    Recent Transactions
-                  </h3>
-                  <div className="space-y-3">
-                    {dashboardData.recentTransactions.map((transaction) => (
-                      <div
-                        key={transaction.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div
-                            className={`p-2 rounded-full ${
-                              transaction.amount > 0
-                                ? "bg-green-100"
-                                : "bg-red-100"
-                            }`}
-                          >
-                            {transaction.amount > 0 ? (
-                              <ArrowUpIcon className="h-4 w-4 text-green-600" />
-                            ) : (
-                              <CurrencyDollarIcon className="h-4 w-4 text-red-600" />
-                            )}
-                          </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className="bg-green-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-gray-900">
-                              {transaction.campaign}
+                            <div className="text-2xl font-bold text-green-600">
+                              {walletBalance ? formatCurrency(walletBalance.currentBalance) : '$0.00'}
                             </div>
                             <div className="text-sm text-gray-600">
-                              {transaction.description}
+                              Available Balance
                             </div>
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={`font-medium ${
-                              transaction.amount > 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {transaction.amount > 0 ? "+" : ""}
-                            {formatCurrency(transaction.amount)}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {new Date(transaction.date).toLocaleDateString()}
-                          </div>
+                          <BanknotesIcon className="h-8 w-8 text-green-600" />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-blue-600">
+                              {walletBalance ? formatCurrency(walletBalance.totalSpent) : '$0.00'}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Total Spent
+                            </div>
+                          </div>
+                          <RectangleStackIcon className="h-8 w-8 text-blue-600" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className="bg-purple-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-purple-600">
+                              {walletBalance ? formatCurrency(walletBalance.totalDeposited) : '$0.00'}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Total Deposited
+                            </div>
+                          </div>
+                          <ArrowUpIcon className="h-8 w-8 text-purple-600" />
+                        </div>
+                      </div>
+                      <div className="bg-orange-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-orange-600">
+                              {walletBalance ? formatCurrency(walletBalance.pendingCharges) : '$0.00'}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Pending Charges
+                            </div>
+                          </div>
+                          <ClockIcon className="h-8 w-8 text-orange-600" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <h3 className="font-medium text-gray-900 mb-3">
+                        Recent Transactions
+                      </h3>
+                      <div className="space-y-3">
+                        {dashboardData.recentTransactions.length > 0 ? (
+                          dashboardData.recentTransactions.map((transaction) => (
+                            <div
+                              key={transaction.id}
+                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div
+                                  className={`p-2 rounded-full ${
+                                    transaction.amount > 0
+                                      ? "bg-green-100"
+                                      : "bg-red-100"
+                                  }`}
+                                >
+                                  {transaction.amount > 0 ? (
+                                    <ArrowUpIcon className="h-4 w-4 text-green-600" />
+                                  ) : (
+                                    <CurrencyDollarIcon className="h-4 w-4 text-red-600" />
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="font-medium text-gray-900">
+                                    {transaction.campaign}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    {transaction.description}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div
+                                  className={`font-medium ${
+                                    transaction.amount > 0
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }`}
+                                >
+                                  {transaction.amount > 0 ? "+" : ""}
+                                  {formatCurrency(transaction.amount)}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {new Date(transaction.date).toLocaleDateString()}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-8 bg-gray-50 rounded-lg">
+                            <BanknotesIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                            <h4 className="text-sm font-medium text-gray-900 mb-2">No transactions yet</h4>
+                            <p className="text-sm text-gray-500">
+                              Your transaction history will appear here once you start funding campaigns.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
