@@ -29,6 +29,7 @@ export default function PaymentMethodsCard({ className = '' }: PaymentMethodsCar
     refreshPaymentMethods,
     removePaymentMethod,
     setDefaultPaymentMethod,
+    paymentStatus,
   } = usePaymentManagement();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -68,6 +69,11 @@ export default function PaymentMethodsCard({ className = '' }: PaymentMethodsCar
   const handleRefresh = async () => {
     await refreshPaymentMethods();
   };
+
+  // Don't render the card if payment setup is not complete
+  if (paymentStatus && !paymentStatus.setupComplete) {
+    return null;
+  }
 
   if (isPaymentMethodsLoading && paymentMethods.length === 0) {
     return (

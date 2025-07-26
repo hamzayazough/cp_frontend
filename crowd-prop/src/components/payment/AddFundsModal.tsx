@@ -126,7 +126,7 @@ export default function AddFundsModal({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Amount
               </label>
-              <div className="grid grid-cols-3 gap-2 mb-3">
+              <div className="grid grid-cols-3 gap-2 mb-3 text-gray-700">
                 {PAYMENT_CONSTANTS.DEFAULT_FUNDING_AMOUNTS.map((preset) => (
                   <button
                     key={preset}
@@ -145,7 +145,7 @@ export default function AddFundsModal({
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
                 placeholder="Custom amount"
                 min={PAYMENT_CONSTANTS.MINIMUM_WALLET_FUNDING}
                 max={PAYMENT_CONSTANTS.MAXIMUM_WALLET_FUNDING}
