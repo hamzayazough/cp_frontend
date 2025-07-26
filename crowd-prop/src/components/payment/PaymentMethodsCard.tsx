@@ -27,6 +27,7 @@ export default function PaymentMethodsCard({ className = '' }: PaymentMethodsCar
     isPaymentMethodsLoading,
     paymentMethodsError,
     refreshPaymentMethods,
+    refreshAll,
     removePaymentMethod,
     setDefaultPaymentMethod,
     paymentStatus,
@@ -35,9 +36,9 @@ export default function PaymentMethodsCard({ className = '' }: PaymentMethodsCar
   const [showAddModal, setShowAddModal] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const handleAddSuccess = () => {
+  const handleAddSuccess = async () => {
     setShowAddModal(false);
-    refreshPaymentMethods();
+    await refreshAll();
   };
 
   const handleSetDefault = async (paymentMethodId: string) => {

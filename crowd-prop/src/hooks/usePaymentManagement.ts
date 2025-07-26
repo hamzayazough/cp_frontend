@@ -6,6 +6,8 @@ import {
   WalletTransaction,
   AddFundsRequest,
   AddFundsResponse,
+  WithdrawFundsRequest,
+  WithdrawFundsResponse,
 } from "@/app/interfaces/payment";
 import { advertiserPaymentService } from "@/services/advertiser-payment.service";
 import { userService } from "@/services/user.service";
@@ -43,7 +45,11 @@ interface UsePaymentManagementResult {
   setDefaultPaymentMethod: (paymentMethodId: string) => Promise<void>;
   refreshWalletBalance: () => Promise<void>;
   addFunds: (request: AddFundsRequest) => Promise<AddFundsResponse>;
+  withdrawFunds: (
+    request: WithdrawFundsRequest
+  ) => Promise<WithdrawFundsResponse>;
   refreshTransactions: () => Promise<void>;
+  refreshAll: () => Promise<void>;
   clearErrors: () => void;
 }
 
@@ -169,8 +175,8 @@ export function usePaymentManagement(): UsePaymentManagementResult {
           setAsDefault,
         });
 
-        // Refresh methods after adding
-        await refreshPaymentMethods();
+        // Refresh both payment methods and payment status
+        await Promise.all([refreshPaymentMethods(), refreshPaymentStatus()]);
       } catch (error) {
         const errorMessage =
           error instanceof Error
@@ -181,7 +187,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
         throw error;
       }
     },
-    [refreshPaymentMethods]
+    [refreshPaymentMethods, refreshPaymentStatus]
   );
 
   // Remove payment method
@@ -191,8 +197,8 @@ export function usePaymentManagement(): UsePaymentManagementResult {
         setPaymentMethodsError(null);
         await advertiserPaymentService.removePaymentMethod(paymentMethodId);
 
-        // Refresh methods after removing
-        await refreshPaymentMethods();
+        // Refresh both payment methods and payment status
+        await Promise.all([refreshPaymentMethods(), refreshPaymentStatus()]);
       } catch (error) {
         const errorMessage =
           error instanceof Error
@@ -203,7 +209,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
         throw error;
       }
     },
-    [refreshPaymentMethods]
+    [refreshPaymentMethods, refreshPaymentStatus]
   );
 
   // Set default payment method
@@ -269,6 +275,28 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     [refreshWalletBalance]
   );
 
+  // Withdraw funds from wallet
+  const withdrawFunds = useCallback(
+    async (request: WithdrawFundsRequest): Promise<WithdrawFundsResponse> => {
+      try {
+        setWalletError(null);
+        const response = await advertiserPaymentService.withdrawFunds(request);
+
+        // Refresh wallet balance after withdrawal
+        await refreshWalletBalance();
+
+        return response;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to withdraw funds";
+        setWalletError(errorMessage);
+        console.error("Failed to withdraw funds:", error);
+        throw error;
+      }
+    },
+    [refreshWalletBalance]
+  );
+
   // Refresh transactions
   const refreshTransactions = useCallback(async () => {
     if (!currentUser) return;
@@ -289,6 +317,24 @@ export function usePaymentManagement(): UsePaymentManagementResult {
       setIsTransactionsLoading(false);
     }
   }, [currentUser]);
+
+  // Refresh all payment-related data
+  const refreshAll = useCallback(async () => {
+    if (!currentUser) return;
+
+    await Promise.all([
+      refreshPaymentStatus(),
+      refreshPaymentMethods(),
+      refreshWalletBalance(),
+      refreshTransactions(),
+    ]);
+  }, [
+    currentUser,
+    refreshPaymentStatus,
+    refreshPaymentMethods,
+    refreshWalletBalance,
+    refreshTransactions,
+  ]);
 
   // Load initial data
   useEffect(() => {
@@ -330,7 +376,9 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     setDefaultPaymentMethod,
     refreshWalletBalance,
     addFunds,
+    withdrawFunds,
     refreshTransactions,
+    refreshAll,
     clearErrors,
   };
 }

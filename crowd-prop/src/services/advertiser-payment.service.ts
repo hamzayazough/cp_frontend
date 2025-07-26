@@ -8,6 +8,10 @@ import {
   AddFundsResponse,
   CampaignFundingStatus,
   StripeCustomer,
+  WithdrawFundsRequest,
+  WithdrawFundsResponse,
+  WithdrawalLimits,
+  WithdrawalHistory,
 } from "@/app/interfaces/payment";
 import { PAYMENT_ENDPOINTS } from "@/app/const/payment-constants";
 
@@ -424,6 +428,115 @@ class AdvertiserPaymentService {
       console.error("Failed to create setup intent:", error);
       throw new Error(
         error instanceof Error ? error.message : "Failed to create setup intent"
+      );
+    }
+  }
+
+  /**
+   * Withdraw funds from wallet
+   */
+  async withdrawFunds(
+    request: WithdrawFundsRequest
+  ): Promise<WithdrawFundsResponse> {
+    try {
+      // Convert dollars to cents for backend
+      const requestInCents = {
+        ...request,
+        amount: Math.round(request.amount * 100), // Convert to cents
+      };
+
+      const response = await httpService.post<{
+        success: boolean;
+        data: WithdrawFundsResponse;
+        message: string;
+      }>(PAYMENT_ENDPOINTS.WITHDRAW_FUNDS, requestInCents, true);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to withdraw funds");
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Failed to withdraw funds:", error);
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to withdraw funds"
+      );
+    }
+  }
+
+  /**
+   * Get withdrawal limits and constraints
+   */
+  async getWithdrawalLimits(): Promise<WithdrawalLimits> {
+    try {
+      const response = await httpService.get<{
+        success: boolean;
+        data: WithdrawalLimits;
+        message: string;
+      }>(PAYMENT_ENDPOINTS.GET_WITHDRAWAL_LIMITS, true);
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "Failed to get withdrawal limits"
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Failed to get withdrawal limits:", error);
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to get withdrawal limits"
+      );
+    }
+  }
+
+  /**
+   * Get withdrawal history
+   */
+  async getWithdrawalHistory(params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    withdrawals: WithdrawalHistory[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append("page", params.page.toString());
+      if (params?.limit) queryParams.append("limit", params.limit.toString());
+
+      const url = `${PAYMENT_ENDPOINTS.GET_WITHDRAWAL_HISTORY}${
+        queryParams.toString() ? `?${queryParams.toString()}` : ""
+      }`;
+
+      const response = await httpService.get<{
+        success: boolean;
+        data: {
+          withdrawals: WithdrawalHistory[];
+          total: number;
+          page: number;
+          totalPages: number;
+        };
+        message: string;
+      }>(url, true);
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "Failed to get withdrawal history"
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Failed to get withdrawal history:", error);
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to get withdrawal history"
       );
     }
   }

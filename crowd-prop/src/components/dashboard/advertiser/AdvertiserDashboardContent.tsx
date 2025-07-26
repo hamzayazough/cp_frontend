@@ -8,6 +8,7 @@ import { usePaymentManagement } from "@/hooks/usePaymentManagement";
 import PaymentStatusCard from "@/components/payment/PaymentStatusCard";
 import PaymentMethodsCard from "@/components/payment/PaymentMethodsCard";
 import AddFundsModal from "@/components/payment/AddFundsModal";
+import WithdrawFundsModal from "@/components/payment/WithdrawFundsModal";
 import {
   EyeIcon,
   CurrencyDollarIcon,
@@ -34,6 +35,7 @@ export default function AdvertiserDashboardContent({
   userName,
 }: AdvertiserDashboardContentProps) {
   const [showAddFundsModal, setShowAddFundsModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   
   const {
     data: dashboardData,
@@ -46,14 +48,14 @@ export default function AdvertiserDashboardContent({
   } = useAdvertiserDashboard();
 
   // Add payment status check
-  const { paymentStatus, walletBalance, isWalletLoading, refreshWallet } = usePaymentManagement();
+  const { paymentStatus, walletBalance, isWalletLoading, refreshAll, withdrawFunds } = usePaymentManagement();
 
   const handleAddFunds = async (amount: number) => {
     try {
       const result = await addFunds(amount);
       if (result.success) {
-        // Show success message and refresh data
-        await refreshWallet(); // Refresh wallet balance from /balance endpoint
+        // Show success message and refresh all payment data
+        await refreshAll(); // This will refresh wallet, payment status, etc.
         refetch(); // Refresh dashboard data
       } else {
         alert(`Failed to add funds: ${result.message}`);
@@ -95,6 +97,26 @@ export default function AdvertiserDashboardContent({
     } catch (err) {
       alert(
         `Error resuming campaign: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
+    }
+  };
+
+  const handleWithdrawFunds = async (amount: number) => {
+    try {
+      const result = await withdrawFunds({ amount });
+      if (result.success) {
+        // Show success message and refresh all payment data
+        await refreshAll(); // This will refresh wallet, payment status, etc.
+        refetch(); // Refresh dashboard data
+        alert(`Withdrawal request submitted successfully! Processing time: 3-5 business days. Net amount after $5 fee: $${result.netAmount.toFixed(2)}`);
+      } else {
+        alert(`Failed to process withdrawal: ${result.message}`);
+      }
+    } catch (err) {
+      alert(
+        `Error processing withdrawal: ${
           err instanceof Error ? err.message : "Unknown error"
         }`
       );
@@ -450,13 +472,28 @@ export default function AdvertiserDashboardContent({
                   <h2 className="text-xl font-bold text-gray-900">
                     Wallet Overview
                   </h2>
-                  <button
-                    onClick={() => setShowAddFundsModal(true)}
-                    className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
-                  >
-                    <PlusIcon className="h-4 w-4 mr-1" />
-                    Add Funds
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setShowWithdrawModal(true)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+                      disabled={!walletBalance || walletBalance.currentBalance < 16} // Minimum $16 (1 minimum withdrawal + 5 fee + 10 remaining)
+                      title={
+                        !walletBalance || walletBalance.currentBalance < 16
+                          ? "Minimum $16 required (includes $5 withdrawal fee and $10 minimum balance)"
+                          : "Withdraw funds from your wallet"
+                      }
+                    >
+                      <BanknotesIcon className="h-4 w-4 mr-1" />
+                      Withdraw
+                    </button>
+                    <button
+                      onClick={() => setShowAddFundsModal(true)}
+                      className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+                    >
+                      <PlusIcon className="h-4 w-4 mr-1" />
+                      Add Funds
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="p-6">
@@ -699,6 +736,17 @@ export default function AdvertiserDashboardContent({
           handleAddFunds(amount);
           setShowAddFundsModal(false);
         }}
+      />
+
+      {/* Withdraw Funds Modal */}
+      <WithdrawFundsModal
+        isOpen={showWithdrawModal}
+        onClose={() => setShowWithdrawModal(false)}
+        onSuccess={(amount) => {
+          handleWithdrawFunds(amount);
+          setShowWithdrawModal(false);
+        }}
+        currentBalance={walletBalance?.currentBalance || 0}
       />
     </div>
   );

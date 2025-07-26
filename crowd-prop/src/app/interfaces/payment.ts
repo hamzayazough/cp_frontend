@@ -275,3 +275,62 @@ export enum PaymentFlowType {
   CAMPAIGN_FUNDING = "CAMPAIGN_FUNDING",
   DIRECT_PAYMENT = "DIRECT_PAYMENT",
 }
+
+// Withdraw Funds
+export interface WithdrawFundsRequest {
+  amount: number; // Amount in dollars
+  reason?: string;
+}
+
+export interface WithdrawFundsResponse {
+  success: boolean;
+  withdrawalId: string;
+  amount: number;
+  fee: number;
+  netAmount: number; // Amount after fee
+  status: WithdrawalStatus;
+  estimatedArrival: string; // Date string
+  message: string;
+}
+
+export enum WithdrawalStatus {
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+  CANCELLED = "CANCELLED",
+}
+
+export interface WithdrawalLimits {
+  feeStructure: {
+    standardFee: number;
+    freeWithdrawalThreshold: number;
+    minimumWithdrawal: number;
+  };
+  limits: {
+    dailyLimit: number;
+    remainingDailyLimit: number;
+    maxWithdrawable: number;
+    recommendedMaxWithdrawal: number;
+  };
+  campaignRestrictions: {
+    activeCampaigns: number;
+    totalBudgetAllocated: number;
+    recommendedReserve: number;
+    canWithdrawFullBalance: boolean;
+  };
+  processingTime: string;
+  description: string;
+}
+
+export interface WithdrawalHistory {
+  id: string;
+  amount: number;
+  fee: number;
+  netAmount: number;
+  status: WithdrawalStatus;
+  requestedAt: string;
+  processedAt?: string;
+  estimatedArrival: string;
+  reason?: string;
+}

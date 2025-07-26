@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { XMarkIcon, CreditCardIcon, BanknotesIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useMemo } from 'react';
+import { XMarkIcon, CreditCardIcon, BanknotesIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { usePaymentManagement } from '@/hooks/usePaymentManagement';
-import { PAYMENT_CONSTANTS } from '@/app/const/payment-constants';
+import { PAYMENT_CONSTANTS, calculateStripeFees } from '@/app/const/payment-constants';
 
 interface AddFundsModalProps {
   isOpen: boolean;
@@ -26,6 +26,11 @@ export default function AddFundsModal({
     addFunds,
     refreshPaymentMethods,
   } = usePaymentManagement();
+
+  // Calculate fees whenever amount changes
+  const feeCalculation = useMemo(() => {
+    return calculateStripeFees(amount);
+  }, [amount]);
 
   useEffect(() => {
     if (isOpen) {
@@ -68,9 +73,9 @@ export default function AddFundsModal({
 
     try {
       await addFunds({
-        amount: amount * 100, // Convert to cents
+        amount: feeCalculation.totalCost * 100, // Convert total cost to cents for backend
         paymentMethodId: selectedPaymentMethod,
-        description: `Add $${amount} to wallet`,
+        description: `Add $${amount} to wallet (paid $${feeCalculation.totalCost.toFixed(2)} including fees)`,
       });
 
       onSuccess(amount);
@@ -156,6 +161,39 @@ export default function AddFundsModal({
               </p>
             </div>
 
+            {/* Fee Breakdown */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start space-x-2">
+                <InformationCircleIcon className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">Cost Breakdown</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between text-gray-700">
+                      <span>Wallet amount:</span>
+                      <span>${feeCalculation.walletAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Processing fee (2.9%):</span>
+                      <span>${feeCalculation.percentageFee.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Fixed fee:</span>
+                      <span>${feeCalculation.fixedFee.toFixed(2)}</span>
+                    </div>
+                    <div className="border-t border-blue-200 pt-1 mt-2">
+                      <div className="flex justify-between font-medium text-blue-900">
+                        <span>Total charge:</span>
+                        <span>${feeCalculation.totalCost.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-blue-700 mt-2">
+                    You pay ${feeCalculation.totalCost.toFixed(2)}, you receive ${feeCalculation.walletAmount.toFixed(2)} for your wallet (2.9% + 30¢)
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Payment Method Selection */}
             {paymentMethods.length > 0 ? (
               <div>
@@ -225,7 +263,7 @@ export default function AddFundsModal({
                 disabled={loading || !selectedPaymentMethod || paymentMethods.length === 0}
                 className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Processing...' : `Add $${amount}`}
+                {loading ? 'Processing...' : `Pay $${feeCalculation.totalCost.toFixed(2)}`}
               </button>
             </div>
           </div>

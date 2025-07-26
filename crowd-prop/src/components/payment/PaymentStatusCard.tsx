@@ -22,6 +22,7 @@ export default function PaymentStatusCard({ className = '' }: PaymentStatusCardP
     isPaymentStatusLoading,
     paymentStatusError,
     refreshPaymentStatus,
+    refreshAll,
     completePaymentSetup,
   } = usePaymentManagement();
 
@@ -46,10 +47,10 @@ export default function PaymentStatusCard({ className = '' }: PaymentStatusCardP
     setShowAddPaymentModal(true);
   };
 
-  const handlePaymentMethodAdded = () => {
+  const handlePaymentMethodAdded = async () => {
     setShowAddPaymentModal(false);
-    // Refresh payment status to update the UI
-    refreshPaymentStatus();
+    // Refresh all payment-related data to sync everything
+    await refreshAll();
   };
 
   const handleRefresh = async () => {

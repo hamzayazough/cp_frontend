@@ -48,3 +48,31 @@ export const getDaysLeft = (deadline: string | Date): number => {
   const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
   return Math.max(0, daysLeft);
 };
+
+/**
+ * Calculate business days (excluding weekends) from a given date
+ */
+export const addBusinessDays = (date: Date, businessDays: number): Date => {
+  const result = new Date(date);
+  let remainingDays = businessDays;
+
+  while (remainingDays > 0) {
+    result.setDate(result.getDate() + 1);
+    // Check if it's not a weekend (0 = Sunday, 6 = Saturday)
+    if (result.getDay() !== 0 && result.getDay() !== 6) {
+      remainingDays--;
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Calculate the estimated arrival date for withdrawals (3-5 business days)
+ */
+export const getWithdrawalEstimatedArrival = (
+  requestDate: Date = new Date()
+): string => {
+  const estimatedDate = addBusinessDays(requestDate, 5); // Use max 5 business days
+  return formatDate(estimatedDate, "long");
+};
