@@ -59,7 +59,10 @@ export function getBudgetCalculationDescription(
       if (formData.cpv && formData.maxViews) {
         return `$${formData.cpv.toFixed(
           2
-        )} per 100 views × ${formData.maxViews.toLocaleString()} max views = $${((formData.cpv * formData.maxViews) / 100).toFixed(2)}`;
+        )} per 100 views × ${formData.maxViews.toLocaleString()} max views = $${(
+          (formData.cpv * formData.maxViews) /
+          100
+        ).toFixed(2)}`;
       }
       return "Cost per 100 views × Maximum views ÷ 100";
 
