@@ -283,14 +283,11 @@ export interface WithdrawFundsRequest {
 }
 
 export interface WithdrawFundsResponse {
-  success: boolean;
   withdrawalId: string;
-  amount: number;
-  fee: number;
-  netAmount: number; // Amount after fee
-  status: WithdrawalStatus;
+  amount: number; // Amount in cents from backend
+  processingTime: string;
   estimatedArrival: string; // Date string
-  message: string;
+  status: string; // "pending", "processing", "completed", etc.
 }
 
 export enum WithdrawalStatus {

@@ -542,4 +542,5 @@ class AdvertiserPaymentService {
   }
 }
 
+export { AdvertiserPaymentService };
 export const advertiserPaymentService = new AdvertiserPaymentService();

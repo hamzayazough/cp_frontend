@@ -9,8 +9,11 @@ import {
   WithdrawFundsRequest,
   WithdrawFundsResponse,
 } from "@/app/interfaces/payment";
-import { advertiserPaymentService } from "@/services/advertiser-payment.service";
+import { AdvertiserPaymentService } from "@/services/advertiser-payment.service";
 import { userService } from "@/services/user.service";
+
+// Create a fresh instance to avoid any module conflicts
+const paymentService = new AdvertiserPaymentService();
 
 interface UsePaymentManagementResult {
   // Payment Setup
@@ -101,7 +104,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     try {
       setIsPaymentStatusLoading(true);
       setPaymentStatusError(null);
-      const status = await advertiserPaymentService.getPaymentSetupStatus();
+      const status = await paymentService.getPaymentSetupStatus();
       setPaymentStatus(status);
     } catch (error) {
       const errorMessage =
@@ -122,7 +125,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
         setIsPaymentStatusLoading(true);
         setPaymentStatusError(null);
 
-        await advertiserPaymentService.completePaymentSetup({
+        await paymentService.completePaymentSetup({
           email: currentUser.email,
           companyName: setupData?.companyName,
         });
@@ -151,7 +154,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     try {
       setIsPaymentMethodsLoading(true);
       setPaymentMethodsError(null);
-      const methods = await advertiserPaymentService.getPaymentMethods();
+      const methods = await paymentService.getPaymentMethods();
       setPaymentMethods(methods);
     } catch (error) {
       const errorMessage =
@@ -170,7 +173,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     async (paymentMethodId: string, setAsDefault = false) => {
       try {
         setPaymentMethodsError(null);
-        await advertiserPaymentService.addPaymentMethod({
+        await paymentService.addPaymentMethod({
           paymentMethodId,
           setAsDefault,
         });
@@ -195,7 +198,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     async (paymentMethodId: string) => {
       try {
         setPaymentMethodsError(null);
-        await advertiserPaymentService.removePaymentMethod(paymentMethodId);
+        await paymentService.removePaymentMethod(paymentMethodId);
 
         // Refresh both payment methods and payment status
         await Promise.all([refreshPaymentMethods(), refreshPaymentStatus()]);
@@ -217,7 +220,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     async (paymentMethodId: string) => {
       try {
         setPaymentMethodsError(null);
-        await advertiserPaymentService.setDefaultPaymentMethod(paymentMethodId);
+        await paymentService.setDefaultPaymentMethod(paymentMethodId);
 
         // Refresh methods after setting default
         await refreshPaymentMethods();
@@ -241,7 +244,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     try {
       setIsWalletLoading(true);
       setWalletError(null);
-      const balance = await advertiserPaymentService.getWalletBalance();
+      const balance = await paymentService.getWalletBalance();
       setWalletBalance(balance);
     } catch (error) {
       const errorMessage =
@@ -257,8 +260,9 @@ export function usePaymentManagement(): UsePaymentManagementResult {
   const addFunds = useCallback(
     async (request: AddFundsRequest): Promise<AddFundsResponse> => {
       try {
+        console.log("adding funds:", request);
         setWalletError(null);
-        const response = await advertiserPaymentService.addFunds(request);
+        const response = await paymentService.addFunds(request);
 
         // Refresh wallet balance after adding funds
         await refreshWalletBalance();
@@ -280,7 +284,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     async (request: WithdrawFundsRequest): Promise<WithdrawFundsResponse> => {
       try {
         setWalletError(null);
-        const response = await advertiserPaymentService.withdrawFunds(request);
+        const response = await paymentService.withdrawFunds(request);
 
         // Refresh wallet balance after withdrawal
         await refreshWalletBalance();
@@ -304,7 +308,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     try {
       setIsTransactionsLoading(true);
       setTransactionsError(null);
-      const response = await advertiserPaymentService.getWalletTransactions({
+      const response = await paymentService.getWalletTransactions({
         limit: 10,
       });
       setTransactions(response.transactions);

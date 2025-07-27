@@ -73,9 +73,9 @@ export default function AddFundsModal({
 
     try {
       await addFunds({
-        amount: feeCalculation.totalCost * 100, // Convert total cost to cents for backend
+        amount: amount * 100, // Convert wallet amount to cents for backend (server will add fees)
         paymentMethodId: selectedPaymentMethod,
-        description: `Add $${amount} to wallet (paid $${feeCalculation.totalCost.toFixed(2)} including fees)`,
+        description: `Add $${amount} to wallet`,
       });
 
       onSuccess(amount);

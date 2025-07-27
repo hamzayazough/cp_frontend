@@ -119,17 +119,14 @@ export default function WithdrawFundsModal({
     setError(null);
 
     try {
-      const response = await advertiserPaymentService.withdrawFunds({
+      await advertiserPaymentService.withdrawFunds({
         amount,
         reason: reason || undefined,
       });
 
-      if (response.success) {
-        onSuccess(amount);
-        onClose();
-      } else {
-        setError(response.message || 'Withdrawal failed');
-      }
+      // If we get here, the withdrawal was successful (no error thrown)
+      onSuccess(amount);
+      onClose();
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to process withdrawal');
     } finally {
@@ -269,11 +266,10 @@ export default function WithdrawFundsModal({
                   <div>
                     <h4 className="text-sm font-medium text-blue-800">Withdrawal Information</h4>
                     <ul className="text-sm text-blue-700 mt-1 space-y-1">
-                      <li>• Processing time: 3-5 business days</li>
+                      <li>• Processing time: {withdrawalLimits?.processingTime || '3-5 business days'}</li>
                       <li>• Estimated arrival: {getWithdrawalEstimatedArrival()}</li>
-                      <li>• Daily limit: {formatCurrency(withdrawalLimits?.maximumDaily || 5000)}</li>
-                      <li>• Minimum balance: {formatCurrency(withdrawalLimits?.minimumBalance || 10)} must remain</li>
-                      <li>• Processing fee: {formatCurrency(withdrawalLimits?.withdrawalFee || 5)}</li>
+                      <li>• Daily limit: {formatCurrency(withdrawalLimits?.limits?.dailyLimit || 5000)}</li>
+                      <li>• Processing fee: {formatCurrency(withdrawalLimits?.feeStructure?.standardFee || 5)}</li>
                     </ul>
                   </div>
                 </div>
@@ -287,7 +283,7 @@ export default function WithdrawFundsModal({
                 <textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                   rows={3}
                   placeholder="Enter reason for withdrawal..."
                 />

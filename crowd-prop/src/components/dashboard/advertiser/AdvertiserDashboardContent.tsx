@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { useAdvertiserDashboard } from "@/hooks/useAdvertiserDashboard";
 import { usePaymentManagement } from "@/hooks/usePaymentManagement";
@@ -36,37 +35,24 @@ export default function AdvertiserDashboardContent({
 }: AdvertiserDashboardContentProps) {
   const [showAddFundsModal, setShowAddFundsModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
   
   const {
     data: dashboardData,
     loading,
     error,
     refetch,
-    addFunds,
     pauseCampaign,
     resumeCampaign,
   } = useAdvertiserDashboard();
 
   // Add payment status check
-  const { paymentStatus, walletBalance, isWalletLoading, refreshAll, withdrawFunds } = usePaymentManagement();
+  const { paymentStatus, walletBalance, isWalletLoading, refreshAll, withdrawFunds, transactions } = usePaymentManagement();
 
-  const handleAddFunds = async (amount: number) => {
-    try {
-      const result = await addFunds(amount);
-      if (result.success) {
-        // Show success message and refresh all payment data
-        await refreshAll(); // This will refresh wallet, payment status, etc.
-        refetch(); // Refresh dashboard data
-      } else {
-        alert(`Failed to add funds: ${result.message}`);
-      }
-    } catch (err) {
-      alert(
-        `Error adding funds: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    }
+  const handleAddFundsSuccess = async (amount: number) => {
+    console.log(`Successfully added $${amount} to wallet!`);
+    
+    await refreshAll();
   };
 
   const handlePauseCampaign = async (campaignId: string) => {
@@ -105,15 +91,15 @@ export default function AdvertiserDashboardContent({
 
   const handleWithdrawFunds = async (amount: number) => {
     try {
-      const result = await withdrawFunds({ amount });
-      if (result.success) {
-        // Show success message and refresh all payment data
-        await refreshAll(); // This will refresh wallet, payment status, etc.
-        refetch(); // Refresh dashboard data
-        alert(`Withdrawal request submitted successfully! Processing time: 3-5 business days. Net amount after $5 fee: $${result.netAmount.toFixed(2)}`);
-      } else {
-        alert(`Failed to process withdrawal: ${result.message}`);
-      }
+      await withdrawFunds({ amount });
+      
+      // If we get here, the withdrawal was successful (no error thrown)
+      await refreshAll(); // This will refresh wallet, payment status, etc.
+      refetch(); // Refresh dashboard data
+      
+      const fee = 5; // Standard withdrawal fee
+      const netAmount = amount - fee;
+      alert(`Withdrawal request submitted successfully! Processing time: 3-5 business days. Net amount after $5 fee: $${netAmount.toFixed(2)}`);
     } catch (err) {
       alert(
         `Error processing withdrawal: ${
@@ -565,52 +551,51 @@ export default function AdvertiserDashboardContent({
                     </div>
 
                     <div className="mb-6">
-                      <h3 className="font-medium text-gray-900 mb-3">
-                        Recent Transactions
-                      </h3>
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-medium text-gray-900">
+                          Recent Transactions
+                        </h3>
+                        {transactions.length > 3 && (
+                          <button
+                            onClick={() => setShowAllTransactions(!showAllTransactions)}
+                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            {showAllTransactions ? 'Show Less' : 'Show More'}
+                          </button>
+                        )}
+                      </div>
                       <div className="space-y-3">
-                        {dashboardData.recentTransactions.length > 0 ? (
-                          dashboardData.recentTransactions.map((transaction) => (
+                        {transactions.length > 0 ? (
+                          (showAllTransactions ? transactions : transactions.slice(0, 2)).map((transaction) => (
                             <div
                               key={transaction.id}
                               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                             >
                               <div className="flex items-center space-x-3">
-                                <div
-                                  className={`p-2 rounded-full ${
-                                    transaction.amount > 0
-                                      ? "bg-green-100"
-                                      : "bg-red-100"
-                                  }`}
-                                >
-                                  {transaction.amount > 0 ? (
-                                    <ArrowUpIcon className="h-4 w-4 text-green-600" />
-                                  ) : (
-                                    <CurrencyDollarIcon className="h-4 w-4 text-red-600" />
-                                  )}
+                                <div className="p-2 rounded-full bg-green-100">
+                                  <ArrowUpIcon className="h-4 w-4 text-green-600" />
                                 </div>
                                 <div>
                                   <div className="font-medium text-gray-900">
-                                    {transaction.campaign}
+                                    {transaction.type === 'WALLET_DEPOSIT' ? 'Wallet Deposit' : transaction.type}
                                   </div>
                                   <div className="text-sm text-gray-600">
                                     {transaction.description}
                                   </div>
+                                  <div className="text-xs text-gray-500">
+                                    Status: {transaction.status} • {transaction.paymentMethod}
+                                  </div>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div
-                                  className={`font-medium ${
-                                    transaction.amount > 0
-                                      ? "text-green-600"
-                                      : "text-red-600"
-                                  }`}
-                                >
-                                  {transaction.amount > 0 ? "+" : ""}
-                                  {formatCurrency(transaction.amount)}
+                                <div className="font-medium text-green-600">
+                                  +{formatCurrency(transaction.amount)}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  Gross: {formatCurrency(transaction.grossAmount)}
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  {new Date(transaction.date).toLocaleDateString()}
+                                  {new Date(transaction.createdAt).toLocaleDateString()}
                                 </div>
                               </div>
                             </div>
@@ -658,73 +643,6 @@ export default function AdvertiserDashboardContent({
               </div>
             </div>
           )}
-
-          {/* Messages Preview */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Messages</h2>
-                <Link
-                  href="/dashboard/messages"
-                  className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-                >
-                  View All
-                  <ArrowRightIcon className="h-4 w-4 ml-1" />
-                </Link>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {dashboardData.recentMessages.length > 0 ? (
-                  dashboardData.recentMessages.map((message) => (
-                    <div
-                      key={message.id}
-                      className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
-                    >
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        {message.avatar ? (
-                          <Image
-                            src={message.avatar}
-                            alt={message.name}
-                            width={40}
-                            height={40}
-                            className="w-full h-full rounded-full object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <span className="text-sm font-bold text-gray-500">
-                            {message.name.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-medium text-gray-900">
-                            {message.name}
-                          </h4>
-                          <span className="text-xs text-gray-500">
-                            {message.time}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 line-clamp-2">
-                          {message.message}
-                        </p>
-                        {!message.isRead && (
-                          <div className="mt-1">
-                            <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No messages yet</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -733,7 +651,7 @@ export default function AdvertiserDashboardContent({
         isOpen={showAddFundsModal}
         onClose={() => setShowAddFundsModal(false)}
         onSuccess={(amount) => {
-          handleAddFunds(amount);
+          handleAddFundsSuccess(amount);
           setShowAddFundsModal(false);
         }}
       />
