@@ -12,6 +12,7 @@ import {
   WithdrawFundsResponse,
   WithdrawalLimits,
   WithdrawalHistory,
+  CampaignFundingFeasibility,
 } from "@/app/interfaces/payment";
 import { PAYMENT_ENDPOINTS } from "@/app/const/payment-constants";
 
@@ -537,6 +538,41 @@ class AdvertiserPaymentService {
         error instanceof Error
           ? error.message
           : "Failed to get withdrawal history"
+      );
+    }
+  }
+
+  /**
+   * Check campaign funding feasibility
+   */
+  async checkCampaignFundingFeasibility(
+    estimatedBudgetCents: number
+  ): Promise<CampaignFundingFeasibility> {
+    try {
+      const response = await httpService.post<{
+        success: boolean;
+        data: CampaignFundingFeasibility;
+        message: string;
+      }>(
+        PAYMENT_ENDPOINTS.CHECK_CAMPAIGN_FUNDING_FEASIBILITY,
+        { estimatedBudgetCents },
+        true
+      );
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message ||
+            "Failed to check campaign funding feasibility"
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Failed to check campaign funding feasibility:", error);
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to check campaign funding feasibility"
       );
     }
   }

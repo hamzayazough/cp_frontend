@@ -9,6 +9,7 @@ import { userService } from '@/services/user.service';
 import { User as AppUser } from '@/app/interfaces/user';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import PromoterEarningsContent from '@/components/dashboard/promoter/PromoterEarningsContent';
+import AdvertiserEarningsContent from '@/components/dashboard/advertiser/AdvertiserEarningsContent';
 
 export default function EarningsPage() {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
@@ -80,16 +81,7 @@ export default function EarningsPage() {
       case 'PROMOTER':
         return <PromoterEarningsContent />;
       case 'ADVERTISER':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Campaign Spending
-            </h2>
-            <p className="text-gray-600">
-              Here you can view your campaign spending and budget analytics.
-            </p>
-          </div>
-        );
+        return <AdvertiserEarningsContent />;
       case 'ADMIN':
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">

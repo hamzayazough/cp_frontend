@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Campaign } from '@/app/interfaces/campaign/campaign';
 import { CampaignType, Deliverable } from '@/app/enums/campaign-type';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
@@ -13,6 +13,8 @@ import CampaignTypeStep from './steps/CampaignTypeStep';
 import { BasicInfoStep } from './steps';
 import CampaignSettingsStep from './steps/CampaignSettingsStep';
 import ReviewStep from './steps/ReviewStep';
+import FundingVerificationModal from './FundingVerificationModal';
+import { calculateEstimatedBudget, canCalculateBudget } from '@/utils/campaign-budget';
 
 interface CreateCampaignWizardProps {
   onComplete: (campaign: Campaign) => void;
@@ -131,6 +133,17 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
   const [formData, setFormData] = useState<CampaignWizardFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadStep, setUploadStep] = useState<'idle' | 'uploading' | 'creating'>('idle');
+  const [showFundingModal, setShowFundingModal] = useState(false);
+  
+  // Calculate estimated budget in real-time
+  const estimatedBudget = useMemo(() => {
+    return calculateEstimatedBudget(formData);
+  }, [formData]);
+
+  // Check if budget can be calculated
+  const canCalculate = useMemo(() => {
+    return canCalculateBudget(formData);
+  }, [formData]);
 
   const steps = [
     {
@@ -260,6 +273,20 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
       // Scroll to top of the page when moving to previous step
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  const handleVerifyFunds = () => {
+    if (!canCalculate) {
+      console.error('Cannot calculate budget with current form data');
+      return;
+    }
+
+    setShowFundingModal(true);
+  };
+
+  const handleFundingVerified = async () => {
+    setShowFundingModal(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -443,7 +470,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
         <div className="flex space-x-3">
           {currentStep === steps.length - 1 ? (
             <button
-              onClick={handleSubmit}
+              onClick={handleVerifyFunds}
               disabled={!canProceed() || isSubmitting}
               className="flex items-center px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -454,7 +481,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
                    uploadStep === 'uploading' ? 'Uploading File...' : 'Creating...'}
                 </>
               ) : (
-                'Create Campaign'
+                'Verify Funds'
               )}
             </button>
           ) : (
@@ -469,6 +496,14 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           )}
         </div>
       </div>
+
+      {/* Funding Verification Modal */}
+      <FundingVerificationModal
+        isOpen={showFundingModal}
+        onClose={() => setShowFundingModal(false)}
+        onVerified={handleFundingVerified}
+        estimatedBudget={estimatedBudget}
+      />
     </div>
   );
 }

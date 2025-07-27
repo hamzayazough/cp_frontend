@@ -216,6 +216,7 @@ export interface WalletBalance {
   totalDeposited: number;
   totalSpent: number;
   availableForWithdrawal: number;
+  totalHeldForCampaign: number;
 }
 
 // Payment Requests and Responses
@@ -330,4 +331,22 @@ export interface WithdrawalHistory {
   processedAt?: string;
   estimatedArrival: string;
   reason?: string;
+}
+
+// Campaign Funding Feasibility Check
+export interface CheckCampaignFundingDto {
+  estimatedBudgetCents: number; // in cents
+}
+
+export interface CampaignFundingFeasibility {
+  canAfford: boolean;
+  currentAvailableBalance: number; // Available balance for new campaigns (excluding held amounts)
+  estimatedBudget: number; // Budget needed for the new campaign
+  shortfallAmount: number; // How much more is needed (0 if can afford)
+  recommendedDeposit: number; // Recommended deposit amount (includes buffer and Stripe fees)
+  walletSummary?: {
+    totalBalance: number; // Total current balance
+    heldForExistingCampaigns: number; // Amount held for existing campaigns
+    pendingTransactions: number; // Pending deposits/withdrawals
+  };
 }
