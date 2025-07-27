@@ -18,6 +18,8 @@ import ProfileImages from './onboarding/ProfileImages';
 import AdvertiserWorksUpload from './onboarding/AdvertiserWorksUpload';
 import PromoterWorksUpload from './onboarding/PromoterWorksUpload';
 import OnboardingComplete from './onboarding/OnboardingComplete';
+import StripeConnectSetup from './onboarding/StripeConnectSetup';
+import StripeOnboardingStatus from './onboarding/StripeOnboardingStatus';
 
 interface UserOnboardingProps {
   user: User;
@@ -126,7 +128,7 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
     loadUserProfile();
   }, [user.displayName, user.uid]);
 
-  const totalSteps = onboardingData.role === 'ADVERTISER' ? 6 : onboardingData.role === 'PROMOTER' ? 6 : 6;
+  const totalSteps = onboardingData.role === 'ADVERTISER' ? 6 : onboardingData.role === 'PROMOTER' ? 8 : 6;
 
   const handleNext = () => {
     setCurrentStep(prev => prev + 1);
@@ -209,8 +211,14 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
         // Update current user with the response data
         const updatedUser = { ...response.user, isSetupDone: true };
         userService.setCurrentUser(updatedUser);
-                
-        onComplete();
+        
+        // For promoters, continue to Stripe onboarding
+        // For advertisers, complete onboarding
+        if (onboardingData.role === 'PROMOTER') {
+          handleNext(); // Go to Stripe setup
+        } else {
+          onComplete();
+        }
       } else {
         throw new Error(response.message || 'Failed to mark setup as complete');
       }
@@ -311,6 +319,30 @@ export default function UserOnboarding({ user, onComplete }: UserOnboardingProps
             isLoading={isLoading}
           />
         );
+      case 7:
+        if (onboardingData.role === 'PROMOTER') {
+          return (
+            <StripeConnectSetup
+              user={user}
+              onComplete={handleNext}
+              onBack={handleBack}
+              isLoading={isLoading}
+            />
+          );
+        }
+        break;
+      case 8:
+        if (onboardingData.role === 'PROMOTER') {
+          return (
+            <StripeOnboardingStatus
+              user={user}
+              onComplete={onComplete}
+              onBack={handleBack}
+              isLoading={isLoading}
+            />
+          );
+        }
+        break;
     }
   };
 

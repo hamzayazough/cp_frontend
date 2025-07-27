@@ -19,6 +19,9 @@ export type {
   UserProfileResponse,
 } from "./user.service";
 
+// Stripe Service - Stripe Connect and payment operations
+export { stripeService } from "./stripe.service";
+
 // Campaign Work - Campaign work management
 export type {
   CampaignWork,
@@ -52,12 +55,16 @@ export type {
   GetAdvertiserDashboardResponse,
 } from "../app/interfaces/dashboard/advertiser-dashboard";
 
+// Advertiser Payment Service - Payment management for advertisers
+export { advertiserPaymentService } from "./advertiser-payment.service";
+
 // Import service instances separately for the services object
 import { httpService } from "./http.service";
 import { authService } from "./auth.service";
 import { userService } from "./user.service";
 import { promoterService } from "./promoter.service";
 import { advertiserService } from "./advertiser.service";
+import { stripeService } from "./stripe.service";
 
 // Re-export commonly used service instances for convenience
 export const services = {
@@ -66,4 +73,5 @@ export const services = {
   user: userService,
   promoter: promoterService,
   advertiser: advertiserService,
+  stripe: stripeService,
 } as const;

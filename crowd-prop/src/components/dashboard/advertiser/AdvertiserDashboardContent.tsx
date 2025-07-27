@@ -1,9 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { useState } from "react";
 import { useAdvertiserDashboard } from "@/hooks/useAdvertiserDashboard";
-import { formatWalletValue } from "@/utils/wallet";
+import { usePaymentManagement } from "@/hooks/usePaymentManagement";
+import PaymentStatusCard from "@/components/payment/PaymentStatusCard";
+import PaymentMethodsCard from "@/components/payment/PaymentMethodsCard";
+import AddFundsModal from "@/components/payment/AddFundsModal";
+import WithdrawFundsModal from "@/components/payment/WithdrawFundsModal";
 import {
   EyeIcon,
   CurrencyDollarIcon,
@@ -29,31 +33,26 @@ interface AdvertiserDashboardContentProps {
 export default function AdvertiserDashboardContent({
   userName,
 }: AdvertiserDashboardContentProps) {
+  const [showAddFundsModal, setShowAddFundsModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
+  
   const {
     data: dashboardData,
     loading,
     error,
     refetch,
-    addFunds,
     pauseCampaign,
     resumeCampaign,
   } = useAdvertiserDashboard();
 
-  const handleAddFunds = async (amount: number) => {
-    try {
-      const result = await addFunds(amount);
-      if (result.success) {
-        alert("Funds added successfully!");
-      } else {
-        alert(`Failed to add funds: ${result.message}`);
-      }
-    } catch (err) {
-      alert(
-        `Error adding funds: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    }
+  // Add payment status check
+  const { paymentStatus, walletBalance, isWalletLoading, refreshAll, withdrawFunds, transactions } = usePaymentManagement();
+
+  const handleAddFundsSuccess = async (amount: number) => {
+    console.log(`Successfully added $${amount} to wallet!`);
+    
+    await refreshAll();
   };
 
   const handlePauseCampaign = async (campaignId: string) => {
@@ -84,6 +83,26 @@ export default function AdvertiserDashboardContent({
     } catch (err) {
       alert(
         `Error resuming campaign: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
+    }
+  };
+
+  const handleWithdrawFunds = async (amount: number) => {
+    try {
+      await withdrawFunds({ amount });
+      
+      // If we get here, the withdrawal was successful (no error thrown)
+      await refreshAll(); // This will refresh wallet, payment status, etc.
+      refetch(); // Refresh dashboard data
+      
+      const fee = 5; // Standard withdrawal fee
+      const netAmount = amount - fee;
+      alert(`Withdrawal request submitted successfully! Processing time: 3-5 business days. Net amount after $5 fee: $${netAmount.toFixed(2)}`);
+    } catch (err) {
+      alert(
+        `Error processing withdrawal: ${
           err instanceof Error ? err.message : "Unknown error"
         }`
       );
@@ -288,17 +307,17 @@ export default function AdvertiserDashboardContent({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
-                Active Campaigns
+                Payment Status
               </p>
-              <p className="text-3xl font-bold text-gray-900">
-                {dashboardData.stats.activeCampaigns}
+              <p className="text-3xl font-bold text-green-600">
+                Ready
               </p>
               <p className="text-sm text-gray-600 mt-1">
-                {dashboardData.stats.pendingApprovalCampaigns} pending approval
+                {dashboardData.stats.activeCampaigns} active campaigns
               </p>
             </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <RectangleStackIcon className="h-6 w-6 text-orange-600" />
+            <div className="p-3 bg-green-100 rounded-full">
+              <CheckCircleIcon className="h-6 w-6 text-green-600" />
             </div>
           </div>
         </div>
@@ -420,188 +439,233 @@ export default function AdvertiserDashboardContent({
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-
-        {/* Wallet & Messages */}
+        {/* Left Column - Payment Management */}
         <div className="space-y-8">
-          {/* Wallet Overview */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
-                  Wallet Overview
-                </h2>
-                <button
-                  onClick={() => {
-                    const amount = prompt("Enter amount to add:");
-                    if (amount && !isNaN(Number(amount))) {
-                      handleAddFunds(Number(amount));
-                    }
-                  }}
-                  className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
-                >
-                  <PlusIcon className="h-4 w-4 mr-1" />
-                  Add Funds
-                </button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-2xl font-bold text-green-600">
-                        {formatWalletValue(
-                          dashboardData.wallet.balance.currentBalance
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Available Balance
-                      </div>
-                    </div>
-                    <BanknotesIcon className="h-8 w-8 text-green-600" />
-                  </div>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-2xl font-bold text-blue-600">
-                        {formatWalletValue(
-                          dashboardData.wallet.campaignBudgets.totalAllocated
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Total Allocated
-                      </div>
-                    </div>
-                    <RectangleStackIcon className="h-8 w-8 text-blue-600" />
+          {/* Payment Status Card */}
+          <PaymentStatusCard />
+          
+          {/* Payment Methods Management */}
+          <PaymentMethodsCard />
+        </div>
+
+        {/* Right Column - Wallet & Messages */}
+        <div className="space-y-8">
+          {/* Wallet Overview - Only show if payment setup is complete */}
+          {paymentStatus?.setupComplete && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Wallet Overview
+                  </h2>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setShowWithdrawModal(true)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+                      disabled={!walletBalance || walletBalance.currentBalance < 16} // Minimum $16 (1 minimum withdrawal + 5 fee + 10 remaining)
+                      title={
+                        !walletBalance || walletBalance.currentBalance < 16
+                          ? "Minimum $16 required (includes $5 withdrawal fee and $10 minimum balance)"
+                          : "Withdraw funds from your wallet"
+                      }
+                    >
+                      <BanknotesIcon className="h-4 w-4 mr-1" />
+                      Withdraw
+                    </button>
+                    <button
+                      onClick={() => setShowAddFundsModal(true)}
+                      className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+                    >
+                      <PlusIcon className="h-4 w-4 mr-1" />
+                      Add Funds
+                    </button>
                   </div>
                 </div>
               </div>
-
-              <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-3">
-                  Recent Transactions
-                </h3>
-                <div className="space-y-3">
-                  {dashboardData.recentTransactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`p-2 rounded-full ${
-                            transaction.amount > 0
-                              ? "bg-green-100"
-                              : "bg-red-100"
-                          }`}
-                        >
-                          {transaction.amount > 0 ? (
-                            <ArrowUpIcon className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <CurrencyDollarIcon className="h-4 w-4 text-red-600" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {transaction.campaign}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {transaction.description}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div
-                          className={`font-medium ${
-                            transaction.amount > 0
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {transaction.amount > 0 ? "+" : ""}
-                          {formatCurrency(transaction.amount)}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {new Date(transaction.date).toLocaleDateString()}
-                        </div>
-                      </div>
+              <div className="p-6">
+                {isWalletLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gray-200 h-20 rounded-lg"></div>
+                      <div className="bg-gray-200 h-20 rounded-lg"></div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages Preview */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Messages</h2>
-                <Link
-                  href="/dashboard/messages"
-                  className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-                >
-                  View All
-                  <ArrowRightIcon className="h-4 w-4 ml-1" />
-                </Link>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {dashboardData.recentMessages.length > 0 ? (
-                  dashboardData.recentMessages.map((message) => (
-                    <div
-                      key={message.id}
-                      className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
-                    >
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        {message.avatar ? (
-                          <Image
-                            src={message.avatar}
-                            alt={message.name}
-                            width={40}
-                            height={40}
-                            className="w-full h-full rounded-full object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <span className="text-sm font-bold text-gray-500">
-                            {message.name.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-medium text-gray-900">
-                            {message.name}
-                          </h4>
-                          <span className="text-xs text-gray-500">
-                            {message.time}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 line-clamp-2">
-                          {message.message}
-                        </p>
-                        {!message.isRead && (
-                          <div className="mt-1">
-                            <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))
+                  </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No messages yet</p>
-                  </div>
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className="bg-green-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-green-600">
+                              {walletBalance ? formatCurrency(walletBalance.currentBalance) : '$0.00'}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Available Balance
+                            </div>
+                          </div>
+                          <BanknotesIcon className="h-8 w-8 text-green-600" />
+                        </div>
+                      </div>
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-blue-600">
+                              {walletBalance ? formatCurrency(walletBalance.totalSpent) : '$0.00'}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Total Spent
+                            </div>
+                          </div>
+                          <RectangleStackIcon className="h-8 w-8 text-blue-600" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className="bg-purple-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-purple-600">
+                              {walletBalance ? formatCurrency(walletBalance.totalDeposited) : '$0.00'}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Total Deposited
+                            </div>
+                          </div>
+                          <ArrowUpIcon className="h-8 w-8 text-purple-600" />
+                        </div>
+                      </div>
+                      <div className="bg-orange-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-orange-600">
+                              {walletBalance ? formatCurrency(walletBalance.pendingCharges) : '$0.00'}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Pending Charges
+                            </div>
+                          </div>
+                          <ClockIcon className="h-8 w-8 text-orange-600" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-medium text-gray-900">
+                          Recent Transactions
+                        </h3>
+                        {transactions.length > 3 && (
+                          <button
+                            onClick={() => setShowAllTransactions(!showAllTransactions)}
+                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            {showAllTransactions ? 'Show Less' : 'Show More'}
+                          </button>
+                        )}
+                      </div>
+                      <div className="space-y-3">
+                        {transactions.length > 0 ? (
+                          (showAllTransactions ? transactions : transactions.slice(0, 2)).map((transaction) => (
+                            <div
+                              key={transaction.id}
+                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="p-2 rounded-full bg-green-100">
+                                  <ArrowUpIcon className="h-4 w-4 text-green-600" />
+                                </div>
+                                <div>
+                                  <div className="font-medium text-gray-900">
+                                    {transaction.type === 'WALLET_DEPOSIT' ? 'Wallet Deposit' : transaction.type}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    {transaction.description}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    Status: {transaction.status} • {transaction.paymentMethod}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-medium text-green-600">
+                                  +{formatCurrency(transaction.amount)}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  Gross: {formatCurrency(transaction.grossAmount)}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {new Date(transaction.createdAt).toLocaleDateString()}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-8 bg-gray-50 rounded-lg">
+                            <BanknotesIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                            <h4 className="text-sm font-medium text-gray-900 mb-2">No transactions yet</h4>
+                            <p className="text-sm text-gray-500">
+                              Your transaction history will appear here once you start funding campaigns.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Setup Required Message - Show when payment setup is not complete */}
+          {paymentStatus && !paymentStatus.setupComplete && (
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 bg-amber-100 rounded-full">
+                  <BanknotesIcon className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-amber-900">
+                    Complete Payment Setup
+                  </h3>
+                  <p className="text-sm text-amber-700">
+                    Add a payment method to access your wallet and fund campaigns
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white/50 rounded-lg p-4">
+                <h4 className="font-medium text-amber-900 mb-2">Next Steps:</h4>
+                <ul className="text-sm text-amber-800 space-y-1">
+                  <li>• Add a payment method using the card above</li>
+                  <li>• Fund your wallet to start campaigns</li>
+                  <li>• Monitor your spending and ROI</li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Add Funds Modal */}
+      <AddFundsModal
+        isOpen={showAddFundsModal}
+        onClose={() => setShowAddFundsModal(false)}
+        onSuccess={(amount) => {
+          handleAddFundsSuccess(amount);
+          setShowAddFundsModal(false);
+        }}
+      />
+
+      {/* Withdraw Funds Modal */}
+      <WithdrawFundsModal
+        isOpen={showWithdrawModal}
+        onClose={() => setShowWithdrawModal(false)}
+        onSuccess={(amount) => {
+          handleWithdrawFunds(amount);
+          setShowWithdrawModal(false);
+        }}
+        currentBalance={walletBalance?.currentBalance || 0}
+      />
     </div>
   );
 }
