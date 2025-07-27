@@ -13,9 +13,9 @@ export function calculateEstimatedBudget(
 
   switch (formData.type) {
     case CampaignType.VISIBILITY:
-      // For visibility campaigns: CPV * Max Views
+      // For visibility campaigns: CPV is per 100 views, so calculate (CPV * Max Views) / 100
       if (formData.cpv && formData.maxViews) {
-        return formData.cpv * formData.maxViews;
+        return (formData.cpv * formData.maxViews) / 100;
       }
       return 0;
 
@@ -57,11 +57,11 @@ export function getBudgetCalculationDescription(
   switch (formData.type) {
     case CampaignType.VISIBILITY:
       if (formData.cpv && formData.maxViews) {
-        return `${formData.cpv.toFixed(
+        return `$${formData.cpv.toFixed(
           2
-        )} per view × ${formData.maxViews.toLocaleString()} max views`;
+        )} per 100 views × ${formData.maxViews.toLocaleString()} max views = $${((formData.cpv * formData.maxViews) / 100).toFixed(2)}`;
       }
-      return "Cost per view × Maximum views";
+      return "Cost per 100 views × Maximum views ÷ 100";
 
     case CampaignType.CONSULTANT:
       return "Maximum budget as specified";
