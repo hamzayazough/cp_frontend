@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { usePaymentManagement } from '@/hooks/usePaymentManagement';
-import { BanknotesIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
+import { BanknotesIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 
 interface RecentTransactionsCardProps {
   showHeader?: boolean;
@@ -22,7 +22,24 @@ export default function RecentTransactionsCard({
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(amount);
+    }).format(Math.abs(amount));
+  };
+
+  const getTransactionDisplay = (transaction) => {
+    const isPositive = transaction.amount >= 0;
+    const icon = isPositive ? ArrowUpIcon : ArrowDownIcon;
+    const iconBgColor = isPositive ? 'bg-green-100' : 'bg-red-100';
+    const iconColor = isPositive ? 'text-green-600' : 'text-red-600';
+    const amountColor = isPositive ? 'text-green-600' : 'text-red-600';
+    const amountPrefix = isPositive ? '+' : '-';
+    
+    return {
+      icon,
+      iconBgColor,
+      iconColor,
+      amountColor,
+      amountPrefix
+    };
   };
 
   const displayedTransactions = showAllTransactions 
@@ -48,40 +65,48 @@ export default function RecentTransactionsCard({
       </div>
       <div className="space-y-3">
         {transactions.length > 0 ? (
-          displayedTransactions.map((transaction) => (
-            <div
-              key={transaction.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-green-100">
-                  <ArrowUpIcon className="h-4 w-4 text-green-600" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">
-                    {transaction.type === 'WALLET_DEPOSIT' ? 'Wallet Deposit' : transaction.type}
+          displayedTransactions.map((transaction) => {
+            const display = getTransactionDisplay(transaction);
+            const TransactionIcon = display.icon;
+            
+            return (
+              <div
+                key={transaction.id}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`p-2 rounded-full ${display.iconBgColor}`}>
+                    <TransactionIcon className={`h-4 w-4 ${display.iconColor}`} />
                   </div>
-                  <div className="text-sm text-gray-600">
-                    {transaction.description}
+                  <div>
+                    <div className="font-medium text-gray-900">
+                      {transaction.type === 'WALLET_DEPOSIT' ? 'Wallet Deposit' : 
+                       transaction.type === 'DIRECT_PAYMENT' ? 'Direct Payment' :
+                       transaction.type === 'CAMPAIGN_FUNDING' ? 'Campaign Funding' :
+                       transaction.type}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {transaction.description}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Status: {transaction.status} • {transaction.paymentMethod}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className={`font-medium ${display.amountColor}`}>
+                    {display.amountPrefix}{formatCurrency(transaction.amount)}
                   </div>
                   <div className="text-xs text-gray-500">
-                    Status: {transaction.status} • {transaction.paymentMethod}
+                    Gross: {formatCurrency(transaction.grossAmount)}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(transaction.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="font-medium text-green-600">
-                  +{formatCurrency(transaction.amount)}
-                </div>
-                <div className="text-xs text-gray-500">
-                  Gross: {formatCurrency(transaction.grossAmount)}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {new Date(transaction.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-center py-8 bg-gray-50 rounded-lg">
             <BanknotesIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />

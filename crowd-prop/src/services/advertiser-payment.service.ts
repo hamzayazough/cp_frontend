@@ -13,6 +13,7 @@ import {
   WithdrawalLimits,
   WithdrawalHistory,
   CampaignFundingFeasibility,
+  PayPromoterResponse,
 } from "@/app/interfaces/payment";
 import { PAYMENT_ENDPOINTS } from "@/app/const/payment-constants";
 
@@ -573,6 +574,71 @@ class AdvertiserPaymentService {
         error instanceof Error
           ? error.message
           : "Failed to check campaign funding feasibility"
+      );
+    }
+  }
+
+  /**
+   * Pay a promoter for campaign work
+   */
+  async payPromoter(
+    campaignId: string,
+    promoterId: string,
+    amountCents: number
+  ): Promise<PayPromoterResponse> {
+    try {
+      console.log("PayPromoter function called with:", {
+        campaignId: campaignId,
+        campaignIdType: typeof campaignId,
+        campaignIdLength: campaignId?.length,
+        promoterId: promoterId,
+        promoteridType: typeof promoterId,
+        amountCents: amountCents,
+        amountCentsType: typeof amountCents,
+      });
+
+      if (!campaignId) {
+        throw new Error("Campaign ID is required but was not provided");
+      }
+      if (!promoterId) {
+        throw new Error("Promoter ID is required but was not provided");
+      }
+
+      const requestBody = {
+        campaignId: campaignId,
+        promoterId: promoterId,
+        amount: amountCents,
+      };
+
+      console.log("PayPromoter request:", {
+        url: PAYMENT_ENDPOINTS.PAY_PROMOTER,
+        body: requestBody,
+        campaignId,
+        promoterId,
+        amountCents,
+      });
+
+      const response = await httpService.post<{
+        success: boolean;
+        data: PayPromoterResponse;
+        message: string;
+      }>(PAYMENT_ENDPOINTS.PAY_PROMOTER, requestBody, true);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to process payment");
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Failed to pay promoter:", error);
+      console.error("Error details:", {
+        campaignId,
+        promoterId,
+        amountCents,
+        error: error instanceof Error ? error.message : error,
+      });
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to process payment"
       );
     }
   }

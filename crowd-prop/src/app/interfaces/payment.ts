@@ -350,3 +350,17 @@ export interface CampaignFundingFeasibility {
     pendingTransactions: number; // Pending deposits/withdrawals
   };
 }
+
+// Pay Promoter Interfaces
+export interface PayPromoterRequest {
+  campaignId: string;
+  promoterId: string;
+  amount: number; // Amount in cents
+}
+
+export interface PayPromoterResponse {
+  success: boolean;
+  message: string;
+  paymentId?: string;
+  newBudgetAllocated?: number; // Updated budget allocated to promoter
+}

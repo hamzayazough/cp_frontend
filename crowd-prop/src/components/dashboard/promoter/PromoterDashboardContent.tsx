@@ -501,7 +501,7 @@ export default function PromoterDashboardContent({
                       </p>
                     </div>
                     <Link
-                      href={routes.dashboardCampaignDetails(campaign.id)}
+                      href={routes.dashboardExploreDetails(campaign.id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
                     >
                       View Campaign

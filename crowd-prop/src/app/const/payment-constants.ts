@@ -88,6 +88,7 @@ export const PAYMENT_ENDPOINTS = {
   GET_CAMPAIGN_FUNDING_STATUS: "/advertiser/campaigns",
   ADJUST_CAMPAIGN_BUDGET: "/advertiser/campaigns",
   CHECK_CAMPAIGN_FUNDING_FEASIBILITY: "/advertiser/campaigns/funding-check",
+  PAY_PROMOTER: "/advertiser/campaigns/pay-promoter",
 
   // Payment History
   GET_PAYMENT_HISTORY: "/advertiser/payments/history",
