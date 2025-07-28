@@ -41,19 +41,6 @@ interface UseAdvertiserCampaignsReturn {
   deleteCampaign: (
     campaignId: string
   ) => Promise<{ success: boolean; message: string }>;
-  duplicateCampaign: (
-    campaignId: string
-  ) => Promise<{ success: boolean; message: string }>;
-  updateCampaign: (
-    campaignId: string,
-    data: Partial<CampaignAdvertiser>
-  ) => Promise<{ success: boolean; message: string }>;
-
-  optimisticDeleteCampaign: (campaignId: string) => void;
-  optimisticUpdateCampaignStatus: (
-    campaignId: string,
-    status: CampaignStatus
-  ) => void;
 }
 
 export const useAdvertiserCampaigns = (
@@ -179,30 +166,9 @@ export const useAdvertiserCampaigns = (
     [fetchCampaigns]
   );
 
-  // Add optimistic update functions
-  const optimisticDeleteCampaign = useCallback((campaignId: string) => {
-    setCampaigns((prev) =>
-      prev.filter((campaign) => campaign.id !== campaignId)
-    );
-  }, []);
-
-  const optimisticUpdateCampaignStatus = useCallback(
-    (campaignId: string, status: CampaignStatus) => {
-      setCampaigns((prev) =>
-        prev.map((campaign) =>
-          campaign.id === campaignId ? { ...campaign, status } : campaign
-        )
-      );
-    },
-    []
-  );
-
   const deleteCampaign = useCallback(
     async (campaignId: string) => {
       try {
-        // Optimistic update first
-        optimisticDeleteCampaign(campaignId);
-
         const result = await advertiserService.deleteCampaign(campaignId);
         if (!result.success) {
           // Revert optimistic update if API call fails
@@ -217,44 +183,9 @@ export const useAdvertiserCampaigns = (
         );
       }
     },
-    [fetchCampaigns, optimisticDeleteCampaign]
-  );
-
-  const duplicateCampaign = useCallback(
-    async (campaignId: string) => {
-      try {
-        const result = await advertiserService.duplicateCampaign(campaignId);
-        if (result.success) {
-          // Refresh campaigns list
-          await fetchCampaigns();
-        }
-        return result;
-      } catch (err) {
-        throw new Error(
-          err instanceof Error ? err.message : "Failed to duplicate campaign"
-        );
-      }
-    },
     [fetchCampaigns]
   );
 
-  const updateCampaign = useCallback(
-    async (campaignId: string, data: Partial<CampaignAdvertiser>) => {
-      try {
-        const result = await advertiserService.updateCampaign(campaignId, data);
-        if (result.success) {
-          // Refresh campaigns list
-          await fetchCampaigns();
-        }
-        return result;
-      } catch (err) {
-        throw new Error(
-          err instanceof Error ? err.message : "Failed to update campaign"
-        );
-      }
-    },
-    [fetchCampaigns]
-  );
   useEffect(() => {
     let mounted = true;
 
@@ -337,9 +268,5 @@ export const useAdvertiserCampaigns = (
     getCampaignDetails,
     reviewApplication,
     deleteCampaign,
-    duplicateCampaign,
-    updateCampaign,
-    optimisticDeleteCampaign,
-    optimisticUpdateCampaignStatus,
   };
 };

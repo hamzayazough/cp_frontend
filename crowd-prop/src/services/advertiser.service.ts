@@ -239,59 +239,7 @@ class AdvertiserService {
       };
     }
   }
-  async duplicateCampaign(
-    campaignId: string
-  ): Promise<{ success: boolean; message: string; campaign?: Campaign }> {
-    try {
-      const response = await httpService.post<{
-        success: boolean;
-        message: string;
-        campaign?: Campaign;
-      }>(`${this.baseUrl}/campaigns/${campaignId}/duplicate`, {}, true);
 
-      return {
-        success: true,
-        message:
-          (response.data as { message?: string })?.message ||
-          "Campaign duplicated successfully",
-        campaign: (response.data as { campaign?: Campaign })?.campaign,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to duplicate campaign",
-      };
-    }
-  }
-  async updateCampaign(
-    campaignId: string,
-    updateData: Partial<Campaign>
-  ): Promise<{ success: boolean; message: string; campaign?: Campaign }> {
-    try {
-      const response = await httpService.put<{
-        success: boolean;
-        message: string;
-        campaign?: Campaign;
-      }>(`${this.baseUrl}/campaigns/${campaignId}`, updateData, true);
-
-      return {
-        success: true,
-        message:
-          (response.data as { message?: string })?.message ||
-          "Campaign updated successfully",
-        campaign: (response.data as { campaign?: Campaign })?.campaign,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to update campaign",
-      };
-    }
-  }
   async shareCampaign(
     campaignId: string,
     shareData: { platform: string; message?: string }
