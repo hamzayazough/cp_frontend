@@ -48,16 +48,32 @@ export default function PayPromoterModal({
   const campaignId = campaignData?.id || campaign?.id;
   const campaignType = campaignData?.type || campaign?.type;
   
+  // Parse budget values as numbers (they come as strings from the API)
+  // Different field names based on campaign type
   const minBudget = campaignType === 'CONSULTANT' 
-    ? campaignData?.minBudget || 0
-    : campaignData?.sellerMinBudget || 0;
-  
+    ? parseFloat(campaignData?.minBudget || '0') || 0
+    : parseFloat(campaignData?.sellerMinBudget || campaignData?.minBudget || '0') || 0;
+    
   const maxBudget = campaignType === 'CONSULTANT'
-    ? campaignData?.maxBudget || 0
-    : campaignData?.sellerMaxBudget || 0;
-
-  const spentBudget = promoter?.budgetAllocated || 0;
+    ? parseFloat(campaignData?.maxBudget || '0') || 0
+    : parseFloat(campaignData?.sellerMaxBudget || campaignData?.maxBudget || '0') || 0;
+    
+  const spentBudget = parseFloat(campaignData?.budgetAllocated || '0') || 0;
+  
   const remainingBudget = maxBudget - spentBudget;
+
+  console.log('Budget values:', {
+    campaignType,
+    minBudget,
+    maxBudget, 
+    spentBudget,
+    remainingBudget,
+    rawMinBudget: campaignData?.minBudget,
+    rawMaxBudget: campaignData?.maxBudget,
+    rawSellerMinBudget: campaignData?.sellerMinBudget,
+    rawSellerMaxBudget: campaignData?.sellerMaxBudget,
+    rawBudgetAllocated: campaignData?.budgetAllocated
+  });
 
   useEffect(() => {
     if (isOpen && campaignData && promoter) {
