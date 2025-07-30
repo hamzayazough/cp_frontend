@@ -153,12 +153,12 @@ export default function PromoterCampaignsContent() {
             <div className="p-2 bg-green-100 rounded-lg">
               <CurrencyDollarIcon className="h-6 w-6 text-green-600" />
             </div>
+            <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">
                 Total Earnings
               </p>
               <p className="text-2xl font-bold text-gray-900">
                 {formatCurrency(summary.totalEarnings)}
-              </p>summary.totalEarnings.toLocaleString()}
               </p>
             </div>
           </div>
