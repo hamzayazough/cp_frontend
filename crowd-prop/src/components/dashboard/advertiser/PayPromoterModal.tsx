@@ -58,7 +58,7 @@ export default function PayPromoterModal({
     ? parseFloat(campaignData?.maxBudget || '0') || 0
     : parseFloat(campaignData?.sellerMaxBudget || campaignData?.maxBudget || '0') || 0;
     
-  const spentBudget = parseFloat(campaignData?.budgetAllocated || '0') || 0;
+  const spentBudget = parseFloat(campaignData?.spentBudget || '0') || 0;
   
   const remainingBudget = maxBudget - spentBudget;
 
@@ -72,6 +72,7 @@ export default function PayPromoterModal({
     rawMaxBudget: campaignData?.maxBudget,
     rawSellerMinBudget: campaignData?.sellerMinBudget,
     rawSellerMaxBudget: campaignData?.sellerMaxBudget,
+    rawSpentBudget: campaignData?.spentBudget,
     rawBudgetAllocated: campaignData?.budgetAllocated
   });
 
