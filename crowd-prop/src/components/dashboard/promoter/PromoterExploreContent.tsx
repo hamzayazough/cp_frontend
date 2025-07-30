@@ -488,13 +488,21 @@ export default function PromoterExploreContent() {
                         }}
                         className="hover:ring-2 hover:ring-blue-500 rounded-md transition-all"
                       >
-                        <Image 
-                          src={campaign.advertiser.profileUrl} 
-                          alt={campaign.advertiser.companyName}
-                          width={40}
-                          height={40}
-                          className="rounded-md object-cover"
-                        />
+                        {campaign.advertiser.profileUrl ? (
+                          <Image 
+                            src={campaign.advertiser.profileUrl} 
+                            alt={campaign.advertiser.companyName}
+                            width={40}
+                            height={40}
+                            className="rounded-md object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
+                            <span className="text-gray-500 text-sm font-medium">
+                              {campaign.advertiser.companyName?.charAt(0)?.toUpperCase() || '?'}
+                            </span>
+                          </div>
+                        )}
                       </button>
                       <div>
                         <div className="text-sm font-medium text-gray-900 flex items-center">
