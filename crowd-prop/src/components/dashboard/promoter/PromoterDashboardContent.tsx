@@ -34,22 +34,18 @@ import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 const getMediaType = (url: string): 'image' | 'video' | 'pdf' | 'unknown' => {
   const extension = url.split('.').pop()?.toLowerCase();
   
-  // Image formats
   if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'].includes(extension || '')) {
     return 'image';
   }
   
-  // Video formats
   if (['mp4', 'webm', 'mov', 'avi', 'mkv', 'wmv', 'flv', 'm4v'].includes(extension || '')) {
     return 'video';
   }
   
-  // PDF format
   if (extension === 'pdf') {
     return 'pdf';
   }
   
-  // Check if the URL contains known patterns
   if (url.includes('image') || url.includes('img')) {
     return 'image';
   }
