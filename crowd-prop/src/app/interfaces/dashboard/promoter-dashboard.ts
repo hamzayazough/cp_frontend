@@ -1,5 +1,6 @@
-import { CampaignType } from "@/app/enums/campaign-type";
+import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 import { PromoterCampaignStatus } from "../promoter-campaign";
+import { Advertiser } from "../campaign/promoter-campaign-details";
 
 export interface PromoterStats {
   earningsThisWeek: number;
@@ -18,30 +19,46 @@ export interface PromoterStats {
 export interface PromoterActiveCampaign {
   id: string;
   title: string;
+  mediaUrl?: string; // URL to the S3 campaign media (image/video)
   type: CampaignType;
   status: PromoterCampaignStatus;
   views: number;
   earnings: number;
-  advertiser: string;
+  advertiser: Advertiser;
   deadline: string;
   createdAt: string;
   updatedAt: string;
+  isPublic: boolean;
+  requirements?: string[];
+  minBudget?: number; // if consultant or seller type
+  maxBudget?: number; // if consultant or seller type
+  meetingPlan?: string; // if consultant or seller type
+  meetingCount?: number; // if consultant or seller type
+  meetingDone?: boolean; // if consultant or seller type
+  cpv?: number; // if visibility type
+  maxViews?: number; // if visibility type
+  commissionPerSale?: number; // if salesman type
 }
 
 export interface PromoterSuggestedCampaign {
   id: string;
   title: string;
+  mediaUrl?: string; // URL to the S3 campaign media (image/video)
   type: CampaignType;
-  cpv?: number; // Cost per view for VISIBILITY campaigns
-  commission?: number; // Commission percentage for SALESMAN campaigns
-  fixedFee?: number; // Fixed fee for CONSULTANT campaigns
-  budget?: number;
-  advertiser: string;
-  tags: string[];
-  description: string;
-  requirements: string[];
-  estimatedEarnings: number;
-  applicationDeadline: string;
+  status: CampaignStatus;
+  advertiser: Advertiser;
+  deadline: string;
+  createdAt: string;
+  updatedAt: string;
+  isPublic: boolean;
+  requirements?: string[];
+  minBudget?: number; //if consultant or seller type
+  maxBudget?: number; //if consultant or seller type
+  meetingPlan?: string; //if consultant or seller type
+  meetingCount?: number; //if consultant or seller type
+  cpv?: number; //if visibility type
+  maxViews?: number; //if visibility type
+  commissionPerSale?: number; //if salesman type
 }
 
 export interface PromoterTransaction {
