@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { routes } from "@/lib/router";
 import { usePromoterDashboard } from "@/hooks/usePromoterDashboard";
 import PromoterDashboardTemplate from "./PromoterDashboardTemplate";
 import StripeStatusCard from "./StripeStatusCard";
 import { userService } from "@/services/user.service";
 import { useStripeOnboarding } from "@/hooks/useStripeOnboarding";
+import { CampaignType } from "@/app/enums/campaign-type";
 import {
   formatWalletValue,
   meetsThreshold,
@@ -23,8 +25,119 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   ChatBubbleLeftIcon,
+  DocumentIcon,
+  PlayIcon,
 } from "@heroicons/react/24/outline";
 import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
+
+// Helper function to determine media type from URL
+const getMediaType = (url: string): 'image' | 'video' | 'pdf' | 'unknown' => {
+  const extension = url.split('.').pop()?.toLowerCase();
+  
+  if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'].includes(extension || '')) {
+    return 'image';
+  }
+  
+  if (['mp4', 'webm', 'mov', 'avi', 'mkv', 'wmv', 'flv', 'm4v'].includes(extension || '')) {
+    return 'video';
+  }
+  
+  if (extension === 'pdf') {
+    return 'pdf';
+  }
+  
+  if (url.includes('image') || url.includes('img')) {
+    return 'image';
+  }
+  if (url.includes('video') || url.includes('vid')) {
+    return 'video';
+  }
+  if (url.includes('pdf')) {
+    return 'pdf';
+  }
+  
+  return 'unknown';
+};
+
+// Media display component
+const MediaDisplay = ({ 
+  mediaUrl, 
+  title, 
+  className = "w-16 h-16" 
+}: { 
+  mediaUrl: string; 
+  title: string; 
+  className?: string; 
+}) => {
+  const mediaType = getMediaType(mediaUrl);
+  
+  const baseClasses = `${className} rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative`;
+  
+  const handleMediaClick = () => {
+    if (mediaType === 'pdf') {
+      window.open(mediaUrl, '_blank');
+    }
+  };
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    // Hide the image and show fallback
+    e.currentTarget.style.display = 'none';
+    const parent = e.currentTarget.parentElement;
+    if (parent) {
+      parent.classList.add('flex', 'items-center', 'justify-center', 'bg-gray-200');
+      parent.innerHTML = `<svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>`;
+    }
+  };
+  
+  switch (mediaType) {
+    case 'image':
+      return (
+        <div className={baseClasses} title="Campaign image">
+          <Image
+            src={mediaUrl}
+            alt={title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 64px, 64px"
+            unoptimized
+            onError={handleImageError}
+          />
+        </div>
+      );
+    case 'video':
+      return (
+        <div className={baseClasses} title="Campaign video">
+          <video
+            src={mediaUrl}
+            className="w-full h-full object-cover"
+            muted
+            preload="metadata"
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+            <PlayIcon className="h-6 w-6 text-white" />
+          </div>
+        </div>
+      );
+    case 'pdf':
+      return (
+        <div 
+          className={`${baseClasses} flex items-center justify-center bg-red-50 border border-red-200 cursor-pointer hover:bg-red-100 transition-colors`}
+          onClick={handleMediaClick}
+          title="Click to open PDF"
+        >
+          <DocumentIcon className="h-8 w-8 text-red-600" />
+        </div>
+      );
+    default:
+      return (
+        <div className={`${baseClasses} flex items-center justify-center bg-gray-50 border border-gray-200`} title="Campaign media">
+          <DocumentIcon className="h-8 w-8 text-gray-400" />
+        </div>
+      );
+  }
+};
 
 interface PromoterDashboardContentProps {
   userName?: string;
@@ -328,36 +441,63 @@ export default function PromoterDashboardContent({
                   key={campaign.id}
                   className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {campaign.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {campaign.advertiser}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          campaign.status
-                        )}`}
-                      >
-                        {getStatusIcon(campaign.status)}
-                        <span className="ml-1">
-                          {campaign.status.replace("_", " ")}
-                        </span>
-                      </span>
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                        {campaign.type}
-                      </span>
+                  <div className="flex items-start space-x-4 mb-3">
+                    {/* Campaign Media */}
+                    {campaign.mediaUrl && (
+                      <MediaDisplay
+                        mediaUrl={campaign.mediaUrl}
+                        title={campaign.title}
+                        className="w-16 h-16"
+                      />
+                    )}
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">
+                            {campaign.title}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {campaign.advertiser.companyName}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                              campaign.status
+                            )}`}
+                          >
+                            {getStatusIcon(campaign.status)}
+                            <span className="ml-1">
+                              {campaign.status.replace("_", " ")}
+                            </span>
+                          </span>
+                          <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                            {campaign.type}
+                          </span>
+                          {!campaign.isPublic && (
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                              Private
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 mb-3">
                     <div>
-                      <p className="text-xs text-gray-500">Views Generated</p>
+                      <p className="text-xs text-gray-500">
+                        {campaign.type === CampaignType.VISIBILITY ? 'Views Generated' : 'Progress'}
+                      </p>
                       <p className="font-semibold text-gray-600">
-                        {campaign.views.toLocaleString()}
+                        {campaign.type === CampaignType.VISIBILITY 
+                          ? campaign.views.toLocaleString()
+                          : campaign.type === CampaignType.CONSULTANT && campaign.meetingCount 
+                            ? `${campaign.meetingDone ? 1 : 0}/${campaign.meetingCount} meetings`
+                            : campaign.type === CampaignType.SELLER && campaign.meetingCount
+                              ? `${campaign.meetingDone ? 1 : 0}/${campaign.meetingCount} meetings`
+                              : 'In Progress'
+                        }
                       </p>
                     </div>
                     <div>
@@ -367,12 +507,57 @@ export default function PromoterDashboardContent({
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-700">Deadline</p>
+                      <p className="text-xs text-gray-500">
+                        {campaign.type === CampaignType.VISIBILITY && campaign.cpv 
+                          ? 'CPV Rate'
+                          : campaign.type === CampaignType.SALESMAN && campaign.commissionPerSale
+                            ? 'Commission'
+                            : campaign.type === CampaignType.CONSULTANT && campaign.minBudget
+                              ? 'Budget Range'
+                              : 'Deadline'
+                        }
+                      </p>
                       <p className="font-semibold text-gray-600">
-                        {new Date(campaign.deadline).toLocaleDateString()}
+                        {campaign.type === CampaignType.VISIBILITY && campaign.cpv 
+                          ? `$${campaign.cpv}`
+                          : campaign.type === CampaignType.SALESMAN && campaign.commissionPerSale
+                            ? `${campaign.commissionPerSale}%`
+                            : campaign.type === CampaignType.CONSULTANT && campaign.minBudget && campaign.maxBudget
+                              ? `$${campaign.minBudget}-$${campaign.maxBudget}`
+                              : new Date(campaign.deadline).toLocaleDateString()
+                        }
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Additional Campaign Details */}
+                  {campaign.requirements && campaign.requirements.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-500 mb-1">Requirements</p>
+                      <div className="flex flex-wrap gap-1">
+                        {campaign.requirements.slice(0, 3).map((req, index) => (
+                          <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">
+                            {req}
+                          </span>
+                        ))}
+                        {campaign.requirements.length > 3 && (
+                          <span className="px-2 py-1 bg-gray-50 text-gray-600 rounded text-xs">
+                            +{campaign.requirements.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Meeting Plan for Consultant/Seller */}
+                  {(campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER) && 
+                   campaign.meetingPlan && (
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-500 mb-1">Meeting Plan</p>
+                      <p className="text-sm text-gray-700 truncate">{campaign.meetingPlan}</p>
+                    </div>
+                  )}
+
                   <div className="flex space-x-2">
                     <Link
                       href={routes.dashboardCampaignDetails(campaign.id)}
@@ -438,22 +623,41 @@ export default function PromoterDashboardContent({
                     className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {campaign.title}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {campaign.advertiser}
-                        </p>
-                        <div className="flex space-x-1 mt-2">
-                          {campaign.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                      <div className="flex-1">
+                        <div className="flex items-start space-x-3">
+                          {/* Campaign Media */}
+                          {campaign.mediaUrl && (
+                            <MediaDisplay
+                              mediaUrl={campaign.mediaUrl}
+                              title={campaign.title}
+                              className="w-12 h-12"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">
+                              {campaign.title}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {campaign.advertiser.companyName}
+                            </p>
+                            {campaign.requirements && campaign.requirements.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {campaign.requirements.slice(0, 3).map((requirement, index) => (
+                                  <span
+                                    key={index}
+                                    className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
+                                  >
+                                    {requirement}
+                                  </span>
+                                ))}
+                                {campaign.requirements.length > 3 && (
+                                  <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                                    +{campaign.requirements.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
@@ -461,42 +665,53 @@ export default function PromoterDashboardContent({
                       </span>
                     </div>
                     <div className="mb-3">
-                      {campaign.type === "VISIBILITY" && campaign.cpv && (
+                      {campaign.type === CampaignType.VISIBILITY && campaign.cpv && (
                         <p className="text-sm text-gray-600">
                           <span className="font-medium">${campaign.cpv}</span>{" "}
-                          per 100 views
-                          {campaign.budget && (
+                          per view
+                          {campaign.maxViews && (
                             <span>
                               {" "}
                               •{" "}
                               <span className="font-medium">
-                                ${campaign.budget}
+                                {campaign.maxViews.toLocaleString()}
                               </span>{" "}
-                              budget
+                              max views
                             </span>
                           )}
                         </p>
                       )}
-                      {campaign.type === "SALESMAN" && campaign.commission && (
+                      {campaign.type === CampaignType.SALESMAN && campaign.commissionPerSale && (
                         <p className="text-sm text-gray-600">
                           <span className="font-medium">
-                            {campaign.commission}%
+                            {campaign.commissionPerSale}%
                           </span>{" "}
                           commission per sale
                         </p>
                       )}
-                      {campaign.type === "CONSULTANT" && campaign.fixedFee && (
+                      {campaign.type === CampaignType.CONSULTANT && campaign.minBudget && (
                         <p className="text-sm text-gray-600">
+                          Budget range:{" "}
                           <span className="font-medium">
-                            ${campaign.fixedFee}
-                          </span>{" "}
-                          fixed fee
+                            ${campaign.minBudget}
+                            {campaign.maxBudget && ` - $${campaign.maxBudget}`}
+                          </span>
+                          {campaign.meetingCount && (
+                            <span>
+                              {" "}
+                              •{" "}
+                              <span className="font-medium">
+                                {campaign.meetingCount}
+                              </span>{" "}
+                              meeting{campaign.meetingCount > 1 ? 's' : ''}
+                            </span>
+                          )}
                         </p>
                       )}
                       <p className="text-xs text-gray-500 mt-1">
-                        Estimated earnings:{" "}
+                        Deadline:{" "}
                         <span className="font-medium">
-                          ${campaign.estimatedEarnings}
+                          {new Date(campaign.deadline).toLocaleDateString()}
                         </span>
                       </p>
                     </div>

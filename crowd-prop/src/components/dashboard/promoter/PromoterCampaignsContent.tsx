@@ -35,6 +35,7 @@ import {
 } from "@/app/const/promoter-campaign-content-const";
 import { usePromoterCampaigns } from "@/hooks/usePromoterCampaigns";
 import { GetPromoterCampaignsRequest } from "@/app/interfaces/campaign/promoter-campaigns-request";
+import { formatCurrency } from "@/utils/currency";
 
 export default function PromoterCampaignsContent() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -157,7 +158,7 @@ export default function PromoterCampaignsContent() {
                 Total Earnings
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                ${summary.totalEarnings.toLocaleString()}
+                {formatCurrency(summary.totalEarnings)}
               </p>
             </div>
           </div>
