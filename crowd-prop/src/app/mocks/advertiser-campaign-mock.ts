@@ -228,7 +228,7 @@ export const MOCK_CAMPAIGN_FILTERS = {
   statuses: [
     CampaignStatus.ACTIVE,
     CampaignStatus.PAUSED,
-    CampaignStatus.ENDED,
+    CampaignStatus.INACTIVE,
   ],
   types: [
     CampaignType.VISIBILITY,

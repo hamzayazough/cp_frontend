@@ -130,7 +130,7 @@ const mockCampaigns: CampaignUnion[] = [
     meetingCount: 6,
     maxBudget: 8000,
     minBudget: 5000,
-    campaignStatus: CampaignStatus.ENDED,
+    campaignStatus: CampaignStatus.INACTIVE,
   } as ConsultantCampaign & { campaignStatus: CampaignStatus },
   {
     id: "4",

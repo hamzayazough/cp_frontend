@@ -128,7 +128,7 @@ Authorization: Bearer <firebase_jwt_token>
         "date": "2025-06-29T00:00:00Z",
         "campaign": "Finance Consulting Project",
         "campaignId": "2",
-        "type": "CONSULTANT_PAYMENT",
+        "type": "CAMPAIGN_FUNDING",
         "paymentMethod": "BANK_TRANSFER",
         "description": "Consultant project completion",
         "estimatedPaymentDate": "2025-07-03T00:00:00Z"
@@ -430,7 +430,7 @@ Authorization: Bearer <firebase_jwt_token>
 ### Transaction Types
 
 - `VIEW_EARNING`: Individual view-based earnings (accumulated in wallet)
-- `CONSULTANT_PAYMENT`: Fixed fee consultant payments (direct to bank)
+- `CAMPAIGN_FUNDING`: Fixed fee consultant payments (direct to bank)
 - `SALESMAN_COMMISSION`: Commission from sales (direct to bank)
 - `MONTHLY_PAYOUT`: End-of-month view earnings withdrawal
 - `DIRECT_PAYMENT`: Direct bank transfers for consultant/seller work

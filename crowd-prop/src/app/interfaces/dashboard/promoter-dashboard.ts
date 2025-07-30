@@ -53,7 +53,7 @@ export interface PromoterTransaction {
   campaignId: string;
   type:
     | "VIEW_EARNING"
-    | "CONSULTANT_PAYMENT"
+    | "CAMPAIGN_FUNDING"
     | "SALESMAN_COMMISSION"
     | "MONTHLY_PAYOUT"
     | "DIRECT_PAYMENT";
