@@ -331,6 +331,9 @@ export class AuthService {
     if (!userData.role) {
       errors.push("Role selection is required");
     }
+    if (!userData.usedCurrency) {
+      errors.push("Currency selection is required");
+    }
 
     if (userData.role === "ADVERTISER") {
       if (!userData.advertiserDetails) {
