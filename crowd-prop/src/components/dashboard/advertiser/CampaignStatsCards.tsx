@@ -1,6 +1,5 @@
 "use client";
 
-import { AdvertiserDashboardSummary } from "@/app/interfaces/campaign/advertiser-campaign";
 import {
   TrendingUp,
   TrendingDown,
@@ -11,7 +10,13 @@ import {
 } from "lucide-react";
 
 interface CampaignStatsCardsProps {
-  summary: AdvertiserDashboardSummary | null;
+  summary: {
+    totalActiveCampaigns: number;
+    totalCompletedCampaigns: number;
+    totalSpentThisMonth: number;
+    totalAllocatedBudget: string | number;
+    totalRemainingBudget: number;
+  } | null;
 }
 
 export default function CampaignStatsCards({
@@ -54,69 +59,37 @@ export default function CampaignStatsCards({
   const statsCards = [
     {
       title: "Total Campaigns",
-      value: summary.totalCampaigns || 0,
-      change:
-        summary.campaignsPercentageChange !== undefined
-          ? `${
-              summary.campaignsPercentageChange > 0 ? "+" : ""
-            }${summary.campaignsPercentageChange.toFixed(1)}%`
-          : "+0.0%",
-      changeType:
-        (summary.campaignsPercentageChange || 0) >= 0
-          ? ("positive" as const)
-          : ("negative" as const),
+      value: (summary.totalActiveCampaigns || 0) + (summary.totalCompletedCampaigns || 0),
+      change: "+0.0%",
+      changeType: "positive" as const,
       icon: Target,
-      description: `${summary.activeCampaigns || 0} active, ${
-        summary.draftCampaigns || 0
-      } draft`,
+      description: `${summary.totalActiveCampaigns || 0} active, ${
+        summary.totalCompletedCampaigns || 0
+      } completed`,
     },
     {
       title: "Monthly Spend",
-      value: formatCurrency(summary.monthlySpend),
-      change:
-        summary.spendPercentageChange !== undefined
-          ? `${
-              summary.spendPercentageChange > 0 ? "+" : ""
-            }${summary.spendPercentageChange.toFixed(1)}%`
-          : "+0.0%",
-      changeType:
-        (summary.spendPercentageChange || 0) >= 0
-          ? ("positive" as const)
-          : ("negative" as const),
+      value: formatCurrency(summary.totalSpentThisMonth),
+      change: "+0.0%",
+      changeType: "positive" as const,
       icon: DollarSign,
-      description: `${formatCurrency(summary.remainingBudget)} remaining`,
+      description: `${formatCurrency(summary.totalRemainingBudget)} remaining budget`,
     },
     {
-      title: "Total Views",
-      value: formatNumber(summary.totalViews),
-      change:
-        summary.viewsPercentageChange !== undefined
-          ? `${
-              summary.viewsPercentageChange > 0 ? "+" : ""
-            }${summary.viewsPercentageChange.toFixed(1)}%`
-          : "+0.0%",
-      changeType:
-        (summary.viewsPercentageChange || 0) >= 0
-          ? ("positive" as const)
-          : ("negative" as const),
+      title: "Total Allocated",
+      value: formatCurrency(parseFloat(summary.totalAllocatedBudget?.toString() || "0")),
+      change: "+0.0%",
+      changeType: "positive" as const,
       icon: BarChart3,
-      description: `${summary.totalSales || 0} conversions`,
+      description: `${formatCurrency(summary.totalSpentThisMonth)} spent this month`,
     },
     {
-      title: "Total Sales",
-      value: formatNumber(summary.totalSales),
-      change:
-        summary.salesPercentageChange !== undefined
-          ? `${
-              summary.salesPercentageChange > 0 ? "+" : ""
-            }${summary.salesPercentageChange.toFixed(1)}%`
-          : "+0.0%",
-      changeType:
-        (summary.salesPercentageChange || 0) >= 0
-          ? ("positive" as const)
-          : ("negative" as const),
+      title: "Active Campaigns",
+      value: formatNumber(summary.totalActiveCampaigns),
+      change: "+0.0%",
+      changeType: "positive" as const,
       icon: Users,
-      description: `${formatCurrency(summary.totalRevenue)} revenue`,
+      description: `${summary.totalCompletedCampaigns || 0} completed campaigns`,
     },
   ];
 

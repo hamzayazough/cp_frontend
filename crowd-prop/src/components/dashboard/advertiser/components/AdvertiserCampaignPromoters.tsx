@@ -1,16 +1,20 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { ApplicationStatus } from "@/app/interfaces/campaign-application";
-import { PromoterCampaignStatus } from "@/app/enums/campaign-type";
+import { PromoterCampaignStatus, CampaignType } from "@/app/enums/campaign-type";
+import { PromoterCampaign } from "@/app/interfaces/promoter-campaign";
 import { Router } from "@/lib/router";
+import PayPromoterModal from "../PayPromoterModal";
 import {
   CheckCircleIcon,
   ClockIcon,
   XCircleIcon,
   EyeIcon,
+  CreditCardIcon,
 } from "@heroicons/react/24/outline";
 
 interface AdvertiserCampaignPromotersProps {
@@ -23,10 +27,35 @@ export default function AdvertiserCampaignPromoters({
   onViewApplications,
 }: AdvertiserCampaignPromotersProps) {
   const router = useRouter();
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [selectedPromoterForPayment, setSelectedPromoterForPayment] = useState<PromoterCampaign | null>(null);
 
   const handleUserClick = (userId: string) => {
     router.push(Router.userProfile(userId));
   };
+
+  const handlePayNow = (promoter: PromoterCampaign) => {
+    console.log('Pay Now clicked for promoter:', promoter);
+    console.log('Campaign supports payments:', supportsPayments);
+    console.log('Campaign type:', campaign.campaign.type);
+    setSelectedPromoterForPayment(promoter);
+    setShowPayModal(true);
+    console.log('Modal state set to true');
+  };
+
+  const handlePaymentSuccess = (amount: number) => {
+    // Refresh the component or show success message
+    console.log(`Payment of $${amount} processed successfully`);
+    // You might want to refresh the campaign data here
+  };
+
+  // Check if campaign supports payments (Seller or Consultant)
+  const supportsPayments = campaign.campaign.type === CampaignType.CONSULTANT || campaign.campaign.type === CampaignType.SELLER;
+
+  console.log('Campaign type:', campaign.campaign.type);
+  console.log('Supports payments:', supportsPayments);
+  console.log('CampaignType.CONSULTANT:', CampaignType.CONSULTANT);
+  console.log('CampaignType.SELLER:', CampaignType.SELLER);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -183,9 +212,53 @@ export default function AdvertiserCampaignPromoters({
                     </div>
                   )}
                 </div>
+                
+                {/* Pay Now Button for Seller and Consultant campaigns */}
+                {supportsPayments ? (
+                  <div className="mt-4 pt-4 border-t border-green-200">
+                    <button
+                      onClick={() => {
+                        console.log('Pay Now button clicked (private campaign)');
+                        handlePayNow(chosenPromoter);
+                      }}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+                    >
+                      <CreditCardIcon className="h-4 w-4 mr-2" />
+                      Pay Now
+                    </button>
+                  </div>
+                ) : (
+                  <div className="mt-4 pt-4 border-t border-green-200">
+                    <p className="text-sm text-gray-500">
+                      Payment not available for {campaign.campaign.type} campaigns
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
+          
+          {/* Pay Promoter Modal for Private Campaign */}
+          {selectedPromoterForPayment && (
+            <>
+              {console.log('Rendering PayPromoterModal (private campaign) with:', {
+                isOpen: showPayModal,
+                selectedPromoter: selectedPromoterForPayment?.promoter?.name,
+                campaignTitle: campaign.campaign.title
+              })}
+              <PayPromoterModal
+                isOpen={showPayModal}
+                onClose={() => {
+                  console.log('Modal close requested (private campaign)');
+                  setShowPayModal(false);
+                  setSelectedPromoterForPayment(null);
+                }}
+                onPaymentSuccess={handlePaymentSuccess}
+                campaign={campaign}
+                promoter={selectedPromoterForPayment}
+              />
+            </>
+          )}
         </div>
       );
     } else if (pendingApplications.length > 0) {
@@ -384,6 +457,28 @@ export default function AdvertiserCampaignPromoters({
                         </p>
                       </div>
                     </div>
+                    
+                    {/* Pay Now Button for Seller and Consultant campaigns */}
+                    {supportsPayments ? (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <button
+                          onClick={() => {
+                            console.log('Pay Now button clicked (active promoters)');
+                            handlePayNow(chosenPromoter);
+                          }}
+                          className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+                        >
+                          <CreditCardIcon className="h-4 w-4 mr-2" />
+                          Pay Now
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="text-sm text-gray-500">
+                          Payment not available for {campaign.campaign.type} campaigns
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -499,6 +594,28 @@ export default function AdvertiserCampaignPromoters({
             ))}
           </div>
         </div>
+      )}
+      
+      {/* Pay Promoter Modal */}
+      {selectedPromoterForPayment && (
+        <>
+          {console.log('Rendering PayPromoterModal with:', {
+            isOpen: showPayModal,
+            selectedPromoter: selectedPromoterForPayment?.promoter?.name,
+            campaignTitle: campaign.campaign.title
+          })}
+          <PayPromoterModal
+            isOpen={showPayModal}
+            onClose={() => {
+              console.log('Modal close requested');
+              setShowPayModal(false);
+              setSelectedPromoterForPayment(null);
+            }}
+            onPaymentSuccess={handlePaymentSuccess}
+            campaign={campaign}
+            promoter={selectedPromoterForPayment}
+          />
+        </>
       )}
     </div>
   );

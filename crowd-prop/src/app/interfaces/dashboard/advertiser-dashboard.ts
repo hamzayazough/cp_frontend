@@ -1,12 +1,26 @@
-import { PromoterCampaignStatus } from "../promoter-campaign";
+import { CampaignType } from "@/app/enums/campaign-type";
+import {
+  PaymentMethod,
+  TransactionStatus,
+  TransactionType,
+} from "../transaction";
 
+export enum AdvertiserCampaignStatus {
+  ONGOING = "ONGOING",
+  COMPLETED = "COMPLETED",
+  WAITING_FOR_APPLICATIONS = "WAITING_FOR_APPLICATIONS",
+  REVIEWING_APPLICATIONS = "REVIEWING_APPLICATIONS",
+  PENDING_PROMOTER = "PENDING_PROMOTER",
+}
 export interface AdvertiserStats {
   spendingThisWeek: number;
   spendingLastWeek: number;
   spendingPercentageChange: number;
+  spendingTotal: number;
   viewsToday: number;
   viewsYesterday: number;
   viewsPercentageChange: number;
+  viewsTotal: number;
   conversionsThisWeek: number;
   conversionsLastWeek: number;
   conversionsPercentageChange: number;
@@ -17,8 +31,8 @@ export interface AdvertiserStats {
 export interface AdvertiserActiveCampaign {
   id: string;
   title: string;
-  type: "VISIBILITY" | "SALESMAN" | "CONSULTANT";
-  status: PromoterCampaignStatus;
+  type: CampaignType;
+  status: AdvertiserCampaignStatus;
   views: number;
   spent: number;
   applications: number;
@@ -31,20 +45,14 @@ export interface AdvertiserActiveCampaign {
 export interface AdvertiserTransaction {
   id: string;
   amount: number;
-  status: "COMPLETED" | "PENDING" | "FAILED" | "CANCELLED";
+  status: TransactionStatus;
   date: string;
   campaign: string;
   campaignId: string;
   promoter?: string;
   promoterId?: string;
-  type:
-    | "CAMPAIGN_PAYMENT"
-    | "PROMOTER_PAYMENT"
-    | "CONSULTANT_FEE"
-    | "COMMISSION_PAYMENT"
-    | "REFUND"
-    | "WALLET_DEPOSIT";
-  paymentMethod: "WALLET" | "CREDIT_CARD" | "BANK_TRANSFER";
+  type: TransactionType;
+  paymentMethod: PaymentMethod;
   description?: string;
   estimatedDeliveryDate?: string;
 }

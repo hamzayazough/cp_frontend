@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { routes } from "@/lib/router";
 import { usePromoterDashboard } from "@/hooks/usePromoterDashboard";
 import PromoterDashboardTemplate from "./PromoterDashboardTemplate";
 import StripeStatusCard from "./StripeStatusCard";
 import { userService } from "@/services/user.service";
 import { useStripeOnboarding } from "@/hooks/useStripeOnboarding";
+import { CampaignType } from "@/app/enums/campaign-type";
 import {
   formatWalletValue,
   meetsThreshold,
@@ -44,8 +46,8 @@ export default function PromoterDashboardContent({
   } = usePromoterDashboard();
 
   const currentUser = userService.getCurrentUserSync();
-  const isPromoter = currentUser?.role === 'PROMOTER';
-  
+  const isPromoter = currentUser?.role === "PROMOTER";
+
   // Get Stripe status for promoters
   const { accountData } = useStripeOnboarding();
   const canReceivePayouts = isPromoter && accountData?.payoutsEnabled;
@@ -266,14 +268,24 @@ export default function PromoterDashboardContent({
                 <p className="text-sm font-medium text-gray-600">
                   Payment Status
                 </p>
-                <p className={`text-lg font-bold ${canReceivePayouts ? 'text-green-600' : 'text-orange-600'}`}>
-                  {canReceivePayouts ? 'Ready' : 'Setup Required'}
+                <p
+                  className={`text-lg font-bold ${
+                    canReceivePayouts ? "text-green-600" : "text-orange-600"
+                  }`}
+                >
+                  {canReceivePayouts ? "Ready" : "Setup Required"}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
-                  {canReceivePayouts ? 'Payouts enabled' : 'Complete Stripe setup'}
+                  {canReceivePayouts
+                    ? "Payouts enabled"
+                    : "Complete Stripe setup"}
                 </p>
               </div>
-              <div className={`p-3 rounded-full ${canReceivePayouts ? 'bg-green-100' : 'bg-orange-100'}`}>
+              <div
+                className={`p-3 rounded-full ${
+                  canReceivePayouts ? "bg-green-100" : "bg-orange-100"
+                }`}
+              >
                 {canReceivePayouts ? (
                   <CheckCircleIcon className="h-6 w-6 text-green-600" />
                 ) : (
@@ -328,36 +340,99 @@ export default function PromoterDashboardContent({
                   key={campaign.id}
                   className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {campaign.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {campaign.advertiser}
-                      </p>
+                  <div className="flex items-start space-x-4 mb-3">
+                    {/* Advertiser Profile */}
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative">
+                      {campaign.advertiser.profileUrl ? (
+                        <Image
+                          src={campaign.advertiser.profileUrl}
+                          alt={campaign.advertiser.companyName}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                          unoptimized
+                          onError={(e) => {
+                            // Hide the image and show fallback
+                            e.currentTarget.style.display = "none";
+                            const parent = e.currentTarget.parentElement;
+                            if (parent) {
+                              parent.classList.add(
+                                "flex",
+                                "items-center",
+                                "justify-center",
+                                "bg-gray-200"
+                              );
+                              parent.innerHTML = `<span class="text-gray-600 font-medium text-xl">${campaign.advertiser.companyName
+                                .charAt(0)
+                                .toUpperCase()}</span>`;
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                          <span className="text-gray-600 font-medium text-xl">
+                            {campaign.advertiser.companyName
+                              .charAt(0)
+                              .toUpperCase()}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          campaign.status
-                        )}`}
-                      >
-                        {getStatusIcon(campaign.status)}
-                        <span className="ml-1">
-                          {campaign.status.replace("_", " ")}
-                        </span>
-                      </span>
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                        {campaign.type}
-                      </span>
+
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">
+                            {campaign.title}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {campaign.advertiser.companyName}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                              campaign.status
+                            )}`}
+                          >
+                            {getStatusIcon(campaign.status)}
+                            <span className="ml-1">
+                              {campaign.status.replace("_", " ")}
+                            </span>
+                          </span>
+                          <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                            {campaign.type}
+                          </span>
+                          {!campaign.isPublic && (
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                              Private
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 mb-3">
                     <div>
-                      <p className="text-xs text-gray-500">Views Generated</p>
+                      <p className="text-xs text-gray-500">
+                        {campaign.type === CampaignType.VISIBILITY
+                          ? "Views Generated"
+                          : "Progress"}
+                      </p>
                       <p className="font-semibold text-gray-600">
-                        {campaign.views.toLocaleString()}
+                        {campaign.type === CampaignType.VISIBILITY
+                          ? campaign.views.toLocaleString()
+                          : campaign.type === CampaignType.CONSULTANT &&
+                            campaign.meetingCount
+                          ? `${campaign.meetingDone ? 1 : 0}/${
+                              campaign.meetingCount
+                            } meetings`
+                          : campaign.type === CampaignType.SELLER &&
+                            campaign.meetingCount
+                          ? `${campaign.meetingDone ? 1 : 0}/${
+                              campaign.meetingCount
+                            } meetings`
+                          : "In Progress"}
                       </p>
                     </div>
                     <div>
@@ -367,12 +442,75 @@ export default function PromoterDashboardContent({
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-700">Deadline</p>
+                      <p className="text-xs text-gray-500">
+                        {campaign.type === CampaignType.VISIBILITY &&
+                        campaign.cpv
+                          ? "CPV Rate"
+                          : campaign.type === CampaignType.SALESMAN &&
+                            campaign.commissionPerSale
+                          ? "Commission"
+                          : campaign.type === CampaignType.CONSULTANT &&
+                            campaign.minBudget
+                          ? "Budget Range"
+                          : "Deadline"}
+                      </p>
                       <p className="font-semibold text-gray-600">
-                        {new Date(campaign.deadline).toLocaleDateString()}
+                        {campaign.type === CampaignType.VISIBILITY &&
+                        campaign.cpv
+                          ? `$${campaign.cpv}`
+                          : campaign.type === CampaignType.SALESMAN &&
+                            campaign.commissionPerSale
+                          ? `${campaign.commissionPerSale}%`
+                          : campaign.type === CampaignType.CONSULTANT &&
+                            campaign.minBudget &&
+                            campaign.maxBudget
+                          ? `$${campaign.minBudget}-$${campaign.maxBudget}`
+                          : new Date(campaign.deadline).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
+
+                  {/* Additional Campaign Details */}
+                  {campaign.requirements &&
+                    campaign.requirements.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-500 mb-1">
+                          Requirements
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {campaign.requirements
+                            .slice(0, 3)
+                            .map((req, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs"
+                              >
+                                {req}
+                              </span>
+                            ))}
+                          {campaign.requirements.length > 3 && (
+                            <span className="px-2 py-1 bg-gray-50 text-gray-600 rounded text-xs">
+                              +{campaign.requirements.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Meeting Plan for Consultant/Seller */}
+                  {(campaign.type === CampaignType.CONSULTANT ||
+                    campaign.type === CampaignType.SELLER) &&
+                    campaign.meetingPlan && (
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-500 mb-1">
+                          Meeting Plan
+                        </p>
+                        <p className="text-sm text-gray-700 truncate">
+                          {campaign.meetingPlan}
+                        </p>
+                      </div>
+                    )}
+
                   <div className="flex space-x-2">
                     <Link
                       href={routes.dashboardCampaignDetails(campaign.id)}
@@ -438,70 +576,178 @@ export default function PromoterDashboardContent({
                     className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {campaign.title}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {campaign.advertiser}
-                        </p>
-                        <div className="flex space-x-1 mt-2">
-                          {campaign.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                      <div className="flex-1">
+                        <div className="flex items-start space-x-3">
+                          {/* Advertiser Profile */}
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative">
+                            {campaign.advertiser.profileUrl ? (
+                              <Image
+                                src={campaign.advertiser.profileUrl}
+                                alt={campaign.advertiser.companyName}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                                unoptimized
+                                onError={(e) => {
+                                  // Hide the image and show fallback
+                                  e.currentTarget.style.display = "none";
+                                  const parent = e.currentTarget.parentElement;
+                                  if (parent) {
+                                    parent.classList.add(
+                                      "flex",
+                                      "items-center",
+                                      "justify-center",
+                                      "bg-gray-200"
+                                    );
+                                    parent.innerHTML = `<span class="text-gray-600 font-medium text-lg">${campaign.advertiser.companyName
+                                      .charAt(0)
+                                      .toUpperCase()}</span>`;
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                <span className="text-gray-600 font-medium text-lg">
+                                  {campaign.advertiser.companyName
+                                    .charAt(0)
+                                    .toUpperCase()}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">
+                              {campaign.title}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {campaign.advertiser.companyName}
+                            </p>
+                            {campaign.requirements &&
+                              campaign.requirements.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {campaign.requirements
+                                    .slice(0, 3)
+                                    .map((requirement, index) => (
+                                      <span
+                                        key={index}
+                                        className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
+                                      >
+                                        {requirement}
+                                      </span>
+                                    ))}
+                                  {campaign.requirements.length > 3 && (
+                                    <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                                      +{campaign.requirements.length - 3} more
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                          </div>
                         </div>
                       </div>
-                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                        {campaign.type}
-                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                          {campaign.type}
+                        </span>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            campaign.isPublic
+                              ? "bg-green-100 text-green-700"
+                              : "bg-purple-100 text-purple-700"
+                          }`}
+                        >
+                          {campaign.isPublic ? "Public" : "Private"}
+                        </span>
+                      </div>
                     </div>
                     <div className="mb-3">
-                      {campaign.type === "VISIBILITY" && campaign.cpv && (
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">${campaign.cpv}</span>{" "}
-                          per 100 views
-                          {campaign.budget && (
-                            <span>
-                              {" "}
-                              •{" "}
+                      {/* Campaign Type Specific Information */}
+                      {campaign.type === CampaignType.VISIBILITY && (
+                        <div className="space-y-1">
+                          {campaign.cpv && (
+                            <p className="text-sm text-gray-600">
                               <span className="font-medium">
-                                ${campaign.budget}
+                                ${campaign.cpv}
                               </span>{" "}
-                              budget
-                            </span>
+                              per view
+                              {campaign.maxViews && (
+                                <span>
+                                  {" "}
+                                  •{" "}
+                                  <span className="font-medium">
+                                    {campaign.maxViews.toLocaleString()}
+                                  </span>{" "}
+                                  max views
+                                </span>
+                              )}
+                            </p>
                           )}
-                        </p>
+                        </div>
                       )}
-                      {campaign.type === "SALESMAN" && campaign.commission && (
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">
-                            {campaign.commission}%
-                          </span>{" "}
-                          commission per sale
-                        </p>
+
+                      {campaign.type === CampaignType.SALESMAN && (
+                        <div className="space-y-1">
+                          {campaign.commissionPerSale && (
+                            <p className="text-sm text-gray-600">
+                              <span className="font-medium">
+                                {campaign.commissionPerSale}%
+                              </span>{" "}
+                              commission per sale
+                            </p>
+                          )}
+                        </div>
                       )}
-                      {campaign.type === "CONSULTANT" && campaign.fixedFee && (
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">
-                            ${campaign.fixedFee}
-                          </span>{" "}
-                          fixed fee
-                        </p>
+
+                      {(campaign.type === CampaignType.CONSULTANT ||
+                        campaign.type === CampaignType.SELLER) && (
+                        <div className="space-y-1">
+                          {(campaign.minBudget || campaign.maxBudget) && (
+                            <p className="text-sm text-gray-600">
+                              Budget range:{" "}
+                              <span className="font-medium">
+                                {campaign.minBudget
+                                  ? `$${campaign.minBudget}`
+                                  : "N/A"}
+                                {campaign.maxBudget &&
+                                  ` - $${campaign.maxBudget}`}
+                              </span>
+                            </p>
+                          )}
+                          {campaign.meetingCount && (
+                            <p className="text-sm text-gray-600">
+                              <span className="font-medium">
+                                {campaign.meetingCount}
+                              </span>{" "}
+                              meeting{campaign.meetingCount > 1 ? "s" : ""}{" "}
+                              required
+                            </p>
+                          )}
+                          {campaign.meetingPlan && (
+                            <p className="text-sm text-gray-600">
+                              <span className="font-medium">Plan:</span>{" "}
+                              <span className="truncate">
+                                {campaign.meetingPlan}
+                              </span>
+                            </p>
+                          )}
+                        </div>
                       )}
-                      <p className="text-xs text-gray-500 mt-1">
-                        Estimated earnings:{" "}
-                        <span className="font-medium">
-                          ${campaign.estimatedEarnings}
+
+                      {/* Campaign Deadline and Creation Date */}
+                      <div className="flex items-center space-x-3 mt-2 text-xs text-gray-500">
+                        <span>
+                          <span className="font-medium">Deadline:</span>{" "}
+                          {new Date(campaign.deadline).toLocaleDateString()}
                         </span>
-                      </p>
+                        <span>•</span>
+                        <span>
+                          <span className="font-medium">Created:</span>{" "}
+                          {new Date(campaign.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                     <Link
-                      href={routes.dashboardCampaignDetails(campaign.id)}
+                      href={routes.dashboardExploreDetails(campaign.id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
                     >
                       View Campaign
@@ -560,7 +806,8 @@ export default function PromoterDashboardContent({
                         Payment Setup Required
                       </p>
                       <p className="text-sm text-yellow-700">
-                        Complete your Stripe Connect setup above to enable payouts and receive earnings.
+                        Complete your Stripe Connect setup above to enable
+                        payouts and receive earnings.
                       </p>
                     </div>
                   </div>
@@ -645,22 +892,24 @@ export default function PromoterDashboardContent({
                     !meetsThreshold(
                       dashboardData.wallet.viewEarnings.currentBalance,
                       dashboardData.wallet.viewEarnings.minimumThreshold
-                    ) || (isPromoter && !canReceivePayouts)
+                    ) ||
+                    (isPromoter && !canReceivePayouts)
                   }
                   className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
                     meetsThreshold(
                       dashboardData.wallet.viewEarnings.currentBalance,
                       dashboardData.wallet.viewEarnings.minimumThreshold
-                    ) && (!isPromoter || canReceivePayouts)
+                    ) &&
+                    (!isPromoter || canReceivePayouts)
                       ? "bg-blue-600 text-white hover:bg-blue-700"
                       : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
                 >
-                  {!isPromoter || canReceivePayouts ? (
-                    meetsThreshold(
-                      dashboardData.wallet.viewEarnings.currentBalance,
-                      dashboardData.wallet.viewEarnings.minimumThreshold
-                    )
+                  {!isPromoter || canReceivePayouts
+                    ? meetsThreshold(
+                        dashboardData.wallet.viewEarnings.currentBalance,
+                        dashboardData.wallet.viewEarnings.minimumThreshold
+                      )
                       ? "Request Monthly Payout"
                       : `Need $${formatWalletValue(
                           amountNeededForThreshold(
@@ -668,9 +917,7 @@ export default function PromoterDashboardContent({
                             dashboardData.wallet.viewEarnings.minimumThreshold
                           )
                         )} more`
-                  ) : (
-                    "Complete Stripe Setup to Enable Payouts"
-                  )}
+                    : "Complete Stripe Setup to Enable Payouts"}
                 </button>
               </div>
               <div>

@@ -11,6 +11,7 @@ import { Promoter } from "../user";
 import { AdvertiserType } from "@/app/enums/advertiser-type";
 import { ApplicationStatus } from "../campaign-application";
 import { CampaignDeliverable } from "@/app/interfaces/campaign-work";
+import { AdvertiserCampaignStatus } from "../dashboard/advertiser-dashboard";
 
 export enum AdvertiserCampaignSortField {
   CREATED_AT = "createdAt",
@@ -123,7 +124,7 @@ export interface CampaignAdvertiser {
   title: string;
   type: CampaignType;
   mediaUrl?: string; // URL to the S3 campaign media (image/video)
-  status: CampaignStatus;
+  status: AdvertiserCampaignStatus;
   description: string; // from Campaign
   campaign: AdvertiserCampaignDetailsUnion;
   performance: CampaignPerformance; // money earned by the promoter for now by this campaign
@@ -176,49 +177,6 @@ export interface AdvertiserCampaignListResponse {
     totalAllocatedBudget: number;
     totalRemainingBudget: number;
   };
-}
-
-// Dashboard summary for advertiser
-export interface AdvertiserDashboardSummary {
-  totalCampaigns: number;
-  activeCampaigns: number;
-  completedCampaigns: number;
-  draftCampaigns: number;
-
-  // Financial summary
-  totalSpent: number;
-  totalAllocated: number;
-  remainingBudget: number;
-  monthlySpend: number;
-  // Performance metrics
-  totalViews: number;
-  totalSales: number;
-  totalRevenue: number;
-
-  // Percentage changes for stats cards
-  campaignsPercentageChange?: number;
-  spendPercentageChange?: number;
-  viewsPercentageChange?: number;
-  salesPercentageChange?: number;
-
-  // Recent activity
-  recentApplications: PromoterApplicationInfo[];
-  recentCompletions: {
-    campaignId: string;
-    campaignTitle: string;
-    promoterName: string;
-    completedAt: Date;
-    earnings: number;
-  }[];
-
-  // Trending campaigns
-  topPerformingCampaigns: {
-    id: string;
-    title: string;
-    views: number;
-    sales: number;
-    activePromoters: number;
-  }[];
 }
 
 export interface FundCampaignRequest {

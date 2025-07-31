@@ -21,7 +21,7 @@ export interface CreateUserDto {
   // Profile images
   avatarUrl?: string;
   backgroundUrl?: string;
-
+  usedCurrency: "USD" | "CAD";
   advertiserDetails?: AdvertiserDetailsDto;
   promoterDetails?: PromoterDetailsDto;
 }

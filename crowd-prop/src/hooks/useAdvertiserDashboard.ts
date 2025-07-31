@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { advertiserService } from "@/services/advertiser.service";
 import { AdvertiserDashboardData } from "@/app/interfaces/dashboard/advertiser-dashboard";
-
+// TODO: fix this hook
 interface UseAdvertiserDashboardReturn {
   data: AdvertiserDashboardData | null;
   loading: boolean;

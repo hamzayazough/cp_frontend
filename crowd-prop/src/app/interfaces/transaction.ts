@@ -1,6 +1,8 @@
 export enum TransactionType {
   VIEW_EARNING = "VIEW_EARNING",
-  CONSULTANT_PAYMENT = "CONSULTANT_PAYMENT",
+  WALLET_DEPOSIT = "WALLET_DEPOSIT",
+  WITHDRAWAL = "WITHDRAWAL",
+  CAMPAIGN_FUNDING = "CAMPAIGN_FUNDING",
   SALESMAN_COMMISSION = "SALESMAN_COMMISSION",
   MONTHLY_PAYOUT = "MONTHLY_PAYOUT",
   DIRECT_PAYMENT = "DIRECT_PAYMENT",
@@ -55,9 +57,11 @@ export interface TransactionSummary {
   };
   breakdown: {
     [TransactionType.VIEW_EARNING]: number;
-    [TransactionType.CONSULTANT_PAYMENT]: number;
+    [TransactionType.CAMPAIGN_FUNDING]: number;
     [TransactionType.SALESMAN_COMMISSION]: number;
     [TransactionType.MONTHLY_PAYOUT]: number;
     [TransactionType.DIRECT_PAYMENT]: number;
+    [TransactionType.WITHDRAWAL]: number;
+    [TransactionType.WALLET_DEPOSIT]: number;
   };
 }

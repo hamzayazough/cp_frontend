@@ -34,6 +34,7 @@ export interface User {
   // Role-specific fields
   advertiserDetails?: AdvertiserDetails;
   promoterDetails?: PromoterDetails;
+  usedCurrency?: "USD" | "CAD";
 }
 
 // Advertiser-specific data
