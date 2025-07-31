@@ -23,7 +23,6 @@ export default function AdvertiserCampaignsContent() {
     loading,
     error,
     summary,
-    dashboardSummary,
     filters,
     refetch,
   } = useAdvertiserCampaigns({
@@ -112,7 +111,7 @@ export default function AdvertiserCampaignsContent() {
         </div>
 
         {/* Stats Cards - Show skeleton or actual data */}
-        <CampaignStatsCards summary={dashboardSummary} />
+        <CampaignStatsCards summary={summary} />
 
         {/* Filters and Search - Show with available data */}
         <CampaignFilters
@@ -155,7 +154,7 @@ export default function AdvertiserCampaignsContent() {
       </div>
 
       {/* Stats Cards */}
-      <CampaignStatsCards summary={dashboardSummary} />
+      <CampaignStatsCards summary={summary} />
 
       {/* Filters and Search */}
       <CampaignFilters

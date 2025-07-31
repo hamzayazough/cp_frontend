@@ -10,7 +10,6 @@ import {
   CampaignAdvertiser,
   AdvertiserCampaignListResponse,
   AdvertiserCampaignListRequest,
-  AdvertiserDashboardSummary,
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
@@ -177,23 +176,6 @@ class AdvertiserService {
     } catch (error) {
       throw new Error(
         error instanceof Error ? error.message : "Failed to review application"
-      );
-    }
-  }
-
-  async getDashboardSummary(): Promise<AdvertiserDashboardSummary> {
-    try {
-      const response = await httpService.get<{
-        success: boolean;
-        data: AdvertiserDashboardSummary;
-      }>(`${this.baseUrl}/dashboard/summary`, true);
-
-      return response.data.data;
-    } catch (error) {
-      throw new Error(
-        error instanceof Error
-          ? error.message
-          : "Failed to retrieve dashboard summary"
       );
     }
   }

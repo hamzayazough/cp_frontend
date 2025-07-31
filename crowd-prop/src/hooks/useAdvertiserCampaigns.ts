@@ -3,7 +3,6 @@ import { advertiserService } from "@/services/advertiser.service";
 import {
   CampaignAdvertiser,
   AdvertiserCampaignListRequest,
-  AdvertiserDashboardSummary,
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
@@ -28,7 +27,6 @@ interface UseAdvertiserCampaignsReturn {
     totalAllocatedBudget: number;
     totalRemainingBudget: number;
   };
-  dashboardSummary: AdvertiserDashboardSummary | null;
   filters: {
     statuses: CampaignStatus[];
     types: CampaignType[];
@@ -65,8 +63,6 @@ export const useAdvertiserCampaigns = (
     totalAllocatedBudget: 0,
     totalRemainingBudget: 0,
   });
-  const [dashboardSummary, setDashboardSummary] =
-    useState<AdvertiserDashboardSummary | null>(null);
   const [filters, setFilters] = useState<{
     statuses: CampaignStatus[];
     types: CampaignType[];
@@ -197,12 +193,10 @@ export const useAdvertiserCampaigns = (
         setError(null);
 
         // Try to fetch real data first
-        const [campaignsResult, dashboardResult, filtersResult] =
-          await Promise.allSettled([
-            advertiserService.getCampaignsList(initialParams),
-            advertiserService.getDashboardSummary(),
-            advertiserService.getCampaignFilters(),
-          ]); // Handle campaigns result
+        const [campaignsResult, filtersResult] = await Promise.allSettled([
+          advertiserService.getCampaignsList(initialParams),
+          advertiserService.getCampaignFilters(),
+        ]); // Handle campaigns result
         if (campaignsResult.status === "fulfilled") {
           setCampaigns(campaignsResult.value.campaigns);
           setPagination(campaignsResult.value.pagination);
@@ -215,14 +209,6 @@ export const useAdvertiserCampaigns = (
           setPagination(mockResponse.pagination);
           setSummary(mockResponse.summary);
           setError("An error has occurred in the server. Please try again");
-        }
-
-        // Handle dashboard summary result
-        if (dashboardResult.status === "fulfilled") {
-          setDashboardSummary(dashboardResult.value);
-        } else {
-          console.warn("Dashboard API not available, using mock data");
-          setDashboardSummary(ADVERTISER_CAMPAIGN_MOCKS.dashboardSummary);
         }
 
         // Handle filters result
@@ -239,7 +225,6 @@ export const useAdvertiserCampaigns = (
         setCampaigns(mockResponse.campaigns);
         setPagination(mockResponse.pagination);
         setSummary(mockResponse.summary);
-        setDashboardSummary(ADVERTISER_CAMPAIGN_MOCKS.dashboardSummary);
         setFilters(ADVERTISER_CAMPAIGN_MOCKS.filters);
         setError("An error has occurred in the server. Please try again");
       } finally {
@@ -262,7 +247,6 @@ export const useAdvertiserCampaigns = (
     error,
     pagination,
     summary,
-    dashboardSummary,
     filters,
     refetch,
     getCampaignDetails,

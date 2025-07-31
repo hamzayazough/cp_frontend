@@ -11,7 +11,6 @@ import { AdvertiserType } from "../enums/advertiser-type";
 import {
   CampaignAdvertiser,
   AdvertiserCampaignListResponse,
-  AdvertiserDashboardSummary,
   PromoterApplicationInfo,
   AdvertiserCampaignSortField,
   AdvertiserVisibilityCampaignDetails,
@@ -341,37 +340,6 @@ export const sortCampaigns = (
   });
 };
 
-// Mock Dashboard Summary
-export const MOCK_ADVERTISER_DASHBOARD_SUMMARY: AdvertiserDashboardSummary = {
-  totalCampaigns: 3,
-  activeCampaigns: 3,
-  completedCampaigns: 0,
-  draftCampaigns: 0,
-  totalSpent: 2261.5,
-  totalAllocated: 22000,
-  remainingBudget: 19738.5,
-  monthlySpend: 1200,
-  totalViews: 45230,
-  totalSales: 0,
-  totalRevenue: 0,
-  // Percentage changes for stats cards
-  campaignsPercentageChange: 12.0,
-  spendPercentageChange: 8.2,
-  viewsPercentageChange: 15.3,
-  salesPercentageChange: 18.5,
-  recentApplications: MOCK_PROMOTER_APPLICATIONS,
-  recentCompletions: [],
-  topPerformingCampaigns: [
-    {
-      id: "campaign-1",
-      title: "Summer Fashion Collection 2024",
-      views: 45230,
-      sales: 0,
-      activePromoters: 0,
-    },
-  ],
-};
-
 // Mock Campaign List Response
 export const MOCK_CAMPAIGN_LIST_RESPONSE: AdvertiserCampaignListResponse = {
   campaigns: MOCK_ADVERTISER_CAMPAIGNS,
@@ -396,7 +364,6 @@ export const MOCK_CAMPAIGN_LIST_RESPONSE: AdvertiserCampaignListResponse = {
 export const ADVERTISER_CAMPAIGN_MOCKS = {
   campaigns: MOCK_ADVERTISER_CAMPAIGNS,
   campaignListResponse: MOCK_CAMPAIGN_LIST_RESPONSE,
-  dashboardSummary: MOCK_ADVERTISER_DASHBOARD_SUMMARY,
   promoterApplications: MOCK_PROMOTER_APPLICATIONS,
   filters: MOCK_CAMPAIGN_FILTERS,
   helpers: {
