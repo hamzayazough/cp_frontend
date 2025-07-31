@@ -20,6 +20,7 @@ import {
 } from "../interfaces/campaign/advertiser-campaign";
 import { Promoter } from "../interfaces/user";
 import { CampaignDeliverable } from "../interfaces/campaign-work";
+import { AdvertiserCampaignStatus } from "../interfaces/dashboard/advertiser-dashboard";
 
 // Mock Promoters
 const MOCK_PROMOTERS: Promoter[] = [
@@ -103,7 +104,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     title: "Summer Fashion Collection 2024",
     type: CampaignType.VISIBILITY,
     mediaUrl: "https://example.com/summer-fashion.jpg",
-    status: CampaignStatus.ACTIVE,
+    status: AdvertiserCampaignStatus.ONGOING,
     description:
       "Promote our latest summer fashion collection to Gen Z audience",
     campaign: {
@@ -141,7 +142,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     title: "Creative Consultation Needed",
     type: CampaignType.CONSULTANT,
     mediaUrl: "https://example.com/creative-consultation.jpg",
-    status: CampaignStatus.ACTIVE,
+    status: AdvertiserCampaignStatus.ONGOING,
     description: "Looking for creative input on our new marketing campaign",
     campaign: {
       type: CampaignType.CONSULTANT,
@@ -188,7 +189,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     title: "Affiliate Marketing Program",
     type: CampaignType.SALESMAN,
     mediaUrl: "https://example.com/affiliate-program.jpg",
-    status: CampaignStatus.ACTIVE,
+    status: AdvertiserCampaignStatus.ONGOING,
     description: "Join our affiliate program and earn commission on every sale",
     campaign: {
       type: CampaignType.SALESMAN,
@@ -226,7 +227,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
 // Mock Campaign Filters
 export const MOCK_CAMPAIGN_FILTERS = {
   statuses: [
-    CampaignStatus.ACTIVE,
+    AdvertiserCampaignStatus.ONGOING,
     CampaignStatus.PAUSED,
     CampaignStatus.INACTIVE,
   ],

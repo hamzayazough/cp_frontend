@@ -13,7 +13,7 @@ import {
   CheckIcon,
 } from "@heroicons/react/24/outline";
 import { CampaignDeliverable } from "@/app/interfaces/campaign-work";
-import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignType } from "@/app/enums/campaign-type";
 import {
   CampaignAdvertiser,
   ChosenPromoterInfo,
@@ -21,6 +21,7 @@ import {
   AdvertiserSellerCampaignDetails,
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import { advertiserService } from "@/services/advertiser.service";
+import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
 interface AdvertiserPromoterLinksProps {
   campaign: CampaignAdvertiser;
@@ -202,8 +203,8 @@ export default function AdvertiserPromoterLinks({
   // Only show if campaign status is ACTIVE or INACTIVE (ongoing or completed)
   if (
     !(
-      campaign.status === CampaignStatus.ACTIVE ||
-      campaign.status === CampaignStatus.INACTIVE
+      campaign.status === AdvertiserCampaignStatus.ONGOING ||
+      campaign.status === AdvertiserCampaignStatus.COMPLETED
     )
   ) {
     return null;
