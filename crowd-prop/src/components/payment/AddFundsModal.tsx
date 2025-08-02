@@ -1,9 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { XMarkIcon, CreditCardIcon, BanknotesIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
-import { usePaymentManagement } from '@/hooks/usePaymentManagement';
-import { PAYMENT_CONSTANTS, calculateStripeFees } from '@/app/const/payment-constants';
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  XMarkIcon,
+  CreditCardIcon,
+  BanknotesIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/outline";
+import { usePaymentManagement } from "@/hooks/usePaymentManagement";
+import {
+  PAYMENT_CONSTANTS,
+  calculateStripeFees,
+} from "@/app/const/payment-constants";
 
 interface AddFundsModalProps {
   isOpen: boolean;
@@ -16,16 +24,17 @@ export default function AddFundsModal({
   onClose,
   onSuccess,
 }: AddFundsModalProps) {
-  const [amount, setAmount] = useState<number>(PAYMENT_CONSTANTS.DEFAULT_FUNDING_AMOUNTS[1]); // Default to $100
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number>(
+    PAYMENT_CONSTANTS.DEFAULT_FUNDING_AMOUNTS[1]
+  ); // Default to $100
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    string | null
+  >(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    paymentMethods,
-    addFunds,
-    refreshPaymentMethods,
-  } = usePaymentManagement();
+  const { paymentMethods, addFunds, refreshPaymentMethods } =
+    usePaymentManagement();
 
   // Calculate fees whenever amount changes
   const feeCalculation = useMemo(() => {
@@ -37,12 +46,12 @@ export default function AddFundsModal({
       refreshPaymentMethods();
       setError(null);
     }
-  }, [isOpen]); // Only depend on isOpen
+  }, [isOpen, refreshPaymentMethods]); // Include refreshPaymentMethods dependency
 
   // Separate effect to select default payment method when payment methods change
   useEffect(() => {
     if (isOpen && paymentMethods.length > 0 && !selectedPaymentMethod) {
-      const defaultMethod = paymentMethods.find(m => m.isDefault);
+      const defaultMethod = paymentMethods.find((m) => m.isDefault);
       if (defaultMethod) {
         setSelectedPaymentMethod(defaultMethod.id);
       } else {
@@ -54,17 +63,21 @@ export default function AddFundsModal({
 
   const handleAddFunds = async () => {
     if (!selectedPaymentMethod) {
-      setError('Please select a payment method');
+      setError("Please select a payment method");
       return;
     }
 
     if (amount < PAYMENT_CONSTANTS.MINIMUM_WALLET_FUNDING) {
-      setError(`Minimum funding amount is $${PAYMENT_CONSTANTS.MINIMUM_WALLET_FUNDING}`);
+      setError(
+        `Minimum funding amount is $${PAYMENT_CONSTANTS.MINIMUM_WALLET_FUNDING}`
+      );
       return;
     }
 
     if (amount > PAYMENT_CONSTANTS.MAXIMUM_WALLET_FUNDING) {
-      setError(`Maximum funding amount is $${PAYMENT_CONSTANTS.MAXIMUM_WALLET_FUNDING}`);
+      setError(
+        `Maximum funding amount is $${PAYMENT_CONSTANTS.MAXIMUM_WALLET_FUNDING}`
+      );
       return;
     }
 
@@ -81,7 +94,7 @@ export default function AddFundsModal({
       onSuccess(amount);
       handleClose();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to add funds');
+      setError(error instanceof Error ? error.message : "Failed to add funds");
     } finally {
       setLoading(false);
     }
@@ -100,11 +113,11 @@ export default function AddFundsModal({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
         onClick={handleClose}
       />
-      
+
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all">
@@ -138,8 +151,8 @@ export default function AddFundsModal({
                     onClick={() => setAmount(preset)}
                     className={`py-2 px-3 text-sm rounded-lg border transition-colors ${
                       amount === preset
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 hover:bg-gray-50'
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-gray-300 hover:bg-gray-50"
                     }`}
                   >
                     ${preset}
@@ -157,7 +170,8 @@ export default function AddFundsModal({
                 step="10"
               />
               <p className="mt-1 text-xs text-gray-500">
-                Min: ${PAYMENT_CONSTANTS.MINIMUM_WALLET_FUNDING}, Max: ${PAYMENT_CONSTANTS.MAXIMUM_WALLET_FUNDING}
+                Min: ${PAYMENT_CONSTANTS.MINIMUM_WALLET_FUNDING}, Max: $
+                {PAYMENT_CONSTANTS.MAXIMUM_WALLET_FUNDING}
               </p>
             </div>
 
@@ -166,7 +180,9 @@ export default function AddFundsModal({
               <div className="flex items-start space-x-2">
                 <InformationCircleIcon className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div className="flex-1">
-                  <h4 className="text-sm font-medium text-blue-900 mb-2">Cost Breakdown</h4>
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">
+                    Cost Breakdown
+                  </h4>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between text-gray-700">
                       <span>Wallet amount:</span>
@@ -188,7 +204,9 @@ export default function AddFundsModal({
                     </div>
                   </div>
                   <p className="text-xs text-blue-700 mt-2">
-                    You pay ${feeCalculation.totalCost.toFixed(2)}, you receive ${feeCalculation.walletAmount.toFixed(2)} for your wallet (2.9% + 30¢)
+                    You pay ${feeCalculation.totalCost.toFixed(2)}, you receive
+                    ${feeCalculation.walletAmount.toFixed(2)} for your wallet
+                    (2.9% + 30¢)
                   </p>
                 </div>
               </div>
@@ -211,7 +229,9 @@ export default function AddFundsModal({
                         name="paymentMethod"
                         value={method.id}
                         checked={selectedPaymentMethod === method.id}
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        onChange={(e) =>
+                          setSelectedPaymentMethod(e.target.value)
+                        }
                         className="text-blue-600 focus:ring-blue-500"
                       />
                       <CreditCardIcon className="h-5 w-5 text-gray-400" />
@@ -220,9 +240,12 @@ export default function AddFundsModal({
                           •••• •••• •••• {method.card?.last4}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {method.card?.brand?.toUpperCase()} • {method.card?.expMonth}/{method.card?.expYear}
+                          {method.card?.brand?.toUpperCase()} •{" "}
+                          {method.card?.expMonth}/{method.card?.expYear}
                           {method.isDefault && (
-                            <span className="ml-2 text-xs text-green-600 font-medium">Default</span>
+                            <span className="ml-2 text-xs text-green-600 font-medium">
+                              Default
+                            </span>
                           )}
                         </div>
                       </div>
@@ -260,10 +283,16 @@ export default function AddFundsModal({
               </button>
               <button
                 onClick={handleAddFunds}
-                disabled={loading || !selectedPaymentMethod || paymentMethods.length === 0}
+                disabled={
+                  loading ||
+                  !selectedPaymentMethod ||
+                  paymentMethods.length === 0
+                }
                 className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Processing...' : `Pay $${feeCalculation.totalCost.toFixed(2)}`}
+                {loading
+                  ? "Processing..."
+                  : `Pay $${feeCalculation.totalCost.toFixed(2)}`}
               </button>
             </div>
           </div>

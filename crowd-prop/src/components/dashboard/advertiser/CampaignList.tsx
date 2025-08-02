@@ -7,7 +7,7 @@ import {
   CampaignAdvertiser,
   PromoterApplicationInfo,
 } from "@/app/interfaces/campaign/advertiser-campaign";
-import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignType } from "@/app/enums/campaign-type";
 import { ADVERTISER_CAMPAIGN_MOCKS } from "@/app/mocks/advertiser-campaign-mock";
 import { useAdvertiserCampaigns } from "@/hooks/useAdvertiserCampaigns";
 import ApplicationReviewModal from "./ApplicationReviewModal";
@@ -23,6 +23,7 @@ import {
   Clock,
   Edit,
 } from "lucide-react";
+import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
 interface CampaignListProps {
   campaigns: CampaignAdvertiser[];
@@ -68,15 +69,19 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     }).format(new Date(date));
   };
 
-  const getStatusBadge = (status: CampaignStatus) => {
+  const getStatusBadge = (status: AdvertiserCampaignStatus) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
     switch (status) {
-      case CampaignStatus.ACTIVE:
+      case AdvertiserCampaignStatus.ONGOING:
         return `${baseClasses} bg-green-100 text-green-800`;
-      case CampaignStatus.PAUSED:
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      case CampaignStatus.INACTIVE:
+      case AdvertiserCampaignStatus.COMPLETED:
+        return `${baseClasses} bg-blue-100 text-blue-800`;
+      case AdvertiserCampaignStatus.WAITING_FOR_APPLICATIONS:
         return `${baseClasses} bg-gray-100 text-gray-800`;
+      case AdvertiserCampaignStatus.REVIEWING_APPLICATIONS:
+        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+      case AdvertiserCampaignStatus.PENDING_PROMOTER:
+        return `${baseClasses} bg-orange-100 text-orange-800`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-800`;
     }
@@ -271,7 +276,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         {campaign.title}
                       </h3>
                       <span className={getStatusBadge(campaign.status)}>
-                        {campaign.status}
+                        {campaign.status.replace(/_/g, " ")}
                       </span>
                       <span className={getTypeBadge(campaign.type)}>
                         {campaign.type}
@@ -530,8 +535,8 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                 {campaign.campaign.type ===
                                   CampaignType.VISIBILITY &&
                                 campaign.campaign.cpv
-                                  ? Number(campaign.campaign.cpv).toFixed(3)
-                                  : "0.000"}
+                                  ? Number(campaign.campaign.cpv).toFixed(2)
+                                  : "0.00"}
                               </p>
                             </div>
                             <div>
