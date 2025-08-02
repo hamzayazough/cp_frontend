@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   CampaignPromoter,
   VisibilityCampaignDetails,
@@ -15,6 +16,23 @@ interface CampaignPerformanceProps {
 export default function CampaignPerformance({
   campaign,
 }: CampaignPerformanceProps) {
+  const [showCopiedToast, setShowCopiedToast] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyLink = async (link: string) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setShowCopiedToast(true);
+      setIsCopied(true);
+      // Hide toast and reset button after 2 seconds
+      setTimeout(() => {
+        setShowCopiedToast(false);
+        setIsCopied(false);
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+    }
+  };
   const progress =
     campaign.campaign.type === CampaignType.VISIBILITY &&
     "maxViews" in campaign.campaign
@@ -166,14 +184,38 @@ export default function CampaignPerformance({
             />
             <button
               onClick={() =>
-                navigator.clipboard.writeText(
+                handleCopyLink(
                   (campaign.campaign as VisibilityCampaignDetails)
                     .trackingLink || ""
                 )
               }
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={isCopied}
+              className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
+                isCopied
+                  ? "bg-green-600 text-white"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             >
-              Copy
+              {isCopied ? (
+                <>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <span>Copy</span>
+              )}
             </button>
           </div>
         </div>
@@ -186,7 +228,10 @@ export default function CampaignPerformance({
 
     const consultantDetails = campaign.campaign as ConsultantCampaignDetails;
 
-    if (!consultantDetails.expectedDeliverables || consultantDetails.expectedDeliverables.length === 0) {
+    if (
+      !consultantDetails.expectedDeliverables ||
+      consultantDetails.expectedDeliverables.length === 0
+    ) {
       return (
         <div className="space-y-4">
           <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
@@ -202,9 +247,13 @@ export default function CampaignPerformance({
         <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
         <div className="space-y-3">
           {consultantDetails.expectedDeliverables.map((deliverable, index) => {
-            const completionPercentage = deliverable.isFinished ? 100 : deliverable.isSubmitted ? 75 : 0;
+            const completionPercentage = deliverable.isFinished
+              ? 100
+              : deliverable.isSubmitted
+              ? 75
+              : 0;
             const workCount = deliverable.promoterWork?.length || 0;
-            
+
             return (
               <div
                 key={deliverable.id || index}
@@ -216,9 +265,15 @@ export default function CampaignPerformance({
                       {deliverable.deliverable.replace(/_/g, " ")}
                     </h5>
                     <div className="flex items-center space-x-2 text-xs text-purple-700">
-                      <span>Created: {new Date(deliverable.createdAt).toLocaleDateString()}</span>
+                      <span>
+                        Created:{" "}
+                        {new Date(deliverable.createdAt).toLocaleDateString()}
+                      </span>
                       <span>•</span>
-                      <span>Updated: {new Date(deliverable.updatedAt).toLocaleDateString()}</span>
+                      <span>
+                        Updated:{" "}
+                        {new Date(deliverable.updatedAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -231,16 +286,22 @@ export default function CampaignPerformance({
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {deliverable.isFinished ? "Completed" : deliverable.isSubmitted ? "Under Review" : "Pending"}
+                      {deliverable.isFinished
+                        ? "Completed"
+                        : deliverable.isSubmitted
+                        ? "Under Review"
+                        : "Pending"}
                     </span>
                   </div>
                 </div>
-                
+
                 {/* Progress Bar */}
                 <div className="mb-3">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs text-purple-600">Progress</span>
-                    <span className="text-xs text-purple-600 font-medium">{completionPercentage}%</span>
+                    <span className="text-xs text-purple-600 font-medium">
+                      {completionPercentage}%
+                    </span>
                   </div>
                   <div className="w-full bg-purple-200 rounded-full h-2">
                     <div
@@ -261,7 +322,7 @@ export default function CampaignPerformance({
                   <div className="flex items-center space-x-2 text-xs text-purple-700">
                     <span className="font-medium">Work Submissions:</span>
                     <span className="bg-purple-100 px-2 py-1 rounded-full">
-                      {workCount} item{workCount !== 1 ? 's' : ''}
+                      {workCount} item{workCount !== 1 ? "s" : ""}
                     </span>
                   </div>
                   {workCount > 0 && (
@@ -275,18 +336,26 @@ export default function CampaignPerformance({
                 {workCount > 0 && (
                   <div className="mt-3 pt-3 border-t border-purple-200">
                     <div className="space-y-2">
-                      {deliverable.promoterWork?.slice(0, 2).map((work, workIndex) => (
-                        <div key={work.id || workIndex} className="flex items-center space-x-2 text-xs text-purple-700">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                          <span className="flex-1 truncate">{work.description || 'Work submission'}</span>
-                          <span className="text-purple-500">
-                            {new Date(work.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      ))}
+                      {deliverable.promoterWork
+                        ?.slice(0, 2)
+                        .map((work, workIndex) => (
+                          <div
+                            key={work.id || workIndex}
+                            className="flex items-center space-x-2 text-xs text-purple-700"
+                          >
+                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                            <span className="flex-1 truncate">
+                              {work.description || "Work submission"}
+                            </span>
+                            <span className="text-purple-500">
+                              {new Date(work.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        ))}
                       {workCount > 2 && (
                         <div className="text-xs text-purple-600 pl-4">
-                          +{workCount - 2} more submission{workCount - 2 !== 1 ? 's' : ''}
+                          +{workCount - 2} more submission
+                          {workCount - 2 !== 1 ? "s" : ""}
                         </div>
                       )}
                     </div>
@@ -305,7 +374,10 @@ export default function CampaignPerformance({
 
     const sellerDetails = campaign.campaign as SellerCampaignDetails;
 
-    if (!sellerDetails.deliverables || sellerDetails.deliverables.length === 0) {
+    if (
+      !sellerDetails.deliverables ||
+      sellerDetails.deliverables.length === 0
+    ) {
       return (
         <div className="space-y-4">
           <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
@@ -321,9 +393,13 @@ export default function CampaignPerformance({
         <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
         <div className="space-y-3">
           {sellerDetails.deliverables.map((deliverable, index) => {
-            const completionPercentage = deliverable.isFinished ? 100 : deliverable.isSubmitted ? 75 : 0;
+            const completionPercentage = deliverable.isFinished
+              ? 100
+              : deliverable.isSubmitted
+              ? 75
+              : 0;
             const workCount = deliverable.promoterWork?.length || 0;
-            
+
             return (
               <div
                 key={deliverable.id || index}
@@ -335,9 +411,15 @@ export default function CampaignPerformance({
                       {deliverable.deliverable.replace(/_/g, " ")}
                     </h5>
                     <div className="flex items-center space-x-2 text-xs text-orange-700">
-                      <span>Created: {new Date(deliverable.createdAt).toLocaleDateString()}</span>
+                      <span>
+                        Created:{" "}
+                        {new Date(deliverable.createdAt).toLocaleDateString()}
+                      </span>
                       <span>•</span>
-                      <span>Updated: {new Date(deliverable.updatedAt).toLocaleDateString()}</span>
+                      <span>
+                        Updated:{" "}
+                        {new Date(deliverable.updatedAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -350,16 +432,22 @@ export default function CampaignPerformance({
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {deliverable.isFinished ? "Completed" : deliverable.isSubmitted ? "Under Review" : "Pending"}
+                      {deliverable.isFinished
+                        ? "Completed"
+                        : deliverable.isSubmitted
+                        ? "Under Review"
+                        : "Pending"}
                     </span>
                   </div>
                 </div>
-                
+
                 {/* Progress Bar */}
                 <div className="mb-3">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs text-orange-600">Progress</span>
-                    <span className="text-xs text-orange-600 font-medium">{completionPercentage}%</span>
+                    <span className="text-xs text-orange-600 font-medium">
+                      {completionPercentage}%
+                    </span>
                   </div>
                   <div className="w-full bg-orange-200 rounded-full h-2">
                     <div
@@ -380,7 +468,7 @@ export default function CampaignPerformance({
                   <div className="flex items-center space-x-2 text-xs text-orange-700">
                     <span className="font-medium">Work Submissions:</span>
                     <span className="bg-orange-100 px-2 py-1 rounded-full">
-                      {workCount} item{workCount !== 1 ? 's' : ''}
+                      {workCount} item{workCount !== 1 ? "s" : ""}
                     </span>
                   </div>
                   {workCount > 0 && (
@@ -394,18 +482,26 @@ export default function CampaignPerformance({
                 {workCount > 0 && (
                   <div className="mt-3 pt-3 border-t border-orange-200">
                     <div className="space-y-2">
-                      {deliverable.promoterWork?.slice(0, 2).map((work, workIndex) => (
-                        <div key={work.id || workIndex} className="flex items-center space-x-2 text-xs text-orange-700">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                          <span className="flex-1 truncate">{work.description || 'Work submission'}</span>
-                          <span className="text-orange-500">
-                            {new Date(work.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      ))}
+                      {deliverable.promoterWork
+                        ?.slice(0, 2)
+                        .map((work, workIndex) => (
+                          <div
+                            key={work.id || workIndex}
+                            className="flex items-center space-x-2 text-xs text-orange-700"
+                          >
+                            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                            <span className="flex-1 truncate">
+                              {work.description || "Work submission"}
+                            </span>
+                            <span className="text-orange-500">
+                              {new Date(work.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        ))}
                       {workCount > 2 && (
                         <div className="text-xs text-orange-600 pl-4">
-                          +{workCount - 2} more submission{workCount - 2 !== 1 ? 's' : ''}
+                          +{workCount - 2} more submission
+                          {workCount - 2 !== 1 ? "s" : ""}
                         </div>
                       )}
                     </div>
@@ -462,6 +558,28 @@ export default function CampaignPerformance({
 
       {/* Sales Performance */}
       {renderSalesPerformance()}
+
+      {/* Copy Success Toast */}
+      {showCopiedToast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
+          <div className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span>Link copied to clipboard!</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
