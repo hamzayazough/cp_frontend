@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useStripeOnboarding } from '@/hooks/useStripeOnboarding';
-import { userService } from '@/services/user.service';
+import React, { useState, useEffect } from "react";
+import { useStripeOnboarding } from "@/hooks/useStripeOnboarding";
 import {
   CreditCardIcon,
   CheckCircleIcon,
@@ -9,13 +8,15 @@ import {
   XCircleIcon,
   ArrowTopRightOnSquareIcon,
   ArrowPathIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
 interface StripeStatusCardProps {
   className?: string;
 }
 
-export default function StripeStatusCard({ className = '' }: StripeStatusCardProps) {
+export default function StripeStatusCard({
+  className = "",
+}: StripeStatusCardProps) {
   const {
     isLoading,
     error,
@@ -27,31 +28,19 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
     clearError,
   } = useStripeOnboarding();
 
-  console.log('StripeStatusCard render:', { isLoading, error, accountData });
+  console.log("StripeStatusCard render:", { isLoading, error, accountData });
 
   const [actionLoading, setActionLoading] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
-
-  const currentUser = userService.getCurrentUserSync();
-
-  // Form data for creating account
-  const [formData, setFormData] = useState({
-    email: currentUser?.email || '',
-    country: 'US',
-    isBusiness: false,
-    firstName: '',
-    lastName: '',
-    businessName: '',
-  });
 
   const handleRefreshStatus = async () => {
     setActionLoading(true);
     clearError();
     try {
       await refreshAccountStatus();
-      console.log('StripeStatusCard: Account status refreshed successfully');
+      console.log("StripeStatusCard: Account status refreshed successfully");
     } catch (err) {
-      console.error('StripeStatusCard: Failed to refresh status:', err);
+      console.error("StripeStatusCard: Failed to refresh status:", err);
     } finally {
       setActionLoading(false);
     }
@@ -61,19 +50,12 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
     setActionLoading(true);
     clearError();
     try {
-      await createAccount({
-        email: formData.email,
-        country: formData.country,
-        isBusiness: formData.isBusiness,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        businessName: formData.isBusiness ? formData.businessName : undefined,
-      });
+      await createAccount();
       setShowCreateForm(false);
       // Refresh status after creating
       await getAccountStatus();
     } catch (err) {
-      console.error('Failed to create account:', err);
+      console.error("Failed to create account:", err);
     } finally {
       setActionLoading(false);
     }
@@ -86,7 +68,7 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
       // Open in same window to redirect to Stripe
       window.location.href = link;
     } catch (err) {
-      console.error('Failed to start onboarding:', err);
+      console.error("Failed to start onboarding:", err);
     } finally {
       setActionLoading(false);
     }
@@ -95,20 +77,20 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
   const getStatusInfo = () => {
     if (!accountData) {
       return {
-        status: 'No Account',
-        description: 'No Stripe Connect account found',
-        color: 'gray',
+        status: "No Account",
+        description: "No Stripe Connect account found",
+        color: "gray",
         icon: XCircleIcon,
-        action: 'Create Account',
+        action: "Create Account",
         canReceivePayments: false,
       };
     }
 
     if (accountData.chargesEnabled && accountData.payoutsEnabled) {
       return {
-        status: 'Active',
-        description: 'Ready to receive payments',
-        color: 'green',
+        status: "Active",
+        description: "Ready to receive payments",
+        color: "green",
         icon: CheckCircleIcon,
         action: null,
         canReceivePayments: true,
@@ -117,21 +99,21 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
 
     if (accountData.detailsSubmitted) {
       return {
-        status: 'Under Review',
-        description: 'Account details submitted, pending verification',
-        color: 'yellow',
+        status: "Under Review",
+        description: "Account details submitted, pending verification",
+        color: "yellow",
         icon: ClockIcon,
-        action: 'Refresh Status',
+        action: "Refresh Status",
         canReceivePayments: false,
       };
     }
 
     return {
-      status: 'Incomplete',
-      description: 'Account setup not completed',
-      color: 'orange',
+      status: "Incomplete",
+      description: "Account setup not completed",
+      color: "orange",
       icon: ExclamationTriangleIcon,
-      action: 'Complete Setup',
+      action: "Complete Setup",
       canReceivePayments: false,
     };
   };
@@ -140,16 +122,16 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
 
   const getStatusColorClasses = (color: string) => {
     switch (color) {
-      case 'green':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'yellow':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'orange':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'red':
-        return 'bg-red-100 text-red-800 border-red-200';
+      case "green":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "yellow":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "orange":
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case "red":
+        return "bg-red-100 text-red-800 border-red-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -157,32 +139,43 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
   useEffect(() => {
     const refreshOnMount = async () => {
       // Only refresh if we don't have account data or if it might be stale
-      if (!accountData || (!accountData.chargesEnabled && !accountData.payoutsEnabled)) {
-        console.log('StripeStatusCard: Auto-refreshing account status on mount');
+      if (
+        !accountData ||
+        (!accountData.chargesEnabled && !accountData.payoutsEnabled)
+      ) {
+        console.log(
+          "StripeStatusCard: Auto-refreshing account status on mount"
+        );
         try {
           await refreshAccountStatus();
         } catch (error) {
-          console.error('StripeStatusCard: Auto-refresh failed:', error);
+          console.error("StripeStatusCard: Auto-refresh failed:", error);
         }
       }
     };
 
     refreshOnMount();
-  }, []); // Only run on mount
+  }, [accountData, refreshAccountStatus]); // Added dependencies
 
   if (isLoading && !accountData) {
     return (
-      <div className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 ${className}`}>
+      <div
+        className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 ${className}`}
+      >
         <div className="flex items-center space-x-3">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span className="text-gray-600">Checking Stripe Connect status...</span>
+          <span className="text-gray-600">
+            Checking Stripe Connect status...
+          </span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 ${className}`}>
+    <div
+      className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 ${className}`}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-blue-100 rounded-lg">
@@ -203,7 +196,9 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
           className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
           title="Refresh status"
         >
-          <ArrowPathIcon className={`h-5 w-5 ${actionLoading ? 'animate-spin' : ''}`} />
+          <ArrowPathIcon
+            className={`h-5 w-5 ${actionLoading ? "animate-spin" : ""}`}
+          />
         </button>
       </div>
 
@@ -222,7 +217,9 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <statusInfo.icon className={`h-5 w-5 text-${statusInfo.color}-600`} />
+            <statusInfo.icon
+              className={`h-5 w-5 text-${statusInfo.color}-600`}
+            />
             <div>
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColorClasses(
@@ -231,10 +228,12 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
               >
                 {statusInfo.status}
               </span>
-              <p className="text-sm text-gray-600 mt-1">{statusInfo.description}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {statusInfo.description}
+              </p>
             </div>
           </div>
-          
+
           {statusInfo.canReceivePayments && (
             <CheckCircleIcon className="h-6 w-6 text-green-500" />
           )}
@@ -245,25 +244,33 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
             <div>
               <p className="text-xs text-gray-500">Account Type</p>
               <p className="text-sm font-medium text-gray-900 capitalize">
-                {accountData.accountType || 'Express'}
+                {accountData.accountType || "Express"}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Country</p>
               <p className="text-sm font-medium text-gray-900">
-                {accountData.country || 'US'}
+                {accountData.country || "US"}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Charges Enabled</p>
-              <p className={`text-sm font-medium ${accountData.chargesEnabled ? 'text-green-600' : 'text-red-600'}`}>
-                {accountData.chargesEnabled ? 'Yes' : 'No'}
+              <p
+                className={`text-sm font-medium ${
+                  accountData.chargesEnabled ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {accountData.chargesEnabled ? "Yes" : "No"}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Payouts Enabled</p>
-              <p className={`text-sm font-medium ${accountData.payoutsEnabled ? 'text-green-600' : 'text-red-600'}`}>
-                {accountData.payoutsEnabled ? 'Yes' : 'No'}
+              <p
+                className={`text-sm font-medium ${
+                  accountData.payoutsEnabled ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {accountData.payoutsEnabled ? "Yes" : "No"}
               </p>
             </div>
           </div>
@@ -271,7 +278,7 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
 
         {accountData?.requirements && (
           <div className="space-y-2">
-            {(accountData.requirements.currentlyDue?.length > 0 || 
+            {(accountData.requirements.currentlyDue?.length > 0 ||
               accountData.requirements.pastDue?.length > 0) && (
               <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
                 <div className="flex items-start space-x-3">
@@ -281,24 +288,40 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
                       Action Required: Complete Account Setup
                     </p>
                     <p className="text-sm text-orange-700 mb-3">
-                      Your Stripe account needs additional information to process payments. 
-                      Complete the verification process to start receiving payouts.
+                      Your Stripe account needs additional information to
+                      process payments. Complete the verification process to
+                      start receiving payouts.
                     </p>
                     <div className="mb-3">
-                      <p className="text-xs font-medium text-orange-800 mb-1">Required Information:</p>
+                      <p className="text-xs font-medium text-orange-800 mb-1">
+                        Required Information:
+                      </p>
                       <ul className="text-xs text-orange-700 space-y-1">
                         {accountData.requirements.pastDue?.map((req, index) => (
-                          <li key={index} className="flex items-center space-x-1">
+                          <li
+                            key={index}
+                            className="flex items-center space-x-1"
+                          >
                             <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-                            <span>{req.replace(/_/g, ' ').replace(/\./g, ' → ')} (Past Due)</span>
+                            <span>
+                              {req.replace(/_/g, " ").replace(/\./g, " → ")}{" "}
+                              (Past Due)
+                            </span>
                           </li>
                         ))}
-                        {accountData.requirements.currentlyDue?.map((req, index) => (
-                          <li key={index} className="flex items-center space-x-1">
-                            <span className="w-1 h-1 bg-orange-500 rounded-full"></span>
-                            <span>{req.replace(/_/g, ' ').replace(/\./g, ' → ')}</span>
-                          </li>
-                        ))}
+                        {accountData.requirements.currentlyDue?.map(
+                          (req, index) => (
+                            <li
+                              key={index}
+                              className="flex items-center space-x-1"
+                            >
+                              <span className="w-1 h-1 bg-orange-500 rounded-full"></span>
+                              <span>
+                                {req.replace(/_/g, " ").replace(/\./g, " → ")}
+                              </span>
+                            </li>
+                          )
+                        )}
                       </ul>
                     </div>
                     <button
@@ -306,7 +329,9 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
                       disabled={actionLoading}
                       className="inline-flex items-center space-x-2 bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 text-sm font-medium"
                     >
-                      <span>{actionLoading ? 'Opening...' : 'Complete Verification'}</span>
+                      <span>
+                        {actionLoading ? "Opening..." : "Complete Verification"}
+                      </span>
                       <ArrowTopRightOnSquareIcon className="h-4 w-4" />
                     </button>
                   </div>
@@ -324,18 +349,23 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
                   <strong>Already have a Stripe account?</strong>
                 </p>
                 <p className="text-xs text-blue-600 mb-3">
-                  If you&apos;ve already created a Stripe Connect account, click refresh to check your latest status.
+                  If you&apos;ve already created a Stripe Connect account, click
+                  refresh to check your latest status.
                 </p>
                 <button
                   onClick={handleRefreshStatus}
                   disabled={actionLoading}
                   className="w-full bg-blue-100 text-blue-700 py-2 px-4 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
-                  <ArrowPathIcon className={`h-4 w-4 ${actionLoading ? 'animate-spin' : ''}`} />
-                  <span>{actionLoading ? 'Checking...' : 'Check Account Status'}</span>
+                  <ArrowPathIcon
+                    className={`h-4 w-4 ${actionLoading ? "animate-spin" : ""}`}
+                  />
+                  <span>
+                    {actionLoading ? "Checking..." : "Check Account Status"}
+                  </span>
                 </button>
               </div>
-              
+
               {!showCreateForm ? (
                 <button
                   onClick={() => setShowCreateForm(true)}
@@ -346,71 +376,13 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
                 </button>
               ) : (
                 <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-black"
-                    />
-                    <select
-                      value={formData.country}
-                      onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-black"
-                    >
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                    </select>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="isBusiness"
-                      checked={formData.isBusiness}
-                      onChange={(e) => setFormData(prev => ({ ...prev, isBusiness: e.target.checked }))}
-                      className="rounded"
-                    />
-                    <label htmlFor="isBusiness" className="text-sm text-gray-700">
-                      Business Account
-                    </label>
-                  </div>
-
-                  {formData.isBusiness ? (
-                    <input
-                      type="text"
-                      placeholder="Business Name"
-                      value={formData.businessName}
-                      onChange={(e) => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-black"
-                    />
-                  ) : (
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        placeholder="First Name"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-black"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Last Name"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-black"
-                      />
-                    </div>
-                  )}
-
                   <div className="flex space-x-2">
                     <button
                       onClick={handleCreateAccount}
                       disabled={actionLoading}
                       className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     >
-                      {actionLoading ? 'Creating...' : 'Create Account'}
+                      {actionLoading ? "Creating..." : "Create Account"}
                     </button>
                     <button
                       onClick={() => setShowCreateForm(false)}
@@ -426,7 +398,7 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
           ) : (
             <div className="space-y-3">
               {/* Status-specific guidance */}
-              {statusInfo.status === 'Active' && (
+              {statusInfo.status === "Active" && (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <CheckCircleIcon className="h-5 w-5 text-green-600" />
@@ -435,78 +407,91 @@ export default function StripeStatusCard({ className = '' }: StripeStatusCardPro
                         Account Active & Ready
                       </p>
                       <p className="text-xs text-green-600">
-                        Your Stripe account is fully set up and can receive payments and payouts.
+                        Your Stripe account is fully set up and can receive
+                        payments and payouts.
                       </p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {statusInfo.status === 'Under Review' && (
+              {statusInfo.status === "Under Review" && (
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm font-medium text-blue-800 mb-1">
                     Account Under Review
                   </p>
                   <p className="text-xs text-blue-600 mb-2">
-                    Stripe is reviewing your account. This usually takes 1-2 business days. 
-                    If there are outstanding requirements above, complete them to speed up the process.
+                    Stripe is reviewing your account. This usually takes 1-2
+                    business days. If there are outstanding requirements above,
+                    complete them to speed up the process.
                   </p>
                 </div>
               )}
 
-              {statusInfo.status === 'Incomplete' && (
+              {statusInfo.status === "Incomplete" && (
                 <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
                   <p className="text-sm font-medium text-orange-800 mb-1">
                     Setup Incomplete
                   </p>
                   <p className="text-xs text-orange-600 mb-2">
-                    Your Stripe account needs additional setup to process payments. 
-                    Click &ldquo;Complete Stripe Setup&rdquo; to continue where you left off.
+                    Your Stripe account needs additional setup to process
+                    payments. Click &ldquo;Complete Stripe Setup&rdquo; to
+                    continue where you left off.
                   </p>
                 </div>
               )}
 
               <div className="space-y-2">
-                {statusInfo.action === 'Complete Setup' && (
+                {statusInfo.action === "Complete Setup" && (
                   <button
                     onClick={handleStartOnboarding}
                     disabled={actionLoading}
                     className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 font-medium"
                   >
-                    <span>{actionLoading ? 'Opening Stripe...' : 'Complete Stripe Setup'}</span>
+                    <span>
+                      {actionLoading
+                        ? "Opening Stripe..."
+                        : "Complete Stripe Setup"}
+                    </span>
                     <ArrowTopRightOnSquareIcon className="h-4 w-4" />
                   </button>
                 )}
-                
-                {statusInfo.action === 'Refresh Status' && (
+
+                {statusInfo.action === "Refresh Status" && (
                   <button
                     onClick={handleRefreshStatus}
                     disabled={actionLoading}
                     className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
                   >
-                    {actionLoading ? 'Checking...' : 'Check Latest Status'}
+                    {actionLoading ? "Checking..." : "Check Latest Status"}
                   </button>
                 )}
 
-                {(accountData && !statusInfo.canReceivePayments && statusInfo.status !== 'Under Review') && (
-                  <button
-                    onClick={handleStartOnboarding}
-                    disabled={actionLoading}
-                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 font-medium"
-                  >
-                    <span>{actionLoading ? 'Opening Stripe...' : 'Continue Setup in Stripe'}</span>
-                    <ArrowTopRightOnSquareIcon className="h-4 w-4" />
-                  </button>
-                )}
+                {accountData &&
+                  !statusInfo.canReceivePayments &&
+                  statusInfo.status !== "Under Review" && (
+                    <button
+                      onClick={handleStartOnboarding}
+                      disabled={actionLoading}
+                      className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 font-medium"
+                    >
+                      <span>
+                        {actionLoading
+                          ? "Opening Stripe..."
+                          : "Continue Setup in Stripe"}
+                      </span>
+                      <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+                    </button>
+                  )}
 
                 {/* Always show refresh button as secondary action */}
-                {statusInfo.action !== 'Refresh Status' && (
+                {statusInfo.action !== "Refresh Status" && (
                   <button
                     onClick={handleRefreshStatus}
                     disabled={actionLoading}
                     className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 text-sm"
                   >
-                    {actionLoading ? 'Refreshing...' : 'Refresh Status'}
+                    {actionLoading ? "Refreshing..." : "Refresh Status"}
                   </button>
                 )}
               </div>

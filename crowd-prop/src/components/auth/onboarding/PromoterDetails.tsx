@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { OnboardingData } from '../UserOnboarding';
-import { Language } from '@/app/enums/language';
+import { OnboardingData } from "../UserOnboarding";
+import { Language } from "@/app/enums/language";
 
 interface PromoterDetailsProps {
   data: OnboardingData;
@@ -10,33 +10,50 @@ interface PromoterDetailsProps {
   onBack: () => void;
 }
 
-export default function PromoterDetails({ data, onUpdate, onNext, onBack }: PromoterDetailsProps) {
+export default function PromoterDetails({
+  data,
+  onUpdate,
+  onNext,
+  onBack,
+}: PromoterDetailsProps) {
   // Language mapping for display purposes
   const languageOptions = [
-    { value: Language.ENGLISH, display: 'English' },
-    { value: Language.SPANISH, display: 'Spanish' },
-    { value: Language.FRENCH, display: 'French' },
-    { value: Language.GERMAN, display: 'German' },
-    { value: Language.ITALIAN, display: 'Italian' },
-    { value: Language.PORTUGUESE, display: 'Portuguese' },
-    { value: Language.RUSSIAN, display: 'Russian' },
-    { value: Language.CHINESE, display: 'Chinese' },
-    { value: Language.JAPANESE, display: 'Japanese' },
-    { value: Language.KOREAN, display: 'Korean' },
-    { value: Language.ARABIC, display: 'Arabic' },
-    { value: Language.HINDI, display: 'Hindi' },
-    { value: Language.DUTCH, display: 'Dutch' },
-    { value: Language.TURKISH, display: 'Turkish' },
-    { value: Language.POLISH, display: 'Polish' },
-    { value: Language.SWEDISH, display: 'Swedish' },
-    { value: Language.OTHER, display: 'Other' }
+    { value: Language.ENGLISH, display: "English" },
+    { value: Language.SPANISH, display: "Spanish" },
+    { value: Language.FRENCH, display: "French" },
+    { value: Language.GERMAN, display: "German" },
+    { value: Language.ITALIAN, display: "Italian" },
+    { value: Language.PORTUGUESE, display: "Portuguese" },
+    { value: Language.RUSSIAN, display: "Russian" },
+    { value: Language.CHINESE, display: "Chinese" },
+    { value: Language.JAPANESE, display: "Japanese" },
+    { value: Language.KOREAN, display: "Korean" },
+    { value: Language.ARABIC, display: "Arabic" },
+    { value: Language.HINDI, display: "Hindi" },
+    { value: Language.DUTCH, display: "Dutch" },
+    { value: Language.TURKISH, display: "Turkish" },
+    { value: Language.POLISH, display: "Polish" },
+    { value: Language.SWEDISH, display: "Swedish" },
+    { value: Language.OTHER, display: "Other" },
   ];
 
   const skillsOptions = [
-    'Video Editing', 'Photography', 'Content Writing', 'Graphic Design',
-    'Social Media Management', 'Influencer Marketing', 'Brand Partnerships',
-    'Live Streaming', 'Comedy/Entertainment', 'Fashion/Beauty', 'Fitness/Health',
-    'Tech Reviews', 'Gaming', 'Cooking/Food', 'Travel', 'Education/Tutorials'
+    "Video Editing",
+    "Photography",
+    "Content Writing",
+    "Graphic Design",
+    "Social Media Management",
+    "Influencer Marketing",
+    "Brand Partnerships",
+    "Live Streaming",
+    "Comedy/Entertainment",
+    "Fashion/Beauty",
+    "Fitness/Health",
+    "Tech Reviews",
+    "Gaming",
+    "Cooking/Food",
+    "Travel",
+    "Education/Tutorials",
   ];
 
   const handleLocationChange = (value: string) => {
@@ -45,47 +62,82 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
         ...data.promoterDetails,
         location: value,
         languagesSpoken: data.promoterDetails?.languagesSpoken || [],
-        skills: data.promoterDetails?.skills || []
-      }
+        skills: data.promoterDetails?.skills || [],
+        isBusiness: data.promoterDetails?.isBusiness || false,
+        businessName: data.promoterDetails?.businessName,
+      },
+    });
+  };
+
+  const handleBusinessTypeChange = (isBusiness: boolean) => {
+    onUpdate({
+      promoterDetails: {
+        ...data.promoterDetails,
+        location: data.promoterDetails?.location || "",
+        languagesSpoken: data.promoterDetails?.languagesSpoken || [],
+        skills: data.promoterDetails?.skills || [],
+        isBusiness: isBusiness,
+        businessName: data.promoterDetails?.businessName,
+      },
+    });
+  };
+
+  const handleBusinessNameChange = (value: string) => {
+    onUpdate({
+      promoterDetails: {
+        ...data.promoterDetails,
+        location: data.promoterDetails?.location || "",
+        languagesSpoken: data.promoterDetails?.languagesSpoken || [],
+        skills: data.promoterDetails?.skills || [],
+        isBusiness: data.promoterDetails?.isBusiness || false,
+        businessName: value,
+      },
     });
   };
 
   const handleLanguageToggle = (language: Language) => {
     const currentLanguages = data.promoterDetails?.languagesSpoken || [];
     const newLanguages = currentLanguages.includes(language)
-      ? currentLanguages.filter(l => l !== language)
+      ? currentLanguages.filter((l) => l !== language)
       : [...currentLanguages, language];
 
     onUpdate({
       promoterDetails: {
         ...data.promoterDetails,
-        location: data.promoterDetails?.location || '',
+        location: data.promoterDetails?.location || "",
         skills: data.promoterDetails?.skills || [],
-        languagesSpoken: newLanguages
-      }
+        isBusiness: data.promoterDetails?.isBusiness ?? false,
+        businessName: data.promoterDetails?.businessName,
+        languagesSpoken: newLanguages,
+      },
     });
   };
 
   const handleSkillToggle = (skill: string) => {
     const currentSkills = data.promoterDetails?.skills || [];
     const newSkills = currentSkills.includes(skill)
-      ? currentSkills.filter(s => s !== skill)
+      ? currentSkills.filter((s) => s !== skill)
       : [...currentSkills, skill];
 
     onUpdate({
       promoterDetails: {
         ...data.promoterDetails,
-        location: data.promoterDetails?.location || '',
+        location: data.promoterDetails?.location || "",
         languagesSpoken: data.promoterDetails?.languagesSpoken || [],
-        skills: newSkills
-      }
+        isBusiness: data.promoterDetails?.isBusiness ?? false,
+        businessName: data.promoterDetails?.businessName,
+        skills: newSkills,
+      },
     });
   };
 
-  const isValid = 
-    (data.promoterDetails?.location || '').trim().length > 0 &&
+  const isValid =
+    (data.promoterDetails?.location || "").trim().length > 0 &&
     (data.promoterDetails?.languagesSpoken || []).length > 0 &&
-    (data.promoterDetails?.skills || []).length > 0;
+    (data.promoterDetails?.skills || []).length > 0 &&
+    data.promoterDetails?.isBusiness !== undefined &&
+    (!data.promoterDetails?.isBusiness ||
+      (data.promoterDetails?.businessName || "").trim().length > 0);
 
   return (
     <div className="space-y-6">
@@ -100,13 +152,104 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
 
       <div className="space-y-6">
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Account Type *
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => handleBusinessTypeChange(false)}
+              className={`p-4 border rounded-lg text-left transition-all duration-200 ${
+                data.promoterDetails?.isBusiness === false
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-gray-200 hover:border-gray-300 text-gray-700"
+              }`}
+            >
+              <div className="flex items-center mb-2">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="font-medium">Individual Creator</span>
+              </div>
+              <p className="text-sm opacity-75">
+                Personal content creator or influencer
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleBusinessTypeChange(true)}
+              className={`p-4 border rounded-lg text-left transition-all duration-200 ${
+                data.promoterDetails?.isBusiness === true
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-gray-200 hover:border-gray-300 text-gray-700"
+              }`}
+            >
+              <div className="flex items-center mb-2">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="font-medium">Business/Agency</span>
+              </div>
+              <p className="text-sm opacity-75">
+                Marketing agency or business entity
+              </p>
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            {data.promoterDetails?.isBusiness === true
+              ? "Selected: Business/Agency"
+              : data.promoterDetails?.isBusiness === false
+              ? "Selected: Individual Creator"
+              : "Please select your account type"}
+          </p>
+        </div>
+
+        {data.promoterDetails?.isBusiness === true && (
+          <div>
+            <label
+              htmlFor="businessName"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Business Name *
+            </label>
+            <input
+              id="businessName"
+              type="text"
+              value={data.promoterDetails?.businessName || ""}
+              onChange={(e) => handleBusinessNameChange(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+              placeholder="Enter your business or agency name"
+            />
+          </div>
+        )}
+
+        <div>
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Location *
           </label>
           <input
             id="location"
             type="text"
-            value={data.promoterDetails?.location || ''}
+            value={data.promoterDetails?.location || ""}
             onChange={(e) => handleLocationChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             placeholder="City, Country (e.g., New York, USA)"
@@ -119,7 +262,9 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {languageOptions.map((languageOption) => {
-              const isSelected = (data.promoterDetails?.languagesSpoken || []).includes(languageOption.value);
+              const isSelected = (
+                data.promoterDetails?.languagesSpoken || []
+              ).includes(languageOption.value);
               return (
                 <button
                   key={languageOption.value}
@@ -127,8 +272,8 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
                   onClick={() => handleLanguageToggle(languageOption.value)}
                   className={`p-2 text-sm border rounded-lg text-center transition-all duration-200 ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-200 hover:border-gray-300 text-gray-700"
                   }`}
                 >
                   {languageOption.display}
@@ -137,7 +282,8 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
             })}
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            Selected: {(data.promoterDetails?.languagesSpoken || []).length} languages
+            Selected: {(data.promoterDetails?.languagesSpoken || []).length}{" "}
+            languages
           </p>
         </div>
 
@@ -147,7 +293,9 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
           </label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {skillsOptions.map((skill) => {
-              const isSelected = (data.promoterDetails?.skills || []).includes(skill);
+              const isSelected = (data.promoterDetails?.skills || []).includes(
+                skill
+              );
               return (
                 <button
                   key={skill}
@@ -155,8 +303,8 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
                   onClick={() => handleSkillToggle(skill)}
                   className={`p-3 text-sm border rounded-lg text-left transition-all duration-200 ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-200 hover:border-gray-300 text-gray-700"
                   }`}
                 >
                   {skill}
@@ -173,8 +321,16 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <div className="flex items-start">
           <div className="flex-shrink-0">
-            <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
           <div className="ml-3">
@@ -182,7 +338,9 @@ export default function PromoterDetails({ data, onUpdate, onNext, onBack }: Prom
               Portfolio Building
             </h3>
             <p className="text-sm text-green-700 mt-1">
-              After completing registration, you&apos;ll be able to upload your work samples and showcase your content creation abilities to potential brand partners.
+              After completing registration, you&apos;ll be able to upload your
+              work samples and showcase your content creation abilities to
+              potential brand partners.
             </p>
           </div>
         </div>

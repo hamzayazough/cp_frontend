@@ -5,10 +5,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { ApplicationStatus } from "@/app/interfaces/campaign-application";
-import { PromoterCampaignStatus, CampaignType } from "@/app/enums/campaign-type";
-import { PromoterCampaign } from "@/app/interfaces/promoter-campaign";
+import {
+  PromoterCampaignStatus,
+  CampaignType,
+} from "@/app/enums/campaign-type";
 import { Router } from "@/lib/router";
 import PayPromoterModal from "../PayPromoterModal";
+import {
+  getPromoterDisplayName,
+  getPromoterInitials,
+} from "@/utils/promoter-name";
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -16,6 +22,7 @@ import {
   EyeIcon,
   CreditCardIcon,
 } from "@heroicons/react/24/outline";
+import { Promoter } from "@/app/interfaces/user";
 
 interface AdvertiserCampaignPromotersProps {
   campaign: CampaignAdvertiser;
@@ -28,19 +35,20 @@ export default function AdvertiserCampaignPromoters({
 }: AdvertiserCampaignPromotersProps) {
   const router = useRouter();
   const [showPayModal, setShowPayModal] = useState(false);
-  const [selectedPromoterForPayment, setSelectedPromoterForPayment] = useState<PromoterCampaign | null>(null);
+  const [selectedPromoterForPayment, setSelectedPromoterForPayment] =
+    useState<Promoter | null>(null);
 
   const handleUserClick = (userId: string) => {
     router.push(Router.userProfile(userId));
   };
 
-  const handlePayNow = (promoter: PromoterCampaign) => {
-    console.log('Pay Now clicked for promoter:', promoter);
-    console.log('Campaign supports payments:', supportsPayments);
-    console.log('Campaign type:', campaign.campaign.type);
+  const handlePayNow = (promoter: Promoter) => {
+    console.log("Pay Now clicked for promoter:", promoter);
+    console.log("Campaign supports payments:", supportsPayments);
+    console.log("Campaign type:", campaign.campaign.type);
     setSelectedPromoterForPayment(promoter);
     setShowPayModal(true);
-    console.log('Modal state set to true');
+    console.log("Modal state set to true");
   };
 
   const handlePaymentSuccess = (amount: number) => {
@@ -50,12 +58,14 @@ export default function AdvertiserCampaignPromoters({
   };
 
   // Check if campaign supports payments (Seller or Consultant)
-  const supportsPayments = campaign.campaign.type === CampaignType.CONSULTANT || campaign.campaign.type === CampaignType.SELLER;
+  const supportsPayments =
+    campaign.campaign.type === CampaignType.CONSULTANT ||
+    campaign.campaign.type === CampaignType.SELLER;
 
-  console.log('Campaign type:', campaign.campaign.type);
-  console.log('Supports payments:', supportsPayments);
-  console.log('CampaignType.CONSULTANT:', CampaignType.CONSULTANT);
-  console.log('CampaignType.SELLER:', CampaignType.SELLER);
+  console.log("Campaign type:", campaign.campaign.type);
+  console.log("Supports payments:", supportsPayments);
+  console.log("CampaignType.CONSULTANT:", CampaignType.CONSULTANT);
+  console.log("CampaignType.SELLER:", CampaignType.SELLER);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -113,13 +123,13 @@ export default function AdvertiserCampaignPromoters({
 
   const applicants = campaign.applicants || [];
   // Handle both single object and array for chosenPromoters
-  const chosenPromotersArray = Array.isArray(campaign.chosenPromoters) 
-    ? campaign.chosenPromoters 
-    : campaign.chosenPromoters 
-      ? [campaign.chosenPromoters] 
-      : [];
+  const chosenPromotersArray = Array.isArray(campaign.chosenPromoters)
+    ? campaign.chosenPromoters
+    : campaign.chosenPromoters
+    ? [campaign.chosenPromoters]
+    : [];
   const chosenPromoter = chosenPromotersArray[0]; // For backwards compatibility
-  
+
   const pendingApplications = applicants.filter(
     (app) => app.applicationStatus === ApplicationStatus.PENDING
   );
@@ -157,26 +167,25 @@ export default function AdvertiserCampaignPromoters({
                   handleUserClick(chosenPromoter.promoter.id);
                 }}
                 className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
-                title={`View ${chosenPromoter.promoter.name}'s profile`}
+                title={`View ${getPromoterDisplayName(
+                  chosenPromoter.promoter
+                )}'s profile`}
               >
                 {chosenPromoter.promoter.avatarUrl ? (
                   <Image
                     src={chosenPromoter.promoter.avatarUrl}
-                    alt={chosenPromoter.promoter.name}
+                    alt={getPromoterDisplayName(chosenPromoter.promoter)}
                     width={48}
                     height={48}
                     className="w-full h-full object-cover rounded-full"
                   />
                 ) : (
-                  chosenPromoter.promoter.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
+                  getPromoterInitials(chosenPromoter.promoter)
                 )}
               </button>
               <div className="flex-1">
                 <h4 className="text-lg font-medium text-gray-900">
-                  {chosenPromoter.promoter.name}
+                  {getPromoterDisplayName(chosenPromoter.promoter)}
                 </h4>
                 <p className="text-sm text-gray-600 mb-3">
                   {chosenPromoter.promoter.bio || "No bio available"}
@@ -212,14 +221,16 @@ export default function AdvertiserCampaignPromoters({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Pay Now Button for Seller and Consultant campaigns */}
                 {supportsPayments ? (
                   <div className="mt-4 pt-4 border-t border-green-200">
                     <button
                       onClick={() => {
-                        console.log('Pay Now button clicked (private campaign)');
-                        handlePayNow(chosenPromoter);
+                        console.log(
+                          "Pay Now button clicked (private campaign)"
+                        );
+                        handlePayNow(chosenPromoter.promoter);
                       }}
                       className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
                     >
@@ -230,26 +241,30 @@ export default function AdvertiserCampaignPromoters({
                 ) : (
                   <div className="mt-4 pt-4 border-t border-green-200">
                     <p className="text-sm text-gray-500">
-                      Payment not available for {campaign.campaign.type} campaigns
+                      Payment not available for {campaign.campaign.type}{" "}
+                      campaigns
                     </p>
                   </div>
                 )}
               </div>
             </div>
           </div>
-          
+
           {/* Pay Promoter Modal for Private Campaign */}
           {selectedPromoterForPayment && (
             <>
-              {console.log('Rendering PayPromoterModal (private campaign) with:', {
-                isOpen: showPayModal,
-                selectedPromoter: selectedPromoterForPayment?.promoter?.name,
-                campaignTitle: campaign.campaign.title
-              })}
+              {console.log(
+                "Rendering PayPromoterModal (private campaign) with:",
+                {
+                  isOpen: showPayModal,
+                  selectedPromoter: selectedPromoterForPayment?.name,
+                  campaignTitle: campaign.title,
+                }
+              )}
               <PayPromoterModal
                 isOpen={showPayModal}
                 onClose={() => {
-                  console.log('Modal close requested (private campaign)');
+                  console.log("Modal close requested (private campaign)");
                   setShowPayModal(false);
                   setSelectedPromoterForPayment(null);
                 }}
@@ -322,7 +337,11 @@ export default function AdvertiserCampaignPromoters({
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className={`grid grid-cols-1 gap-4 ${campaign.campaign.isPublic ? 'md:grid-cols-2' : 'md:grid-cols-4'}`}>
+      <div
+        className={`grid grid-cols-1 gap-4 ${
+          campaign.campaign.isPublic ? "md:grid-cols-2" : "md:grid-cols-4"
+        }`}
+      >
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center">
             <CheckCircleIcon className="h-5 w-5 text-blue-600 mr-2" />
@@ -382,7 +401,9 @@ export default function AdvertiserCampaignPromoters({
       {chosenPromotersArray.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Active Promoters</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Active Promoters
+            </h3>
           </div>
           <div className="divide-y divide-gray-200">
             {chosenPromotersArray.map((chosenPromoter) => (
@@ -394,27 +415,26 @@ export default function AdvertiserCampaignPromoters({
                       handleUserClick(chosenPromoter.promoter.id);
                     }}
                     className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
-                    title={`View ${chosenPromoter.promoter.name}'s profile`}
+                    title={`View ${getPromoterDisplayName(
+                      chosenPromoter.promoter
+                    )}'s profile`}
                   >
                     {chosenPromoter.promoter.avatarUrl ? (
                       <Image
                         src={chosenPromoter.promoter.avatarUrl}
-                        alt={chosenPromoter.promoter.name}
+                        alt={getPromoterDisplayName(chosenPromoter.promoter)}
                         width={48}
                         height={48}
                         className="w-full h-full object-cover rounded-full"
                       />
                     ) : (
-                      chosenPromoter.promoter.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
+                      getPromoterInitials(chosenPromoter.promoter)
                     )}
                   </button>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-lg font-medium text-gray-900">
-                        {chosenPromoter.promoter.name}
+                        {getPromoterDisplayName(chosenPromoter.promoter)}
                       </h4>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPromoterStatusColor(
@@ -434,7 +454,9 @@ export default function AdvertiserCampaignPromoters({
                         <p className="text-xs text-gray-500">Joined</p>
                         <p className="font-medium text-gray-900">
                           {chosenPromoter.joinedAt
-                            ? new Date(chosenPromoter.joinedAt).toLocaleDateString()
+                            ? new Date(
+                                chosenPromoter.joinedAt
+                              ).toLocaleDateString()
                             : "Recently"}
                         </p>
                       </div>
@@ -447,7 +469,9 @@ export default function AdvertiserCampaignPromoters({
                       <div>
                         <p className="text-xs text-gray-500">Money paid</p>
                         <p className="font-medium text-gray-900">
-                          {formatCurrency(Number(chosenPromoter.budgetAllocated) || 0)}
+                          {formatCurrency(
+                            Number(chosenPromoter.budgetAllocated) || 0
+                          )}
                         </p>
                       </div>
                       <div>
@@ -457,14 +481,16 @@ export default function AdvertiserCampaignPromoters({
                         </p>
                       </div>
                     </div>
-                    
+
                     {/* Pay Now Button for Seller and Consultant campaigns */}
                     {supportsPayments ? (
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <button
                           onClick={() => {
-                            console.log('Pay Now button clicked (active promoters)');
-                            handlePayNow(chosenPromoter);
+                            console.log(
+                              "Pay Now button clicked (active promoters)"
+                            );
+                            handlePayNow(chosenPromoter.promoter);
                           }}
                           className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
                         >
@@ -475,7 +501,8 @@ export default function AdvertiserCampaignPromoters({
                     ) : (
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <p className="text-sm text-gray-500">
-                          Payment not available for {campaign.campaign.type} campaigns
+                          Payment not available for {campaign.campaign.type}{" "}
+                          campaigns
                         </p>
                       </div>
                     )}
@@ -491,7 +518,9 @@ export default function AdvertiserCampaignPromoters({
       {applicants.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Applications</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Applications
+            </h3>
             {pendingApplications.length > 0 && (
               <button
                 onClick={() => onViewApplications(campaign)}
@@ -512,34 +541,35 @@ export default function AdvertiserCampaignPromoters({
                         handleUserClick(applicant.promoter.id);
                       }}
                       className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
-                      title={`View ${applicant.promoter.name}'s profile`}
+                      title={`View ${getPromoterDisplayName(
+                        applicant.promoter
+                      )}'s profile`}
                     >
                       {applicant.promoter.avatarUrl ? (
                         <Image
                           src={applicant.promoter.avatarUrl}
-                          alt={applicant.promoter.name}
+                          alt={getPromoterDisplayName(applicant.promoter)}
                           width={48}
                           height={48}
                           className="w-full h-full object-cover rounded-full"
                         />
                       ) : (
-                        applicant.promoter.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
+                        getPromoterInitials(applicant.promoter)
                       )}
                     </button>
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <h4 className="text-lg font-medium text-gray-900">
-                          {applicant.promoter.name}
+                          {getPromoterDisplayName(applicant.promoter)}
                         </h4>
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getApplicationStatusColor(
                             applicant.applicationStatus
                           )}`}
                         >
-                          {getApplicationStatusIcon(applicant.applicationStatus)}
+                          {getApplicationStatusIcon(
+                            applicant.applicationStatus
+                          )}
                           <span className="ml-1">
                             {applicant.applicationStatus}
                           </span>
@@ -575,7 +605,10 @@ export default function AdvertiserCampaignPromoters({
                         <div>
                           <p className="text-xs text-gray-500">Total Sales</p>
                           <p className="font-medium text-gray-900">
-                            ${formatNumber(Number(applicant.promoter.totalSales) || 0)}
+                            $
+                            {formatNumber(
+                              Number(applicant.promoter.totalSales) || 0
+                            )}
                           </p>
                         </div>
                         <div>
@@ -595,19 +628,19 @@ export default function AdvertiserCampaignPromoters({
           </div>
         </div>
       )}
-      
+
       {/* Pay Promoter Modal */}
       {selectedPromoterForPayment && (
         <>
-          {console.log('Rendering PayPromoterModal with:', {
+          {console.log("Rendering PayPromoterModal with:", {
             isOpen: showPayModal,
-            selectedPromoter: selectedPromoterForPayment?.promoter?.name,
-            campaignTitle: campaign.campaign.title
+            selectedPromoter: selectedPromoterForPayment?.name,
+            campaignTitle: campaign.title,
           })}
           <PayPromoterModal
             isOpen={showPayModal}
             onClose={() => {
-              console.log('Modal close requested');
+              console.log("Modal close requested");
               setShowPayModal(false);
               setSelectedPromoterForPayment(null);
             }}

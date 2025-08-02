@@ -1,24 +1,31 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   XMarkIcon,
   CreditCardIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
   CheckCircleIcon,
-} from '@heroicons/react/24/outline';
-import { CampaignAdvertiser } from '@/app/interfaces/campaign/advertiser-campaign';
-import { PromoterCampaign } from '@/app/interfaces/promoter-campaign';
-import { formatCurrency } from '@/utils/currency';
-import { advertiserPaymentService } from '@/services/advertiser-payment.service';
+} from "@heroicons/react/24/outline";
+import {
+  AdvertiserConsultantCampaignDetails,
+  AdvertiserSellerCampaignDetails,
+  AdvertiserVisibilityCampaignDetails,
+  AdvertiserSalesmanCampaignDetails,
+  CampaignAdvertiser,
+} from "@/app/interfaces/campaign/advertiser-campaign";
+import { Promoter } from "@/app/interfaces/user";
+import { formatCurrency } from "@/utils/currency";
+import { getPromoterDisplayName } from "@/utils/promoter-name";
+import { advertiserPaymentService } from "@/services/advertiser-payment.service";
 
 interface PayPromoterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onPaymentSuccess: (amount: number) => void;
   campaign: CampaignAdvertiser;
-  promoter: PromoterCampaign;
+  promoter: Promoter;
 }
 
 export default function PayPromoterModal({
@@ -28,52 +35,78 @@ export default function PayPromoterModal({
   campaign,
   promoter,
 }: PayPromoterModalProps) {
-  console.log('PayPromoterModal component called with:', { 
-    isOpen, 
-    campaignTitle: campaign?.campaign?.title, 
-    promoterName: promoter?.promoter?.name,
+  console.log("PayPromoterModal component called with:", {
+    isOpen,
+    campaignTitle: campaign?.title,
+    promoterName: promoter?.name,
     campaignType: campaign?.campaign?.type,
     fullCampaign: campaign,
-    fullPromoter: promoter
+    fullPromoter: promoter,
   });
 
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('PayPromoterModal props:', { isOpen, campaign: campaign?.campaign?.title || campaign?.title, promoter: promoter?.promoter?.name });
+  console.log("PayPromoterModal props:", {
+    isOpen,
+    campaign: campaign?.title || campaign?.title,
+    promoter: promoter?.name,
+  });
 
-  // Get campaign budget info (with null checks) - handle both data structures
-  const campaignData = campaign?.campaign || campaign;
-  const campaignId = campaignData?.id || campaign?.id;
-  const campaignType = campaignData?.type || campaign?.type;
-  
-  // Parse budget values as numbers (they come as strings from the API)
-  // Different field names based on campaign type
-  const minBudget = campaignType === 'CONSULTANT' 
-    ? parseFloat(campaignData?.minBudget || '0') || 0
-    : parseFloat(campaignData?.sellerMinBudget || campaignData?.minBudget || '0') || 0;
-    
-  const maxBudget = campaignType === 'CONSULTANT'
-    ? parseFloat(campaignData?.maxBudget || '0') || 0
-    : parseFloat(campaignData?.sellerMaxBudget || campaignData?.maxBudget || '0') || 0;
-    
-  const spentBudget = parseFloat(campaignData?.spentBudget || '0') || 0;
-  
+  // Get campaign budget info (with null checks)
+  const campaignData = campaign;
+  const campaignId = campaignData?.id;
+  const campaignType = campaignData?.campaign?.type;
+  const campaignDetails = campaignData?.campaign;
+
+  // Extract budget values based on campaign type
+  let minBudget = 0;
+  let maxBudget = 0;
+
+  if (campaignDetails) {
+    switch (campaignDetails.type) {
+      case "CONSULTANT":
+        const consultantDetails =
+          campaignDetails as AdvertiserConsultantCampaignDetails;
+        minBudget = consultantDetails.minBudget || 0;
+        maxBudget = consultantDetails.maxBudget || 0;
+        break;
+      case "SELLER":
+        const sellerDetails =
+          campaignDetails as AdvertiserSellerCampaignDetails;
+        minBudget = sellerDetails.minBudget || 0;
+        maxBudget = sellerDetails.maxBudget || 0;
+        break;
+      case "VISIBILITY":
+        const visibilityDetails =
+          campaignDetails as AdvertiserVisibilityCampaignDetails;
+        minBudget = 0; // Visibility campaigns don't have min/max budget
+        maxBudget = visibilityDetails.budgetAllocated || 0;
+        break;
+      case "SALESMAN":
+        const salesmanDetails =
+          campaignDetails as AdvertiserSalesmanCampaignDetails;
+        minBudget = 0; // Salesman campaigns don't have min/max budget
+        maxBudget = salesmanDetails.budgetAllocated || 0;
+        break;
+      default:
+        minBudget = 0;
+        maxBudget = 0;
+    }
+  }
+
+  const spentBudget = campaignDetails?.spentBudget || 0;
+
   const remainingBudget = maxBudget - spentBudget;
 
-  console.log('Budget values:', {
+  console.log("Budget values:", {
     campaignType,
     minBudget,
-    maxBudget, 
+    maxBudget,
     spentBudget,
     remainingBudget,
-    rawMinBudget: campaignData?.minBudget,
-    rawMaxBudget: campaignData?.maxBudget,
-    rawSellerMinBudget: campaignData?.sellerMinBudget,
-    rawSellerMaxBudget: campaignData?.sellerMaxBudget,
-    rawSpentBudget: campaignData?.spentBudget,
-    rawBudgetAllocated: campaignData?.budgetAllocated
+    campaignDetails,
   });
 
   useEffect(() => {
@@ -86,13 +119,13 @@ export default function PayPromoterModal({
   }, [isOpen, spentBudget, remainingBudget, minBudget, campaignData, promoter]);
 
   // Early return if required props are missing
-  if (!campaignData || !campaignId || !promoter || !promoter.promoter) {
-    console.error('PayPromoterModal: Missing required props', { 
-      campaign: !!campaign, 
+  if (!campaignData || !campaignId || !promoter || !promoter.id) {
+    console.error("PayPromoterModal: Missing required props", {
+      campaign: !!campaign,
       campaignData: !!campaignData,
       campaignId: campaignId,
       promoter: !!promoter,
-      promoterPromoter: !!promoter?.promoter 
+      promoterId: !!promoter?.id,
     });
     return null;
   }
@@ -104,13 +137,17 @@ export default function PayPromoterModal({
 
   const validatePaymentAmount = (): string | null => {
     if (paymentAmount <= 0) {
-      return 'Payment amount must be greater than $0';
+      return "Payment amount must be greater than $0";
     }
     if (paymentAmount > remainingBudget) {
-      return `Payment amount cannot exceed ${formatCurrency(remainingBudget)} (remaining budget)`;
+      return `Payment amount cannot exceed ${formatCurrency(
+        remainingBudget
+      )} (remaining budget)`;
     }
     if (spentBudget + paymentAmount > maxBudget) {
-      return `Total payments cannot exceed ${formatCurrency(maxBudget)} (maximum budget)`;
+      return `Total payments cannot exceed ${formatCurrency(
+        maxBudget
+      )} (maximum budget)`;
     }
     return null;
   };
@@ -126,28 +163,28 @@ export default function PayPromoterModal({
     setError(null);
 
     try {
-      console.log('Modal payment attempt:', {
+      console.log("Modal payment attempt:", {
         campaignId: campaignId,
         campaignIdType: typeof campaignId,
-        promoterId: promoter.promoter.id,
-        promoterIdType: typeof promoter.promoter.id,
+        promoterId: promoter.id,
+        promoterIdType: typeof promoter.id,
         paymentAmount: paymentAmount,
-        paymentAmountCents: Math.round(paymentAmount * 100)
+        paymentAmountCents: Math.round(paymentAmount * 100),
       });
 
       await advertiserPaymentService.payPromoter(
         campaignId,
-        promoter.promoter.id,
+        promoter.id,
         Math.round(paymentAmount * 100) // Convert to cents
       );
-      
+
       // Call success callback
       onPaymentSuccess(paymentAmount);
-      
+
       // Close modal
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Payment failed');
+      setError(err instanceof Error ? err.message : "Payment failed");
     } finally {
       setLoading(false);
     }
@@ -161,20 +198,20 @@ export default function PayPromoterModal({
   };
 
   if (!isOpen) {
-    console.log('Modal not open, returning null');
+    console.log("Modal not open, returning null");
     return null;
   }
 
-  console.log('Modal should render now...');
+  console.log("Modal should render now...");
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
         onClick={handleClose}
       />
-      
+
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all">
@@ -198,25 +235,38 @@ export default function PayPromoterModal({
           <div className="space-y-6">
             {/* Promoter Info */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-gray-900 mb-2">Promoter</h4>
-              <p className="text-lg font-semibold text-gray-900">{promoter.promoter.name}</p>
-              <p className="text-sm text-gray-600">Campaign: {campaignData?.title || 'Unknown Campaign'}</p>
+              <h4 className="text-sm font-medium text-gray-900 mb-2">
+                Promoter
+              </h4>
+              <p className="text-lg font-semibold text-gray-900">
+                {getPromoterDisplayName(promoter)}
+              </p>
+              <p className="text-sm text-gray-600">
+                Campaign: {campaignData?.title || "Unknown Campaign"}
+              </p>
             </div>
 
             {/* Budget Timeline */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-blue-900 mb-4">Payment Progress</h4>
-              
+              <h4 className="text-sm font-medium text-blue-900 mb-4">
+                Payment Progress
+              </h4>
+
               {/* Timeline Visual */}
               <div className="relative">
                 {/* Timeline Line */}
                 <div className="absolute top-3 left-0 right-0 h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-blue-600 rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min((spentBudget / maxBudget) * 100, 100)}%` }}
+                    style={{
+                      width: `${Math.min(
+                        (spentBudget / maxBudget) * 100,
+                        100
+                      )}%`,
+                    }}
                   />
                 </div>
-                
+
                 {/* Timeline Points */}
                 <div className="relative flex justify-between items-center mb-6">
                   {/* Start Point */}
@@ -227,52 +277,71 @@ export default function PayPromoterModal({
                       <div>Start</div>
                     </div>
                   </div>
-                  
+
                   {/* Min Budget Point */}
                   <div className="flex flex-col items-center">
-                    <div className={`w-6 h-6 rounded-full border-2 border-white shadow-sm ${
-                      spentBudget >= minBudget ? 'bg-blue-600' : 'bg-gray-300'
-                    }`}></div>
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 border-white shadow-sm ${
+                        spentBudget >= minBudget ? "bg-blue-600" : "bg-gray-300"
+                      }`}
+                    ></div>
                     <div className="mt-2 text-xs text-gray-600 text-center">
-                      <div className="font-medium">{formatCurrency(minBudget)}</div>
+                      <div className="font-medium">
+                        {formatCurrency(minBudget)}
+                      </div>
                       <div>Min</div>
                     </div>
                   </div>
-                  
+
                   {/* Current Point */}
-                  {spentBudget > 0 && spentBudget !== minBudget && spentBudget !== maxBudget && (
-                    <div className="flex flex-col items-center">
-                      <div className="w-6 h-6 bg-blue-600 rounded-full border-2 border-white shadow-sm"></div>
-                      <div className="mt-2 text-xs text-gray-600 text-center">
-                        <div className="font-medium">{formatCurrency(spentBudget)}</div>
-                        <div>Current</div>
+                  {spentBudget > 0 &&
+                    spentBudget !== minBudget &&
+                    spentBudget !== maxBudget && (
+                      <div className="flex flex-col items-center">
+                        <div className="w-6 h-6 bg-blue-600 rounded-full border-2 border-white shadow-sm"></div>
+                        <div className="mt-2 text-xs text-gray-600 text-center">
+                          <div className="font-medium">
+                            {formatCurrency(spentBudget)}
+                          </div>
+                          <div>Current</div>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  
+                    )}
+
                   {/* Max Budget Point */}
                   <div className="flex flex-col items-center">
-                    <div className={`w-6 h-6 rounded-full border-2 border-white shadow-sm ${
-                      spentBudget >= maxBudget ? 'bg-blue-600' : 'bg-gray-300'
-                    }`}></div>
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 border-white shadow-sm ${
+                        spentBudget >= maxBudget ? "bg-blue-600" : "bg-gray-300"
+                      }`}
+                    ></div>
                     <div className="mt-2 text-xs text-gray-600 text-center">
-                      <div className="font-medium">{formatCurrency(maxBudget)}</div>
+                      <div className="font-medium">
+                        {formatCurrency(maxBudget)}
+                      </div>
                       <div>Max</div>
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Progress Summary */}
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Paid: {formatCurrency(spentBudget)}</span>
-                  <span className="text-blue-700 font-medium">Remaining: {formatCurrency(remainingBudget)}</span>
+                  <span className="text-gray-600">
+                    Paid: {formatCurrency(spentBudget)}
+                  </span>
+                  <span className="text-blue-700 font-medium">
+                    Remaining: {formatCurrency(remainingBudget)}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Payment Amount Input */}
             <div>
-              <label htmlFor="paymentAmount" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="paymentAmount"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Payment Amount
               </label>
               <div className="relative">
@@ -283,7 +352,9 @@ export default function PayPromoterModal({
                   type="number"
                   id="paymentAmount"
                   value={paymentAmount}
-                  onChange={(e) => handlePaymentAmountChange(Number(e.target.value))}
+                  onChange={(e) =>
+                    handlePaymentAmountChange(Number(e.target.value))
+                  }
                   className="block w-full pl-7 pr-12 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-lg text-black"
                   placeholder="0.00"
                   min={0}
@@ -291,7 +362,7 @@ export default function PayPromoterModal({
                   step="0.01"
                 />
               </div>
-              
+
               {/* Quick Amount Buttons */}
               <div className="mt-3 flex space-x-2">
                 <button
@@ -316,7 +387,9 @@ export default function PayPromoterModal({
                 <div className="flex items-start space-x-2">
                   <ExclamationTriangleIcon className="h-5 w-5 text-red-600 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-red-900">Payment Error</h4>
+                    <h4 className="text-sm font-medium text-red-900">
+                      Payment Error
+                    </h4>
                     <p className="text-sm text-red-700 mt-1">{error}</p>
                   </div>
                 </div>
@@ -329,8 +402,9 @@ export default function PayPromoterModal({
                 <InformationCircleIcon className="h-5 w-5 text-amber-600 mt-0.5" />
                 <div>
                   <p className="text-sm text-amber-800">
-                    <strong>Note:</strong> A portion of the payment will be retained by the platform 
-                    to cover transaction fees and service costs.
+                    <strong>Note:</strong> A portion of the payment will be
+                    retained by the platform to cover transaction fees and
+                    service costs.
                   </p>
                 </div>
               </div>

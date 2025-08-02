@@ -14,6 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { CampaignDeliverable } from "@/app/interfaces/campaign-work";
 import { CampaignType } from "@/app/enums/campaign-type";
+import { getPromoterDisplayName } from "@/utils/promoter-name";
 import {
   CampaignAdvertiser,
   ChosenPromoterInfo,
@@ -233,7 +234,7 @@ export default function AdvertiserPromoterLinks({
         </h3>
         <span className="text-sm text-gray-600">
           {selectedPromoter
-            ? `Work from ${selectedPromoter.promoter.name}`
+            ? `Work from ${getPromoterDisplayName(selectedPromoter.promoter)}`
             : `Work from all promoters`}
         </span>
       </div>

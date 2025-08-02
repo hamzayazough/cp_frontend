@@ -1,6 +1,5 @@
 import { httpService } from "./http.service";
 import {
-  CreateConnectAccountRequest,
   StripeConnectResponse,
   OnboardingLinkResponse,
   OnboardingStatusResponse,
@@ -13,19 +12,13 @@ class StripeService {
   /**
    * Create a Stripe Connect account for the current user
    */
-  async createConnectAccount(
-    accountData: CreateConnectAccountRequest
-  ): Promise<StripeConnectResponse> {
+  async createConnectAccount(): Promise<StripeConnectResponse> {
     try {
-      // Verify authentication and get token
-      const token = await this.checkAuth();
-
       console.log("Creating Stripe Connect account with auth:", true);
-      console.log("Account data:", accountData);
 
       const response = await httpService.post<StripeConnectResponse>(
         STRIPE_ENDPOINTS.CREATE_ACCOUNT,
-        accountData,
+        {},
         true // requiresAuth
       );
 

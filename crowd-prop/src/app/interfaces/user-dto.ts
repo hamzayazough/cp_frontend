@@ -24,6 +24,7 @@ export interface CreateUserDto {
   usedCurrency: "USD" | "CAD";
   advertiserDetails?: AdvertiserDetailsDto;
   promoterDetails?: PromoterDetailsDto;
+  country: string;
 }
 
 export interface AdvertiserDetailsDto {
@@ -36,6 +37,8 @@ export interface PromoterDetailsDto {
   location: string;
   languagesSpoken: Language[];
   skills: string[];
+  isBusiness: boolean;
+  businessName?: string;
   followerEstimates?: FollowerEstimateDto[];
   works?: PromoterWorkDto[];
 }

@@ -35,6 +35,7 @@ export interface User {
   advertiserDetails?: AdvertiserDetails;
   promoterDetails?: PromoterDetails;
   usedCurrency?: "USD" | "CAD";
+  country: string;
 }
 
 // Advertiser-specific data
@@ -57,6 +58,8 @@ export interface PromoterDetails {
   totalSales?: number;
   numberOfCampaignDone?: number;
   totalViewsGenerated?: number;
+  isBusiness: boolean;
+  businessName?: string;
 }
 
 export interface Advertiser {
@@ -107,4 +110,7 @@ export interface Promoter {
   numberOfSalesmanCampaignDone?: number;
   numberOfConsultantCampaignDone?: number;
   totalViewsGenerated?: number;
+  isBusiness: boolean;
+  businessName?: string;
+  country: string;
 }

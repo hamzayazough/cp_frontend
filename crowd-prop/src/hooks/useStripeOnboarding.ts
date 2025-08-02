@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from "react";
 import { stripeService } from "@/services/stripe.service";
 import { userService } from "@/services/user.service";
 import {
-  CreateConnectAccountRequest,
   OnboardingStatusResponse,
   StripeConnectAccount,
 } from "@/app/interfaces/stripe";
@@ -15,7 +14,7 @@ interface UseStripeOnboardingResult {
   onboardingStatus: OnboardingStatusResponse | null;
 
   // Actions
-  createAccount: (accountData: CreateConnectAccountRequest) => Promise<void>;
+  createAccount: () => Promise<void>;
   getOnboardingLink: () => Promise<string>;
   checkOnboardingStatus: (userId: string) => Promise<OnboardingStatusResponse>;
   getAccountStatus: () => Promise<StripeConnectAccount | null>;
@@ -45,37 +44,34 @@ export function useStripeOnboarding(): UseStripeOnboardingResult {
     setOnboardingStatus(null);
   }, []);
 
-  const createAccount = useCallback(
-    async (accountData: CreateConnectAccountRequest) => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  const createAccount = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-        const response = await stripeService.createConnectAccount(accountData);
+      const response = await stripeService.createConnectAccount();
 
-        if (!response.success) {
-          throw new Error(response.message || "Failed to create account");
-        }
-
-        // The response data should contain account information
-        if (
-          response.data &&
-          typeof response.data === "object" &&
-          "accountId" in response.data
-        ) {
-          setAccountData(response.data as StripeConnectAccount);
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to create account";
-        setError(errorMessage);
-        throw err;
-      } finally {
-        setIsLoading(false);
+      if (!response.success) {
+        throw new Error(response.message || "Failed to create account");
       }
-    },
-    []
-  );
+
+      // The response data should contain account information
+      if (
+        response.data &&
+        typeof response.data === "object" &&
+        "accountId" in response.data
+      ) {
+        setAccountData(response.data as StripeConnectAccount);
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to create account";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const getOnboardingLink = useCallback(async (): Promise<string> => {
     try {
@@ -192,7 +188,7 @@ export function useStripeOnboarding(): UseStripeOnboardingResult {
         setError(null);
         console.log(
           "useStripeOnboarding: Fetching account status on mount for user:",
-          currentUser.uid
+          currentUser
         );
         const account = await stripeService.getAccountStatus();
         console.log("useStripeOnboarding: Account status fetched:", account);

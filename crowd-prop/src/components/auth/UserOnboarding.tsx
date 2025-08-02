@@ -31,6 +31,7 @@ export interface OnboardingData {
   bio: string;
   role: UserRole | null;
   usedCurrency: "USD" | "CAD";
+  country: "US" | "CA";
 
   tiktokUrl: string;
   instagramUrl: string;
@@ -57,6 +58,8 @@ export interface OnboardingData {
     location: string;
     languagesSpoken: Language[];
     skills: string[];
+    isBusiness: boolean;
+    businessName?: string;
   };
 }
 
@@ -73,6 +76,7 @@ export default function UserOnboarding({
     bio: "",
     role: null,
     usedCurrency: "USD",
+    country: "US",
     tiktokUrl: "",
     instagramUrl: "",
     snapchatUrl: "",
@@ -98,6 +102,7 @@ export default function UserOnboarding({
             bio: existingUser.bio || "",
             role: existingUser.role,
             usedCurrency: existingUser.usedCurrency || "USD",
+            country: (existingUser.country as "US" | "CA") || "US", // Use existing country or default to US
             tiktokUrl: existingUser.tiktokUrl || "",
             instagramUrl: existingUser.instagramUrl || "",
             snapchatUrl: existingUser.snapchatUrl || "",
@@ -124,6 +129,8 @@ export default function UserOnboarding({
                   languagesSpoken:
                     existingUser.promoterDetails.languagesSpoken || [],
                   skills: existingUser.promoterDetails.skills || [],
+                  isBusiness: existingUser.promoterDetails.isBusiness || false,
+                  businessName: existingUser.promoterDetails.businessName || "",
                 }
               : undefined,
           });
@@ -173,6 +180,7 @@ export default function UserOnboarding({
         bio: onboardingData.bio,
         role: onboardingData.role,
         usedCurrency: onboardingData.usedCurrency,
+        country: onboardingData.country,
         tiktokUrl: onboardingData.tiktokUrl,
         instagramUrl: onboardingData.instagramUrl,
         snapchatUrl: onboardingData.snapchatUrl,
@@ -205,6 +213,8 @@ export default function UserOnboarding({
           languagesSpoken: onboardingData.promoterDetails
             .languagesSpoken as Language[],
           skills: onboardingData.promoterDetails.skills,
+          isBusiness: onboardingData.promoterDetails.isBusiness,
+          businessName: onboardingData.promoterDetails.businessName,
         };
       }
 
@@ -352,7 +362,6 @@ export default function UserOnboarding({
         if (onboardingData.role === "PROMOTER") {
           return (
             <StripeConnectSetup
-              user={user}
               onComplete={handleNext}
               onBack={handleBack}
               isLoading={isLoading}
