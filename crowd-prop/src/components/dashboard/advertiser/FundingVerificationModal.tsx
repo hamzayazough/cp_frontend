@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   XMarkIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   CreditCardIcon,
   InformationCircleIcon,
-} from '@heroicons/react/24/outline';
-import { CampaignFundingFeasibility } from '@/app/interfaces/payment';
-import { advertiserPaymentService } from '@/services/advertiser-payment.service';
-import { formatCurrency } from '@/utils/currency';
-import AddFundsModal from '../../payment/AddFundsModal';
+} from "@heroicons/react/24/outline";
+import { CampaignFundingFeasibility } from "@/app/interfaces/payment";
+import { advertiserPaymentService } from "@/services/advertiser-payment.service";
+import { formatCurrency } from "@/utils/currency";
+import AddFundsModal from "../../payment/AddFundsModal";
 
 interface FundingVerificationModalProps {
   isOpen: boolean;
@@ -28,7 +28,8 @@ export default function FundingVerificationModal({
 }: FundingVerificationModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [feasibility, setFeasibility] = useState<CampaignFundingFeasibility | null>(null);
+  const [feasibility, setFeasibility] =
+    useState<CampaignFundingFeasibility | null>(null);
   const [showAddFunds, setShowAddFunds] = useState(false);
   const [isRechecking, setIsRechecking] = useState(false);
 
@@ -42,12 +43,13 @@ export default function FundingVerificationModal({
     setLoading(true);
     setError(null);
     try {
-      const result = await advertiserPaymentService.checkCampaignFundingFeasibility(
-        Math.round(estimatedBudget * 100) // Convert dollars to cents
-      );
+      const result =
+        await advertiserPaymentService.checkCampaignFundingFeasibility(
+          Math.round(estimatedBudget * 100) // Convert dollars to cents
+        );
       setFeasibility(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to check funding');
+      setError(err instanceof Error ? err.message : "Failed to check funding");
     } finally {
       setLoading(false);
     }
@@ -85,11 +87,11 @@ export default function FundingVerificationModal({
     <>
       <div className="fixed inset-0 z-50 overflow-y-auto">
         {/* Backdrop */}
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
           onClick={handleClose}
         />
-        
+
         {/* Modal */}
         <div className="flex min-h-full items-center justify-center p-4">
           <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all">
@@ -113,7 +115,9 @@ export default function FundingVerificationModal({
             {loading ? (
               <div className="flex flex-col items-center justify-center py-8">
                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-gray-600">Checking your account balance...</p>
+                <p className="text-gray-600">
+                  Checking your account balance...
+                </p>
               </div>
             ) : error ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -135,7 +139,9 @@ export default function FundingVerificationModal({
               <div className="space-y-6">
                 {/* Campaign Budget Info */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-gray-900 mb-3">Campaign Budget</h4>
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                    Campaign Budget
+                  </h4>
                   <div className="text-lg font-semibold text-gray-900">
                     {formatCurrency(feasibility.estimatedBudget)}
                   </div>
@@ -147,31 +153,45 @@ export default function FundingVerificationModal({
                 {/* Wallet Summary */}
                 {feasibility.walletSummary && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="text-sm font-medium text-blue-900 mb-3">Wallet Summary</h4>
+                    <h4 className="text-sm font-medium text-blue-900 mb-3">
+                      Wallet Summary
+                    </h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Total Balance:</span>
                         <span className="font-medium text-gray-900">
-                          {formatCurrency(feasibility.walletSummary.totalBalance)}
+                          {formatCurrency(
+                            feasibility.walletSummary.totalBalance
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Held for Existing Campaigns:</span>
+                        <span className="text-gray-600">
+                          Held for Existing Campaigns:
+                        </span>
                         <span className="font-medium text-gray-900">
-                          {formatCurrency(feasibility.walletSummary.heldForExistingCampaigns)}
+                          {formatCurrency(
+                            feasibility.walletSummary.heldForExistingCampaigns
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Available for New Campaigns:</span>
+                        <span className="text-gray-600">
+                          Available for New Campaigns:
+                        </span>
                         <span className="font-semibold text-blue-900">
                           {formatCurrency(feasibility.currentAvailableBalance)}
                         </span>
                       </div>
                       {feasibility.walletSummary.pendingTransactions > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Pending Transactions:</span>
+                          <span className="text-gray-600">
+                            Pending Transactions:
+                          </span>
                           <span className="font-medium text-gray-900">
-                            {formatCurrency(feasibility.walletSummary.pendingTransactions)}
+                            {formatCurrency(
+                              feasibility.walletSummary.pendingTransactions
+                            )}
                           </span>
                         </div>
                       )}
@@ -189,7 +209,9 @@ export default function FundingVerificationModal({
                           ✅ Sufficient Funds Available
                         </h4>
                         <p className="text-sm text-green-700 mt-1">
-                          You have enough funds to create this campaign. The maximum budget will be held when you create the campaign.
+                          You have enough funds to create this campaign. The
+                          maximum budget will be held when you create the
+                          campaign.
                         </p>
                       </div>
                     </div>
@@ -203,17 +225,9 @@ export default function FundingVerificationModal({
                           Additional Funding Required
                         </h4>
                         <p className="text-sm text-amber-700 mt-1">
-                          You need {formatCurrency(feasibility.shortfallAmount)} more to fund this campaign.
+                          You need {formatCurrency(feasibility.shortfallAmount)}{" "}
+                          more to fund this campaign.
                         </p>
-                        <div className="mt-3 p-3 bg-amber-100 rounded border">
-                          <p className="text-sm text-amber-800">
-                            <strong>Recommended deposit:</strong> {formatCurrency(feasibility.recommendedDeposit)}
-                            <br />
-                            <span className="text-xs">
-                              (Includes required amount plus buffer and processing fees)
-                            </span>
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -225,7 +239,10 @@ export default function FundingVerificationModal({
                     <InformationCircleIcon className="h-5 w-5 text-gray-600 mt-0.5" />
                     <div>
                       <p className="text-sm text-gray-700">
-                        <strong>How it works:</strong> When you create a campaign, the maximum budget amount will be temporarily held in your account to ensure promoters get paid. Unused funds are released when the campaign ends.
+                        <strong>How it works:</strong> When you create a
+                        campaign, the maximum budget amount will be temporarily
+                        held in your account to ensure promoters get paid.
+                        Unused funds are released when the campaign ends.
                       </p>
                     </div>
                   </div>
@@ -239,7 +256,7 @@ export default function FundingVerificationModal({
                   >
                     Cancel
                   </button>
-                  
+
                   {feasibility.canAfford ? (
                     <button
                       onClick={handleCreateCampaign}
@@ -254,7 +271,7 @@ export default function FundingVerificationModal({
                         disabled={isRechecking}
                         className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                       >
-                        {isRechecking ? 'Checking...' : 'Recheck'}
+                        {isRechecking ? "Checking..." : "Recheck"}
                       </button>
                       <button
                         onClick={() => setShowAddFunds(true)}

@@ -231,7 +231,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
           No campaigns match your current filters. Try adjusting your search
           criteria.
         </p>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        <button
+          onClick={() => router.push("/dashboard/campaigns/create")}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
           Create New Campaign
         </button>
       </div>
