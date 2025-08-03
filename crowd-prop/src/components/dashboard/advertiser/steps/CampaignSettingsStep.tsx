@@ -133,21 +133,40 @@ export default function CampaignSettingsStep({
               </label>
               <input
                 type="number"
-                min="0"
+                min="10001"
                 value={formData.maxViews || ""}
-                onChange={(e) =>
-                  updateFormData({
-                    maxViews: e.target.value
-                      ? parseInt(e.target.value)
-                      : undefined,
-                  })
-                }
-                placeholder="10,000"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "") {
+                    updateFormData({ maxViews: undefined });
+                    return;
+                  }
+                  let num = parseInt(value);
+                  if (isNaN(num)) return;
+                  if (num <= 10000) {
+                    num = 10001;
+                  }
+                  updateFormData({ maxViews: num });
+                }}
+                placeholder="10,001"
+                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                  formData.maxViews && formData.maxViews <= 10000
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
               />
               <p className="mt-2 text-sm text-gray-500">
-                📊 Maximum number of views to target
+                📊 Must be more than 10,000 views
               </p>
+              {formData.maxViews !== null &&
+                formData.maxViews !== undefined &&
+                formData.maxViews <= 10000 && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600 font-medium">
+                      Max Views must be more than 10,000.
+                    </p>
+                  </div>
+                )}
             </div>
           </div>
 
