@@ -854,29 +854,29 @@ export default function CampaignDetailsPage({
               {renderCampaignSpecificInfo(campaign)}
             </div>
             {/* Campaign Media */}
-            {campaign.mediaUrl && (
+            {campaign.mediaUrls && campaign.mediaUrls.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">
                   Campaign Media
                 </h3>
                 <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
-                  {campaign.mediaUrl.endsWith(".mp4") ||
-                  campaign.mediaUrl.endsWith(".webm") ||
-                  campaign.mediaUrl.endsWith(".mov") ||
-                  campaign.mediaUrl.endsWith(".avi") ? (
+                  {campaign.mediaUrls[0].mediaUrl.endsWith(".mp4") ||
+                  campaign.mediaUrls[0].mediaUrl.endsWith(".webm") ||
+                  campaign.mediaUrls[0].mediaUrl.endsWith(".mov") ||
+                  campaign.mediaUrls[0].mediaUrl.endsWith(".avi") ? (
                     <video
-                      src={campaign.mediaUrl}
+                      src={campaign.mediaUrls[0].mediaUrl}
                       controls
                       className="w-full h-full object-cover"
                     >
                       Your browser does not support the video tag.
                     </video>
-                  ) : campaign.mediaUrl.endsWith(".pdf") ? (
+                  ) : campaign.mediaUrls[0].mediaUrl.endsWith(".pdf") ? (
                     <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
                       <DocumentTextIcon className="h-16 w-16 text-gray-400" />
                       <p className="text-gray-600 text-center">PDF Document</p>
                       <a
-                        href={campaign.mediaUrl}
+                        href={campaign.mediaUrls[0].mediaUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -886,7 +886,7 @@ export default function CampaignDetailsPage({
                     </div>
                   ) : (
                     <img
-                      src={campaign.mediaUrl}
+                      src={campaign.mediaUrls[0].mediaUrl}
                       alt="Campaign Media"
                       className="w-full h-full object-cover"
                       onError={(e) => {

@@ -383,21 +383,21 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
     <div className="space-y-6">
       {" "}
       {/* Campaign Media */}
-      {campaign.mediaUrl && (
+      {campaign.mediaUrls && campaign.mediaUrls.length > 0 && (
         <div>
           <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
-            {campaign.mediaUrl.endsWith(".mp4") ||
-            campaign.mediaUrl.endsWith(".webm") ||
-            campaign.mediaUrl.endsWith(".mov") ||
-            campaign.mediaUrl.endsWith(".avi") ? (
+            {campaign.mediaUrls[0].mediaUrl.endsWith(".mp4") ||
+            campaign.mediaUrls[0].mediaUrl.endsWith(".webm") ||
+            campaign.mediaUrls[0].mediaUrl.endsWith(".mov") ||
+            campaign.mediaUrls[0].mediaUrl.endsWith(".avi") ? (
               <video
-                src={campaign.mediaUrl}
+                src={campaign.mediaUrls[0].mediaUrl}
                 controls
                 className="w-full h-full object-cover"
               >
                 Your browser does not support the video tag.
               </video>
-            ) : campaign.mediaUrl.toLowerCase().endsWith(".pdf") ? (
+            ) : campaign.mediaUrls[0].mediaUrl.toLowerCase().endsWith(".pdf") ? (
               <div className="w-full h-full flex flex-col items-center justify-center space-y-4 bg-gray-50">
                 <svg
                   className="h-16 w-16 text-gray-400"
@@ -410,7 +410,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   PDF Document
                 </p>
                 <a
-                  href={campaign.mediaUrl}
+                  href={campaign.mediaUrls[0].mediaUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
@@ -420,7 +420,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               </div>
             ) : (
               <Image
-                src={campaign.mediaUrl}
+                src={campaign.mediaUrls[0].mediaUrl}
                 alt="Campaign Media"
                 width={800}
                 height={400}
