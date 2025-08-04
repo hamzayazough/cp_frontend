@@ -286,33 +286,59 @@ class AdvertiserService {
 
     return response.data;
   }
-  async uploadCampaignFile(
-    file: File,
+  async uploadCampaignFiles(
+    files: File[],
     campaignId: string
-  ): Promise<{ success: boolean; message: string; mediaUrl?: string }> {
+  ): Promise<{
+    success: boolean;
+    message: string;
+    uploadedFiles?: Array<{ fileUrl: string; fileName: string }>;
+    failedFiles?: Array<{ fileName: string; error: string }>;
+    campaign?: Campaign;
+  }> {
     try {
+      if (!files || files.length === 0) {
+        return {
+          success: true,
+          message: "No files to upload",
+          uploadedFiles: [],
+          failedFiles: [],
+        };
+      }
+
+      if (files.length > 10) {
+        return {
+          success: false,
+          message: "Maximum 10 files allowed",
+        };
+      }
+
       const formData = new FormData();
-      formData.append("file", file);
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
       formData.append("campaignId", campaignId);
 
       const response = await httpService.uploadFormData<{
         success: boolean;
         message: string;
-        mediaUrl?: string;
-      }>(`${this.baseUrl}/upload-file`, formData, true);
+        uploadedFiles?: Array<{ fileUrl: string; fileName: string }>;
+        failedFiles?: Array<{ fileName: string; error: string }>;
+        campaign?: Campaign;
+      }>(`${this.baseUrl}/upload-files`, formData, true);
 
       return {
-        success: true,
-        message:
-          (response.data as { message?: string })?.message ||
-          "File uploaded successfully",
-        mediaUrl: (response.data as { mediaUrl?: string })?.mediaUrl,
+        success: response.data.success || true,
+        message: response.data.message || "Files uploaded successfully",
+        uploadedFiles: response.data.uploadedFiles || [],
+        failedFiles: response.data.failedFiles || [],
+        campaign: response.data.campaign,
       };
     } catch (error) {
       return {
         success: false,
         message:
-          error instanceof Error ? error.message : "Failed to upload file",
+          error instanceof Error ? error.message : "Failed to upload files",
       };
     }
   }

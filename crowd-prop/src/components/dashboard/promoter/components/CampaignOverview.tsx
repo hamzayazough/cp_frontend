@@ -152,7 +152,10 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
 
   const renderCampaignDetails = () => {
     const baseDetails = (
-      <div key="baseDetails" className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+      <div
+        key="baseDetails"
+        className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+      >
         <div className="flex items-center">
           <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
           <span className="text-sm text-gray-600">Budget</span>
@@ -397,7 +400,9 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               >
                 Your browser does not support the video tag.
               </video>
-            ) : campaign.mediaUrls[0].mediaUrl.toLowerCase().endsWith(".pdf") ? (
+            ) : campaign.mediaUrls[0].mediaUrl
+                .toLowerCase()
+                .endsWith(".pdf") ? (
               <div className="w-full h-full flex flex-col items-center justify-center space-y-4 bg-gray-50">
                 <svg
                   className="h-16 w-16 text-gray-400"

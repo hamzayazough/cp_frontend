@@ -1,20 +1,23 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useMemo } from 'react';
-import { Campaign } from '@/app/interfaces/campaign/campaign';
-import { CampaignType, Deliverable } from '@/app/enums/campaign-type';
-import { AdvertiserType } from '@/app/enums/advertiser-type';
-import { SocialPlatform } from '@/app/enums/social-platform';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { advertiserService } from '@/services/advertiser.service';
-import { CampaignDeliverable } from '@/app/interfaces/campaign-work';
-import StepIndicator from './StepIndicator';
-import CampaignTypeStep from './steps/CampaignTypeStep';
-import { BasicInfoStep } from './steps';
-import CampaignSettingsStep from './steps/CampaignSettingsStep';
-import ReviewStep from './steps/ReviewStep';
-import FundingVerificationModal from './FundingVerificationModal';
-import { calculateEstimatedBudget, canCalculateBudget } from '@/utils/campaign-budget';
+import { useState, useCallback, useMemo } from "react";
+import { Campaign } from "@/app/interfaces/campaign/campaign";
+import { CampaignType, Deliverable } from "@/app/enums/campaign-type";
+import { AdvertiserType } from "@/app/enums/advertiser-type";
+import { SocialPlatform } from "@/app/enums/social-platform";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { advertiserService } from "@/services/advertiser.service";
+import { CampaignDeliverable } from "@/app/interfaces/campaign-work";
+import StepIndicator from "./StepIndicator";
+import CampaignTypeStep from "./steps/CampaignTypeStep";
+import { BasicInfoStep } from "./steps";
+import CampaignSettingsStep from "./steps/CampaignSettingsStep";
+import ReviewStep from "./steps/ReviewStep";
+import FundingVerificationModal from "./FundingVerificationModal";
+import {
+  calculateEstimatedBudget,
+  canCalculateBudget,
+} from "@/utils/campaign-budget";
 
 interface CreateCampaignWizardProps {
   onComplete: (campaign: Campaign) => void;
@@ -29,8 +32,8 @@ export interface CampaignWizardFormData {
   type: CampaignType | null;
   advertiserTypes: AdvertiserType[];
   isPublic: boolean;
-  file: File | null; // Changed from mediaUrl to file - required for upload
-  
+  files: File[]; // Support multiple files (up to 10)
+
   // Optional common fields
   requirements?: string[];
   targetAudience?: string;
@@ -45,38 +48,38 @@ export interface CampaignWizardFormData {
   minFollowers?: number;
 
   // Consultant-specific fields
-  meetingPlan?: import('@/app/enums/campaign-type').MeetingPlan;
+  meetingPlan?: import("@/app/enums/campaign-type").MeetingPlan;
   expertiseRequired?: string;
-  expectedDeliverables?: import('@/app/enums/campaign-type').Deliverable[];
+  expectedDeliverables?: import("@/app/enums/campaign-type").Deliverable[];
   meetingCount?: number;
   maxBudget?: number;
   minBudget?: number;
 
   // Seller-specific fields
-  sellerRequirements?: import('@/app/enums/campaign-type').Deliverable[];
-  deliverables?: import('@/app/enums/campaign-type').Deliverable[];
+  sellerRequirements?: import("@/app/enums/campaign-type").Deliverable[];
+  deliverables?: import("@/app/enums/campaign-type").Deliverable[];
   needMeeting?: boolean;
-  sellerMeetingPlan?: import('@/app/enums/campaign-type').MeetingPlan;
+  sellerMeetingPlan?: import("@/app/enums/campaign-type").MeetingPlan;
   sellerMeetingCount?: number;
   sellerMaxBudget?: number;
   sellerMinBudget?: number;
 
   // Salesman-specific fields
   commissionPerSale?: number;
-  trackSalesVia?: import('@/app/enums/campaign-type').SalesTrackingMethod;
+  trackSalesVia?: import("@/app/enums/campaign-type").SalesTrackingMethod;
   codePrefix?: string;
   salesmanMinFollowers?: number;
 }
 
 const initialFormData: CampaignWizardFormData = {
-  title: '',
-  description: '',
+  title: "",
+  description: "",
   type: null,
   advertiserTypes: [],
   isPublic: true,
-  file: null,
+  files: [],
   requirements: [],
-  targetAudience: '',
+  targetAudience: "",
   preferredPlatforms: [],
   deadline: null,
   startDate: null,
@@ -84,12 +87,12 @@ const initialFormData: CampaignWizardFormData = {
   // Visibility fields
   cpv: undefined,
   maxViews: undefined,
-  trackingLink: '',
+  trackingLink: "",
   minFollowers: undefined,
 
   // Consultant fields
   meetingPlan: undefined,
-  expertiseRequired: '',
+  expertiseRequired: "",
   expectedDeliverables: [],
   meetingCount: undefined,
   maxBudget: undefined,
@@ -107,7 +110,7 @@ const initialFormData: CampaignWizardFormData = {
   // Salesman fields
   commissionPerSale: undefined,
   trackSalesVia: undefined,
-  codePrefix: '',
+  codePrefix: "",
   salesmanMinFollowers: undefined,
 };
 
@@ -128,13 +131,19 @@ const transformDeliverablesForCreation = (
   }));
 };
 
-export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCampaignWizardProps) {
+export default function CreateCampaignWizard({
+  onComplete,
+  onCancel,
+}: CreateCampaignWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<CampaignWizardFormData>(initialFormData);
+  const [formData, setFormData] =
+    useState<CampaignWizardFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadStep, setUploadStep] = useState<'idle' | 'uploading' | 'creating'>('idle');
+  const [uploadStep, setUploadStep] = useState<
+    "idle" | "uploading" | "creating"
+  >("idle");
   const [showFundingModal, setShowFundingModal] = useState(false);
-  
+
   // Calculate estimated budget in real-time
   const estimatedBudget = useMemo(() => {
     return calculateEstimatedBudget(formData);
@@ -147,27 +156,27 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
 
   const steps = [
     {
-      id: 'type',
-      title: 'Campaign Type',
-      description: 'Choose your campaign type',
+      id: "type",
+      title: "Campaign Type",
+      description: "Choose your campaign type",
       component: CampaignTypeStep,
     },
     {
-      id: 'basic',
-      title: 'Basic Information',
-      description: 'Provide campaign details',
+      id: "basic",
+      title: "Basic Information",
+      description: "Provide campaign details",
       component: BasicInfoStep,
     },
     {
-      id: 'settings',
-      title: 'Campaign Settings',
-      description: 'Configure campaign parameters',
+      id: "settings",
+      title: "Campaign Settings",
+      description: "Configure campaign parameters",
       component: CampaignSettingsStep,
     },
     {
-      id: 'review',
-      title: 'Review & Launch',
-      description: 'Review and create your campaign',
+      id: "review",
+      title: "Review & Launch",
+      description: "Review and create your campaign",
       component: ReviewStep,
     },
   ];
@@ -175,12 +184,15 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
   const currentStepData = steps[currentStep];
   const StepComponent = currentStepData.component;
 
-  const updateFormData = useCallback((updates: Partial<CampaignWizardFormData>) => {
-    setFormData(prev => {
-      const newData = { ...prev, ...updates };
-      return newData;
-    });
-  }, []);
+  const updateFormData = useCallback(
+    (updates: Partial<CampaignWizardFormData>) => {
+      setFormData((prev) => {
+        const newData = { ...prev, ...updates };
+        return newData;
+      });
+    },
+    []
+  );
 
   const canProceed = () => {
     switch (currentStep) {
@@ -188,12 +200,13 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
         return formData.type !== null;
       case 1: // Basic Info
         return (
-          formData.title.trim() !== '' && 
-          formData.description.trim() !== '' &&
+          formData.title.trim() !== "" &&
+          formData.description.trim() !== "" &&
           formData.advertiserTypes.length > 0 &&
           formData.startDate !== null &&
           formData.deadline !== null &&
-          formData.file !== null
+          formData.files &&
+          formData.files.length > 0
         );
       case 2: // Settings
         return validateSettings();
@@ -206,50 +219,50 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
 
   const validateSettings = () => {
     if (!formData.type) return false;
-    
+
     switch (formData.type) {
       case CampaignType.VISIBILITY:
         return (
-          typeof formData.cpv === 'number' &&
+          typeof formData.cpv === "number" &&
           formData.cpv >= 0.5 &&
-          typeof formData.trackingLink === 'string' &&
-          formData.trackingLink.trim() !== '' &&
-          typeof formData.maxViews === 'number' &&
+          typeof formData.trackingLink === "string" &&
+          formData.trackingLink.trim() !== "" &&
+          typeof formData.maxViews === "number" &&
           formData.maxViews > 0
         );
       case CampaignType.CONSULTANT:
         return (
-          Array.isArray(formData.expectedDeliverables) && 
+          Array.isArray(formData.expectedDeliverables) &&
           formData.expectedDeliverables.length > 0 &&
-          typeof formData.maxBudget === 'number' &&
+          typeof formData.maxBudget === "number" &&
           formData.maxBudget > 0 &&
-          typeof formData.minBudget === 'number' &&
+          typeof formData.minBudget === "number" &&
           formData.minBudget > 0 &&
           formData.minBudget <= formData.maxBudget &&
           formData.meetingPlan !== undefined &&
-          typeof formData.meetingCount === 'number' &&
+          typeof formData.meetingCount === "number" &&
           formData.meetingCount > 0
         );
       case CampaignType.SELLER:
         return (
           // Both seller requirements AND deliverables are now required
-          Array.isArray(formData.sellerRequirements) && 
+          Array.isArray(formData.sellerRequirements) &&
           formData.sellerRequirements.length > 0 &&
-          Array.isArray(formData.deliverables) && 
+          Array.isArray(formData.deliverables) &&
           formData.deliverables.length > 0 &&
-          typeof formData.sellerMaxBudget === 'number' &&
+          typeof formData.sellerMaxBudget === "number" &&
           formData.sellerMaxBudget > 0 &&
-          typeof formData.sellerMinBudget === 'number' &&
+          typeof formData.sellerMinBudget === "number" &&
           formData.sellerMinBudget > 0 &&
           formData.sellerMinBudget <= formData.sellerMaxBudget &&
-          (formData.needMeeting === false || 
-           (formData.sellerMeetingPlan !== undefined && 
-            typeof formData.sellerMeetingCount === 'number' &&
-            formData.sellerMeetingCount > 0))
+          (formData.needMeeting === false ||
+            (formData.sellerMeetingPlan !== undefined &&
+              typeof formData.sellerMeetingCount === "number" &&
+              formData.sellerMeetingCount > 0))
         );
       case CampaignType.SALESMAN:
         return (
-          typeof formData.commissionPerSale === 'number' &&
+          typeof formData.commissionPerSale === "number" &&
           formData.commissionPerSale > 0 &&
           formData.trackSalesVia !== null &&
           formData.trackSalesVia !== undefined
@@ -263,7 +276,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
       // Scroll to top of the page when moving to next step
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -271,13 +284,13 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
       // Scroll to top of the page when moving to previous step
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleVerifyFunds = () => {
     if (!canCalculate) {
-      console.error('Cannot calculate budget with current form data');
+      console.error("Cannot calculate budget with current form data");
       return;
     }
 
@@ -291,7 +304,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    setUploadStep('creating');
+    setUploadStep("creating");
 
     // Debug: Log the entire form data at submission
 
@@ -315,7 +328,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           campaignData = {
             ...baseData,
             type: CampaignType.VISIBILITY,
-            cpv: formData.cpv !== undefined ? formData.cpv : 0, 
+            cpv: formData.cpv !== undefined ? formData.cpv : 0,
             maxViews: formData.maxViews!, // Now required
             trackingLink: formData.trackingLink!,
             minFollowers: formData.minFollowers,
@@ -329,7 +342,9 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
             type: CampaignType.CONSULTANT,
             meetingPlan: formData.meetingPlan!,
             expertiseRequired: formData.expertiseRequired,
-            expectedDeliverables: transformDeliverablesForCreation(formData.expectedDeliverables!),
+            expectedDeliverables: transformDeliverablesForCreation(
+              formData.expectedDeliverables!
+            ),
             meetingCount: formData.meetingCount!,
             maxBudget: formData.maxBudget!,
             minBudget: formData.minBudget!,
@@ -342,7 +357,9 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
             ...baseData,
             type: CampaignType.SELLER,
             sellerRequirements: formData.sellerRequirements ?? [],
-            deliverables: transformDeliverablesForCreation(formData.deliverables ?? []),
+            deliverables: transformDeliverablesForCreation(
+              formData.deliverables ?? []
+            ),
             maxBudget: formData.sellerMaxBudget!,
             minBudget: formData.sellerMinBudget!,
             isPublic: false,
@@ -366,25 +383,27 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           break;
 
         default:
-          throw new Error('Invalid campaign type');
+          throw new Error("Invalid campaign type");
       }
 
       // Step 2: Call the advertiser service to create the campaign
       const result = await advertiserService.createCampaign(campaignData);
-      
 
       if (result.success && result.campaign) {
         let finalCampaign = result.campaign;
-      
-        // Step 3: Upload the file after campaign creation if there is one
-        if (formData.file && result.campaign.id) {
-          setUploadStep('uploading');
-          const uploadResult = await advertiserService.uploadCampaignFile(
-            formData.file,
+
+        // Step 3: Upload the files after campaign creation if there are any
+        if (formData.files && formData.files.length > 0 && result.campaign.id) {
+          setUploadStep("uploading");
+          const uploadResult = await advertiserService.uploadCampaignFiles(
+            formData.files,
             result.campaign.id
           );
           if (!uploadResult.success) {
-            console.warn('Campaign created but file upload failed:', uploadResult.message);
+            console.warn(
+              "Campaign created but file upload failed:",
+              uploadResult.message
+            );
             // Campaign was created successfully, but file upload failed
             // You might want to show a warning to the user here
           } else {
@@ -392,24 +411,46 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
             if (uploadResult.campaign) {
               finalCampaign = uploadResult.campaign;
             }
+            // Log upload results
+            if (
+              uploadResult.uploadedFiles &&
+              uploadResult.uploadedFiles.length > 0
+            ) {
+              console.log(
+                "Successfully uploaded files:",
+                uploadResult.uploadedFiles
+              );
+            }
+            if (
+              uploadResult.failedFiles &&
+              uploadResult.failedFiles.length > 0
+            ) {
+              console.warn(
+                "Failed to upload some files:",
+                uploadResult.failedFiles
+              );
+            }
           }
         } else {
-          console.log('Skipping file upload - conditions not met');
-          console.log('Missing file:', !formData.file);
-          console.log('Missing campaign ID:', !result.campaign.id);
+          console.log("Skipping file upload - conditions not met");
+          console.log(
+            "Missing files:",
+            !formData.files || formData.files.length === 0
+          );
+          console.log("Missing campaign ID:", !result.campaign.id);
         }
-        
+
         onComplete(finalCampaign);
       } else {
-        throw new Error(result.message || 'Failed to create campaign');
+        throw new Error(result.message || "Failed to create campaign");
       }
     } catch (error) {
-      console.error('Error creating campaign:', error);
+      console.error("Error creating campaign:", error);
       // Handle error (show toast, etc.)
       // You might want to show an error message to the user here
     } finally {
       setIsSubmitting(false);
-      setUploadStep('idle');
+      setUploadStep("idle");
     }
   };
 
@@ -444,9 +485,7 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             {currentStepData.title}
           </h2>
-          <p className="text-gray-600 text-sm">
-            {currentStepData.description}
-          </p>
+          <p className="text-gray-600 text-sm">{currentStepData.description}</p>
         </div>
 
         <StepComponent
@@ -477,11 +516,14 @@ export default function CreateCampaignWizard({ onComplete, onCancel }: CreateCam
               {isSubmitting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  {uploadStep === 'creating' ? 'Creating Campaign...' : 
-                   uploadStep === 'uploading' ? 'Uploading File...' : 'Creating...'}
+                  {uploadStep === "creating"
+                    ? "Creating Campaign..."
+                    : uploadStep === "uploading"
+                    ? "Uploading File..."
+                    : "Creating..."}
                 </>
               ) : (
-                'Verify Funds'
+                "Verify Funds"
               )}
             </button>
           ) : (

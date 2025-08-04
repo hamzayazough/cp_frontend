@@ -16,9 +16,7 @@ import {
   Linkedin,
   Facebook,
   Globe,
-  FileText,
 } from "lucide-react";
-import Image from "next/image";
 
 interface AdvertiserCampaignOverviewProps {
   campaign: CampaignAdvertiser;
@@ -107,7 +105,7 @@ export default function AdvertiserCampaignOverview({
               </span>
               <span className="text-lg font-semibold text-pink-600">
                 {campaign.campaign.type === CampaignType.VISIBILITY
-                  ? formatCurrency(campaign.campaign.cpv )
+                  ? formatCurrency(campaign.campaign.cpv)
                   : "N/A"}
               </span>
             </div>
@@ -225,59 +223,6 @@ export default function AdvertiserCampaignOverview({
   return (
     <div className="space-y-6">
       {" "}
-      {/* Campaign Media */}
-      {campaign.mediaUrls && campaign.mediaUrls.length > 0 && (
-        <div>
-          <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
-            {campaign.mediaUrls[0].mediaUrl.endsWith(".mp4") ||
-            campaign.mediaUrls[0].mediaUrl.endsWith(".webm") ||
-            campaign.mediaUrls[0].mediaUrl.endsWith(".mov") ||
-            campaign.mediaUrls[0].mediaUrl.endsWith(".avi") ? (
-              <video
-                src={campaign.mediaUrls[0].mediaUrl}
-                controls
-                className="w-full h-full object-cover"
-              >
-                Your browser does not support the video tag.
-              </video>
-            ) : campaign.mediaUrls[0].mediaUrl.endsWith(".pdf") ? (
-              <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
-                <FileText className="h-16 w-16 text-gray-400" />
-                <p className="text-gray-600 text-center">PDF Document</p>
-                <a
-                  href={campaign.mediaUrls[0].mediaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  View PDF
-                </a>
-              </div>
-            ) : (
-              <Image
-                src={campaign.mediaUrls[0].mediaUrl}
-                alt="Campaign Media"
-                width={800}
-                height={400}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                  e.currentTarget.parentElement!.innerHTML = `
-                    <div class="flex flex-col items-center justify-center space-y-4">
-                      <div class="h-16 w-16 text-gray-400">
-                        <svg fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                        </svg>
-                      </div>
-                      <p class="text-gray-600 text-center">Media unavailable</p>
-                    </div>
-                  `;
-                }}
-              />
-            )}
-          </div>
-        </div>
-      )}
       {/* Three cards section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Campaign Details Card */}
@@ -323,21 +268,21 @@ export default function AdvertiserCampaignOverview({
                   <p className="text-sm font-medium text-gray-600 mb-2">
                     Preferred Platforms:
                   </p>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {campaign.campaign.preferredPlatforms.map(
                       (platform, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full"
-                      >
-                        {getSocialPlatformIcon(platform, "black")}
-                        <span className="text-xs font-medium text-green-700">
-                        {platform}
-                        </span>
-                      </div>
+                        <div
+                          key={index}
+                          className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full"
+                        >
+                          {getSocialPlatformIcon(platform, "black")}
+                          <span className="text-xs font-medium text-green-700">
+                            {platform}
+                          </span>
+                        </div>
                       )
                     )}
-                    </div>
+                  </div>
                 </div>
               )}
           </div>
