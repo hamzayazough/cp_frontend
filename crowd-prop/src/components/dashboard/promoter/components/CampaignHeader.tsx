@@ -8,7 +8,10 @@ import {
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import { CampaignPromoter } from "@/app/interfaces/campaign/promoter-campaign-details";
-import { CampaignType } from "@/app/enums/campaign-type";
+import {
+  CampaignType,
+  PromoterCampaignStatus,
+} from "@/app/enums/campaign-type";
 
 interface CampaignHeaderProps {
   campaign: CampaignPromoter;
@@ -55,33 +58,37 @@ export default function CampaignHeader({
         </div>
       </div>
       <div className="flex items-center space-x-3">
-        {campaign.campaign.type === CampaignType.VISIBILITY && (
-          <button
-            onClick={onShareClick}
-            className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <ShareIcon className="h-4 w-4 mr-2" />
-            Link to Share
-          </button>
-        )}
-        {campaign.campaign.discordInviteLink && (
+        {campaign.campaign.type === CampaignType.VISIBILITY &&
+          campaign.status === PromoterCampaignStatus.ONGOING && (
+            <button
+              onClick={onShareClick}
+              className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <ShareIcon className="h-4 w-4 mr-2" />
+              Link to Share
+            </button>
+          )}
+        {campaign.campaign.discordInviteLink &&
+          campaign.status === PromoterCampaignStatus.ONGOING && (
+            <Link
+              href={campaign.campaign.discordInviteLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
+              Discord Channel
+            </Link>
+          )}
+        {campaign.status === PromoterCampaignStatus.ONGOING && (
           <Link
-            href={campaign.campaign.discordInviteLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            href={routes.messageThread(campaignId)}
+            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
-            Discord Channel
+            Chat
           </Link>
         )}
-        <Link
-          href={routes.messageThread(campaignId)}
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
-          Chat
-        </Link>
       </div>
     </div>
   );

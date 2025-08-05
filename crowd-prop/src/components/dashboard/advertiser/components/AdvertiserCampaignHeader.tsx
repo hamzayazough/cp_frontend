@@ -181,15 +181,16 @@ export default function AdvertiserCampaignHeader({
               {isCompletingCampaign ? "Completing..." : "Complete Campaign"}
             </button>
           )}
-          {campaign.type === CampaignType.VISIBILITY && (
-            <button
-              onClick={onShareClick}
-              className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors text-sm"
-            >
-              <ShareIcon className="h-4 w-4 mr-2" />
-              Link to Share
-            </button>
-          )}
+          {campaign.type === CampaignType.VISIBILITY &&
+            shouldShowChatButton() && (
+              <button
+                onClick={onShareClick}
+                className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              >
+                <ShareIcon className="h-4 w-4 mr-2" />
+                Link to Share
+              </button>
+            )}
           {campaign.campaign.discordInviteLink && (
             <Link
               href={campaign.campaign.discordInviteLink}
