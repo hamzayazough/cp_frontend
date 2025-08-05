@@ -5,7 +5,6 @@ import {
   EyeIcon,
   CheckCircleIcon,
   ChatBubbleLeftRightIcon,
-  UsersIcon,
   PhotoIcon,
 } from "@heroicons/react/24/outline";
 
@@ -21,7 +20,6 @@ export default function AdvertiserCampaignTabs({
   const tabs = [
     { id: "overview", label: "Overview", icon: ChartBarIcon },
     { id: "media", label: "Media", icon: PhotoIcon },
-    { id: "promoters", label: "Promoters", icon: UsersIcon },
     { id: "performance", label: "Performance", icon: EyeIcon },
     { id: "requirements", label: "Requirements", icon: CheckCircleIcon },
     { id: "messages", label: "Messages", icon: ChatBubbleLeftRightIcon },

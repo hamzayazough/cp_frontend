@@ -220,13 +220,6 @@ export default function AdvertiserCampaignDetailsContent({
         return <AdvertiserCampaignOverview campaign={campaign} />;
       case "media":
         return <AdvertiserCampaignMedia campaign={campaign} />;
-      case "promoters":
-        return (
-          <AdvertiserCampaignPromoters
-            campaign={campaign}
-            onViewApplications={handleViewApplications}
-          />
-        );
       case "performance":
         return <AdvertiserCampaignPerformance campaign={campaign} />;
       case "requirements":
@@ -306,6 +299,16 @@ export default function AdvertiserCampaignDetailsContent({
         campaign={campaign}
         daysLeft={getDaysLeft()}
       />
+
+      {/* Promoters Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-6">
+          <AdvertiserCampaignPromoters
+            campaign={campaign}
+            onViewApplications={handleViewApplications}
+          />
+        </div>
+      </div>
 
       {/* Promoter Links */}
       <AdvertiserPromoterLinks campaign={campaign} />
