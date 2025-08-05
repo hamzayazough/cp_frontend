@@ -6,6 +6,7 @@ import {
   ShareIcon,
   ChatBubbleLeftRightIcon,
   CheckCircleIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 import {
   CampaignAdvertiser,
@@ -39,6 +40,9 @@ export default function AdvertiserCampaignHeader({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isCompletingCampaign, setIsCompletingCampaign] = useState(false);
   const [completeError, setCompleteError] = useState<string | null>(null);
+  const [showExtendModal, setShowExtendModal] = useState(false);
+  const [isExtending, setIsExtending] = useState(false);
+  const [extendError, setExtendError] = useState<string | null>(null);
 
   // Check if all deliverables are finished for Consultant and Seller campaigns
   const areAllDeliverablesFinished = () => {
@@ -84,6 +88,36 @@ export default function AdvertiserCampaignHeader({
       (chosenPromoter) =>
         chosenPromoter.status === PromoterCampaignStatus.ONGOING
     );
+  };
+
+  // Check if deadline is within a week
+  const isDeadlineWithinWeek = () => {
+    const deadline = new Date(campaign.campaign.deadline);
+    const now = new Date();
+    const oneWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+    return deadline.getTime() - now.getTime() <= oneWeek && deadline > now;
+  };
+
+  // Handle extending campaign deadline
+  const handleExtendDeadline = async (additionalDays: number) => {
+    setIsExtending(true);
+    setExtendError(null);
+    try {
+      const res = await import("@/services/advertiser.service").then((m) =>
+        m.advertiserService.extendCampaignDeadline(campaign.id, additionalDays)
+      );
+      if (res.success) {
+        // Reload the page to show updated deadline
+        window.location.reload();
+      } else {
+        setExtendError(res.message || "Failed to extend deadline.");
+      }
+    } catch {
+      setExtendError("Failed to extend deadline.");
+    } finally {
+      setIsExtending(false);
+      setShowExtendModal(false);
+    }
   };
 
   const handleCompleteCampaign = async () => {
@@ -166,6 +200,17 @@ export default function AdvertiserCampaignHeader({
         </div>
         {/* Remove Chat button if no chosenPromoters */}
         <div className="flex items-center space-x-3">
+          {/* Extend Deadline Button - only show if deadline is within a week and campaign is ongoing */}
+          {isDeadlineWithinWeek() &&
+            campaign.status === AdvertiserCampaignStatus.ONGOING && (
+              <button
+                onClick={() => setShowExtendModal(true)}
+                className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm"
+              >
+                <ClockIcon className="h-4 w-4 mr-2" />
+                Extend Deadline
+              </button>
+            )}
           {/* Complete Campaign Button for Consultant and Seller campaigns */}
           {canCompleteCampaign() && (
             <button
@@ -277,6 +322,79 @@ export default function AdvertiserCampaignHeader({
           )}
         </div>
       </div>
+
+      {/* Extend Deadline Modal */}
+      {showExtendModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Extend Campaign Deadline
+            </h2>
+            <p className="mb-4 text-gray-700">
+              Choose how much time to add to your campaign deadline:
+            </p>
+            {extendError && (
+              <div className="mb-4 text-red-600 text-sm bg-red-50 p-3 rounded">
+                {extendError}
+              </div>
+            )}
+            <div className="space-y-3 mb-6">
+              <button
+                onClick={() => handleExtendDeadline(7)}
+                disabled={isExtending}
+                className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                <div className="font-medium">One Week</div>
+                <div className="text-sm text-gray-500">Add 7 days</div>
+              </button>
+              <button
+                onClick={() => handleExtendDeadline(30)}
+                disabled={isExtending}
+                className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                <div className="font-medium">One Month</div>
+                <div className="text-sm text-gray-500">Add 30 days</div>
+              </button>
+              <button
+                onClick={() => handleExtendDeadline(180)}
+                disabled={isExtending}
+                className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                <div className="font-medium">Six Months</div>
+                <div className="text-sm text-gray-500">Add 180 days</div>
+              </button>
+              <button
+                onClick={() => handleExtendDeadline(365)}
+                disabled={isExtending}
+                className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                <div className="font-medium">One Year</div>
+                <div className="text-sm text-gray-500">Add 365 days</div>
+              </button>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => {
+                  setShowExtendModal(false);
+                  setExtendError(null);
+                }}
+                className="px-4 py-2 rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+                disabled={isExtending}
+              >
+                Cancel
+              </button>
+            </div>
+            {isExtending && (
+              <div className="mt-4 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-600 mx-auto"></div>
+                <p className="text-sm text-gray-600 mt-2">
+                  Extending deadline...
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

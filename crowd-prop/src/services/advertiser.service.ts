@@ -442,6 +442,37 @@ class AdvertiserService {
       };
     }
   }
+
+  async extendCampaignDeadline(
+    campaignId: string,
+    additionalDays: number
+  ): Promise<{
+    success: boolean;
+    message: string;
+    newDeadline?: string;
+  }> {
+    try {
+      const response = await httpService.patch(
+        `/campaign-management/campaigns/${campaignId}/extend/${additionalDays}`,
+        undefined, // no body needed
+        true // requiresAuth
+      );
+
+      return response.data as {
+        success: boolean;
+        message: string;
+        newDeadline?: string;
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to extend campaign deadline",
+      };
+    }
+  }
 }
 
 export const advertiserService = new AdvertiserService();
