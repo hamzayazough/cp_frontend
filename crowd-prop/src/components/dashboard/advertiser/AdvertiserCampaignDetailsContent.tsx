@@ -17,6 +17,7 @@ import AdvertiserCampaignHeader from "./components/AdvertiserCampaignHeader";
 import AdvertiserCampaignStatsCards from "./components/AdvertiserCampaignStatsCards";
 import AdvertiserCampaignTabs from "./components/AdvertiserCampaignTabs";
 import AdvertiserCampaignOverview from "./components/AdvertiserCampaignOverview";
+import AdvertiserCampaignMedia from "./components/AdvertiserCampaignMedia";
 import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoters";
 import AdvertiserCampaignRequirements from "./components/AdvertiserCampaignRequirements";
 import AdvertiserCampaignPerformance from "./components/AdvertiserCampaignPerformance";
@@ -212,6 +213,8 @@ export default function AdvertiserCampaignDetailsContent({
     switch (activeTab) {
       case "overview":
         return <AdvertiserCampaignOverview campaign={campaign} />;
+      case "media":
+        return <AdvertiserCampaignMedia campaign={campaign} />;
       case "promoters":
         return (
           <AdvertiserCampaignPromoters

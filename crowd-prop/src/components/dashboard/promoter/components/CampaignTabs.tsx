@@ -5,6 +5,7 @@ import {
   EyeIcon,
   CheckCircleIcon,
   ChatBubbleLeftRightIcon,
+  PhotoIcon,
 } from "@heroicons/react/24/outline";
 
 interface CampaignTabsProps {
@@ -12,9 +13,13 @@ interface CampaignTabsProps {
   onTabChange: (tab: string) => void;
 }
 
-export default function CampaignTabs({ activeTab, onTabChange }: CampaignTabsProps) {
+export default function CampaignTabs({
+  activeTab,
+  onTabChange,
+}: CampaignTabsProps) {
   const tabs = [
     { id: "overview", label: "Overview", icon: ChartBarIcon },
+    { id: "media", label: "Media", icon: PhotoIcon },
     { id: "performance", label: "Performance", icon: EyeIcon },
     { id: "requirements", label: "Requirements", icon: CheckCircleIcon },
     { id: "messages", label: "Messages", icon: ChatBubbleLeftRightIcon },

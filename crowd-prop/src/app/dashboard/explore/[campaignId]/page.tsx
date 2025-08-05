@@ -21,6 +21,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
+import CampaignMediaViewer from "@/components/ui/CampaignMediaViewer";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
 import {
   VisibilityCampaign,
@@ -854,58 +855,8 @@ export default function CampaignDetailsPage({
               {renderCampaignSpecificInfo(campaign)}
             </div>
             {/* Campaign Media */}
-            {campaign.mediaUrl && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                  Campaign Media
-                </h3>
-                <div className="w-full max-w-2xl h-80 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
-                  {campaign.mediaUrl.endsWith(".mp4") ||
-                  campaign.mediaUrl.endsWith(".webm") ||
-                  campaign.mediaUrl.endsWith(".mov") ||
-                  campaign.mediaUrl.endsWith(".avi") ? (
-                    <video
-                      src={campaign.mediaUrl}
-                      controls
-                      className="w-full h-full object-cover"
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : campaign.mediaUrl.endsWith(".pdf") ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
-                      <DocumentTextIcon className="h-16 w-16 text-gray-400" />
-                      <p className="text-gray-600 text-center">PDF Document</p>
-                      <a
-                        href={campaign.mediaUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        View PDF
-                      </a>
-                    </div>
-                  ) : (
-                    <img
-                      src={campaign.mediaUrl}
-                      alt="Campaign Media"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                        e.currentTarget.parentElement!.innerHTML = `
-                          <div class="flex flex-col items-center justify-center space-y-4">
-                            <div class="h-16 w-16 text-gray-400">
-                              <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                              </svg>
-                            </div>
-                            <p class="text-gray-600 text-center">Media unavailable</p>
-                          </div>
-                        `;
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
+            {campaign.mediaUrls && campaign.mediaUrls.length > 0 && (
+              <CampaignMediaViewer mediaUrls={campaign.mediaUrls} />
             )}{" "}
             {/* Requirements */}
             {campaign.requirements && campaign.requirements.length > 0 && (

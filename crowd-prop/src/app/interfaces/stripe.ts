@@ -28,15 +28,6 @@ export interface StripeConnectAccount {
   updatedAt: Date;
 }
 
-export interface CreateConnectAccountRequest {
-  email: string;
-  country: string;
-  isBusiness: boolean;
-  businessName?: string;
-  firstName?: string;
-  lastName?: string;
-}
-
 export interface OnboardingLinkResponse {
   url: string;
   expiresAt: Date;

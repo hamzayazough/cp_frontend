@@ -2,6 +2,10 @@
 
 import { PromoterApplicationInfo } from "@/app/interfaces/campaign/advertiser-campaign";
 import {
+  getPromoterDisplayName,
+  getPromoterInitials,
+} from "@/utils/promoter-name";
+import {
   X,
   Star,
   Clock,
@@ -31,7 +35,7 @@ export default function ApplicationReviewModal({
   onRejectApplication,
 }: ApplicationReviewModalProps) {
   const router = useRouter();
-  
+
   if (!isOpen) return null;
 
   const formatDate = (date: string | Date) => {
@@ -116,21 +120,20 @@ export default function ApplicationReviewModal({
                     <button
                       onClick={(e) => handleUserClick(app.promoter.id, e)}
                       className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
-                      title={`View ${app.promoter.name}'s profile`}
+                      title={`View ${getPromoterDisplayName(
+                        app.promoter
+                      )}'s profile`}
                     >
                       {app.promoter.avatarUrl ? (
                         <Image
                           src={app.promoter.avatarUrl}
-                          alt={app.promoter.name}
+                          alt={getPromoterDisplayName(app.promoter)}
                           width={64}
                           height={64}
                           className="w-full h-full rounded-full object-cover"
                         />
                       ) : (
-                        app.promoter.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
+                        getPromoterInitials(app.promoter)
                       )}
                     </button>
 
@@ -139,7 +142,7 @@ export default function ApplicationReviewModal({
                       <div className="flex items-start justify-between mb-3">
                         <div>
                           <h4 className="text-lg font-semibold text-gray-900 mb-1">
-                            {app.promoter.name}
+                            {getPromoterDisplayName(app.promoter)}
                           </h4>
                           <div className="flex items-center space-x-4 text-sm text-gray-600">
                             <div className="flex items-center">

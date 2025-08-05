@@ -8,6 +8,7 @@ import {
 import { SocialPlatform } from "@/app/enums/social-platform";
 import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 import { CampaignDeliverable } from "@/app/interfaces/campaign-work";
+import { CampaignMedia } from "./campaign-media";
 
 export interface Advertiser {
   id: string; // Optional ID for the advertiser
@@ -94,7 +95,7 @@ export interface CampaignPromoter {
   id: string;
   title: string;
   type: CampaignType;
-  mediaUrl?: string; // URL to the S3 campaign media (image/video)
+  mediaUrls?: CampaignMedia[];
   status: PromoterCampaignStatus; // PromoterCampaign.status
   description: string; // from Campaign
   advertiser: Advertiser;

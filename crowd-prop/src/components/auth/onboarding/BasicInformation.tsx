@@ -19,7 +19,34 @@ export default function BasicInformation({
     onUpdate({ [field]: value });
   };
 
-  const isValid = data.name.trim().length > 0;
+  const handleCurrencyChange = (currency: string) => {
+    // Auto-sync country with currency for better UX
+    const countryMap: { [key: string]: "US" | "CA" } = {
+      USD: "US",
+      CAD: "CA",
+    };
+
+    onUpdate({
+      usedCurrency: currency as "USD" | "CAD",
+      country: countryMap[currency] || data.country,
+    });
+  };
+
+  const handleCountryChange = (country: string) => {
+    // Auto-sync currency with country for better UX
+    const currencyMap: { [key: string]: "USD" | "CAD" } = {
+      US: "USD",
+      CA: "CAD",
+    };
+
+    onUpdate({
+      country: country as "US" | "CA",
+      usedCurrency: currencyMap[country] || data.usedCurrency,
+    });
+  };
+
+  const isValid =
+    data.name.trim().length > 0 && data.country && data.usedCurrency;
 
   return (
     <div className="space-y-6">
@@ -80,7 +107,7 @@ export default function BasicInformation({
           <select
             id="currency"
             value={data.usedCurrency}
-            onChange={(e) => handleInputChange("usedCurrency", e.target.value)}
+            onChange={(e) => handleCurrencyChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           >
             <option value="USD">USD - US Dollar</option>
@@ -88,6 +115,27 @@ export default function BasicInformation({
           </select>
           <p className="text-xs text-gray-500 mt-1">
             This will be used for payments and earnings display
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="country"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Country *
+          </label>
+          <select
+            id="country"
+            value={data.country}
+            onChange={(e) => handleCountryChange(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+          >
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            This will be used for legal and payment purposes
           </p>
         </div>
 

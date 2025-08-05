@@ -102,7 +102,15 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     id: "campaign-1",
     title: "Summer Fashion Collection 2024",
     type: CampaignType.VISIBILITY,
-    mediaUrl: "https://example.com/summer-fashion.jpg",
+    mediaUrls: [
+      {
+        id: "media-1",
+        campaignId: "campaign-1",
+        mediaUrl: "https://example.com/summer-fashion.jpg",
+        mediaType: "image",
+        isPrimary: true,
+      }
+    ],
     status: AdvertiserCampaignStatus.ONGOING,
     description:
       "Promote our latest summer fashion collection to Gen Z audience",
@@ -140,7 +148,15 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     id: "campaign-7",
     title: "Creative Consultation Needed",
     type: CampaignType.CONSULTANT,
-    mediaUrl: "https://example.com/creative-consultation.jpg",
+    mediaUrls: [
+      {
+        id: "media-7",
+        campaignId: "campaign-7",
+        mediaUrl: "https://example.com/creative-consultation.jpg",
+        mediaType: "image",
+        isPrimary: true,
+      }
+    ],
     status: AdvertiserCampaignStatus.ONGOING,
     description: "Looking for creative input on our new marketing campaign",
     campaign: {
@@ -187,7 +203,15 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     id: "campaign-3",
     title: "Affiliate Marketing Program",
     type: CampaignType.SALESMAN,
-    mediaUrl: "https://example.com/affiliate-program.jpg",
+    mediaUrls: [
+      {
+        id: "media-3",
+        campaignId: "campaign-3",
+        mediaUrl: "https://example.com/affiliate-program.jpg",
+        mediaType: "image",
+        isPrimary: true,
+      }
+    ],
     status: AdvertiserCampaignStatus.ONGOING,
     description: "Join our affiliate program and earn commission on every sale",
     campaign: {

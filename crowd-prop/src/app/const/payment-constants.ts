@@ -1,6 +1,6 @@
 export const PAYMENT_CONSTANTS = {
   MINIMUM_WALLET_FUNDING: 10, // $10 minimum
-  MAXIMUM_WALLET_FUNDING: 10000, // $10,000 maximum
+  MAXIMUM_WALLET_FUNDING: 1000000, // $1,000,000 maximum
   DEFAULT_FUNDING_AMOUNTS: [50, 100, 250, 500, 1000],
 
   // Withdrawal constants

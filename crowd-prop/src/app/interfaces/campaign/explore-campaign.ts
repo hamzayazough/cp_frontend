@@ -8,6 +8,7 @@ import {
 } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
 import { PromoterCampaignStatus } from "../promoter-campaign";
+import { CampaignMedia } from "./campaign-media";
 
 export interface Advertiser {
   id: string;
@@ -25,7 +26,7 @@ export interface BaseCampaignDetails {
   advertiser: Advertiser;
   title: string;
   type: CampaignType;
-  mediaUrl?: string; // URL to the S3 campaign media (image/video)
+  mediaUrls?: CampaignMedia[]; // List of campaign media (images/videos/documents)
   status: PromoterCampaignStatus; // PromoterCampaign.status
   description: string; // from Campaign
   targetAudience?: string;

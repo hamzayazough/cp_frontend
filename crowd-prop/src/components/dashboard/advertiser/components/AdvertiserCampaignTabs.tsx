@@ -6,6 +6,7 @@ import {
   CheckCircleIcon,
   ChatBubbleLeftRightIcon,
   UsersIcon,
+  PhotoIcon,
 } from "@heroicons/react/24/outline";
 
 interface AdvertiserCampaignTabsProps {
@@ -13,12 +14,13 @@ interface AdvertiserCampaignTabsProps {
   onTabChange: (tab: string) => void;
 }
 
-export default function AdvertiserCampaignTabs({ 
-  activeTab, 
-  onTabChange 
+export default function AdvertiserCampaignTabs({
+  activeTab,
+  onTabChange,
 }: AdvertiserCampaignTabsProps) {
   const tabs = [
     { id: "overview", label: "Overview", icon: ChartBarIcon },
+    { id: "media", label: "Media", icon: PhotoIcon },
     { id: "promoters", label: "Promoters", icon: UsersIcon },
     { id: "performance", label: "Performance", icon: EyeIcon },
     { id: "requirements", label: "Requirements", icon: CheckCircleIcon },

@@ -27,6 +27,7 @@ import CampaignRequirements from "./components/CampaignRequirements";
 import CampaignMessages from "./components/CampaignMessages";
 import ShareModal from "./components/ShareModal";
 import CampaignNotFound from "./components/CampaignNotFound";
+import CampaignMediaViewer from "@/components/ui/CampaignMediaViewer";
 import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 interface PromoterCampaignDetailsContentProps {
@@ -67,7 +68,9 @@ export default function PromoterCampaignDetailsContent({
         // If not found in localStorage, try API call
         try {
           console.log("Campaign not found in localStorage, fetching from API");
-          campaignData = await promoterService.getPromoterCampaignById(campaignId);
+          campaignData = await promoterService.getPromoterCampaignById(
+            campaignId
+          );
           setCampaign(campaignData);
           setLoading(false);
           return;
@@ -77,7 +80,8 @@ export default function PromoterCampaignDetailsContent({
 
         // If API call fails, fallback to mock data
         console.log("Using mock data as fallback");
-        campaignData = mockCampaignData[campaignId as keyof typeof mockCampaignData];
+        campaignData =
+          mockCampaignData[campaignId as keyof typeof mockCampaignData];
         setCampaign(campaignData || null);
         setLoading(false);
       } catch (error) {
@@ -144,6 +148,8 @@ export default function PromoterCampaignDetailsContent({
     switch (activeTab) {
       case "overview":
         return <CampaignOverview campaign={campaign} />;
+      case "media":
+        return <CampaignMediaViewer mediaUrls={campaign?.mediaUrls || []} />;
       case "performance":
         return <CampaignPerformance campaign={campaign} />;
       case "requirements":

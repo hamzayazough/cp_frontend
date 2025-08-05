@@ -23,7 +23,7 @@ export const MOCK_CAMPAIGN_PROMOTER1: CampaignPromoter = {
   id: "1",
   title: "KeepFit Health App Promotion",
   type: CampaignType.VISIBILITY,
-  mediaUrl: undefined,
+  mediaUrls: undefined,
   status: PromoterCampaignStatus.ONGOING,
   description:
     "Help us promote our revolutionary health and fitness app to reach health-conscious millennials and Gen Z.",
@@ -83,7 +83,7 @@ export const MOCK_CAMPAIGN_PROMOTER2: CampaignPromoter = {
   id: "2",
   title: "Digital Marketing Strategy Consultation",
   type: CampaignType.CONSULTANT,
-  mediaUrl: undefined,
+  mediaUrls: undefined,
   status: PromoterCampaignStatus.ONGOING,
   description:
     "Looking for an experienced digital marketing consultant to help develop a comprehensive marketing strategy for our e-commerce platform.",
@@ -169,7 +169,7 @@ export const MOCK_CAMPAIGN_PROMOTER3: CampaignPromoter = {
   id: "3",
   title: "E-commerce Store Creation & Sales",
   type: CampaignType.SELLER,
-  mediaUrl: undefined,
+  mediaUrls: undefined,
   status: PromoterCampaignStatus.ONGOING,
   description:
     "Looking for a skilled promoter to create and manage a complete e-commerce store for our handmade jewelry business, including product photography, store setup, and initial sales.",
@@ -287,7 +287,7 @@ export const MOCK_CAMPAIGN_PROMOTER4: CampaignPromoter = {
   id: "4",
   title: "Fitness App Sales Commission Program",
   type: CampaignType.SALESMAN,
-  mediaUrl: undefined,
+  mediaUrls: undefined,
   status: PromoterCampaignStatus.ONGOING,
   description:
     "Join our sales team and earn commission for every fitness app subscription you generate. Perfect for fitness influencers and health enthusiasts with engaged audiences.",

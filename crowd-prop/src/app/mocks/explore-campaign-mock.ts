@@ -34,7 +34,7 @@ const mockCampaigns: CampaignUnion[] = [
     },
     title: "Finance Insights Blog Promotion",
     type: CampaignType.VISIBILITY,
-    mediaUrl: undefined,
+    mediaUrls: undefined,
     status: PromoterCampaignStatus.ONGOING,
     description:
       "Promote our finance education blog to reach financially conscious millennials and Gen Z.",
@@ -71,7 +71,7 @@ const mockCampaigns: CampaignUnion[] = [
     },
     title: "Eco Energy Product Sales",
     type: CampaignType.SALESMAN,
-    mediaUrl: undefined,
+    mediaUrls: undefined,
     status: PromoterCampaignStatus.ONGOING,
     description:
       "Drive sales for our sustainable energy solutions targeting environmentally conscious homeowners.",
@@ -108,7 +108,7 @@ const mockCampaigns: CampaignUnion[] = [
     },
     title: "SaaS Marketing Strategy Consulting",
     type: CampaignType.CONSULTANT,
-    mediaUrl: undefined,
+    mediaUrls: undefined,
     status: PromoterCampaignStatus.ONGOING,
     description:
       "We need a marketing consultant to help develop our go-to-market strategy for our new SaaS platform.",
@@ -147,7 +147,7 @@ const mockCampaigns: CampaignUnion[] = [
     },
     title: "Fashion Brand Content Creation",
     type: CampaignType.SELLER,
-    mediaUrl: undefined,
+    mediaUrls: undefined,
     status: PromoterCampaignStatus.ONGOING,
     description:
       "Create compelling content and drive sales for our new sustainable fashion line.",
@@ -188,7 +188,7 @@ const mockCampaigns: CampaignUnion[] = [
     },
     title: "Tech Product Review Campaign",
     type: CampaignType.VISIBILITY,
-    mediaUrl: undefined,
+    mediaUrls: undefined,
     status: PromoterCampaignStatus.ONGOING,
     description:
       "Review and promote our new productivity app to tech-savvy professionals.",
