@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { ApplicationStatus } from "@/app/interfaces/campaign-application";
+import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 import {
   PromoterCampaignStatus,
   CampaignType,
@@ -61,6 +62,15 @@ export default function AdvertiserCampaignPromoters({
   const supportsPayments =
     campaign.campaign.type === CampaignType.CONSULTANT ||
     campaign.campaign.type === CampaignType.SELLER;
+
+  // Check if payment button should be shown
+  const shouldShowPayButton = (promoterStatus: PromoterCampaignStatus) => {
+    return (
+      supportsPayments &&
+      campaign.status === AdvertiserCampaignStatus.ONGOING &&
+      promoterStatus === PromoterCampaignStatus.ONGOING
+    );
+  };
 
   console.log("Campaign type:", campaign.campaign.type);
   console.log("Supports payments:", supportsPayments);
@@ -223,7 +233,7 @@ export default function AdvertiserCampaignPromoters({
                 </div>
 
                 {/* Pay Now Button for Seller and Consultant campaigns */}
-                {supportsPayments ? (
+                {shouldShowPayButton(chosenPromoter.status) ? (
                   <div className="mt-4 pt-4 border-t border-green-200">
                     <button
                       onClick={() => {
@@ -237,6 +247,13 @@ export default function AdvertiserCampaignPromoters({
                       <CreditCardIcon className="h-4 w-4 mr-2" />
                       Pay Now
                     </button>
+                  </div>
+                ) : supportsPayments ? (
+                  <div className="mt-4 pt-4 border-t border-green-200">
+                    <p className="text-sm text-gray-500">
+                      Payment only available when campaign and promoter are both
+                      active
+                    </p>
                   </div>
                 ) : (
                   <div className="mt-4 pt-4 border-t border-green-200">
@@ -483,7 +500,7 @@ export default function AdvertiserCampaignPromoters({
                     </div>
 
                     {/* Pay Now Button for Seller and Consultant campaigns */}
-                    {supportsPayments ? (
+                    {shouldShowPayButton(chosenPromoter.status) ? (
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <button
                           onClick={() => {
@@ -497,6 +514,13 @@ export default function AdvertiserCampaignPromoters({
                           <CreditCardIcon className="h-4 w-4 mr-2" />
                           Pay Now
                         </button>
+                      </div>
+                    ) : supportsPayments ? (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="text-sm text-gray-500">
+                          Payment only available when campaign and promoter are
+                          both active
+                        </p>
                       </div>
                     ) : (
                       <div className="mt-4 pt-4 border-t border-gray-200">

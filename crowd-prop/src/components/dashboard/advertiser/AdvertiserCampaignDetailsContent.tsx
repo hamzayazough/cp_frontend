@@ -6,7 +6,7 @@ import {
   CampaignAdvertiser,
   PromoterApplicationInfo,
 } from "@/app/interfaces/campaign/advertiser-campaign";
-import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignType } from "@/app/enums/campaign-type";
 import { ADVERTISER_CAMPAIGN_MOCKS } from "@/app/mocks/advertiser-campaign-mock";
 import { useAdvertiserCampaigns } from "@/hooks/useAdvertiserCampaigns";
 import CreateCampaignWizard from "./CreateCampaignWizard";
@@ -22,6 +22,7 @@ import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoter
 import AdvertiserCampaignRequirements from "./components/AdvertiserCampaignRequirements";
 import AdvertiserCampaignPerformance from "./components/AdvertiserCampaignPerformance";
 import AdvertiserPromoterLinks from "./components/AdvertiserPromoterLinks";
+import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
 interface AdvertiserCampaignDetailsContentProps {
   campaignId: string;
@@ -81,14 +82,18 @@ export default function AdvertiserCampaignDetailsContent({
     loadCampaign();
   }, [campaignId, getCampaignDetails]);
 
-  const getStatusColor = (status: CampaignStatus) => {
+  const getStatusColor = (status: AdvertiserCampaignStatus) => {
     switch (status) {
-      case CampaignStatus.ACTIVE:
+      case AdvertiserCampaignStatus.ONGOING:
         return "bg-green-100 text-green-800";
-      case CampaignStatus.PAUSED:
-        return "bg-yellow-100 text-yellow-800";
-      case CampaignStatus.INACTIVE:
+      case AdvertiserCampaignStatus.COMPLETED:
+        return "bg-blue-100 text-blue-800";
+      case AdvertiserCampaignStatus.WAITING_FOR_APPLICATIONS:
         return "bg-gray-100 text-gray-800";
+      case AdvertiserCampaignStatus.REVIEWING_APPLICATIONS:
+        return "bg-yellow-100 text-yellow-800";
+      case AdvertiserCampaignStatus.PENDING_PROMOTER:
+        return "bg-orange-100 text-orange-800";
       default:
         return "bg-gray-100 text-gray-800";
     }

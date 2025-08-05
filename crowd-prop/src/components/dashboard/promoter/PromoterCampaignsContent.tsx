@@ -6,7 +6,6 @@ import Image from "next/image";
 import { routes } from "@/lib/router";
 import {
   CheckCircleIcon,
-  ExclamationTriangleIcon,
   EyeIcon,
   CurrencyDollarIcon,
   CalendarIcon,
@@ -121,13 +120,13 @@ export default function PromoterCampaignsContent() {
 
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <ExclamationTriangleIcon className="h-6 w-6 text-yellow-600" />
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <CheckCircleIcon className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending</p>
+              <p className="text-sm font-medium text-gray-600">Completed</p>
               <p className="text-2xl font-bold text-gray-900">
-                {summary.totalPending}
+                {summary.totalCompleted}
               </p>
             </div>
           </div>

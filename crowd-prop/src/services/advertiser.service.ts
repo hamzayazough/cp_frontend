@@ -414,6 +414,34 @@ class AdvertiserService {
       );
     }
   }
+
+  async completeCampaign(campaignId: string): Promise<{
+    success: boolean;
+    message: string;
+    data?: CampaignAdvertiser;
+  }> {
+    try {
+      const response = await httpService.patch(
+        `/campaign-management/campaigns/${campaignId}/complete`,
+        undefined, // no body needed
+        true // requiresAuth
+      );
+
+      return response.data as {
+        success: boolean;
+        message: string;
+        data?: CampaignAdvertiser;
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to complete campaign",
+      };
+    }
+  }
 }
 
 export const advertiserService = new AdvertiserService();

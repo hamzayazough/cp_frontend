@@ -11,7 +11,7 @@ import {
   SellerCampaignDetails,
   SalesmanCampaignDetails,
 } from "../interfaces/campaign/promoter-campaign-details";
-import { CampaignType } from "../enums/campaign-type";
+import { CampaignType, PromoterCampaignStatus } from "../enums/campaign-type";
 
 export const statusOptions = [
   { value: "ALL", label: "All Status" },
@@ -31,13 +31,13 @@ export const typeOptions = [
 
 export const getStatusColor = (status: string) => {
   switch (status) {
-    case "ONGOING":
-      return "bg-green-100 text-green-800";
-    case "AWAITING_REVIEW":
+    case PromoterCampaignStatus.AWAITING_REVIEW:
       return "bg-yellow-100 text-yellow-800";
-    case "COMPLETED":
-      return "bg-gray-100 text-gray-800";
-    case "PAUSED":
+    case PromoterCampaignStatus.ONGOING:
+      return "bg-green-100 text-green-800";
+    case PromoterCampaignStatus.COMPLETED:
+      return "bg-blue-100 text-blue-800";
+    case PromoterCampaignStatus.REJECTED:
       return "bg-red-100 text-red-800";
     default:
       return "bg-gray-100 text-gray-800";
