@@ -141,11 +141,9 @@ export default function CampaignSettingsStep({
                     updateFormData({ maxViews: undefined });
                     return;
                   }
-                  let num = parseInt(value);
+                  const num = parseInt(value);
                   if (isNaN(num)) return;
-                  if (num <= 10000) {
-                    num = 10001;
-                  }
+                  // Allow any number to be typed, validation will show errors but won't force changes
                   updateFormData({ maxViews: num });
                 }}
                 placeholder="10,001"
