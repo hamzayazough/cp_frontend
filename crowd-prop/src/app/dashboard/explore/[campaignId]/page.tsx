@@ -189,8 +189,9 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <p className="text-2xl font-bold text-purple-900">
                   $
                   {(
-                    Number(visibilityCampaign.maxViews) *
-                    Number(visibilityCampaign.cpv)
+                    (Number(visibilityCampaign.maxViews) *
+                      Number(visibilityCampaign.cpv)) /
+                    100
                   ).toLocaleString()}
                 </p>
               </div>
