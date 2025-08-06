@@ -33,6 +33,7 @@ import {
 import { formatDate, getDaysLeft } from "@/utils/date";
 import { exploreCampaignsStorage } from "@/utils/explore-campaigns-storage";
 import { promoterService } from "@/services/promoter.service";
+import { useAuthGuard } from "@/hooks/useAuth";
 
 const getCampaignDisplayStatus = (
   campaign: CampaignUnion,
@@ -518,6 +519,7 @@ export default function CampaignDetailsPage({
 }: CampaignDetailsPageProps) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const { user, loading: authLoading } = useAuthGuard();
   const [campaign, setCampaign] = useState<CampaignUnion | null>(null);
   const [loading, setLoading] = useState(true);
   const [acceptingContract, setAcceptingContract] = useState<string | null>(
@@ -543,6 +545,11 @@ export default function CampaignDetailsPage({
 
   useEffect(() => {
     const fetchCampaign = async () => {
+      // Wait for auth to load before making API calls
+      if (authLoading) {
+        return;
+      }
+
       // Try to get campaign from localStorage first
       const storedCampaign = exploreCampaignsStorage.getCampaignById(
         resolvedParams.campaignId
@@ -569,7 +576,7 @@ export default function CampaignDetailsPage({
     };
 
     fetchCampaign();
-  }, [resolvedParams.campaignId, router]);
+  }, [resolvedParams.campaignId, router, authLoading]);
 
   const handleApplyClick = async (campaign: CampaignUnion) => {
     if (campaign.isPublic) {
@@ -661,7 +668,7 @@ export default function CampaignDetailsPage({
     setApplicationModal({ isOpen: false, campaign: null });
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
