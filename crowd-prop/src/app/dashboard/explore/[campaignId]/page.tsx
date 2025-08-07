@@ -519,7 +519,7 @@ export default function CampaignDetailsPage({
 }: CampaignDetailsPageProps) {
   const resolvedParams = use(params);
   const router = useRouter();
-  const { user, loading: authLoading } = useAuthGuard();
+  const { loading: authLoading } = useAuthGuard();
   const [campaign, setCampaign] = useState<CampaignUnion | null>(null);
   const [loading, setLoading] = useState(true);
   const [acceptingContract, setAcceptingContract] = useState<string | null>(
