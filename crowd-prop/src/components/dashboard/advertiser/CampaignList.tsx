@@ -832,7 +832,19 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                         className="flex items-center space-x-1 px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-xs"
                                       >
                                         <ExternalLink className="h-3 w-3" />
-                                        <span>Discord</span>
+                                        <span>Join Discord</span>
+                                      </button>
+                                    )}
+                                    {campaign.campaign.discordThreadUrl && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          window.open(campaign.campaign.discordThreadUrl, "_blank");
+                                        }}
+                                        className="flex items-center space-x-1 px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-xs"
+                                      >
+                                        <ExternalLink className="h-3 w-3" />
+                                        <span>Discord Thread</span>
                                       </button>
                                     )}
                                   </div>

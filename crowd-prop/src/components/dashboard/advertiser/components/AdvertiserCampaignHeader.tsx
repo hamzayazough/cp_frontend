@@ -244,7 +244,18 @@ export default function AdvertiserCampaignHeader({
               className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
             >
               <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
-              Discord Channel
+              Join Discord
+            </Link>
+          )}
+          {campaign.campaign.discordThreadUrl && (
+            <Link
+              href={campaign.campaign.discordThreadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+            >
+              <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
+              Discord Thread
             </Link>
           )}
           {shouldShowChatButton() ? (

@@ -45,6 +45,7 @@ export interface AdvertiserDetails {
   companyWebsite?: string;
   verified?: boolean;
   advertiserWork?: AdvertiserWork[]; // Example products or services offered
+  discordChannelUrl?: string;
 }
 
 // 📣 Promoter-specific data

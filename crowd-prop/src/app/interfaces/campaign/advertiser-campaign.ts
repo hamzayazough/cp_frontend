@@ -60,6 +60,7 @@ export interface AdvertiserBaseCampaignDetails {
   budgetAllocated: number;
 
   discordInviteLink: string; // Discord invite link for the campaign.
+  discordThreadUrl?: string;
 }
 
 export interface AdvertiserVisibilityCampaignDetails

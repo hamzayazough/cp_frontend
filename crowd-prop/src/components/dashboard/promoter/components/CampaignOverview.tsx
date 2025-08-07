@@ -644,7 +644,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
         </div>
       </div>
       {/* Campaign Channel Footer */}
-      {campaign.campaign.discordInviteLink && (
+      {(campaign.campaign.discordInviteLink || campaign.campaign.discordThreadUrl) && (
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -653,23 +653,37 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Join Campaign Channel
+                  Campaign Communication
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Having questions? Connect directly with the advertiser in the
-                  campaign channel.
+                  Connect directly with the advertiser through Discord.
                 </p>
               </div>
             </div>
-            <Link
-              href={campaign.campaign.discordInviteLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
-            >
-              <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2" />
-              Join Discord Channel
-            </Link>
+            <div className="flex items-center space-x-3">
+              {campaign.campaign.discordInviteLink && (
+                <Link
+                  href={campaign.campaign.discordInviteLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                >
+                  <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2" />
+                  Join Discord
+                </Link>
+              )}
+              {campaign.campaign.discordThreadUrl && (
+                <Link
+                  href={campaign.campaign.discordThreadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
+                >
+                  <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2" />
+                  Discord Thread
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}
