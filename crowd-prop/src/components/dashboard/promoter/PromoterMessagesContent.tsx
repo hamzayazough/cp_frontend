@@ -11,10 +11,7 @@ import { User } from "firebase/auth";
 import {
   MagnifyingGlassIcon,
   PaperAirplaneIcon,
-  PaperClipIcon,
   EllipsisVerticalIcon,
-  VideoCameraIcon,
-  PhoneIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 
@@ -425,12 +422,6 @@ export default function PromoterMessagesContent({
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                        <PhoneIcon className="h-5 w-5" />
-                      </button>
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                        <VideoCameraIcon className="h-5 w-5" />
-                      </button>
                       {selectedThread.campaign && (
                         <Link
                           href={routes.dashboardCampaignDetails(
@@ -535,9 +526,6 @@ export default function PromoterMessagesContent({
             {/* Message Input */}
             <div className="p-4 border-t border-gray-200 bg-white">
               <div className="flex items-end space-x-3">
-                <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                  <PaperClipIcon className="h-5 w-5" />
-                </button>
                 <div className="flex-1">
                   <textarea
                     value={messageInput}
