@@ -175,9 +175,6 @@ export default function CampaignMessages({
       // Backend automatically determines promoterId from Firebase token
       const newThread = await messagingService.createThread({
         campaignId,
-        subject: campaignTitle
-          ? `Discussion about ${campaignTitle}`
-          : `Discussion about Campaign ${campaignId}`,
       });
 
       setCampaignThread(newThread);

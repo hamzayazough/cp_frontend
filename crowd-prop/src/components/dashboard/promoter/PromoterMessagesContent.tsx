@@ -324,6 +324,10 @@ export default function PromoterMessagesContent({
                   onClick={() => setSelectedThread(thread)}
                   className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
                     isSelected ? "bg-blue-50 border-blue-200" : ""
+                  } ${
+                    (thread.unreadCount || 0) > 0
+                      ? "border-l-4 border-l-orange-500 bg-orange-50"
+                      : ""
                   }`}
                 >
                   <div className="flex items-start space-x-3">
@@ -352,8 +356,9 @@ export default function PromoterMessagesContent({
                           {thread.campaign?.title || "No campaign"}
                         </p>
                         {(thread.unreadCount || 0) > 0 && (
-                          <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[1.25rem] text-center">
-                            {thread.unreadCount}
+                          <span className="text-xs text-orange-600 font-semibold">
+                            {thread.unreadCount} new message
+                            {(thread.unreadCount || 0) > 1 ? "s" : ""}
                           </span>
                         )}
                       </div>

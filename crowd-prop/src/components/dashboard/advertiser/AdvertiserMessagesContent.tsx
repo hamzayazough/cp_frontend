@@ -197,6 +197,10 @@ export default function AdvertiserMessagesContent() {
                     selectedThread?.id === thread.id
                       ? "bg-blue-50 border-l-4 border-l-blue-500"
                       : ""
+                  } ${
+                    thread.unreadCount && thread.unreadCount > 0
+                      ? "border-l-4 border-l-orange-500 bg-orange-50"
+                      : ""
                   }`}
                 >
                   <div className="flex items-start space-x-3">
@@ -227,7 +231,7 @@ export default function AdvertiserMessagesContent() {
                       )}
                       {thread.unreadCount && thread.unreadCount > 0 && (
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs text-blue-600 font-medium">
+                          <span className="text-xs text-orange-600 font-semibold">
                             {thread.unreadCount} new message
                             {thread.unreadCount > 1 ? "s" : ""}
                           </span>

@@ -175,9 +175,6 @@ export default function AdvertiserCampaignMessages({
       // Backend automatically determines advertiserId from Firebase token
       const newThread = await messagingService.createThread({
         campaignId,
-        subject: campaignTitle
-          ? `Discussion about ${campaignTitle}`
-          : `Discussion about Campaign ${campaignId}`,
       });
 
       setCampaignThread(newThread);
