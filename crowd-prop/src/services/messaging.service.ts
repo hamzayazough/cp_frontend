@@ -1,0 +1,330 @@
+import io, { Socket } from "socket.io-client";
+import {
+  MessageResponse,
+  MessageThreadResponse,
+  CreateMessageThreadRequest,
+  ConnectedPayload,
+  UserTypingPayload,
+  MessageReadPayload,
+  ThreadReadPayload,
+  JoinThreadPayload,
+  SendMessagePayload,
+  MarkAsReadPayload,
+  TypingPayload,
+  NewMessagePayload,
+  NotificationPayload,
+  ErrorPayload,
+} from "@/interfaces/messaging";
+
+class MessagingService {
+  private socket: Socket | null = null;
+  private token: string | null = null;
+  private baseUrl: string;
+  private wsUrl: string;
+
+  constructor() {
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    this.wsUrl =
+      process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:3000/messaging";
+  }
+
+  // WebSocket Connection Management
+  connect(firebaseToken: string): Socket {
+    this.token = firebaseToken;
+    this.socket = io(this.wsUrl, {
+      auth: { token: firebaseToken },
+    });
+
+    this.setupEventHandlers();
+    return this.socket;
+  }
+
+  disconnect(): void {
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+    }
+  }
+
+  private setupEventHandlers(): void {
+    if (!this.socket) return;
+
+    this.socket.on("connected", (data: ConnectedPayload) => {
+      console.log("✅ Connected to messaging:", data);
+    });
+
+    this.socket.on("error", (error: ErrorPayload) => {
+      console.error("❌ WebSocket error:", error);
+    });
+
+    this.socket.on("disconnect", (reason: string) => {
+      console.log("🔌 Disconnected from messaging:", reason);
+    });
+  }
+
+  // WebSocket Methods
+  joinThread(threadId: string): void {
+    if (!this.socket) {
+      console.warn("Socket not connected");
+      return;
+    }
+    const payload: JoinThreadPayload = { threadId };
+    this.socket.emit("joinThread", payload);
+  }
+
+  leaveThread(threadId: string): void {
+    if (!this.socket) {
+      console.warn("Socket not connected");
+      return;
+    }
+    this.socket.emit("leaveThread", { threadId });
+  }
+
+  sendMessage(threadId: string, content: string): void {
+    if (!this.socket) {
+      console.warn("Socket not connected");
+      return;
+    }
+    const payload: SendMessagePayload = { threadId, content };
+    this.socket.emit("sendMessage", payload);
+  }
+
+  sendTyping(threadId: string, isTyping: boolean): void {
+    if (!this.socket) {
+      console.warn("Socket not connected");
+      return;
+    }
+    const payload: TypingPayload = { threadId, isTyping };
+    this.socket.emit("typing", payload);
+  }
+
+  markAsRead(threadId?: string, messageId?: string): void {
+    if (!this.socket) {
+      console.warn("Socket not connected");
+      return;
+    }
+    const payload: MarkAsReadPayload = { threadId, messageId };
+    this.socket.emit("markAsRead", payload);
+  }
+
+  // Event Listeners
+  onNewMessage(callback: (message: NewMessagePayload) => void): void {
+    this.socket?.on("newMessage", callback);
+  }
+
+  onUserTyping(callback: (data: UserTypingPayload) => void): void {
+    this.socket?.on("userTyping", callback);
+  }
+
+  onMessageRead(callback: (data: MessageReadPayload) => void): void {
+    this.socket?.on("messageRead", callback);
+  }
+
+  onThreadRead(callback: (data: ThreadReadPayload) => void): void {
+    this.socket?.on("threadRead", callback);
+  }
+
+  onNotification(callback: (data: NotificationPayload) => void): void {
+    this.socket?.on("notification", callback);
+  }
+
+  onThreadJoined(callback: (data: { threadId: string }) => void): void {
+    this.socket?.on("threadJoined", callback);
+  }
+
+  onThreadLeft(callback: (data: { threadId: string }) => void): void {
+    this.socket?.on("threadLeft", callback);
+  }
+
+  // Remove event listeners
+  offNewMessage(callback: (message: NewMessagePayload) => void): void {
+    this.socket?.off("newMessage", callback);
+  }
+
+  offUserTyping(callback: (data: UserTypingPayload) => void): void {
+    this.socket?.off("userTyping", callback);
+  }
+
+  offMessageRead(callback: (data: MessageReadPayload) => void): void {
+    this.socket?.off("messageRead", callback);
+  }
+
+  offThreadRead(callback: (data: ThreadReadPayload) => void): void {
+    this.socket?.off("threadRead", callback);
+  }
+
+  // REST API Methods
+  private async makeRequest<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    if (!this.token) {
+      throw new Error("No authentication token available");
+    }
+
+    const url = `${this.baseUrl}${endpoint}`;
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.token}`,
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    return response.json();
+  }
+
+  async getThreads(
+    page?: number,
+    limit?: number,
+    campaignId?: string
+  ): Promise<MessageThreadResponse[]> {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page.toString());
+    if (limit) params.append("limit", limit.toString());
+    if (campaignId) params.append("campaignId", campaignId);
+
+    const query = params.toString();
+    const endpoint = `/api/messaging/threads${query ? `?${query}` : ""}`;
+
+    return this.makeRequest<MessageThreadResponse[]>(endpoint);
+  }
+
+  async getThread(threadId: string): Promise<MessageThreadResponse> {
+    return this.makeRequest<MessageThreadResponse>(
+      `/api/messaging/threads/${threadId}`
+    );
+  }
+
+  async getMessages(
+    threadId: string,
+    page?: number,
+    limit?: number,
+    before?: Date
+  ): Promise<MessageResponse[]> {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page.toString());
+    if (limit) params.append("limit", limit.toString());
+    if (before) params.append("before", before.toISOString());
+
+    const query = params.toString();
+    const endpoint = `/api/messaging/threads/${threadId}/messages${
+      query ? `?${query}` : ""
+    }`;
+
+    return this.makeRequest<MessageResponse[]>(endpoint);
+  }
+
+  /**
+   * Get thread for a specific campaign
+   */
+  async getThreadForCampaign(
+    campaignId: string
+  ): Promise<MessageThreadResponse | null> {
+    if (!this.token) {
+      throw new Error("No authentication token available");
+    }
+
+    const url = `${this.baseUrl}/api/messaging/campaigns/${campaignId}/thread`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
+
+      // Return null if thread doesn't exist (404)
+      if (response.status === 404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      // Check if response has content before parsing JSON
+      const contentLength = response.headers.get("content-length");
+      if (contentLength === "0" || contentLength === null) {
+        return null;
+      }
+
+      // Try to parse JSON, handle empty responses gracefully
+      const text = await response.text();
+      if (!text.trim()) {
+        return null;
+      }
+
+      return JSON.parse(text);
+    } catch (error) {
+      // Handle JSON parsing errors specifically
+      if (error instanceof SyntaxError && error.message.includes("JSON")) {
+        console.warn(
+          "Empty or invalid JSON response for campaign thread:",
+          campaignId
+        );
+        return null;
+      }
+
+      console.error("Error getting campaign thread:", error);
+      throw error;
+    }
+  }
+
+  async createThread(
+    request: CreateMessageThreadRequest
+  ): Promise<MessageThreadResponse> {
+    return this.makeRequest<MessageThreadResponse>("/api/messaging/threads", {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
+  }
+
+  // Send message via REST API (also broadcasts via WebSocket)
+  async sendMessageHTTP(
+    threadId: string,
+    content: string
+  ): Promise<MessageResponse> {
+    return this.makeRequest<MessageResponse>(
+      `/api/messaging/threads/${threadId}/messages`,
+      {
+        method: "POST",
+        body: JSON.stringify({ content }),
+      }
+    );
+  }
+
+  async markMessageAsReadHTTP(messageId: string): Promise<void> {
+    await this.makeRequest<void>(`/api/messaging/messages/${messageId}/read`, {
+      method: "PATCH",
+    });
+  }
+
+  async markThreadAsReadHTTP(threadId: string): Promise<void> {
+    await this.makeRequest<void>(`/api/messaging/threads/${threadId}/read`, {
+      method: "PATCH",
+    });
+  }
+
+  // Utility methods
+  isConnected(): boolean {
+    return this.socket?.connected ?? false;
+  }
+
+  getSocket(): Socket | null {
+    return this.socket;
+  }
+}
+
+// Singleton instance
+export const messagingService = new MessagingService();
+export default messagingService;

@@ -13,15 +13,15 @@ import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
 import messagingService from "@/services/messaging.service";
 
-interface CampaignMessagesProps {
+interface AdvertiserCampaignMessagesProps {
   campaignId: string;
   campaignTitle?: string; // Optional campaign title for better UX
 }
 
-export default function CampaignMessages({
+export default function AdvertiserCampaignMessages({
   campaignId,
   campaignTitle,
-}: CampaignMessagesProps) {
+}: AdvertiserCampaignMessagesProps) {
   const [messageInput, setMessageInput] = useState("");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [firebaseToken, setFirebaseToken] = useState<string | null>(null);
@@ -172,7 +172,7 @@ export default function CampaignMessages({
     setIsCreatingThread(true);
     setCreateThreadError(null);
     try {
-      // Backend automatically determines promoterId from Firebase token
+      // Backend automatically determines advertiserId from Firebase token
       const newThread = await messagingService.createThread({
         campaignId,
         subject: campaignTitle
@@ -238,7 +238,7 @@ export default function CampaignMessages({
           No messages yet
         </h3>
         <p className="text-gray-600 mb-4">
-          Start a conversation with the advertiser about{" "}
+          Start a conversation with the promoters about{" "}
           {campaignTitle || "this campaign"}
         </p>
 
@@ -256,7 +256,7 @@ export default function CampaignMessages({
           disabled={isCreatingThread || !currentUser}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isCreatingThread ? "Creating..." : "Send Message"}
+          {isCreatingThread ? "Creating..." : "Start Conversation"}
         </button>
       </div>
     );
@@ -273,7 +273,9 @@ export default function CampaignMessages({
           </div>
           <div>
             <h3 className="font-medium text-gray-900">Campaign Discussion</h3>
-            <p className="text-sm text-gray-500">Campaign Discussion</p>
+            <p className="text-sm text-gray-500">
+              {campaignTitle || "Campaign Discussion"}
+            </p>
           </div>
         </div>
 
@@ -302,9 +304,8 @@ export default function CampaignMessages({
           </div>
         ) : (
           campaignMessages.map((message) => {
-            // For now, we'll use a simple approach - check if senderId matches current user
-            // The backend could provide a flag like isOwnMessage in the future
-            const isOwnMessage = message.senderType === "PROMOTER"; // Assuming this component is for promoters
+            // For advertisers, we'll assume they are the sender when senderType is 'ADVERTISER'
+            const isOwnMessage = message.senderType === "ADVERTISER";
 
             return (
               <div
@@ -317,7 +318,7 @@ export default function CampaignMessages({
                 {!isOwnMessage && (
                   <div className="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                     <span className="text-xs font-medium text-gray-600">
-                      {message.sender?.username?.charAt(0).toUpperCase() || "A"}
+                      {message.sender?.username?.charAt(0).toUpperCase() || "P"}
                     </span>
                   </div>
                 )}
@@ -332,7 +333,7 @@ export default function CampaignMessages({
                 >
                   {!isOwnMessage && (
                     <p className="text-xs font-medium mb-1 opacity-75">
-                      {message.sender?.username || "Advertiser"}
+                      {message.sender?.username || "Promoter"}
                     </p>
                   )}
                   <p className="text-sm">{message.content}</p>
@@ -349,7 +350,7 @@ export default function CampaignMessages({
                 {isOwnMessage && (
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                     <span className="text-xs font-medium text-white">
-                      {currentUser?.displayName?.charAt(0).toUpperCase() || "P"}
+                      {currentUser?.displayName?.charAt(0).toUpperCase() || "A"}
                     </span>
                   </div>
                 )}

@@ -22,6 +22,7 @@ import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoter
 import AdvertiserCampaignRequirements from "./components/AdvertiserCampaignRequirements";
 import AdvertiserCampaignPerformance from "./components/AdvertiserCampaignPerformance";
 import AdvertiserPromoterLinks from "./components/AdvertiserPromoterLinks";
+import AdvertiserCampaignMessages from "./components/AdvertiserCampaignMessages";
 import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
 interface AdvertiserCampaignDetailsContentProps {
@@ -226,11 +227,11 @@ export default function AdvertiserCampaignDetailsContent({
         return <AdvertiserCampaignRequirements campaign={campaign} />;
       case "messages":
         return (
-          <div className="text-center py-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Campaign Messages
-            </h3>
-            <p className="text-gray-600">Messaging system coming soon...</p>
+          <div className="h-96">
+            <AdvertiserCampaignMessages
+              campaignId={campaignId}
+              campaignTitle={campaign.title}
+            />
           </div>
         );
       default:

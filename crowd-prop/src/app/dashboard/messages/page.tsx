@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-import { userService } from '@/services/user.service';
-import { User as AppUser } from '@/app/interfaces/user';
-import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import PromoterMessagesContent from '@/components/dashboard/promoter/PromoterMessagesContent';
+import { useEffect, useState } from "react";
+import { User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { userService } from "@/services/user.service";
+import { User as AppUser } from "@/app/interfaces/user";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import PromoterMessagesContent from "@/components/dashboard/promoter/PromoterMessagesContent";
+import AdvertiserMessagesContent from "@/components/dashboard/advertiser/AdvertiserMessagesContent";
 
 export default function MessagesPage() {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
@@ -19,9 +20,9 @@ export default function MessagesPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       setFirebaseUser(authUser);
-      
+
       if (!authUser) {
-        router.push('/auth');
+        router.push("/auth");
         setLoading(false);
         return;
       }
@@ -38,8 +39,8 @@ export default function MessagesPage() {
           setAppUser(fetchedUser);
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
-        router.push('/onboarding');
+        console.error("Error fetching user:", error);
+        router.push("/onboarding");
       }
 
       setLoading(false);
@@ -70,25 +71,24 @@ export default function MessagesPage() {
   }
 
   if (!appUser.isSetupDone) {
-    router.push('/onboarding');
+    router.push("/onboarding");
     return null;
   }
 
   // Render role-based messages content
   const renderMessagesContent = () => {
-    switch (appUser.role) {
-      case 'PROMOTER':
-        return <PromoterMessagesContent />;
-      case 'ADVERTISER':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Comming soon
-            </h2>
+    const currentUserData = {
+      id: appUser.id,
+      firebaseUid: firebaseUser?.uid || "",
+      name: appUser.name,
+    };
 
-          </div>
-        );
-      case 'ADMIN':
+    switch (appUser.role) {
+      case "PROMOTER":
+        return <PromoterMessagesContent currentUser={currentUserData} />;
+      case "ADVERTISER":
+        return <AdvertiserMessagesContent currentUser={currentUserData} />;
+      case "ADMIN":
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -100,7 +100,7 @@ export default function MessagesPage() {
           </div>
         );
       default:
-        return <PromoterMessagesContent />;
+        return <PromoterMessagesContent currentUser={currentUserData} />;
     }
   };
 
