@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { routes } from "@/lib/router";
-import { useMessagingContext } from "@/contexts/MessagingContext";
 import { useMessaging } from "@/hooks/useMessaging";
 import { MessageThreadResponse, MessageResponse } from "@/interfaces/messaging";
 import { auth } from "@/lib/firebase";
@@ -36,7 +35,7 @@ export default function PromoterMessagesContent({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Get Firebase token
+  // Get Firebase token and user ID
   useEffect(() => {
     const getFirebaseToken = async () => {
       if (auth.currentUser) {
@@ -63,9 +62,6 @@ export default function PromoterMessagesContent({
     return () => unsubscribe();
   }, []);
 
-  // Get unread count from global context
-  const { unreadCount } = useMessagingContext();
-
   // Initialize messaging for this component
   const {
     isConnected,
@@ -86,6 +82,7 @@ export default function PromoterMessagesContent({
     clearError,
   } = useMessaging(firebaseToken, {
     autoConnect: true,
+    currentUserType: "PROMOTER",
   });
 
   // Load threads on mount
@@ -148,8 +145,8 @@ export default function PromoterMessagesContent({
       }
       sendTyping(selectedThread.id, false);
 
-      // Send message via WebSocket for real-time delivery
-      sendMessage(selectedThread.id, messageInput.trim());
+      // Send message via HTTP API for immediate response
+      await sendMessage(selectedThread.id, messageInput.trim());
       setMessageInput("");
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -455,7 +452,10 @@ export default function PromoterMessagesContent({
                 </div>
               ) : (
                 threadMessages.map((message: MessageResponse) => {
-                  const isOwn = message.senderId === currentUser?.id;
+                  // Check both senderType and senderId as fallback since server might set incorrect senderType
+                  const isOwn =
+                    message.senderType === "PROMOTER" ||
+                    message.senderId === currentUser?.id;
                   const otherParticipant = selectedThread
                     ? getOtherParticipant(selectedThread)
                     : null;

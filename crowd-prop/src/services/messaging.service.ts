@@ -50,15 +50,15 @@ class MessagingService {
     if (!this.socket) return;
 
     this.socket.on("connected", (data: ConnectedPayload) => {
-      console.log("✅ Connected to messaging:", data);
+      console.log("🔌 WebSocket Event - connected:", data);
     });
 
     this.socket.on("error", (error: ErrorPayload) => {
-      console.error("❌ WebSocket error:", error);
+      console.error("❌ WebSocket Event - error:", error);
     });
 
     this.socket.on("disconnect", (reason: string) => {
-      console.log("🔌 Disconnected from messaging:", reason);
+      console.log("🔌 WebSocket Event - disconnect:", reason);
     });
   }
 
@@ -69,6 +69,7 @@ class MessagingService {
       return;
     }
     const payload: JoinThreadPayload = { threadId };
+    console.log("📤 WebSocket Emit - joinThread:", payload);
     this.socket.emit("joinThread", payload);
   }
 
@@ -77,7 +78,9 @@ class MessagingService {
       console.warn("Socket not connected");
       return;
     }
-    this.socket.emit("leaveThread", { threadId });
+    const payload = { threadId };
+    console.log("📤 WebSocket Emit - leaveThread:", payload);
+    this.socket.emit("leaveThread", payload);
   }
 
   sendMessage(threadId: string, content: string): void {
@@ -86,6 +89,7 @@ class MessagingService {
       return;
     }
     const payload: SendMessagePayload = { threadId, content };
+    console.log("📤 WebSocket Emit - sendMessage:", payload);
     this.socket.emit("sendMessage", payload);
   }
 
@@ -95,6 +99,7 @@ class MessagingService {
       return;
     }
     const payload: TypingPayload = { threadId, isTyping };
+    console.log("📤 WebSocket Emit - typing:", payload);
     this.socket.emit("typing", payload);
   }
 
@@ -104,36 +109,58 @@ class MessagingService {
       return;
     }
     const payload: MarkAsReadPayload = { threadId, messageId };
+    console.log("📤 WebSocket Emit - markAsRead:", payload);
     this.socket.emit("markAsRead", payload);
   }
 
   // Event Listeners
   onNewMessage(callback: (message: NewMessagePayload) => void): void {
-    this.socket?.on("newMessage", callback);
+    this.socket?.on("newMessage", (data: NewMessagePayload) => {
+      console.log("📨 WebSocket Event - newMessage:", data);
+      callback(data);
+    });
   }
 
   onUserTyping(callback: (data: UserTypingPayload) => void): void {
-    this.socket?.on("userTyping", callback);
+    this.socket?.on("userTyping", (data: UserTypingPayload) => {
+      console.log("⌨️ WebSocket Event - userTyping:", data);
+      callback(data);
+    });
   }
 
   onMessageRead(callback: (data: MessageReadPayload) => void): void {
-    this.socket?.on("messageRead", callback);
+    this.socket?.on("messageRead", (data: MessageReadPayload) => {
+      console.log("✅ WebSocket Event - messageRead:", data);
+      callback(data);
+    });
   }
 
   onThreadRead(callback: (data: ThreadReadPayload) => void): void {
-    this.socket?.on("threadRead", callback);
+    this.socket?.on("threadRead", (data: ThreadReadPayload) => {
+      console.log("📖 WebSocket Event - threadRead:", data);
+      callback(data);
+    });
   }
 
   onNotification(callback: (data: NotificationPayload) => void): void {
-    this.socket?.on("notification", callback);
+    this.socket?.on("notification", (data: NotificationPayload) => {
+      console.log("🔔 WebSocket Event - notification:", data);
+      callback(data);
+    });
   }
 
   onThreadJoined(callback: (data: { threadId: string }) => void): void {
-    this.socket?.on("threadJoined", callback);
+    this.socket?.on("threadJoined", (data: { threadId: string }) => {
+      console.log("🚪 WebSocket Event - threadJoined:", data);
+      callback(data);
+    });
   }
 
   onThreadLeft(callback: (data: { threadId: string }) => void): void {
-    this.socket?.on("threadLeft", callback);
+    this.socket?.on("threadLeft", (data: { threadId: string }) => {
+      console.log("🚪 WebSocket Event - threadLeft:", data);
+      callback(data);
+    });
   }
 
   // Remove event listeners
@@ -304,15 +331,57 @@ class MessagingService {
   }
 
   async markMessageAsReadHTTP(messageId: string): Promise<void> {
-    await this.makeRequest<void>(`/api/messaging/messages/${messageId}/read`, {
+    const url = `${this.baseUrl}/api/messaging/messages/${messageId}/read`;
+    const response = await fetch(url, {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.token}`,
+      },
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    // Don't try to parse JSON for empty responses
+    const text = await response.text();
+    if (text) {
+      try {
+        return JSON.parse(text);
+      } catch {
+        // If it's not valid JSON, just return void for successful responses
+        return;
+      }
+    }
   }
 
   async markThreadAsReadHTTP(threadId: string): Promise<void> {
-    await this.makeRequest<void>(`/api/messaging/threads/${threadId}/read`, {
+    const url = `${this.baseUrl}/api/messaging/threads/${threadId}/read`;
+    const response = await fetch(url, {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.token}`,
+      },
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    // Don't try to parse JSON for empty responses
+    const text = await response.text();
+    if (text) {
+      try {
+        return JSON.parse(text);
+      } catch {
+        // If it's not valid JSON, just return void for successful responses
+        return;
+      }
+    }
   }
 
   // Utility methods

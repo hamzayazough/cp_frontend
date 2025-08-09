@@ -18,6 +18,7 @@ import {
 interface UseMessagingOptions {
   autoConnect?: boolean;
   autoJoinThread?: string;
+  currentUserType?: "ADVERTISER" | "PROMOTER";
 }
 
 interface UseMessagingReturn {
@@ -41,11 +42,11 @@ interface UseMessagingReturn {
   error: string | null;
 
   // WebSocket methods
-  sendMessage: (threadId: string, content: string) => void;
+  sendMessage: (threadId: string, content: string) => Promise<void>;
   joinThread: (threadId: string) => void;
   leaveThread: (threadId: string) => void;
   sendTyping: (threadId: string, isTyping: boolean) => void;
-  markAsRead: (threadId?: string, messageId?: string) => void;
+  markAsRead: (threadId?: string, messageId?: string) => Promise<void>;
 
   // REST API methods
   loadThreads: (
@@ -80,7 +81,7 @@ export const useMessaging = (
   firebaseToken: string | null,
   options: UseMessagingOptions = {}
 ): UseMessagingReturn => {
-  const { autoConnect = true, autoJoinThread } = options;
+  const { autoConnect = true, autoJoinThread, currentUserType } = options;
 
   // Connection state
   const [isConnected, setIsConnected] = useState(false);
@@ -160,14 +161,19 @@ export const useMessaging = (
         });
 
         // Update thread's last message and unread count
+        // Only increment unread count for messages from other users
         setThreads((prev) =>
           prev.map((thread) => {
             if (thread.id === message.threadId) {
+              const isOwnMessage =
+                currentUserType && message.senderType === currentUserType;
               return {
                 ...thread,
                 lastMessageAt: message.createdAt,
                 messages: [message],
-                unreadCount: (thread.unreadCount || 0) + 1,
+                unreadCount: isOwnMessage
+                  ? thread.unreadCount || 0
+                  : (thread.unreadCount || 0) + 1,
               };
             }
             return thread;
@@ -198,6 +204,7 @@ export const useMessaging = (
       });
 
       messagingService.onThreadRead((data: ThreadReadPayload) => {
+        console.log("🔄 Received threadRead event:", data);
         setMessages((prev) =>
           prev.map((msg) =>
             msg.threadId === data.threadId && msg.senderId !== data.userId
@@ -207,9 +214,15 @@ export const useMessaging = (
         );
 
         setThreads((prev) =>
-          prev.map((thread) =>
-            thread.id === data.threadId ? { ...thread, unreadCount: 0 } : thread
-          )
+          prev.map((thread) => {
+            if (thread.id === data.threadId) {
+              console.log(
+                `📝 Updating thread ${thread.id} unreadCount from ${thread.unreadCount} to 0`
+              );
+              return { ...thread, unreadCount: 0 };
+            }
+            return thread;
+          })
         );
       });
 
@@ -238,11 +251,49 @@ export const useMessaging = (
       setSocket(null);
       setIsConnected(false);
     };
-  }, [firebaseToken, autoConnect, autoJoinThread]);
+  }, [firebaseToken, autoConnect, autoJoinThread, currentUserType]);
 
   // WebSocket methods
-  const sendMessage = useCallback((threadId: string, content: string) => {
-    messagingService.sendMessage(threadId, content);
+  const sendMessage = useCallback(async (threadId: string, content: string) => {
+    try {
+      setIsSendingMessage(true);
+      setError(null);
+
+      // Use HTTP API to send message and get immediate response
+      const newMessage = await messagingService.sendMessageHTTP(
+        threadId,
+        content
+      );
+
+      // Add the message to local state immediately
+      setMessages((prev) => {
+        // Avoid duplicate messages
+        if (prev.find((m) => m.id === newMessage.id)) return prev;
+        return [...prev, newMessage];
+      });
+
+      // Update thread's last message time
+      setThreads((prev) =>
+        prev.map((thread) => {
+          if (thread.id === threadId) {
+            return {
+              ...thread,
+              lastMessageAt: newMessage.createdAt,
+              messages: [newMessage],
+            };
+          }
+          return thread;
+        })
+      );
+    } catch (err) {
+      setError(
+        `Failed to send message: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsSendingMessage(false);
+    }
   }, []);
 
   const joinThread = useCallback((threadId: string) => {
@@ -257,9 +308,39 @@ export const useMessaging = (
     messagingService.sendTyping(threadId, isTyping);
   }, []);
 
-  const markAsRead = useCallback((threadId?: string, messageId?: string) => {
-    messagingService.markAsRead(threadId, messageId);
-  }, []);
+  const markAsRead = useCallback(
+    async (threadId?: string, messageId?: string) => {
+      try {
+        if (messageId) {
+          // Mark specific message as read via HTTP API
+          console.log("📖 Marking message as read (HTTP):", messageId);
+          await messagingService.markMessageAsReadHTTP(messageId);
+        } else if (threadId) {
+          // Mark entire thread as read via HTTP API
+          console.log("📖 Marking thread as read (HTTP):", threadId);
+          await messagingService.markThreadAsReadHTTP(threadId);
+
+          // Immediately update local state for instant UI feedback
+          console.log("🔄 Updating local thread state immediately");
+          setThreads((prev) =>
+            prev.map((thread) => {
+              if (thread.id === threadId) {
+                console.log(
+                  `📝 Local update: thread ${thread.id} unreadCount from ${thread.unreadCount} to 0`
+                );
+                return { ...thread, unreadCount: 0 };
+              }
+              return thread;
+            })
+          );
+        }
+      } catch (error) {
+        console.error("Failed to mark as read:", error);
+        throw error; // Re-throw so calling code can handle it
+      }
+    },
+    []
+  );
 
   // REST API methods
 

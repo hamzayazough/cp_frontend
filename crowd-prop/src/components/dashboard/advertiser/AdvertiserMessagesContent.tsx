@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useMessaging } from "@/hooks/useMessaging";
 import { MessageThreadResponse } from "@/interfaces/messaging";
 import { auth } from "@/lib/firebase";
-import { MagnifyingGlassIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import {
+  MagnifyingGlassIcon,
+  PaperAirplaneIcon,
+} from "@heroicons/react/24/outline";
 
 export default function AdvertiserMessagesContent() {
   const [firebaseToken, setFirebaseToken] = useState<string | null>(null);
   const [selectedThread, setSelectedThread] =
     useState<MessageThreadResponse | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Get Firebase token
+  // Get Firebase token and user ID
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -47,6 +51,7 @@ export default function AdvertiserMessagesContent() {
     markAsRead,
   } = useMessaging(firebaseToken, {
     autoConnect: true,
+    currentUserType: "ADVERTISER",
   });
 
   // Load threads on mount
@@ -69,24 +74,39 @@ export default function AdvertiserMessagesContent() {
   );
 
   // Get messages for selected thread
-  const threadMessages = selectedThread
-    ? messages
-        .filter((msg) => msg.threadId === selectedThread.id)
-        .sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        )
-    : [];
+  const threadMessages = useMemo(() => {
+    return selectedThread
+      ? messages
+          .filter((msg) => msg.threadId === selectedThread.id)
+          .sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          )
+      : [];
+  }, [selectedThread, messages]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [threadMessages]);
 
   // Handle thread selection
-  const handleThreadSelect = (thread: MessageThreadResponse) => {
+  const handleThreadSelect = async (thread: MessageThreadResponse) => {
+    console.log("🎯 Selecting thread:", {
+      threadId: thread.id,
+      unreadCount: thread.unreadCount,
+    });
     setSelectedThread(thread);
     joinThread(thread.id);
     loadMessages(thread.id);
 
-    // Mark thread as read
-    if (thread.unreadCount && thread.unreadCount > 0) {
-      markAsRead(thread.id);
+    // Mark thread as read when selecting it
+    console.log("📖 Calling markAsRead for thread:", thread.id);
+    try {
+      await markAsRead(thread.id);
+      console.log("✅ Successfully marked thread as read");
+    } catch (error) {
+      console.error("❌ Failed to mark thread as read:", error);
     }
   };
 
@@ -283,8 +303,18 @@ export default function AdvertiserMessagesContent() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -369,6 +399,9 @@ export default function AdvertiserMessagesContent() {
                     </div>
                   </div>
                 )}
+
+                {/* Scroll anchor */}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}
@@ -381,14 +414,30 @@ export default function AdvertiserMessagesContent() {
                       rows={1}
                       style={{ minHeight: "40px", maxHeight: "120px" }}
                       disabled={!isConnected || isSendingMessage}
-                      onKeyPress={(e) => {
+                      onFocus={async () => {
+                        // Mark thread as read when user focuses on input
+                        if (selectedThread) {
+                          try {
+                            await markAsRead(selectedThread.id);
+                            console.log(
+                              "✅ Marked thread as read on input focus"
+                            );
+                          } catch (error) {
+                            console.error(
+                              "❌ Failed to mark thread as read on focus:",
+                              error
+                            );
+                          }
+                        }
+                      }}
+                      onKeyPress={async (e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
                           const content = (
                             e.target as HTMLTextAreaElement
                           ).value.trim();
                           if (content && selectedThread) {
-                            sendMessage(selectedThread.id, content);
+                            await sendMessage(selectedThread.id, content);
                             (e.target as HTMLTextAreaElement).value = "";
                           }
                         }
@@ -396,11 +445,11 @@ export default function AdvertiserMessagesContent() {
                     />
                   </div>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       const textarea = document.querySelector("textarea");
                       const content = textarea?.value.trim();
                       if (content && selectedThread) {
-                        sendMessage(selectedThread.id, content);
+                        await sendMessage(selectedThread.id, content);
                         if (textarea) textarea.value = "";
                       }
                     }}
