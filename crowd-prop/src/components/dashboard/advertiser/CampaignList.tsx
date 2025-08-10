@@ -173,10 +173,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     }
   };
 
-  const getProgressPercentage = (spent: number, total: number) => {
-    return Math.min((spent / total) * 100, 100);
-  };
-
   const getCampaignIcon = (type: CampaignType) => {
     switch (type) {
       case CampaignType.VISIBILITY:
@@ -316,10 +312,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       <div className="divide-y divide-gray-100">
         {campaigns.map((campaign) => {
           const Icon = getCampaignIcon(campaign.type);
-          const progressPercentage = getProgressPercentage(
-            campaign.campaign.spentBudget,
-            campaign.campaign.budgetAllocated
-          );
 
           // Handle both single object and array for chosenPromoters
           const chosenPromotersArray = Array.isArray(campaign.chosenPromoters)
@@ -353,13 +345,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       </span>
                     </div>
                     
-                    {/* Status Progress Indicator */}
-                    <div className="mb-3">
-                      {getStatusProgress(campaign.status, campaign.campaign.isPublic)}
-                    </div>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {campaign.description}
-                    </p>{" "}
                     {/* Campaign Metrics */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                       {campaign.type === CampaignType.SALESMAN ? (
@@ -981,31 +966,12 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         })()}
                       </div>
                     )}{" "}
-                    {/* Progress Bar - Hide for SALESMAN campaigns */}
-                    {campaign.type !== CampaignType.SALESMAN && (
-                      <div className="mb-3">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs text-gray-500">
-                            Budget Usage
-                          </span>
-                          <span className="text-xs text-gray-700">
-                            {progressPercentage.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full transition-all ${
-                              progressPercentage > 80
-                                ? "bg-red-500"
-                                : progressPercentage > 60
-                                ? "bg-yellow-500"
-                                : "bg-green-500"
-                            }`}
-                            style={{ width: `${progressPercentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
+                    
+                    {/* Status Progress Indicator */}
+                    <div className="mb-3">
+                      {getStatusProgress(campaign.status, campaign.campaign.isPublic)}
+                    </div>
+                    
                     {/* Footer Info */}
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <div className="flex items-center space-x-4">
