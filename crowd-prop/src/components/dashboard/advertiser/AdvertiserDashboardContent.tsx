@@ -175,7 +175,7 @@ export default function AdvertiserDashboardContent({
             href="/dashboard/campaigns/create"
             className="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors"
           >
-            Verify Funds
+            Create a campaign
           </Link>
           <Link
             href="/dashboard/profile"
@@ -218,7 +218,7 @@ export default function AdvertiserDashboardContent({
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Views Generated Today</p>
+              <p className="text-sm font-medium text-gray-600">Views Gained Today</p>
               <p className="text-3xl font-bold text-gray-900">
                 {formatNumber(dashboardData.stats.viewsToday)}
               </p>
@@ -244,7 +244,7 @@ export default function AdvertiserDashboardContent({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
-                Conversions This Week
+                Sales made This Week
               </p>
               <p className="text-3xl font-bold text-gray-900">
                 {dashboardData.stats.conversionsThisWeek}
@@ -274,17 +274,17 @@ export default function AdvertiserDashboardContent({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
-                Payment Status
+                Active Campaigns
               </p>
-              <p className="text-3xl font-bold text-green-600">
-                Ready
+              <p className="text-3xl font-bold text-gray-900">
+                {dashboardData.stats.activeCampaigns}
               </p>
               <p className="text-sm text-gray-600 mt-1">
-                {dashboardData.stats.activeCampaigns} active campaigns
+                campaigns running
               </p>
             </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <CheckCircleIcon className="h-6 w-6 text-green-600" />
+            <div className="p-3 bg-blue-100 rounded-full">
+              <RectangleStackIcon className="h-6 w-6 text-blue-600" />
             </div>
           </div>
         </div>
@@ -396,7 +396,7 @@ export default function AdvertiserDashboardContent({
                   href="/dashboard/campaigns/create"
                   className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Verify Funds
+                  Create your first campaign
                 </Link>
               </div>
             )}
