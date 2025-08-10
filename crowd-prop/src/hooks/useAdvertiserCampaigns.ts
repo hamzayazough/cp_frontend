@@ -6,7 +6,11 @@ import {
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
-import { ADVERTISER_CAMPAIGN_MOCKS } from "@/app/mocks/advertiser-campaign-mock";
+import {
+  ADVERTISER_CAMPAIGN_MOCKS,
+  getFilteredCampaigns,
+  sortCampaigns,
+} from "@/app/mocks/advertiser-campaign-mock";
 
 interface UseAdvertiserCampaignsReturn {
   campaigns: CampaignAdvertiser[];
@@ -70,14 +74,51 @@ export const useAdvertiserCampaigns = (
     statuses: [],
     types: [],
   });
+
+  // Helper function to apply filters and sorting to mock data
+  const getMockDataWithFilters = useCallback(
+    (params?: AdvertiserCampaignListRequest) => {
+      let campaigns = [
+        ...ADVERTISER_CAMPAIGN_MOCKS.campaignListResponse.campaigns,
+      ];
+
+      // Apply filters
+      if (params) {
+        campaigns = getFilteredCampaigns(campaigns, {
+          status: params.status,
+          type: params.type,
+          searchQuery: params.searchQuery,
+          isPublic: params.isPublic,
+        });
+
+        // Apply sorting
+        if (params.sortBy) {
+          campaigns = sortCampaigns(
+            campaigns,
+            params.sortBy,
+            params.sortOrder || "desc"
+          );
+        }
+      }
+
+      return {
+        campaigns,
+        pagination: ADVERTISER_CAMPAIGN_MOCKS.campaignListResponse.pagination,
+        summary: ADVERTISER_CAMPAIGN_MOCKS.campaignListResponse.summary,
+      };
+    },
+    []
+  );
+
   const fetchCampaigns = useCallback(
     async (params?: AdvertiserCampaignListRequest) => {
       try {
         setLoading(true);
         setError(null);
 
+        const requestParams = params || initialParams;
         const response = await advertiserService.getCampaignsList(
-          params || initialParams
+          requestParams
         );
         setCampaigns(response.campaigns);
         setPagination(response.pagination);
@@ -99,10 +140,10 @@ export const useAdvertiserCampaigns = (
           console.warn("API not available, falling back to mock data");
           setRetryCount((prev) => prev + 1);
 
-          const mockResponse = ADVERTISER_CAMPAIGN_MOCKS.campaignListResponse;
-          setCampaigns(mockResponse.campaigns);
-          setPagination(mockResponse.pagination);
-          setSummary(mockResponse.summary);
+          const mockData = getMockDataWithFilters(requestParams);
+          setCampaigns(mockData.campaigns);
+          setPagination(mockData.pagination);
+          setSummary(mockData.summary);
           setError("An error has occurred in the server. Please try again");
         } else {
           setError(errorMessage);
@@ -111,8 +152,9 @@ export const useAdvertiserCampaigns = (
         setLoading(false);
       }
     },
-    [initialParams, retryCount]
+    [initialParams, retryCount, getMockDataWithFilters]
   );
+
   const refetch = useCallback(async () => {
     await fetchCampaigns(initialParams);
   }, [fetchCampaigns, initialParams]);
@@ -204,14 +246,14 @@ export const useAdvertiserCampaigns = (
           setRetryCount(0);
         } else {
           console.warn("Campaigns API not available, using mock data");
-          const mockResponse = ADVERTISER_CAMPAIGN_MOCKS.campaignListResponse;
-          setCampaigns(mockResponse.campaigns);
-          setPagination(mockResponse.pagination);
-          setSummary(mockResponse.summary);
+          const mockData = getMockDataWithFilters(initialParams);
+          setCampaigns(mockData.campaigns);
+          setPagination(mockData.pagination);
+          setSummary(mockData.summary);
           setError("An error has occurred in the server. Please try again");
         }
 
-        // Handle filters result
+        // Handle filters result - only set filters if they haven't been set yet
         if (filtersResult.status === "fulfilled") {
           setFilters(filtersResult.value);
         } else {
@@ -221,10 +263,10 @@ export const useAdvertiserCampaigns = (
       } catch (err) {
         console.error("Error during initialization:", err);
         // Fallback to all mock data
-        const mockResponse = ADVERTISER_CAMPAIGN_MOCKS.campaignListResponse;
-        setCampaigns(mockResponse.campaigns);
-        setPagination(mockResponse.pagination);
-        setSummary(mockResponse.summary);
+        const mockData = getMockDataWithFilters(initialParams);
+        setCampaigns(mockData.campaigns);
+        setPagination(mockData.pagination);
+        setSummary(mockData.summary);
         setFilters(ADVERTISER_CAMPAIGN_MOCKS.filters);
         setError("An error has occurred in the server. Please try again");
       } finally {
@@ -238,8 +280,15 @@ export const useAdvertiserCampaigns = (
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array to run only once
+  }, [
+    JSON.stringify(initialParams?.searchQuery),
+    JSON.stringify(initialParams?.status),
+    JSON.stringify(initialParams?.type),
+    initialParams?.sortBy,
+    initialParams?.sortOrder,
+    initialParams?.page,
+    initialParams?.limit,
+  ]); // React to parameter changes
 
   return {
     campaigns,

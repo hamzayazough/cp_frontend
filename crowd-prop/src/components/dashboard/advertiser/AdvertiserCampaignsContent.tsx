@@ -12,12 +12,14 @@ import CreateCampaignButton from "./CreateCampaignButton";
 
 export default function AdvertiserCampaignsContent() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<CampaignStatus[]>([]);
   const [typeFilter, setTypeFilter] = useState<CampaignType[]>([]);
   const [sortBy, setSortBy] = useState<AdvertiserCampaignSortField>(
     AdvertiserCampaignSortField.UPDATED_AT
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
   const {
     campaigns,
     loading,
@@ -26,15 +28,26 @@ export default function AdvertiserCampaignsContent() {
     filters,
     refetch,
   } = useAdvertiserCampaigns({
-    searchQuery: searchQuery || undefined,
+    searchQuery: appliedSearchQuery || undefined,
     status: statusFilter.length > 0 ? statusFilter : undefined,
     type: typeFilter.length > 0 ? typeFilter : undefined,
     sortBy,
     sortOrder,
   });
 
+  const handleSearchBlur = () => {
+    setAppliedSearchQuery(searchQuery);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setAppliedSearchQuery(searchQuery);
+    }
+  };
+
   const handleClearFilters = () => {
     setSearchQuery("");
+    setAppliedSearchQuery("");
     setStatusFilter([]);
     setTypeFilter([]);
     setSortBy(AdvertiserCampaignSortField.UPDATED_AT);
@@ -117,6 +130,8 @@ export default function AdvertiserCampaignsContent() {
         <CampaignFilters
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          onSearchBlur={handleSearchBlur}
+          onSearchKeyDown={handleSearchKeyDown}
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilter}
           typeFilter={typeFilter}
@@ -159,6 +174,8 @@ export default function AdvertiserCampaignsContent() {
       <CampaignFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onSearchBlur={handleSearchBlur}
+        onSearchKeyDown={handleSearchKeyDown}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
         typeFilter={typeFilter}

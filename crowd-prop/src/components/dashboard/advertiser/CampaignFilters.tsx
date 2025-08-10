@@ -9,6 +9,8 @@ import { Search, Filter, SortAsc, SortDesc, X } from 'lucide-react';
 interface CampaignFiltersProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onSearchBlur?: () => void;
+  onSearchKeyDown?: (e: React.KeyboardEvent) => void;
   statusFilter: CampaignStatus[];
   onStatusFilterChange: (statuses: CampaignStatus[]) => void;
   typeFilter: CampaignType[];
@@ -27,6 +29,8 @@ interface CampaignFiltersProps {
 export default function CampaignFilters({
   searchQuery,
   onSearchChange,
+  onSearchBlur,
+  onSearchKeyDown,
   statusFilter,
   onStatusFilterChange,
   typeFilter,
@@ -99,7 +103,9 @@ export default function CampaignFilters({
             placeholder="Search campaigns..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onBlur={onSearchBlur}
+            onKeyDown={onSearchKeyDown}
+            className="w-full pl-8 pr-3 py-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
