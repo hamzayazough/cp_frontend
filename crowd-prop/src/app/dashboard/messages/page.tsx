@@ -87,7 +87,7 @@ export default function MessagesPage() {
       case "PROMOTER":
         return <PromoterMessagesContent currentUser={currentUserData} />;
       case "ADVERTISER":
-        return <AdvertiserMessagesContent currentUser={currentUserData} />;
+        return <AdvertiserMessagesContent />;
       case "ADMIN":
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
