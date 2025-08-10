@@ -43,30 +43,30 @@ export default function AdvertiserCampaignsContent() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Campaigns</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl font-bold text-gray-900">My Campaigns</h1>
+            <p className="text-gray-600 text-sm">
               Manage your advertising campaigns and track their performance
             </p>
           </div>
           <CreateCampaignButton />
         </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex justify-center items-center h-48">
+          <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Header - Keep the same structure */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Campaigns</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl font-bold text-gray-900">My Campaigns</h1>
+            <p className="text-gray-600 text-sm">
               Manage your advertising campaigns and track their performance
             </p>
           </div>
@@ -74,11 +74,11 @@ export default function AdvertiserCampaignsContent() {
         </div>
 
         {/* Error Banner */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-amber-400"
+                className="h-4 w-4 text-amber-400"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -89,18 +89,18 @@ export default function AdvertiserCampaignsContent() {
                 />
               </svg>
             </div>
-            <div className="ml-3">
+            <div className="ml-2">
               <h3 className="text-sm font-medium text-amber-800">
                 {error.includes("demo data") ? "Demo Mode" : "Connection Issue"}
               </h3>
-              <div className="mt-2 text-sm text-amber-700">
+              <div className="mt-1 text-sm text-amber-700">
                 <p>{error}</p>
               </div>
               {!error.includes("demo data") && (
-                <div className="mt-4">
+                <div className="mt-2">
                   <button
                     onClick={() => refetch()}
-                    className="bg-amber-600 text-white px-4 py-2 rounded-md hover:bg-amber-700 transition-colors"
+                    className="bg-amber-600 text-white px-3 py-1 text-sm rounded-md hover:bg-amber-700 transition-colors"
                   >
                     Try Again
                   </button>
@@ -141,12 +141,12 @@ export default function AdvertiserCampaignsContent() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Campaigns</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900">My Campaigns</h1>
+          <p className="text-gray-600 text-sm">
             Manage your advertising campaigns and track their performance
           </p>
         </div>
