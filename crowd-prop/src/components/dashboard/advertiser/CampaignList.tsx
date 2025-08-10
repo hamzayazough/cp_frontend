@@ -83,6 +83,21 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     }
   };
 
+  const getCampaignTypeColor = (type: CampaignType) => {
+    switch (type) {
+      case CampaignType.VISIBILITY:
+        return "bg-blue-500";
+      case CampaignType.CONSULTANT:
+        return "bg-purple-500";
+      case CampaignType.SALESMAN:
+        return "bg-orange-500";
+      case CampaignType.SELLER:
+        return "bg-green-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
   const getCampaignIcon = (type: CampaignType) => {
     switch (type) {
       case CampaignType.VISIBILITY:
@@ -209,7 +224,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
 
   return (
     <Fragment>
-      <div className="space-y-4">
+      <div className="space-y-6">
         {campaigns.map((campaign) => {
           const Icon = getCampaignIcon(campaign.type);
 
@@ -223,37 +238,31 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
           return (
             <div
               key={campaign.id}
-              className="group bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
+              className="group bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
               onClick={() => router.push(`/dashboard/campaigns/${campaign.id}`)}
             >
               {/* Header Section */}
               <div className="relative">
                 {/* Status Banner */}
-                <div className={`h-1 w-full ${
-                  campaign.status === AdvertiserCampaignStatus.COMPLETED 
-                    ? "bg-green-500" 
-                    : campaign.status === AdvertiserCampaignStatus.ONGOING 
-                    ? "bg-blue-500" 
-                    : "bg-yellow-500"
-                }`} />
+                <div className={`h-1 w-full ${getCampaignTypeColor(campaign.type)}`} />
                 
-                <div className="p-6">
+                <div className="p-4">
                   {/* Title Row */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3 flex-1">
-                      <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
-                        <Icon className="h-6 w-6 text-blue-600" />
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-2 flex-1">
+                      <div className="p-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
+                        <Icon className="h-4 w-4 text-blue-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">
+                        <h3 className="text-base font-bold text-gray-900 mb-0.5 truncate">
                           {campaign.title}
                         </h3>
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
                           <span className={getTypeBadge(campaign.type)}>
                             {campaign.type}
                           </span>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Calendar className="h-4 w-4 mr-1" />
+                          <div className="flex items-center text-xs text-gray-500">
+                            <Calendar className="h-3 w-3 mr-1" />
                             <span>Due {formatDate(campaign.campaign.deadline)}</span>
                           </div>
                         </div>
@@ -265,18 +274,18 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         e.stopPropagation();
                         console.log("Edit campaign:", campaign.id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                       title="Edit Campaign"
                     >
-                      <Edit className="h-5 w-5" />
+                      <Edit className="h-4 w-4" />
                     </button>
                   </div>
 
                   {/* Status Progress */}
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Campaign Progress</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs font-medium text-gray-700">Campaign Progress</span>
+                      <span className="text-xs text-gray-500">
                         {(() => {
                           const statusLabels = {
                             [AdvertiserCampaignStatus.PENDING_PROMOTER]: "Waiting for Applicants",
@@ -289,19 +298,20 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       </span>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    <div className="flex justify-center">
+                      <div className="w-[75%] flex items-center space-x-1">
                       {(() => {
                         const statuses = campaign.campaign.isPublic 
                           ? [
                               { key: AdvertiserCampaignStatus.PENDING_PROMOTER, label: "Waiting", icon: AlertCircle },
-                              { key: AdvertiserCampaignStatus.ONGOING, label: "Active", icon: Play },
-                              { key: AdvertiserCampaignStatus.COMPLETED, label: "Done", icon: CheckCircle },
+                              { key: AdvertiserCampaignStatus.ONGOING, label: "Ongoing", icon: Play },
+                              { key: AdvertiserCampaignStatus.COMPLETED, label: "Completed", icon: CheckCircle },
                             ]
                           : [
                               { key: AdvertiserCampaignStatus.PENDING_PROMOTER, label: "Waiting", icon: AlertCircle },
                               { key: AdvertiserCampaignStatus.REVIEWING_APPLICATIONS, label: "Review", icon: Search },
-                              { key: AdvertiserCampaignStatus.ONGOING, label: "Active", icon: Play },
-                              { key: AdvertiserCampaignStatus.COMPLETED, label: "Done", icon: CheckCircle },
+                              { key: AdvertiserCampaignStatus.ONGOING, label: "Ongoing", icon: Play },
+                              { key: AdvertiserCampaignStatus.COMPLETED, label: "Completed", icon: CheckCircle },
                             ];
                         
                         const currentIndex = statuses.findIndex(status => status.key === campaign.status);
@@ -315,7 +325,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                             <div key={status.key} className="flex items-center flex-1">
                               <div className="flex flex-col items-center flex-1">
                                 <div
-                                  className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 transition-all ${
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all ${
                                     isActive
                                       ? "bg-blue-600 text-white shadow-lg"
                                       : isCompleted
@@ -323,7 +333,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                       : "bg-gray-200 text-gray-400"
                                   }`}
                                 >
-                                  <Icon className="h-4 w-4" />
+                                  <Icon className="h-2.5 w-2.5" />
                                 </div>
                                 <span
                                   className={`text-xs font-medium ${
@@ -339,7 +349,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                               </div>
                               {index < statuses.length - 1 && (
                                 <div
-                                  className={`flex-1 h-1 mx-2 rounded-full transition-all ${
+                                  className={`flex-1 h-0.5 mx-1 rounded-full transition-all ${
                                     isCompleted ? "bg-green-600" : "bg-gray-200"
                                   }`}
                                 />
@@ -348,36 +358,37 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                           );
                         });
                       })()}
+                      </div>
                     </div>
                   </div>
 
                   {/* Metrics Grid */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     {campaign.type === CampaignType.SALESMAN ? (
                       // SALESMAN campaigns
                       <>
-                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <div className="p-2 bg-gray-200 rounded-lg">
-                              <DollarSign className="h-4 w-4 text-gray-600" />
+                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 border border-gray-200">
+                          <div className="flex items-center space-x-1.5 mb-0.5">
+                            <div className="p-1 bg-gray-200 rounded-md">
+                              <DollarSign className="h-3 w-3 text-gray-600" />
                             </div>
-                            <span className="text-sm font-medium text-gray-700">Promo Code</span>
+                            <span className="text-xs font-medium text-gray-700">Promo Code</span>
                           </div>
-                          <p className="text-lg font-bold text-gray-900">
+                          <p className="text-sm font-bold text-gray-900">
                             {campaign.campaign.type === CampaignType.SALESMAN
                               ? campaign.campaign.codePrefix || "Not Set"
                               : "N/A"}
                           </p>
                         </div>
                         
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <div className="p-2 bg-blue-200 rounded-lg">
-                              <BarChart3 className="h-4 w-4 text-blue-600" />
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
+                          <div className="flex items-center space-x-1.5 mb-0.5">
+                            <div className="p-1 bg-blue-200 rounded-md">
+                              <BarChart3 className="h-3 w-3 text-blue-600" />
                             </div>
-                            <span className="text-sm font-medium text-blue-700">Commission</span>
+                            <span className="text-xs font-medium text-blue-700">Commission</span>
                           </div>
-                          <p className="text-lg font-bold text-blue-900">
+                          <p className="text-sm font-bold text-blue-900">
                             {campaign.campaign.type === CampaignType.SALESMAN
                               ? `${campaign.campaign.commissionPerSale}%`
                               : "N/A"}
@@ -388,32 +399,32 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                       // Other campaign types
                       <>
                         {/* Budget Circle Chart */}
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-4 border border-green-200">
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg p-3 border border-green-200">
                           {(() => {
                             const budget = campaign.campaign.budgetAllocated;
                             const spent = campaign.campaign.spentBudget;
                             const percentage = budget > 0 ? (spent / budget) * 100 : 0;
-                            const circumference = 2 * Math.PI * 24;
+                            const circumference = 2 * Math.PI * 16;
                             const strokeDashoffset = circumference - (percentage / 100) * circumference;
                             
                             return (
-                              <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-2">
                                 <div className="relative">
-                                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 56 56">
+                                  <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 40 40">
                                     <circle
-                                      cx="28"
-                                      cy="28"
-                                      r="24"
+                                      cx="20"
+                                      cy="20"
+                                      r="16"
                                       stroke="#d1fae5"
-                                      strokeWidth="6"
+                                      strokeWidth="4"
                                       fill="none"
                                     />
                                     <circle
-                                      cx="28"
-                                      cy="28"
-                                      r="24"
+                                      cx="20"
+                                      cy="20"
+                                      r="16"
                                       stroke={percentage > 90 ? "#ef4444" : percentage > 70 ? "#f59e0b" : "#10b981"}
-                                      strokeWidth="6"
+                                      strokeWidth="4"
                                       fill="none"
                                       strokeDasharray={circumference}
                                       strokeDashoffset={strokeDashoffset}
@@ -422,13 +433,13 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                     />
                                   </svg>
                                   <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-sm font-bold text-green-700">
+                                    <span className="text-xs font-bold text-green-700">
                                       {Math.round(percentage)}%
                                     </span>
                                   </div>
                                 </div>
                                 <div className="flex-1">
-                                  <p className="text-sm font-medium text-green-700 mb-1">Budget Usage</p>
+                                  <p className="text-xs font-medium text-green-700 mb-0.5">Budget Usage</p>
                                   <p className="text-xs text-green-600">
                                     {formatCurrency(spent)} spent
                                   </p>
@@ -443,14 +454,14 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         
                         {/* Secondary Metric */}
                         {campaign.type === CampaignType.VISIBILITY ? (
-                          <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-xl p-4 border border-purple-200">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <div className="p-2 bg-purple-200 rounded-lg">
-                                <Eye className="h-4 w-4 text-purple-600" />
+                          <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-lg p-3 border border-purple-200">
+                            <div className="flex items-center space-x-1.5 mb-0.5">
+                              <div className="p-1 bg-purple-200 rounded-md">
+                                <Eye className="h-3 w-3 text-purple-600" />
                               </div>
-                              <span className="text-sm font-medium text-purple-700">Views</span>
+                              <span className="text-xs font-medium text-purple-700">Views</span>
                             </div>
-                            <p className="text-lg font-bold text-purple-900">
+                            <p className="text-sm font-bold text-purple-900">
                               {formatNumber(
                                 campaign.campaign.type === CampaignType.VISIBILITY
                                   ? campaign.campaign.currentViews
@@ -465,14 +476,14 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                 const chosenPromoter = chosenPromotersArray[0];
                                 if (campaign.type === CampaignType.CONSULTANT) {
                                   return (
-                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-4 border border-blue-200">
-                                      <div className="flex items-center space-x-2 mb-2">
-                                        <div className="p-2 bg-blue-200 rounded-lg">
-                                          <Users className="h-4 w-4 text-blue-600" />
+                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-3 border border-blue-200">
+                                      <div className="flex items-center space-x-1.5 mb-0.5">
+                                        <div className="p-1 bg-blue-200 rounded-md">
+                                          <Users className="h-3 w-3 text-blue-600" />
                                         </div>
-                                        <span className="text-sm font-medium text-blue-700">Meetings</span>
+                                        <span className="text-xs font-medium text-blue-700">Meetings</span>
                                       </div>
-                                      <p className="text-lg font-bold text-blue-900">
+                                      <p className="text-sm font-bold text-blue-900">
                                         {chosenPromoter.numberMeetingsDone || 0}/8
                                       </p>
                                     </div>
@@ -480,21 +491,21 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                 }
                               }
                               return (
-                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200 flex items-center justify-center">
-                                  <span className="text-sm text-gray-500">No metrics available</span>
+                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 border border-gray-200 flex items-center justify-center">
+                                  <span className="text-xs text-gray-500">No metrics available</span>
                                 </div>
                               );
                             } else {
                               const totalApplicants = campaign.applicants?.length || 0;
                               return (
-                                <div className="bg-gradient-to-br from-indigo-50 to-blue-100 rounded-xl p-4 border border-indigo-200">
-                                  <div className="flex items-center space-x-2 mb-2">
-                                    <div className="p-2 bg-indigo-200 rounded-lg">
-                                      <Users className="h-4 w-4 text-indigo-600" />
+                                <div className="bg-gradient-to-br from-indigo-50 to-blue-100 rounded-lg p-3 border border-indigo-200">
+                                  <div className="flex items-center space-x-1.5 mb-0.5">
+                                    <div className="p-1 bg-indigo-200 rounded-md">
+                                      <Users className="h-3 w-3 text-indigo-600" />
                                     </div>
-                                    <span className="text-sm font-medium text-indigo-700">Applicants</span>
+                                    <span className="text-xs font-medium text-indigo-700">Applicants</span>
                                   </div>
-                                  <p className="text-lg font-bold text-indigo-900">
+                                  <p className="text-sm font-bold text-indigo-900">
                                     {totalApplicants}
                                   </p>
                                 </div>
@@ -508,13 +519,13 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                 </div>
 
                 {/* Bottom Section */}
-                <div className="border-t border-gray-100 bg-gray-50 px-6 py-4 space-y-4">
+                <div className="border-t border-gray-100 bg-gray-50 px-4 py-3 space-y-3">
                   {/* Deliverables for CONSULTANT and SELLER */}
                   {(campaign.type === CampaignType.CONSULTANT ||
                     campaign.type === CampaignType.SELLER) && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Deliverables</h4>
-                      <div className="flex flex-wrap gap-2">
+                      <h4 className="text-xs font-medium text-gray-700 mb-1">Deliverables</h4>
+                      <div className="flex flex-wrap gap-1.5">
                         {(() => {
                           const deliverables =
                             campaign.type === CampaignType.CONSULTANT
@@ -528,7 +539,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                           return deliverables.map((deliverable, index) => (
                             <div
                               key={deliverable.id || index}
-                              className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                              className={`flex items-center space-x-1.5 px-2 py-1 rounded-full text-xs font-medium transition-all ${
                                 deliverable.isFinished
                                   ? "bg-green-100 text-green-800 border border-green-200"
                                   : "bg-orange-100 text-orange-800 border border-orange-200"
@@ -536,9 +547,9 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                             >
                               <span>{deliverable.deliverable.replace(/_/g, " ")}</span>
                               {deliverable.isFinished ? (
-                                <Check className="h-4 w-4" />
+                                <Check className="h-3 w-3" />
                               ) : (
-                                <Clock className="h-4 w-4" />
+                                <Clock className="h-3 w-3" />
                               )}
                             </div>
                           ));
@@ -550,7 +561,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                   {/* Application Status */}
                   {!campaign.campaign.isPublic && (
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Promoters</span>
+                      <span className="text-xs font-medium text-gray-700">Promoters</span>
                       {(() => {
                         const chosenPromoter = chosenPromotersArray[0];
                         const pendingApplications =
@@ -560,8 +571,8 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
 
                         if (chosenPromoter) {
                           return (
-                            <span className="inline-flex items-center space-x-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium">
-                              <UserCheck className="h-4 w-4" />
+                            <span className="inline-flex items-center space-x-1.5 bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                              <UserCheck className="h-3 w-3" />
                               <span>Promoter Selected</span>
                             </span>
                           );
@@ -572,16 +583,16 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                                 e.stopPropagation();
                                 handleViewApplications(campaign);
                               }}
-                              className="inline-flex items-center space-x-2 bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+                              className="inline-flex items-center space-x-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 px-2 py-1 rounded-full text-xs font-medium transition-colors"
                             >
-                              <Bell className="h-4 w-4" />
+                              <Bell className="h-3 w-3" />
                               <span>{pendingApplications.length} pending applications</span>
                             </button>
                           );
                         } else {
                           return (
-                            <span className="inline-flex items-center space-x-2 text-gray-500 text-sm">
-                              <Clock className="h-4 w-4" />
+                            <span className="inline-flex items-center space-x-1.5 text-gray-500 text-xs">
+                              <Clock className="h-3 w-3" />
                               <span>Waiting for applications</span>
                             </span>
                           );
@@ -591,18 +602,18 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                   )}
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                  <div className="flex items-center justify-between pt-1.5 border-t border-gray-200">
                     <span className="text-xs text-gray-500">
                       Created {formatDate(campaign.campaign.createdAt)}
                     </span>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1.5">
                       {campaign.campaign.isPublic && (
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-xs font-medium">
                           Public
                         </span>
                       )}
                       {campaign.type === CampaignType.SALESMAN && (
-                        <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded-full text-xs font-medium">
                           {campaign.performance.totalSalesMade || 0} sales
                         </span>
                       )}
