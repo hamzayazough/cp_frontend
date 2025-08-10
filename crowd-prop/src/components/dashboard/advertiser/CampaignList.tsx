@@ -22,6 +22,10 @@ import {
   UserCheck,
   Clock,
   Edit,
+  Play,
+  CheckCircle,
+  Search,
+  AlertCircle,
 } from "lucide-react";
 import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
@@ -69,22 +73,88 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     }).format(new Date(date));
   };
 
-  const getStatusBadge = (status: AdvertiserCampaignStatus) => {
-    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
-    switch (status) {
-      case AdvertiserCampaignStatus.ONGOING:
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case AdvertiserCampaignStatus.COMPLETED:
-        return `${baseClasses} bg-blue-100 text-blue-800`;
-      case AdvertiserCampaignStatus.WAITING_FOR_APPLICATIONS:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
-      case AdvertiserCampaignStatus.REVIEWING_APPLICATIONS:
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      case AdvertiserCampaignStatus.PENDING_PROMOTER:
-        return `${baseClasses} bg-orange-100 text-orange-800`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
-    }
+  const getStatusProgress = (currentStatus: AdvertiserCampaignStatus, isPublic: boolean = true) => {
+    // Define the base flow
+    const baseStatuses = [
+      {
+        key: AdvertiserCampaignStatus.PENDING_PROMOTER,
+        label: "Waiting Applicants",
+        icon: AlertCircle,
+      },
+      {
+        key: AdvertiserCampaignStatus.ONGOING,
+        label: "Ongoing",
+        icon: Play,
+      },
+      {
+        key: AdvertiserCampaignStatus.COMPLETED,
+        label: "Completed",
+        icon: CheckCircle,
+      },
+    ];
+
+    // For private campaigns, insert REVIEWING_APPLICATIONS between PENDING and ONGOING
+    const statuses = isPublic 
+      ? baseStatuses 
+      : [
+          baseStatuses[0], // PENDING_PROMOTER
+          {
+            key: AdvertiserCampaignStatus.REVIEWING_APPLICATIONS,
+            label: "Reviewing Applications",
+            icon: Search,
+          },
+          baseStatuses[1], // ONGOING
+          baseStatuses[2], // COMPLETED
+        ];
+
+    const currentIndex = statuses.findIndex(status => status.key === currentStatus);
+
+    return (
+      <div className="flex items-center space-x-2">
+        {statuses.map((status, index) => {
+          const Icon = status.icon;
+          const isActive = index === currentIndex;
+          const isCompleted = index < currentIndex;
+
+          return (
+            <div key={status.key} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : isCompleted
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-200 text-gray-400"
+                  }`}
+                  title={`${status.label} - ${status.key.replace(/_/g, " ")}`}
+                >
+                  <Icon className="h-3 w-3" />
+                </div>
+                <span
+                  className={`text-xs mt-1 font-medium ${
+                    isActive
+                      ? "text-blue-600"
+                      : isCompleted
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {status.label}
+                </span>
+              </div>
+              {index < statuses.length - 1 && (
+                <div
+                  className={`w-8 h-0.5 mx-1 transition-all ${
+                    isCompleted ? "bg-green-600" : "bg-gray-200"
+                  }`}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   const getTypeBadge = (type: CampaignType) => {
@@ -274,16 +344,18 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3 mb-2">
+                    <div className="flex items-start justify-between mb-2">
                       <h3 className="text-lg font-semibold text-gray-900 truncate">
                         {campaign.title}
                       </h3>
-                      <span className={getStatusBadge(campaign.status)}>
-                        {campaign.status.replace(/_/g, " ")}
-                      </span>
                       <span className={getTypeBadge(campaign.type)}>
                         {campaign.type}
                       </span>
+                    </div>
+                    
+                    {/* Status Progress Indicator */}
+                    <div className="mb-3">
+                      {getStatusProgress(campaign.status, campaign.campaign.isPublic)}
                     </div>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                       {campaign.description}
