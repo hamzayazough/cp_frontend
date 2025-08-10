@@ -155,7 +155,11 @@ export default function PromoterCampaignDetailsContent({
       case "requirements":
         return <CampaignRequirements campaign={campaign} />;
       case "messages":
-        return <CampaignMessages campaignId={campaignId} />;
+        return (
+          <div className="h-[600px]">
+            <CampaignMessages campaignId={campaignId} />
+          </div>
+        );
       default:
         return <CampaignOverview campaign={campaign} />;
     }

@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import {
   ChatBubbleLeftRightIcon,
   PaperAirplaneIcon,
-  EllipsisVerticalIcon,
-  UserIcon,
 } from "@heroicons/react/24/outline";
 import { useMessaging } from "@/hooks/useMessaging";
 import { MessageThreadResponse } from "@/interfaces/messaging";
@@ -253,7 +252,7 @@ export default function CampaignMessages({
           disabled={isCreatingThread || !currentUser}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isCreatingThread ? "Creating..." : "Send Message"}
+          {isCreatingThread ? "Creating..." : "Start Conversation"}
         </button>
       </div>
     );
@@ -265,12 +264,11 @@ export default function CampaignMessages({
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="bg-gray-100 rounded-full p-2">
-            <UserIcon className="h-5 w-5 text-gray-600" />
-          </div>
           <div>
             <h3 className="font-medium text-gray-900">Campaign Discussion</h3>
-            <p className="text-sm text-gray-500">Campaign Discussion</p>
+            <p className="text-sm text-gray-500">
+              {campaignTitle || "Campaign Discussion"}
+            </p>
           </div>
         </div>
 
@@ -283,14 +281,11 @@ export default function CampaignMessages({
           <span className="text-xs text-gray-500">
             {isConnected ? "Connected" : "Disconnected"}
           </span>
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <EllipsisVerticalIcon className="h-5 w-5 text-gray-400" />
-          </button>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50">
         {campaignMessages.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-500">
@@ -306,50 +301,53 @@ export default function CampaignMessages({
             return (
               <div
                 key={message.id}
-                className={`flex items-end space-x-2 ${
+                className={`flex items-start space-x-3 ${
                   isOwnMessage ? "justify-end" : "justify-start"
                 }`}
               >
-                {/* Avatar for other users (left side) */}
+                {/* Avatar for other users only (left side) */}
                 {!isOwnMessage && (
-                  <div className="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium text-gray-600">
-                      {message.sender?.username?.charAt(0).toUpperCase() || "A"}
-                    </span>
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+                    {message.sender?.profilePictureUrl ? (
+                      <Image
+                        src={message.sender.profilePictureUrl}
+                        alt={message.sender.username || "User"}
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-xs font-medium text-white">
+                        {message.sender?.username?.charAt(0).toUpperCase() ||
+                          "A"}
+                      </span>
+                    )}
                   </div>
                 )}
 
                 {/* Message bubble */}
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    isOwnMessage
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-900"
+                  className={`max-w-xs lg:max-w-md ${
+                    isOwnMessage ? "ml-auto" : ""
                   }`}
                 >
-                  {!isOwnMessage && (
-                    <p className="text-xs font-medium mb-1 opacity-75">
-                      {message.sender?.username || "Advertiser"}
-                    </p>
-                  )}
-                  <p className="text-sm">{message.content}</p>
+                  <div
+                    className={`px-4 py-2 rounded-2xl ${
+                      isOwnMessage
+                        ? "bg-blue-600 text-white"
+                        : "bg-white text-gray-900 border border-gray-200"
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                  </div>
                   <p
-                    className={`text-xs mt-1 ${
-                      isOwnMessage ? "text-blue-100" : "text-gray-500"
+                    className={`text-xs text-gray-500 mt-1 ${
+                      isOwnMessage ? "text-right" : "text-left"
                     }`}
                   >
                     {formatTime(message.createdAt)}
                   </p>
                 </div>
-
-                {/* Avatar for own messages (right side) */}
-                {isOwnMessage && (
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium text-white">
-                      {currentUser?.displayName?.charAt(0).toUpperCase() || "P"}
-                    </span>
-                  </div>
-                )}
               </div>
             );
           })
@@ -379,7 +377,7 @@ export default function CampaignMessages({
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
               rows={1}
               style={{ minHeight: "40px", maxHeight: "120px" }}
               disabled={!isConnected || isSendingMessage}
@@ -388,19 +386,22 @@ export default function CampaignMessages({
           <button
             onClick={handleSendMessage}
             disabled={!messageInput.trim() || !isConnected || isSendingMessage}
-            className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <PaperAirplaneIcon className="h-5 w-5" />
           </button>
         </div>
 
-        {!isConnected && (
-          <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded p-2">
-            <p className="text-yellow-800 text-xs">
-              Disconnected from server. Trying to reconnect...
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-gray-500">
+            Press Enter to send, Shift + Enter for new line
+          </p>
+          {!isConnected && (
+            <p className="text-xs text-red-600">
+              Disconnected. Please check your connection.
             </p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

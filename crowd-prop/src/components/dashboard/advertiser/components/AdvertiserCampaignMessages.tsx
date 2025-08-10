@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import {
   ChatBubbleLeftRightIcon,
   PaperAirplaneIcon,
@@ -305,10 +306,21 @@ export default function AdvertiserCampaignMessages({
               >
                 {/* Avatar for other users only (left side) */}
                 {!isOwnMessage && (
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium text-white">
-                      {message.sender?.username?.charAt(0).toUpperCase() || "P"}
-                    </span>
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+                    {message.sender?.profilePictureUrl ? (
+                      <Image
+                        src={message.sender.profilePictureUrl}
+                        alt={message.sender.username || "User"}
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-xs font-medium text-white">
+                        {message.sender?.username?.charAt(0).toUpperCase() ||
+                          "P"}
+                      </span>
+                    )}
                   </div>
                 )}
 

@@ -227,7 +227,7 @@ export default function AdvertiserCampaignDetailsContent({
         return <AdvertiserCampaignRequirements campaign={campaign} />;
       case "messages":
         return (
-          <div className="h-96">
+          <div className="h-[600px]">
             <AdvertiserCampaignMessages
               campaignId={campaignId}
               campaignTitle={campaign.title}
