@@ -18,7 +18,13 @@ export function useNewMessageNotification(
   const [error, setError] = useState<string | null>(null);
 
   const checkForNewMessages = useCallback(async () => {
-    if (!campaignId || !firebaseToken) {
+    // Validate campaign ID - should not be empty, 'create', or other non-UUID values
+    if (
+      !campaignId ||
+      !firebaseToken ||
+      campaignId === "create" ||
+      campaignId.length < 10
+    ) {
       setStatus({ hasNewMessages: false, unreadCount: 0 });
       return;
     }
@@ -46,7 +52,14 @@ export function useNewMessageNotification(
 
   // Set up periodic checking for new messages (every 30 seconds)
   useEffect(() => {
-    if (!campaignId || !firebaseToken) return;
+    // Same validation as in checkForNewMessages
+    if (
+      !campaignId ||
+      !firebaseToken ||
+      campaignId === "create" ||
+      campaignId.length < 10
+    )
+      return;
 
     const interval = setInterval(checkForNewMessages, 30000);
     return () => clearInterval(interval);
