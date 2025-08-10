@@ -302,7 +302,7 @@ export default function BasicInfoStep({
                       🌍 Public - Open to All Promoters
                     </label>
                     <p className="text-xs text-gray-600 mt-1">
-                      First come, first served. Best for quick execution.
+                      Everyone can participate. Better for fast reach and more engagement.
                     </p>
                     <div className="mt-1 text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded inline-block">
                       ✓ Faster • ✓ Multiple promoters
