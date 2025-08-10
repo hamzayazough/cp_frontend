@@ -34,7 +34,7 @@ interface CampaignListProps {
 
 export default function CampaignList({ campaigns }: CampaignListProps) {
   const router = useRouter();
-  const { reviewApplication } = useAdvertiserCampaigns();
+  const { reviewApplication, refetch } = useAdvertiserCampaigns();
 
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
@@ -634,6 +634,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
         applications={modalState.applications}
         onAcceptApplication={handleAcceptApplication}
         onRejectApplication={handleRejectApplication}
+        onRefresh={refetch}
       />
     </Fragment>
   );

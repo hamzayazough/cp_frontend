@@ -165,6 +165,16 @@ export default function AdvertiserCampaignDetailsContent({
       applications: [],
     });
   };
+
+  const refreshCampaignData = async () => {
+    if (!campaign) return;
+    try {
+      const updatedCampaign = await getCampaignDetails(campaign.id);
+      setCampaign(updatedCampaign);
+    } catch (error) {
+      console.error("Error refreshing campaign data:", error);
+    }
+  };
   const handleAcceptApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
 
@@ -370,6 +380,7 @@ export default function AdvertiserCampaignDetailsContent({
           onClose={handleCloseModal}
           onAcceptApplication={handleAcceptApplication}
           onRejectApplication={handleRejectApplication}
+          onRefresh={refreshCampaignData}
         />
       )}
     </div>
