@@ -8,8 +8,6 @@ import {
   BanknotesIcon,
   PlusIcon,
   RectangleStackIcon,
-  ArrowUpIcon,
-  ClockIcon,
 } from '@heroicons/react/24/outline';
 
 interface WalletOverviewCardProps {
@@ -109,9 +107,9 @@ export default function WalletOverviewCard({
             </div>
           ) : (
             <>
-              {/* Primary Balance Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-green-50 p-6 rounded-lg">
+              {/* Primary Metrics - Most Important */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-green-50 p-6 rounded-lg border border-green-200">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-3xl font-bold text-green-600">
@@ -124,60 +122,48 @@ export default function WalletOverviewCard({
                     <BanknotesIcon className="h-10 w-10 text-green-600" />
                   </div>
                 </div>
-                <div className="bg-indigo-50 p-6 rounded-lg">
+                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-3xl font-bold text-indigo-600">
-                        {walletBalance ? formatCurrency(walletBalance.totalHeldForCampaign) : '$0.00'}
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Held for Campaigns
-                      </div>
-                    </div>
-                    <RectangleStackIcon className="h-10 w-10 text-indigo-600" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Secondary Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xl font-bold text-blue-600">
+                      <div className="text-3xl font-bold text-blue-600">
                         {walletBalance ? formatCurrency(walletBalance.totalSpent) : '$0.00'}
                       </div>
                       <div className="text-sm text-gray-600 mt-1">
                         Total Spent
                       </div>
                     </div>
-                    <RectangleStackIcon className="h-8 w-8 text-blue-600" />
+                    <RectangleStackIcon className="h-10 w-10 text-blue-600" />
                   </div>
                 </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xl font-bold text-purple-600">
-                        {walletBalance ? formatCurrency(walletBalance.totalDeposited) : '$0.00'}
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Total Deposited
-                      </div>
+              </div>
+
+              {/* Secondary Metrics - Less Prominent */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-3">Additional Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-3 rounded border">
+                    <div className="text-lg font-semibold text-gray-900">
+                      {walletBalance ? formatCurrency(walletBalance.totalHeldForCampaign) : '$0.00'}
                     </div>
-                    <ArrowUpIcon className="h-8 w-8 text-purple-600" />
+                    <div className="text-xs text-gray-500 mt-1">
+                      Held for Campaigns
+                    </div>
                   </div>
-                </div>
-                <div className="bg-orange-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xl font-bold text-orange-600">
-                        {walletBalance ? formatCurrency(walletBalance.pendingCharges) : '$0.00'}
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Pending Charges
-                      </div>
+                  <div className="bg-white p-3 rounded border">
+                    <div className="text-lg font-semibold text-gray-900">
+                      {walletBalance ? formatCurrency(walletBalance.totalDeposited) : '$0.00'}
                     </div>
-                    <ClockIcon className="h-8 w-8 text-orange-600" />
+                    <div className="text-xs text-gray-500 mt-1">
+                      Total Deposited
+                    </div>
+                  </div>
+                  <div className="bg-white p-3 rounded border">
+                    <div className="text-lg font-semibold text-gray-900">
+                      {walletBalance ? formatCurrency(walletBalance.pendingCharges) : '$0.00'}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Pending Charges
+                    </div>
                   </div>
                 </div>
               </div>
