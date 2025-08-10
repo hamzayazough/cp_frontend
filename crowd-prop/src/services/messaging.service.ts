@@ -384,6 +384,27 @@ class MessagingService {
     }
   }
 
+  // Check for new messages in campaign
+  async hasNewMessagesForCampaign(
+    campaignId: string
+  ): Promise<{ hasNewMessages: boolean; unreadCount: number }> {
+    const url = `${this.baseUrl}/api/messaging/campaigns/${campaignId}/has-new-messages`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    return await response.json();
+  }
+
   // Utility methods
   isConnected(): boolean {
     return this.socket?.connected ?? false;

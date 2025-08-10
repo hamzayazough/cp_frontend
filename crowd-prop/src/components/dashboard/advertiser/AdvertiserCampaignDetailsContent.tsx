@@ -9,6 +9,8 @@ import {
 import { CampaignType } from "@/app/enums/campaign-type";
 import { ADVERTISER_CAMPAIGN_MOCKS } from "@/app/mocks/advertiser-campaign-mock";
 import { useAdvertiserCampaigns } from "@/hooks/useAdvertiserCampaigns";
+import { useNewMessageNotification } from "@/hooks/useNewMessageNotification";
+import { auth } from "@/lib/firebase";
 import CreateCampaignWizard from "./CreateCampaignWizard";
 import ApplicationReviewModal from "./ApplicationReviewModal";
 
@@ -40,6 +42,7 @@ export default function AdvertiserCampaignDetailsContent({
   const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [firebaseToken, setFirebaseToken] = useState<string | null>(null);
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     campaign: CampaignAdvertiser | null;
@@ -49,6 +52,27 @@ export default function AdvertiserCampaignDetailsContent({
     campaign: null,
     applications: [],
   });
+
+  // Get Firebase auth token
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const token = await user.getIdToken();
+          setFirebaseToken(token);
+        }
+      } catch (error) {
+        console.error("Failed to get Firebase token:", error);
+      }
+    };
+
+    getToken();
+  }, []);
+
+  // Use notification hook
+  const { hasNewMessages, unreadCount, resetNotification } =
+    useNewMessageNotification(campaignId as string, firebaseToken);
 
   useEffect(() => {
     // Check if this is the create route
@@ -200,6 +224,16 @@ export default function AdvertiserCampaignDetailsContent({
     }
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+
+    // If switching to messages tab, reset notification
+    if (tab === "messages" && hasNewMessages) {
+      // Reset notification when user opens messages tab
+      setTimeout(() => resetNotification(), 1000);
+    }
+  };
+
   const handleShareClick = () => {
     // TODO: Implement share functionality
     console.log("Share campaign:", campaign?.id);
@@ -317,7 +351,9 @@ export default function AdvertiserCampaignDetailsContent({
       {/* Tabs */}
       <AdvertiserCampaignTabs
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
+        hasNewMessages={hasNewMessages}
+        unreadCount={unreadCount}
       />
 
       {/* Tab Content */}

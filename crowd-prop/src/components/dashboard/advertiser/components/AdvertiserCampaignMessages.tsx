@@ -27,6 +27,7 @@ export default function AdvertiserCampaignMessages({
   const [campaignThread, setCampaignThread] =
     useState<MessageThreadResponse | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // const hasMarkedAsReadRef = useRef<string | null>(null); // Track which thread we've marked as read - TEMPORARILY DISABLED
 
   const [isCreatingThread, setIsCreatingThread] = useState(false);
   const [createThreadError, setCreateThreadError] = useState<string | null>(
@@ -67,6 +68,7 @@ export default function AdvertiserCampaignMessages({
     loadMessages,
     loadThreads,
     getCampaignThread,
+    // markAsRead, // TEMPORARILY DISABLED
   } = useMessaging(firebaseToken, {
     autoConnect: true,
   });
@@ -126,6 +128,18 @@ export default function AdvertiserCampaignMessages({
       };
     }
   }, [campaignThread, isConnected, joinThread, leaveThread, loadMessages]);
+
+  // TEMPORARILY DISABLED - Mark thread as read when component mounts
+  // useEffect(() => {
+  //   if (campaignThread && hasMarkedAsReadRef.current !== campaignThread.id) {
+  //     const timer = setTimeout(() => {
+  //       markAsRead(campaignThread.id);
+  //       hasMarkedAsReadRef.current = campaignThread.id;
+  //     }, 500);
+
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [campaignThread, markAsRead]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
