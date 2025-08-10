@@ -15,22 +15,19 @@ import {
   NotificationPayload,
   ErrorPayload,
 } from "@/interfaces/messaging";
+import { httpService } from "./http.service";
 
 class MessagingService {
   private socket: Socket | null = null;
-  private token: string | null = null;
-  private baseUrl: string;
   private wsUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
     this.wsUrl =
       process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:3000/messaging";
   }
 
   // WebSocket Connection Management
   connect(firebaseToken: string): Socket {
-    this.token = firebaseToken;
     this.socket = io(this.wsUrl, {
       auth: { token: firebaseToken },
     });
@@ -181,32 +178,6 @@ class MessagingService {
   }
 
   // REST API Methods
-  private async makeRequest<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    if (!this.token) {
-      throw new Error("No authentication token available");
-    }
-
-    const url = `${this.baseUrl}${endpoint}`;
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.token}`,
-        ...options.headers,
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    return response.json();
-  }
-
   async getThreads(
     page?: number,
     limit?: number,
@@ -218,15 +189,18 @@ class MessagingService {
     if (campaignId) params.append("campaignId", campaignId);
 
     const query = params.toString();
-    const endpoint = `/api/messaging/threads${query ? `?${query}` : ""}`;
+    const endpoint = `/messaging/threads${query ? `?${query}` : ""}`;
 
-    return this.makeRequest<MessageThreadResponse[]>(endpoint);
+    const response = await httpService.get<MessageThreadResponse[]>(endpoint, true);
+    return response.data;
   }
 
   async getThread(threadId: string): Promise<MessageThreadResponse> {
-    return this.makeRequest<MessageThreadResponse>(
-      `/api/messaging/threads/${threadId}`
+    const response = await httpService.get<MessageThreadResponse>(
+      `/messaging/threads/${threadId}`,
+      true
     );
+    return response.data;
   }
 
   async getMessages(
@@ -241,11 +215,12 @@ class MessagingService {
     if (before) params.append("before", before.toISOString());
 
     const query = params.toString();
-    const endpoint = `/api/messaging/threads/${threadId}/messages${
+    const endpoint = `/messaging/threads/${threadId}/messages${
       query ? `?${query}` : ""
     }`;
 
-    return this.makeRequest<MessageResponse[]>(endpoint);
+    const response = await httpService.get<MessageResponse[]>(endpoint, true);
+    return response.data;
   }
 
   /**
@@ -254,54 +229,17 @@ class MessagingService {
   async getThreadForCampaign(
     campaignId: string
   ): Promise<MessageThreadResponse | null> {
-    if (!this.token) {
-      throw new Error("No authentication token available");
-    }
-
-    const url = `${this.baseUrl}/api/messaging/campaigns/${campaignId}/thread`;
-
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
-      });
-
+      const response = await httpService.get<MessageThreadResponse>(
+        `/messaging/campaigns/${campaignId}/thread`,
+        true
+      );
+      return response.data;
+    } catch (error: unknown) {
       // Return null if thread doesn't exist (404)
-      if (response.status === 404) {
+      if (error instanceof Error && error.message.includes("404")) {
         return null;
       }
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
-
-      // Check if response has content before parsing JSON
-      const contentLength = response.headers.get("content-length");
-      if (contentLength === "0" || contentLength === null) {
-        return null;
-      }
-
-      // Try to parse JSON, handle empty responses gracefully
-      const text = await response.text();
-      if (!text.trim()) {
-        return null;
-      }
-
-      return JSON.parse(text);
-    } catch (error) {
-      // Handle JSON parsing errors specifically
-      if (error instanceof SyntaxError && error.message.includes("JSON")) {
-        console.warn(
-          "Empty or invalid JSON response for campaign thread:",
-          campaignId
-        );
-        return null;
-      }
-
       console.error("Error getting campaign thread:", error);
       throw error;
     }
@@ -310,10 +248,12 @@ class MessagingService {
   async createThread(
     request: CreateMessageThreadRequest
   ): Promise<MessageThreadResponse> {
-    return this.makeRequest<MessageThreadResponse>("/api/messaging/threads", {
-      method: "POST",
-      body: JSON.stringify(request),
-    });
+    const response = await httpService.post<MessageThreadResponse>(
+      "/messaging/threads",
+      request,
+      true
+    );
+    return response.data;
   }
 
   // Send message via REST API (also broadcasts via WebSocket)
@@ -321,88 +261,39 @@ class MessagingService {
     threadId: string,
     content: string
   ): Promise<MessageResponse> {
-    return this.makeRequest<MessageResponse>(
-      `/api/messaging/threads/${threadId}/messages`,
-      {
-        method: "POST",
-        body: JSON.stringify({ content }),
-      }
+    const response = await httpService.post<MessageResponse>(
+      `/messaging/threads/${threadId}/messages`,
+      { content },
+      true
     );
+    return response.data;
   }
 
   async markMessageAsReadHTTP(messageId: string): Promise<void> {
-    const url = `${this.baseUrl}/api/messaging/messages/${messageId}/read`;
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    // Don't try to parse JSON for empty responses
-    const text = await response.text();
-    if (text) {
-      try {
-        return JSON.parse(text);
-      } catch {
-        // If it's not valid JSON, just return void for successful responses
-        return;
-      }
-    }
+    await httpService.patch<void>(
+      `/messaging/messages/${messageId}/read`,
+      undefined,
+      true
+    );
   }
 
   async markThreadAsReadHTTP(threadId: string): Promise<void> {
-    const url = `${this.baseUrl}/api/messaging/threads/${threadId}/read`;
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    // Don't try to parse JSON for empty responses
-    const text = await response.text();
-    if (text) {
-      try {
-        return JSON.parse(text);
-      } catch {
-        // If it's not valid JSON, just return void for successful responses
-        return;
-      }
-    }
+    await httpService.patch<void>(
+      `/messaging/threads/${threadId}/read`,
+      undefined,
+      true
+    );
   }
 
   // Check for new messages in campaign
   async hasNewMessagesForCampaign(
     campaignId: string
   ): Promise<{ hasNewMessages: boolean; unreadCount: number }> {
-    const url = `${this.baseUrl}/api/messaging/campaigns/${campaignId}/has-new-messages`;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    return await response.json();
+    const response = await httpService.get<{ hasNewMessages: boolean; unreadCount: number }>(
+      `/messaging/campaigns/${campaignId}/has-new-messages`,
+      true
+    );
+    return response.data;
   }
 
   // Utility methods
