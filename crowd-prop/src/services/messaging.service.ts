@@ -191,7 +191,10 @@ class MessagingService {
     const query = params.toString();
     const endpoint = `/messaging/threads${query ? `?${query}` : ""}`;
 
-    const response = await httpService.get<MessageThreadResponse[]>(endpoint, true);
+    const response = await httpService.get<MessageThreadResponse[]>(
+      endpoint,
+      true
+    );
     return response.data;
   }
 
@@ -289,10 +292,10 @@ class MessagingService {
   async hasNewMessagesForCampaign(
     campaignId: string
   ): Promise<{ hasNewMessages: boolean; unreadCount: number }> {
-    const response = await httpService.get<{ hasNewMessages: boolean; unreadCount: number }>(
-      `/messaging/campaigns/${campaignId}/has-new-messages`,
-      true
-    );
+    const response = await httpService.get<{
+      hasNewMessages: boolean;
+      unreadCount: number;
+    }>(`/messaging/campaigns/${campaignId}/has-new-messages`, true);
     return response.data;
   }
 
