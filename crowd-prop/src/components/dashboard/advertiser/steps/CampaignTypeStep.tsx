@@ -18,7 +18,21 @@ interface CampaignTypeStepProps {
   onNext?: () => void;
 }
 
-const campaignTypes = [
+interface CampaignTypeConfig {
+  type: CampaignType;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  title: string;
+  description: string;
+  explanation: string;
+  whyChoose: string;
+  color: string;
+  isPublic: boolean;
+  pricing: string;
+  disabled?: boolean;
+  comingSoon?: boolean;
+}
+
+const campaignTypes: CampaignTypeConfig[] = [
   {
     type: CampaignType.VISIBILITY,
     icon: EyeIcon,
@@ -61,7 +75,9 @@ const campaignTypes = [
     whyChoose: 'Choose this if you want to scale sales, only pay for results, or build an affiliate network without upfront costs.',
     color: 'orange',
     isPublic: false,
-    pricing: 'Commission only'
+    pricing: 'Commission only',
+    disabled: true,
+    comingSoon: true
   },
 ];
 
@@ -69,6 +85,13 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
   const [selectedInfoType, setSelectedInfoType] = useState<CampaignType | null>(null);
   
   const handleTypeSelect = (type: CampaignType) => {
+    // Check if the campaign type is disabled
+    const campaign = campaignTypes.find(c => c.type === type);
+    if (campaign?.disabled) {
+      console.log('Campaign type is disabled:', type);
+      return; // Prevent selection of disabled campaign types
+    }
+
     // Reset all form data except type to avoid errors from previous step values
     updateFormData({
       type,
@@ -154,10 +177,24 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
           return (
             <div
               key={campaign.type}
-              className={`relative rounded-lg border transition-all duration-200 hover:shadow-md ${
-                getSelectionClasses(campaign.type, isSelected)
+              className={`relative rounded-lg border transition-all duration-200 ${
+                campaign.disabled 
+                  ? 'border-gray-200 cursor-not-allowed group' 
+                  : `hover:shadow-md ${getSelectionClasses(campaign.type, isSelected)}`
               }`}
+              title={campaign.disabled ? "Coming Soon" : ""}
             >
+              {/* Coming Soon Tooltip */}
+              {campaign.disabled && (
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-all duration-200 pointer-events-none z-5 group-hover:backdrop-blur-sm">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="bg-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                      Coming Soon
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Info Button */}
               <button
                 onClick={(e) => {
@@ -171,9 +208,22 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
               </button>
 
               {/* Main Card Content */}
-              <button
-                onClick={() => handleTypeSelect(campaign.type)}
-                className="w-full p-4 text-left"
+              <div
+                onClick={(e) => {
+                  if (campaign.disabled) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                  }
+                  handleTypeSelect(campaign.type);
+                }}
+                className={`w-full p-4 text-left ${
+                  campaign.disabled 
+                    ? 'cursor-not-allowed select-none' 
+                    : 'cursor-pointer hover:bg-opacity-80'
+                }`}
+                role="button"
+                tabIndex={campaign.disabled ? -1 : 0}
               >
                 <div className="flex items-start space-x-3 mb-3">
                   <div className={`p-2 rounded-lg ${
@@ -218,7 +268,7 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
                     {campaign.pricing}
                   </span>
                 </div>
-              </button>
+              </div>
             </div>
           );
         })}

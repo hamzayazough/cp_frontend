@@ -217,17 +217,17 @@ export default function FundingVerificationModal({
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                     <div className="flex items-start space-x-2">
-                      <ExclamationTriangleIcon className="h-5 w-5 text-amber-600 mt-0.5" />
+                      <ExclamationTriangleIcon className="h-5 w-5 text-red-600 mt-0.5" />
                       <div>
-                        <h4 className="text-sm font-medium text-amber-900">
-                          Additional Funding Required
-                        </h4>
-                        <p className="text-sm text-amber-700 mt-1">
-                          You need {formatCurrency(feasibility.shortfallAmount)}{" "}
-                          more to fund this campaign.
-                        </p>
+                      <h4 className="text-sm font-medium text-red-900">
+                        Additional Funding Required
+                      </h4>
+                      <p className="text-sm text-red-700 mt-1">
+                        You need {formatCurrency(feasibility.shortfallAmount)}{" "}
+                        more to fund this campaign.
+                      </p>
                       </div>
                     </div>
                   </div>
