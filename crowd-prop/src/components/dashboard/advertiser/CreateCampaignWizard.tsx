@@ -457,9 +457,9 @@ export default function CreateCampaignWizard({
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">Create Campaign</h1>
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-2xl font-bold text-gray-900">Create Campaign</h1>
           <button
             onClick={onCancel}
             className="text-gray-500 hover:text-gray-700 text-sm font-medium"
@@ -467,7 +467,7 @@ export default function CreateCampaignWizard({
             Cancel
           </button>
         </div>
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm">
           Create a new campaign to connect with promoters and grow your brand.
         </p>
       </div>
@@ -480,9 +480,9 @@ export default function CreateCampaignWizard({
       />
 
       {/* Step Content */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-8">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">
             {currentStepData.title}
           </h2>
           <p className="text-gray-600 text-sm">{currentStepData.description}</p>
@@ -496,7 +496,7 @@ export default function CreateCampaignWizard({
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between items-center mt-8">
+      <div className="flex justify-between items-center mt-6">
         <button
           onClick={handlePrevious}
           disabled={currentStep === 0}

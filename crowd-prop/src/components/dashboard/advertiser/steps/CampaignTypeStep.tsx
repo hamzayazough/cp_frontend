@@ -136,17 +136,17 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+    <div className="space-y-4">
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Choose Your Campaign Type
         </h3>
-        <p className="text-gray-600 text-lg">
-          Select the campaign type that best matches your marketing goals and budget
+        <p className="text-gray-600 text-sm">
+          Select the campaign type that best matches your marketing goals
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {campaignTypes.map((campaign) => {
           const Icon = campaign.icon;
           const isSelected = formData.type === campaign.type;
@@ -154,7 +154,7 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
           return (
             <div
               key={campaign.type}
-              className={`relative rounded-xl border-2 transition-all duration-200 hover:shadow-lg ${
+              className={`relative rounded-lg border transition-all duration-200 hover:shadow-md ${
                 getSelectionClasses(campaign.type, isSelected)
               }`}
             >
@@ -164,41 +164,41 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
                   e.stopPropagation();
                   setSelectedInfoType(campaign.type);
                 }}
-                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-white hover:bg-opacity-80 rounded-full transition-colors z-10"
+                className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white hover:bg-opacity-80 rounded-full transition-colors z-10"
                 title="More information"
               >
-                <InformationCircleIcon className="h-5 w-5" />
+                <InformationCircleIcon className="h-4 w-4" />
               </button>
 
               {/* Main Card Content */}
               <button
                 onClick={() => handleTypeSelect(campaign.type)}
-                className="w-full p-6 text-left"
+                className="w-full p-4 text-left"
               >
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className={`p-3 rounded-xl ${
+                <div className="flex items-start space-x-3 mb-3">
+                  <div className={`p-2 rounded-lg ${
                     isSelected 
                       ? 'bg-white shadow-sm' 
                       : 'bg-gray-50'
                   }`}>
-                    <Icon className={`h-7 w-7 ${getIconClasses(campaign.type, isSelected)}`} />
+                    <Icon className={`h-5 w-5 ${getIconClasses(campaign.type, isSelected)}`} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h4 className="text-base font-semibold text-gray-900 mb-1">
                       {campaign.title}
                     </h4>
-                    <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                    <p className="text-xs text-gray-600 mb-2 leading-relaxed">
                       {campaign.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Explanation */}
-                <div className="mb-4">
-                  <p className="text-sm text-gray-700 leading-relaxed mb-3">
+                <div className="mb-3">
+                  <p className="text-xs text-gray-700 leading-relaxed mb-2">
                     {campaign.explanation}
                   </p>
-                  <div className="p-3 bg-gray-50 rounded-lg">
+                  <div className="p-2 bg-gray-50 rounded-md">
                     <p className="text-xs font-medium text-gray-800">
                       💡 {campaign.whyChoose}
                     </p>
@@ -206,8 +206,8 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
                 </div>
 
                 {/* Bottom Info */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                     campaign.isPublic 
                       ? 'bg-blue-100 text-blue-700' 
                       : 'bg-green-100 text-green-700'
@@ -226,43 +226,42 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
 
       {/* Selected Campaign Overview */}
       {formData.type && (
-        <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-blue-100 rounded-lg">
+        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="p-1.5 bg-blue-100 rounded-md">
               {(() => {
                 const SelectedIcon = campaignTypes.find(c => c.type === formData.type)?.icon;
-                return SelectedIcon ? <SelectedIcon className="h-5 w-5 text-blue-600" /> : null;
+                return SelectedIcon ? <SelectedIcon className="h-4 w-4 text-blue-600" /> : null;
               })()}
             </div>
-            <h4 className="text-lg font-semibold text-blue-900">
+            <h4 className="text-sm font-semibold text-blue-900">
               {campaignTypes.find(c => c.type === formData.type)?.title} Selected
             </h4>
           </div>
-          <div className="text-blue-800 text-sm leading-relaxed">
+          <div className="text-blue-800 text-xs leading-relaxed">
             {formData.type === CampaignType.VISIBILITY && (
               <p>
-                <strong>Great choice!</strong> Visibility campaigns are perfect for driving targeted traffic and measuring 
-                real engagement. You&apos;ll set your price per 100 views, and promoters will compete to deliver high-quality 
-                traffic to your destination. Every click is tracked and verified for authenticity.
+                <strong>Great choice!</strong> Visibility campaigns are perfect for driving targeted traffic. 
+                You&apos;ll set your price per 100 views, and promoters will compete to deliver high-quality 
+                traffic to your destination.
               </p>
             )}
             {formData.type === CampaignType.CONSULTANT && (
               <p>
-                <strong>Excellent decision!</strong> You&apos;ll work with a marketing expert who specializes in scaling products and sales strategies. 
-                They&apos;ll provide strategic guidance, create detailed growth plans, and share their expertise to help you succeed.
+                <strong>Excellent decision!</strong> You&apos;ll work with a marketing expert who specializes in scaling products. 
+                They&apos;ll provide strategic guidance and create detailed growth plans.
               </p>
             )}
             {formData.type === CampaignType.SELLER && (
               <p>
-                <strong>Smart choice!</strong> Your promoter will create and manage social media accounts for your product, handle daily posting, 
-                engage with audiences, and actively promote your business across social platforms. Perfect for hands-on execution.
+                <strong>Smart choice!</strong> Your promoter will create and manage social media accounts for your product, 
+                handle daily posting, and actively promote your business across platforms.
               </p>
             )}
             {formData.type === CampaignType.SALESMAN && (
               <p>
                 <strong>Performance-focused!</strong> Build a network of promoters who only get paid when they deliver 
-                sales. This risk-free model ensures you only pay for results, making it perfect for e-commerce and 
-                product-based businesses.
+                sales. This risk-free model ensures you only pay for results.
               </p>
             )}
           </div>

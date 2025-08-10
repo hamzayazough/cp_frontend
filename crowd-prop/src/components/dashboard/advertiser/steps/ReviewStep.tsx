@@ -68,41 +68,41 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
   const Icon = typeInfo.icon;
 
   return (
-    <div className="space-y-8">
-      <div className="text-center mb-8">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mb-6 shadow-lg">
-          <CheckCircleIcon className="h-8 w-8 text-green-600" />
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <div className="mx-auto w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mb-4 shadow-md">
+          <CheckCircleIcon className="h-6 w-6 text-green-600" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+        <h3 className="text-lg font-bold text-gray-900 mb-2">
           Review Your Campaign
         </h3>
-        <p className="text-lg text-gray-600 max-w-md mx-auto">
-          Please review all the details before creating your campaign
+        <p className="text-sm text-gray-600 max-w-md mx-auto">
+          Please review all details before creating your campaign
         </p>
       </div>
 
-      <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
         {/* Campaign Header */}
         <div
-          className={`bg-gradient-to-r from-${typeInfo.color}-50 to-${typeInfo.color}-100 border-b-2 border-${typeInfo.color}-200 p-8`}
+          className={`bg-gradient-to-r from-${typeInfo.color}-50 to-${typeInfo.color}-100 border-b border-${typeInfo.color}-200 p-4`}
         >
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4">
             <div
-              className={`p-4 bg-white rounded-xl shadow-md border-2 border-${typeInfo.color}-200`}
+              className={`p-2 bg-white rounded-lg shadow-sm border border-${typeInfo.color}-200`}
             >
-              <Icon className={`h-8 w-8 text-${typeInfo.color}-600`} />
+              <Icon className={`h-6 w-6 text-${typeInfo.color}-600`} />
             </div>
             <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900 mb-2">
+              <h4 className="text-lg font-bold text-gray-900 mb-1">
                 {formData.title}
               </h4>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <span
-                  className={`px-3 py-1 bg-${typeInfo.color}-200 text-${typeInfo.color}-800 text-sm font-semibold rounded-full`}
+                  className={`px-2 py-0.5 bg-${typeInfo.color}-200 text-${typeInfo.color}-800 text-xs font-semibold rounded-full`}
                 >
                   {typeInfo.title}
                 </span>
-                <span className="text-gray-600 text-sm">
+                <span className="text-gray-600 text-xs">
                   {typeInfo.description}
                 </span>
               </div>
@@ -111,35 +111,35 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
         </div>
 
         {/* Campaign Details */}
-        <div className="p-8 space-y-8">
+        <div className="p-4 space-y-4">
           {/* Basic Information */}
-          <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-            <h5 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-              <DocumentTextIcon className="h-6 w-6 mr-3 text-blue-600" />
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h5 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+              <DocumentTextIcon className="h-4 w-4 mr-2 text-blue-600" />
               Basic Information
             </h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-gray-700">
                   Description
                 </label>
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-900 leading-relaxed">
+                <div className="bg-white p-3 rounded-md border border-gray-200">
+                  <p className="text-xs text-gray-900 leading-relaxed">
                     {formData.description}
                   </p>
                 </div>
               </div>
               {formData.advertiserTypes &&
                 formData.advertiserTypes.length > 0 && (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
                       Advertiser Types
                     </label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1">
                       {formData.advertiserTypes.map((type) => (
                         <span
                           key={type}
-                          className="px-3 py-2 bg-blue-100 text-blue-800 text-sm font-medium rounded-lg border border-blue-200"
+                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-md border border-blue-200"
                         >
                           {type.charAt(0) +
                             type.slice(1).toLowerCase().replace(/_/g, " ")}
@@ -148,13 +148,13 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     </div>
                   </div>
                 )}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-gray-700">
                   Campaign Visibility
                 </label>
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="bg-white p-3 rounded-md border border-gray-200">
                   <span
-                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold border-2 ${
+                    className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold border ${
                       formData.type === CampaignType.VISIBILITY &&
                       formData.isPublic
                         ? "bg-green-50 text-green-800 border-green-200"
@@ -166,7 +166,7 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                       ? "Public Campaign"
                       : "Private Campaign"}
                   </span>
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-xs text-gray-600 mt-1">
                     {formData.type === CampaignType.VISIBILITY &&
                     formData.isPublic
                       ? "Any promoter can accept this campaign"
@@ -175,25 +175,25 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                 </div>
               </div>
               {formData.targetAudience && (
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-gray-700">
                     Target Audience
                   </label>
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-900">
+                  <div className="bg-white p-3 rounded-md border border-gray-200">
+                    <p className="text-xs text-gray-900">
                       {formData.targetAudience}
                     </p>
                   </div>
                 </div>
               )}
               {formData.startDate && (
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-gray-700">
                     Start Date
                   </label>
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-900 flex items-center">
-                      <CalendarIcon className="h-5 w-5 mr-2 text-blue-600" />
+                  <div className="bg-white p-3 rounded-md border border-gray-200">
+                    <p className="text-xs text-gray-900 flex items-center">
+                      <CalendarIcon className="h-3 w-3 mr-1 text-blue-600" />
                       {formData.startDate.toLocaleDateString()}
                     </p>
                   </div>
@@ -203,12 +203,12 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
               {formData.type === CampaignType.CONSULTANT &&
                 formData.minBudget &&
                 formData.maxBudget && (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
                       Budget Range
                     </label>
-                    <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <p className="text-lg font-bold text-green-600">
+                    <div className="bg-white p-3 rounded-md border border-gray-200">
+                      <p className="text-sm font-bold text-green-600">
                         ${formData.minBudget} - ${formData.maxBudget}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
@@ -220,12 +220,12 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
               {formData.type === CampaignType.SELLER &&
                 formData.sellerMinBudget &&
                 formData.sellerMaxBudget && (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
                       Budget Range
                     </label>
-                    <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <p className="text-lg font-bold text-green-600">
+                    <div className="bg-white p-3 rounded-md border border-gray-200">
+                      <p className="text-sm font-bold text-green-600">
                         ${formData.sellerMinBudget} - $
                         {formData.sellerMaxBudget}
                       </p>
@@ -236,13 +236,13 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                   </div>
                 )}
               {formData.deadline && (
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-gray-700">
                     Campaign Deadline
                   </label>
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-900 flex items-center mb-1">
-                      <CalendarIcon className="h-5 w-5 mr-2 text-red-600" />
+                  <div className="bg-white p-3 rounded-md border border-gray-200">
+                    <p className="text-xs text-gray-900 flex items-center mb-1">
+                      <CalendarIcon className="h-3 w-3 mr-1 text-red-600" />
                       {formData.deadline.toLocaleDateString()}
                     </p>
                     <p className="text-xs text-red-600 font-medium">
@@ -254,16 +254,16 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
               )}
             </div>
             {formData.file && (
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <label className="block text-xs font-semibold text-gray-700 mb-2">
                   Supporting Media
                 </label>
-                <div className="bg-white p-4 rounded-lg border border-gray-200 flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center border border-blue-200">
-                    <span className="text-blue-600 text-lg">📁</span>
+                <div className="bg-white p-3 rounded-md border border-gray-200 flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center border border-blue-200">
+                    <span className="text-blue-600 text-sm">📁</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-xs font-semibold text-gray-900">
                       {formData.file.name}
                     </p>
                     <p className="text-xs text-gray-500">
@@ -279,24 +279,24 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
           {((formData.requirements && formData.requirements.length > 0) ||
             (formData.preferredPlatforms &&
               formData.preferredPlatforms.length > 0)) && (
-            <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
-              <h5 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-                <DocumentTextIcon className="h-6 w-6 mr-3 text-purple-600" />
+            <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+              <h5 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+                <DocumentTextIcon className="h-4 w-4 mr-2 text-purple-600" />
                 Additional Information
               </h5>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {formData.requirements && formData.requirements.length > 0 && (
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-gray-700">
                       Campaign Requirements
                     </label>
-                    <div className="bg-white p-4 rounded-lg border border-purple-200">
-                      <ul className="text-sm text-gray-900 space-y-2">
+                    <div className="bg-white p-3 rounded-md border border-purple-200">
+                      <ul className="text-xs text-gray-900 space-y-1">
                         {formData.requirements
                           .filter((req) => req.trim())
                           .map((requirement, index) => (
                             <li key={index} className="flex items-start">
-                              <span className="text-purple-500 mr-3 mt-1">
+                              <span className="text-purple-500 mr-2 mt-0.5">
                                 •
                               </span>
                               <span className="flex-1">{requirement}</span>
@@ -308,15 +308,15 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                 )}
                 {formData.preferredPlatforms &&
                   formData.preferredPlatforms.length > 0 && (
-                    <div className="space-y-3">
-                      <label className="block text-sm font-semibold text-gray-700">
+                    <div className="space-y-2">
+                      <label className="block text-xs font-semibold text-gray-700">
                         Preferred Platforms
                       </label>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {formData.preferredPlatforms.map((platform) => (
                           <span
                             key={platform}
-                            className="px-4 py-2 bg-purple-100 text-purple-800 text-sm font-medium rounded-lg border border-purple-200"
+                            className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-md border border-purple-200"
                           >
                             {platform.charAt(0) +
                               platform.slice(1).toLowerCase()}
@@ -331,41 +331,41 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
 
           {/* Campaign-specific settings */}
           {formData.type === CampaignType.VISIBILITY && (
-            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-              <h5 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-                <EyeIcon className="h-6 w-6 mr-3 text-blue-600" />
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <h5 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+                <EyeIcon className="h-4 w-4 mr-2 text-blue-600" />
                 Visibility Settings
               </h5>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-gray-700">
                     Cost Per 100 Views
                   </label>
-                  <div className="bg-white p-4 rounded-lg border border-blue-200">
-                    <p className="text-lg font-bold text-blue-600">
+                  <div className="bg-white p-3 rounded-md border border-blue-200">
+                    <p className="text-sm font-bold text-blue-600">
                       ${formData.cpv}/view
                     </p>
                   </div>
                 </div>
                 {formData.maxViews && (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
                       Max Views
                     </label>
-                    <div className="bg-white p-4 rounded-lg border border-blue-200">
-                      <p className="text-lg font-bold text-blue-600">
+                    <div className="bg-white p-3 rounded-md border border-blue-200">
+                      <p className="text-sm font-bold text-blue-600">
                         {formData.maxViews.toLocaleString()}
                       </p>
                     </div>
                   </div>
                 )}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-gray-700">
                     Target URL
                   </label>
-                  <div className="bg-white p-4 rounded-lg border border-blue-200">
-                    <p className="text-sm text-gray-900 flex items-center">
-                      <LinkIcon className="h-5 w-5 mr-2 text-blue-600 flex-shrink-0" />
+                  <div className="bg-white p-3 rounded-md border border-blue-200">
+                    <p className="text-xs text-gray-900 flex items-center">
+                      <LinkIcon className="h-3 w-3 mr-1 text-blue-600 flex-shrink-0" />
                       <a
                         href={formData.trackingLink}
                         target="_blank"
@@ -382,23 +382,23 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
           )}
 
           {formData.type === CampaignType.CONSULTANT && (
-            <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
-              <h5 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-                <UserIcon className="h-6 w-6 mr-3 text-purple-600" />
+            <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+              <h5 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+                <UserIcon className="h-4 w-4 mr-2 text-purple-600" />
                 Consultant Settings
               </h5>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {formData.expectedDeliverables &&
                   formData.expectedDeliverables.length > 0 && (
-                    <div className="space-y-3">
-                      <label className="block text-sm font-semibold text-gray-700">
+                    <div className="space-y-2">
+                      <label className="block text-xs font-semibold text-gray-700">
                         Expected Deliverables
                       </label>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {formData.expectedDeliverables.map((deliverable) => (
                           <span
                             key={deliverable}
-                            className="px-4 py-2 bg-purple-100 text-purple-800 text-sm font-medium rounded-lg border border-purple-200"
+                            className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-md border border-purple-200"
                           >
                             {deliverable.replace(/_/g, " ")}
                           </span>
@@ -406,26 +406,26 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                       </div>
                     </div>
                   )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {formData.meetingCount && (
-                    <div className="space-y-2">
-                      <label className="block text-sm font-semibold text-gray-700">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-700">
                         Meeting Count
                       </label>
-                      <div className="bg-white p-4 rounded-lg border border-purple-200">
-                        <p className="text-lg font-bold text-purple-600">
+                      <div className="bg-white p-3 rounded-md border border-purple-200">
+                        <p className="text-sm font-bold text-purple-600">
                           {formData.meetingCount}
                         </p>
                       </div>
                     </div>
                   )}
                   {formData.maxBudget && formData.minBudget && (
-                    <div className="space-y-2">
-                      <label className="block text-sm font-semibold text-gray-700">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-700">
                         Budget Range
                       </label>
-                      <div className="bg-white p-4 rounded-lg border border-purple-200">
-                        <p className="text-lg font-bold text-green-600">
+                      <div className="bg-white p-3 rounded-md border border-purple-200">
+                        <p className="text-sm font-bold text-green-600">
                           ${formData.minBudget} - ${formData.maxBudget}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
@@ -440,23 +440,23 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
           )}
 
           {formData.type === CampaignType.SELLER && (
-            <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-              <h5 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-                <ShoppingBagIcon className="h-6 w-6 mr-3 text-green-600" />
+            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+              <h5 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+                <ShoppingBagIcon className="h-4 w-4 mr-2 text-green-600" />
                 Seller Settings
               </h5>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {formData.sellerRequirements &&
                   formData.sellerRequirements.length > 0 && (
-                    <div className="space-y-3">
-                      <label className="block text-sm font-semibold text-gray-700">
+                    <div className="space-y-2">
+                      <label className="block text-xs font-semibold text-gray-700">
                         Seller Requirements
                       </label>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {formData.sellerRequirements.map((requirement) => (
                           <span
                             key={requirement}
-                            className="px-4 py-2 bg-orange-100 text-orange-800 text-sm font-medium rounded-lg border border-orange-200"
+                            className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-md border border-orange-200"
                           >
                             {requirement.replace(/_/g, " ")}
                           </span>
@@ -465,15 +465,15 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     </div>
                   )}
                 {formData.deliverables && formData.deliverables.length > 0 && (
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-gray-700">
                       Expected Deliverables
                     </label>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2">
                       {formData.deliverables.map((deliverable) => (
                         <span
                           key={deliverable}
-                          className="px-4 py-2 bg-green-100 text-green-800 text-sm font-medium rounded-lg border border-green-200"
+                          className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-md border border-green-200"
                         >
                           {deliverable.replace(/_/g, " ")}
                         </span>
@@ -481,22 +481,22 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     </div>
                   </div>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {formData.sellerMeetingPlan && (
-                    <div className="space-y-2">
-                      <label className="block text-sm font-semibold text-gray-700">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-700">
                         Meeting Plan
                       </label>
-                      <div className="bg-white p-4 rounded-lg border border-green-200">
-                        <p className="text-sm font-bold text-green-600">
+                      <div className="bg-white p-3 rounded-md border border-green-200">
+                        <p className="text-xs font-bold text-green-600">
                           {formData.sellerMeetingPlan.replace(/_/g, " ")}
                         </p>
                       </div>
                     </div>
                   )}
                   {formData.sellerMinBudget && formData.sellerMaxBudget && (
-                    <div className="space-y-2">
-                      <label className="block text-sm font-semibold text-gray-700">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-gray-700">
                         Budget Range
                       </label>
                       <div className="bg-white p-4 rounded-lg border border-green-200">

@@ -79,31 +79,31 @@ export default function CampaignSettingsStep({
   };
 
   const renderVisibilitySettings = () => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <div className="mb-6">
-        <div className="flex items-center space-x-3 mb-2">
-          <EyeIcon className="h-6 w-6 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">
+    <div className="bg-white border border-gray-200 rounded-md p-3">
+      <div className="mb-2">
+        <div className="flex items-center space-x-2 mb-1">
+          <EyeIcon className="h-4 w-4 text-blue-600" />
+          <h3 className="text-sm font-semibold text-gray-900">
             Visibility Campaign Settings
           </h3>
         </div>
-        <p className="text-sm text-gray-600">
-          Configure pricing and audience targeting for your visibility campaign
+        <p className="text-xs text-gray-600">
+          Configure pricing and audience targeting
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         {/* Pricing Section */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <CurrencyDollarIcon className="h-5 w-5 mr-2 text-blue-600" />
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <CurrencyDollarIcon className="h-3 w-3 mr-1 text-blue-600" />
             Pricing Configuration
           </h4>
 
           {/* Main Pricing Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Cost Per 100 Views (CPV) *
               </label>
               <div className="relative">
@@ -127,26 +127,26 @@ export default function CampaignSettingsStep({
                     updateFormData({ cpv: num });
                   }}
                   placeholder="0.50"
-                  className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                  className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs transition-all duration-200 ${
                     formData.cpv && formData.cpv < 0.5
                       ? "border-red-500 bg-red-50"
                       : "border-gray-300 hover:border-gray-400"
                   }`}
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  <span className="text-gray-500 text-sm font-medium">
-                    $/100 views
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center">
+                  <span className="text-gray-500 text-xs">
+                    $/100
                   </span>
                 </div>
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                💰 Minimum $0.50 per 100 views
+              <p className="mt-1 text-xs text-gray-500">
+                💰 Min $0.50 per 100 views
               </p>
               {formData.cpv !== null &&
                 formData.cpv !== undefined &&
                 formData.cpv < 0.5 && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600 font-medium">
+                  <div className="mt-1 p-1 bg-red-50 border border-red-200 rounded-md">
+                    <p className="text-xs text-red-600">
                       CPV must be at least $0.50 per 100 views.
                     </p>
                   </div>
@@ -154,7 +154,7 @@ export default function CampaignSettingsStep({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Max Views *
               </label>
               <input
@@ -173,20 +173,20 @@ export default function CampaignSettingsStep({
                   updateFormData({ maxViews: num });
                 }}
                 placeholder="10,001"
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs transition-all duration-200 ${
                   formData.maxViews && formData.maxViews <= 10000
                     ? "border-red-500 bg-red-50"
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
-              <p className="mt-2 text-sm text-gray-500">
-                📊 Must be more than 10,000 views
+              <p className="mt-1 text-xs text-gray-500">
+                📊 Must be more than 10,000
               </p>
               {formData.maxViews !== null &&
                 formData.maxViews !== undefined &&
                 formData.maxViews <= 10000 && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600 font-medium">
+                  <div className="mt-1 p-1 bg-red-50 border border-red-200 rounded-md">
+                    <p className="text-xs text-red-600">
                       Max Views must be more than 10,000.
                     </p>
                   </div>
@@ -195,83 +195,45 @@ export default function CampaignSettingsStep({
           </div>
 
           {/* Payment Hold Information */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-md p-2 mb-2">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="text-sm font-semibold text-gray-800 flex items-center">
-                  <CurrencyDollarIcon className="h-4 w-4 mr-2 text-amber-600" />
-                  Payment Hold Amount
+                <h5 className="text-xs font-semibold text-gray-800 flex items-center">
+                  <CurrencyDollarIcon className="h-3 w-3 mr-1 text-amber-600" />
+                  Payment Hold
                 </h5>
-                <p className="text-xs text-gray-600 mt-1">
-                  Total amount held until campaign completion
+                <p className="text-xs text-gray-600">
+                  Held until completion
                 </p>
               </div>
               <div className="text-right">
-                <span className="text-xl font-bold text-amber-600">
+                <span className="text-sm font-bold text-amber-600">
                   ${calculatePaymentHold()}
                 </span>
-                <p className="text-xs text-gray-500">USD</p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-600">
-              💳 This amount represents the maximum cost if your campaign
-              reaches the full target. You will only be charged for actual
-              verified views received.
-            </p>
           </div>
 
           {/* View Tracking & Verification */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h5 className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-              <ShieldCheckIcon className="h-4 w-4 mr-2 text-green-600" />
-              View Tracking & Verification
+          <div className="bg-green-50 border border-green-200 rounded-md p-2">
+            <h5 className="text-xs font-semibold text-gray-800 mb-1 flex items-center">
+              <ShieldCheckIcon className="h-3 w-3 mr-1 text-green-600" />
+              View Tracking
             </h5>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-              <div className="flex items-start space-x-2">
-                <EyeIcon className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
-                <div>
-                  <span className="text-xs font-medium text-gray-700 block">
-                    Organic Views Only
-                  </span>
-                  <p className="text-xs text-gray-600">
-                    Real people willingly visiting your URL -{" "}
-                    <strong>not from ads</strong>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-2">
-                <UserIcon className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
-                <div>
-                  <span className="text-xs font-medium text-gray-700 block">
-                    Anti-Fraud Protection
-                  </span>
-                  <p className="text-xs text-gray-600">
-                    IP & MAC tracking ensures <strong>unique users only</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-2 bg-green-100 rounded border border-green-300">
-              <p className="text-xs text-green-800">
-                <strong>🛡️ Quality Guarantee:</strong> Advanced bot detection
-                blocks automated traffic. Only genuine human engagement from
-                unique visitors is counted and charged.
-              </p>
+            <div className="text-xs text-green-800">
+              🛡️ Only genuine human engagement counted
             </div>
           </div>
         </div>
 
         {/* Audience Targeting */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <UserIcon className="h-5 w-5 mr-2 text-purple-600" />
-            Audience Requirements (Optional)
+        <div className="bg-purple-50 border border-purple-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <UserIcon className="h-3 w-3 mr-1 text-purple-600" />
+            Audience Requirements
           </h4>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Minimum Followers
             </label>
             <input
@@ -286,22 +248,22 @@ export default function CampaignSettingsStep({
                 })
               }
               placeholder="1,000"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
             />
-            <p className="mt-2 text-sm text-gray-500">
-              👥 Minimum follower count required for promoters to participate
+            <p className="mt-1 text-xs text-gray-500">
+              👥 Min follower count required
             </p>
           </div>
         </div>
 
         {/* Destination URL */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <LinkIcon className="h-5 w-5 mr-2 text-green-600" />
+        <div className="bg-green-50 border border-green-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <LinkIcon className="h-3 w-3 mr-1 text-green-600" />
             Campaign Destination
           </h4>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Destination URL *
             </label>
             <input
@@ -309,20 +271,20 @@ export default function CampaignSettingsStep({
               value={formData.trackingLink || ""}
               onChange={(e) => updateFormData({ trackingLink: e.target.value })}
               placeholder="https://example.com/your-page"
-              className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+              className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs transition-all duration-200 ${
                 formData.trackingLink &&
                 !formData.trackingLink.startsWith("https://")
                   ? "border-red-500 bg-red-50"
                   : "border-gray-300 hover:border-gray-400"
               }`}
             />
-            <p className="mt-2 text-sm text-gray-500">
-              🔗 Enter the web address where you want users to be directed
+            <p className="mt-1 text-xs text-gray-500">
+              🔗 Where users will be directed
             </p>
             {formData.trackingLink &&
               !formData.trackingLink.startsWith("https://") && (
-                <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600 font-medium">
+                <div className="mt-1 p-1 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-xs text-red-600">
                     URL must start with https://
                   </p>
                 </div>
@@ -334,21 +296,20 @@ export default function CampaignSettingsStep({
   );
 
   const renderConsultantSettings = () => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <div className="mb-6">
-        <div className="flex items-center space-x-3 mb-2">
-          <UserIcon className="h-6 w-6 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-900">
+    <div className="bg-white border border-gray-200 rounded-md p-3">
+      <div className="mb-2">
+        <div className="flex items-center space-x-2 mb-1">
+          <UserIcon className="h-4 w-4 text-purple-600" />
+          <h3 className="text-sm font-semibold text-gray-900">
             Consultant Campaign Settings
           </h3>
         </div>
-        <p className="text-sm text-gray-600">
-          Define deliverables, budget, and meeting requirements for your
-          consultant campaign
+        <p className="text-xs text-gray-600">
+          Define deliverables, budget, and meetings
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         {/* Expected Deliverables */}
         <DeliverableSelector
           selectedDeliverables={(formData.expectedDeliverables || []).filter(d => getConsultantDeliverables().includes(d))}
@@ -361,14 +322,14 @@ export default function CampaignSettingsStep({
         />
 
         {/* Budget Configuration */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <CurrencyDollarIcon className="h-5 w-5 mr-2 text-green-600" />
+        <div className="bg-green-50 border border-green-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <CurrencyDollarIcon className="h-3 w-3 mr-1 text-green-600" />
             Budget Range
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Min Budget ($) *
               </label>
               <input
@@ -384,7 +345,7 @@ export default function CampaignSettingsStep({
                   updateFormData({ minBudget: value });
                 }}
                 placeholder="100"
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs transition-all duration-200 ${
                   formData.minBudget &&
                   formData.maxBudget &&
                   formData.minBudget >= formData.maxBudget
@@ -392,13 +353,13 @@ export default function CampaignSettingsStep({
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
-              <p className="mt-2 text-sm text-gray-500">
-                💰 Minimum budget you&apos;re willing to pay
+              <p className="mt-1 text-xs text-gray-500">
+                💰 Minimum you&apos;ll pay
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Max Budget ($) *
               </label>
               <input
@@ -414,7 +375,7 @@ export default function CampaignSettingsStep({
                   updateFormData({ maxBudget: value });
                 }}
                 placeholder="500"
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs transition-all duration-200 ${
                   formData.minBudget &&
                   formData.maxBudget &&
                   formData.minBudget >= formData.maxBudget
@@ -422,8 +383,8 @@ export default function CampaignSettingsStep({
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
-              <p className="mt-2 text-sm text-gray-500">
-                🔒 Maximum budget (will be held until campaign completion)
+              <p className="mt-1 text-xs text-gray-500">
+                🔒 Held until completion
               </p>
             </div>
           </div>
@@ -432,32 +393,23 @@ export default function CampaignSettingsStep({
           {formData.minBudget &&
             formData.maxBudget &&
             formData.minBudget >= formData.maxBudget && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600 font-medium">
-                  ⚠️ Maximum budget must be higher than minimum budget
+              <div className="mt-2 p-1 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-xs text-red-600">
+                  ⚠️ Max budget must be higher than min budget
                 </p>
               </div>
             )}
-
-          {/* Budget Information */}
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-700">
-              💡 <strong>Budget Holding:</strong> The maximum budget amount will
-              be temporarily held in your account when the campaign starts and
-              released upon completion or if the campaign is cancelled.
-            </p>
-          </div>
         </div>
 
         {/* Meeting Configuration */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <ClockIcon className="h-5 w-5 mr-2 text-blue-600" />
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <ClockIcon className="h-3 w-3 mr-1 text-blue-600" />
             Meeting Setup
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Meeting Plan *
               </label>
               <select
@@ -471,7 +423,7 @@ export default function CampaignSettingsStep({
                       plan === "ONE_TIME" ? 1 : formData.meetingCount,
                   });
                 }}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+                className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
               >
                 <option value="">Select meeting plan</option>
                 {Object.values(MeetingPlan).map((plan) => (
@@ -483,7 +435,7 @@ export default function CampaignSettingsStep({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Meeting Count *
               </label>
               <input
@@ -503,15 +455,15 @@ export default function CampaignSettingsStep({
                 }
                 placeholder="1"
                 disabled={formData.meetingPlan === "ONE_TIME"}
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none text-gray-900 transition-all duration-200 ${
+                className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none text-gray-900 text-xs transition-all duration-200 ${
                   formData.meetingPlan === "ONE_TIME"
                     ? "bg-gray-100 border-gray-200 cursor-not-allowed text-gray-500"
-                    : "border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    : "border-gray-300 hover:border-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 }`}
               />
               {formData.meetingPlan === "ONE_TIME" && (
-                <p className="mt-2 text-sm text-blue-600">
-                  ℹ️ One-time meetings are automatically set to 1 meeting
+                <p className="mt-1 text-xs text-blue-600">
+                  ℹ️ Auto-set to 1 meeting
                 </p>
               )}
             </div>
@@ -519,10 +471,10 @@ export default function CampaignSettingsStep({
         </div>
 
         {/* Expertise Required */}
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+        <div className="bg-orange-50 border border-orange-200 rounded-md p-2">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
             <div className="flex items-center">
-              <UserIcon className="h-5 w-5 mr-2 text-orange-600" />
+              <UserIcon className="h-3 w-3 mr-1 text-orange-600" />
               Expertise Required
             </div>
           </label>
@@ -531,12 +483,12 @@ export default function CampaignSettingsStep({
             onChange={(e) =>
               updateFormData({ expertiseRequired: e.target.value })
             }
-            rows={4}
+            rows={2}
             placeholder="Describe the specific expertise you're looking for..."
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200 resize-none"
+            className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200 resize-none"
           />
-          <p className="mt-2 text-sm text-gray-500">
-            💡 Be specific about the skills and experience you need
+          <p className="mt-1 text-xs text-gray-500">
+            💡 Specific skills and experience needed
           </p>
         </div>
       </div>
@@ -544,21 +496,20 @@ export default function CampaignSettingsStep({
   );
 
   const renderSellerSettings = () => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <div className="mb-6">
-        <div className="flex items-center space-x-3 mb-2">
-          <ShoppingBagIcon className="h-6 w-6 text-green-600" />
-          <h3 className="text-lg font-semibold text-gray-900">
+    <div className="bg-white border border-gray-200 rounded-md p-3">
+      <div className="mb-2">
+        <div className="flex items-center space-x-2 mb-1">
+          <ShoppingBagIcon className="h-4 w-4 text-green-600" />
+          <h3 className="text-sm font-semibold text-gray-900">
             Seller Campaign Settings
           </h3>
         </div>
-        <p className="text-sm text-gray-600">
-          Configure requirements, deliverables, and budget for your seller
-          campaign
+        <p className="text-xs text-gray-600">
+          Configure requirements, deliverables, and budget
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         {/* Seller Requirements */}
         <DeliverableSelector
           selectedDeliverables={(formData.sellerRequirements || []).filter(d => getSellerDeliverables().includes(d))}
@@ -582,14 +533,14 @@ export default function CampaignSettingsStep({
         />
 
         {/* Budget Configuration */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <CurrencyDollarIcon className="h-5 w-5 mr-2 text-blue-600" />
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <CurrencyDollarIcon className="h-3 w-3 mr-1 text-blue-600" />
             Budget Range
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Min Budget ($) *
               </label>
               <input
@@ -605,7 +556,7 @@ export default function CampaignSettingsStep({
                   updateFormData({ sellerMinBudget: value });
                 }}
                 placeholder="100"
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs transition-all duration-200 ${
                   formData.sellerMinBudget &&
                   formData.sellerMaxBudget &&
                   formData.sellerMinBudget >= formData.sellerMaxBudget
@@ -613,13 +564,13 @@ export default function CampaignSettingsStep({
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
-              <p className="mt-2 text-sm text-gray-500">
-                💰 Minimum budget you&apos;re willing to pay
+              <p className="mt-1 text-xs text-gray-500">
+                💰 Minimum you&apos;ll pay
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Max Budget ($) *
               </label>
               <input
@@ -635,7 +586,7 @@ export default function CampaignSettingsStep({
                   updateFormData({ sellerMaxBudget: value });
                 }}
                 placeholder="500"
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs transition-all duration-200 ${
                   formData.sellerMinBudget &&
                   formData.sellerMaxBudget &&
                   formData.sellerMinBudget >= formData.sellerMaxBudget
@@ -643,8 +594,8 @@ export default function CampaignSettingsStep({
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
-              <p className="mt-2 text-sm text-gray-500">
-                🔒 Maximum budget (will be held until campaign completion)
+              <p className="mt-1 text-xs text-gray-500">
+                🔒 Held until completion
               </p>
             </div>
           </div>
@@ -653,31 +604,22 @@ export default function CampaignSettingsStep({
           {formData.sellerMinBudget &&
             formData.sellerMaxBudget &&
             formData.sellerMinBudget >= formData.sellerMaxBudget && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600 font-medium">
-                  ⚠️ Maximum budget must be higher than minimum budget
+              <div className="mt-2 p-1 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-xs text-red-600">
+                  ⚠️ Max budget must be higher than min budget
                 </p>
               </div>
             )}
-
-          {/* Budget Information */}
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-700">
-              💡 <strong>Budget Holding:</strong> The maximum budget amount will
-              be temporarily held in your account when the campaign starts and
-              released upon completion or if the campaign is cancelled.
-            </p>
-          </div>
         </div>
 
         {/* Meeting Requirements */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <ClockIcon className="h-5 w-5 mr-2 text-purple-600" />
+        <div className="bg-purple-50 border border-purple-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <ClockIcon className="h-3 w-3 mr-1 text-purple-600" />
             Meeting Requirements
           </h4>
 
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -685,22 +627,18 @@ export default function CampaignSettingsStep({
                 onChange={(e) =>
                   updateFormData({ needMeeting: e.target.checked })
                 }
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <span className="ml-3 text-sm font-medium text-gray-700">
-                Require meeting before starting campaign
+              <span className="ml-2 text-xs font-medium text-gray-700">
+                Require meeting before starting
               </span>
             </label>
-            <p className="mt-2 ml-7 text-sm text-gray-500">
-              💬 Check this if you want to meet with the seller before they
-              start working
-            </p>
           </div>
 
           {formData.needMeeting && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-purple-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 pt-2 border-t border-purple-200">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Meeting Plan
                 </label>
                 <select
@@ -714,7 +652,7 @@ export default function CampaignSettingsStep({
                         plan === "ONE_TIME" ? 1 : formData.sellerMeetingCount,
                     });
                   }}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+                  className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
                 >
                   <option value="">Select meeting plan</option>
                   {Object.values(MeetingPlan).map((plan) => (
@@ -726,7 +664,7 @@ export default function CampaignSettingsStep({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Meeting Count
                 </label>
                 <input
@@ -746,30 +684,25 @@ export default function CampaignSettingsStep({
                   }
                   placeholder="1"
                   disabled={formData.sellerMeetingPlan === "ONE_TIME"}
-                  className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none text-gray-900 transition-all duration-200 ${
+                  className={`w-full px-2 py-1.5 border rounded-md shadow-sm focus:outline-none text-gray-900 text-xs transition-all duration-200 ${
                     formData.sellerMeetingPlan === "ONE_TIME"
                       ? "bg-gray-100 border-gray-200 cursor-not-allowed text-gray-500"
-                      : "border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      : "border-gray-300 hover:border-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   }`}
                 />
-                {formData.sellerMeetingPlan === "ONE_TIME" && (
-                  <p className="mt-2 text-sm text-blue-600">
-                    ℹ️ One-time meetings are automatically set to 1 meeting
-                  </p>
-                )}
               </div>
             </div>
           )}
         </div>
 
         {/* Audience Requirements */}
-        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <UserIcon className="h-5 w-5 mr-2 text-indigo-600" />
+        <div className="bg-indigo-50 border border-indigo-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <UserIcon className="h-3 w-3 mr-1 text-indigo-600" />
             Audience Requirements
           </h4>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Minimum Followers
             </label>
             <input
@@ -784,10 +717,10 @@ export default function CampaignSettingsStep({
                 })
               }
               placeholder="1,000"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
             />
-            <p className="mt-2 text-sm text-gray-500">
-              👥 Minimum follower count required for sellers to participate
+            <p className="mt-1 text-xs text-gray-500">
+              👥 Min follower count required
             </p>
           </div>
         </div>
@@ -796,30 +729,29 @@ export default function CampaignSettingsStep({
   );
 
   const renderSalesmanSettings = () => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <div className="mb-6">
-        <div className="flex items-center space-x-3 mb-2">
-          <CurrencyDollarIcon className="h-6 w-6 text-orange-600" />
-          <h3 className="text-lg font-semibold text-gray-900">
+    <div className="bg-white border border-gray-200 rounded-md p-3">
+      <div className="mb-2">
+        <div className="flex items-center space-x-2 mb-1">
+          <CurrencyDollarIcon className="h-4 w-4 text-orange-600" />
+          <h3 className="text-sm font-semibold text-gray-900">
             Salesman Campaign Settings
           </h3>
         </div>
-        <p className="text-sm text-gray-600">
-          Configure commission structure and sales tracking for your salesman
-          campaign
+        <p className="text-xs text-gray-600">
+          Configure commission and sales tracking
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         {/* Commission & Tracking */}
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <CurrencyDollarIcon className="h-5 w-5 mr-2 text-orange-600" />
-            Commission & Tracking Setup
+        <div className="bg-orange-50 border border-orange-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <CurrencyDollarIcon className="h-3 w-3 mr-1 text-orange-600" />
+            Commission & Tracking
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Commission Per 1$ Sold ($) *
               </label>
               <input
@@ -842,15 +774,15 @@ export default function CampaignSettingsStep({
                   updateFormData({ commissionPerSale: num });
                 }}
                 placeholder="0.10"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+                className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
               />
-              <p className="mt-2 text-sm text-gray-500">
-                💰 Amount paid to salesman per successful sale
+              <p className="mt-1 text-xs text-gray-500">
+                💰 Per successful sale
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Track Sales Via *
               </label>
               <select
@@ -860,7 +792,7 @@ export default function CampaignSettingsStep({
                     trackSalesVia: e.target.value as SalesTrackingMethod,
                   })
                 }
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+                className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
               >
                 <option value="">Select tracking method</option>
                 {Object.values(SalesTrackingMethod).map((method) => (
@@ -869,21 +801,21 @@ export default function CampaignSettingsStep({
                   </option>
                 ))}
               </select>
-              <p className="mt-2 text-sm text-gray-500">
-                📊 How will you track sales made by salesmen?
+              <p className="mt-1 text-xs text-gray-500">
+                📊 How to track sales
               </p>
             </div>
           </div>
         </div>
 
         {/* Code Configuration */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <DocumentTextIcon className="h-5 w-5 mr-2 text-blue-600" />
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <DocumentTextIcon className="h-3 w-3 mr-1 text-blue-600" />
             Coupon Code Setup
           </h4>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Code Prefix (Optional)
             </label>
             <input
@@ -891,14 +823,14 @@ export default function CampaignSettingsStep({
               value={formData.codePrefix || ""}
               onChange={(e) => updateFormData({ codePrefix: e.target.value })}
               placeholder="PROMO"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
             />
-            <p className="mt-2 text-sm text-gray-500">
-              🏷️ Prefix for generated coupon codes (e.g., PROMO-ABC123)
+            <p className="mt-1 text-xs text-gray-500">
+              🏷️ Prefix for coupon codes
             </p>
             {formData.codePrefix && (
-              <div className="mt-3 p-3 bg-blue-100 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="mt-1 p-1 bg-blue-100 border border-blue-200 rounded-md">
+                <p className="text-xs text-blue-800">
                   <strong>Preview:</strong> {formData.codePrefix}-ABC123
                 </p>
               </div>
@@ -907,13 +839,13 @@ export default function CampaignSettingsStep({
         </div>
 
         {/* Audience Requirements */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <h4 className="text-md font-medium text-gray-900 mb-4 flex items-center">
-            <UserIcon className="h-5 w-5 mr-2 text-purple-600" />
+        <div className="bg-purple-50 border border-purple-200 rounded-md p-2">
+          <h4 className="text-xs font-medium text-gray-900 mb-2 flex items-center">
+            <UserIcon className="h-3 w-3 mr-1 text-purple-600" />
             Audience Requirements
           </h4>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Minimum Followers
             </label>
             <input
@@ -928,33 +860,32 @@ export default function CampaignSettingsStep({
                 })
               }
               placeholder="1,000"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-xs hover:border-gray-400 transition-all duration-200"
             />
-            <p className="mt-2 text-sm text-gray-500">
-              👥 Minimum follower count required for salesmen to participate
+            <p className="mt-1 text-xs text-gray-500">
+              👥 Min follower count required
             </p>
           </div>
         </div>
 
         {/* Summary Card */}
         {(formData.commissionPerSale || formData.trackSalesVia) && (
-          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-4">
-            <h4 className="text-md font-medium text-gray-900 mb-3 flex items-center">
+          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-md p-2">
+            <h4 className="text-xs font-medium text-gray-900 mb-1 flex items-center">
               📋 Campaign Summary
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-xs">
               {formData.commissionPerSale && (
                 <div className="flex items-center">
-                  <CurrencyDollarIcon className="h-4 w-4 mr-2 text-orange-600" />
+                  <CurrencyDollarIcon className="h-3 w-3 mr-1 text-orange-600" />
                   <span>
-                    <strong>Commission:</strong> ${formData.commissionPerSale}{" "}
-                    per sale
+                    <strong>Commission:</strong> ${formData.commissionPerSale}
                   </span>
                 </div>
               )}
               {formData.trackSalesVia && (
                 <div className="flex items-center">
-                  <DocumentTextIcon className="h-4 w-4 mr-2 text-blue-600" />
+                  <DocumentTextIcon className="h-3 w-3 mr-1 text-blue-600" />
                   <span>
                     <strong>Tracking:</strong>{" "}
                     {formData.trackSalesVia.replace(/_/g, " ")}
@@ -963,15 +894,15 @@ export default function CampaignSettingsStep({
               )}
               {formData.codePrefix && (
                 <div className="flex items-center">
-                  <DocumentTextIcon className="h-4 w-4 mr-2 text-green-600" />
+                  <DocumentTextIcon className="h-3 w-3 mr-1 text-green-600" />
                   <span>
-                    <strong>Code Prefix:</strong> {formData.codePrefix}
+                    <strong>Prefix:</strong> {formData.codePrefix}
                   </span>
                 </div>
               )}
               {formData.salesmanMinFollowers && (
                 <div className="flex items-center">
-                  <UserIcon className="h-4 w-4 mr-2 text-purple-600" />
+                  <UserIcon className="h-3 w-3 mr-1 text-purple-600" />
                   <span>
                     <strong>Min Followers:</strong>{" "}
                     {formData.salesmanMinFollowers.toLocaleString()}
@@ -1000,5 +931,5 @@ export default function CampaignSettingsStep({
     }
   };
 
-  return <div className="space-y-6">{renderSettings()}</div>;
+  return <div className="space-y-3">{renderSettings()}</div>;
 }

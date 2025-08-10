@@ -262,23 +262,23 @@ export default function BasicInfoStep({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4">
         {/* Campaign Access Type - Only for Visibility Campaigns */}
         {formData.type === CampaignType.VISIBILITY && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+            <div className="mb-3">
+              <h3 className="text-sm font-semibold text-gray-900 mb-1">
                 Campaign Access Type
               </h3>
-              <p className="text-sm text-gray-600">
-                This determines how promoters can join your visibility campaign
+              <p className="text-xs text-gray-600">
+                How promoters can join your visibility campaign
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div
-                className={`relative rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                className={`relative rounded-md border p-3 cursor-pointer transition-all ${
                   formData.isPublic
                     ? "border-green-500 bg-green-50"
                     : "border-gray-200 bg-white hover:border-gray-300"
@@ -292,35 +292,27 @@ export default function BasicInfoStep({
                     name="visibility"
                     checked={formData.isPublic}
                     onChange={() => handleInputChange("isPublic", true)}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 mt-1"
+                    className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300 mt-1"
                   />
                   <div className="flex-1">
                     <label
                       htmlFor="visibility-public"
-                      className="block text-sm font-medium text-gray-900 cursor-pointer"
+                      className="block text-xs font-medium text-gray-900 cursor-pointer"
                     >
-                      🌍 Public Campaign - Open to All Promoters
+                      🌍 Public - Open to All Promoters
                     </label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Any qualified promoter can directly accept your campaign
-                      and start working.
-                      <strong> First come, first served.</strong> Best for
-                      campaigns that need quick execution and where multiple
-                      promoters can work simultaneously.
+                    <p className="text-xs text-gray-600 mt-1">
+                      First come, first served. Best for quick execution.
                     </p>
-                    <div className="mt-2 text-xs text-green-700 bg-green-100 px-2 py-1 rounded inline-block">
-                      ✓ Faster launch • ✓ Multiple promoters • ✓ Immediate start
-                    </div>
-                    <div className="mt-2 text-xs text-gray-500">
-                      <strong>Recommended for:</strong> Simple visibility tasks,
-                      urgent deadlines
+                    <div className="mt-1 text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded inline-block">
+                      ✓ Faster • ✓ Multiple promoters
                     </div>
                   </div>
                 </div>
               </div>
 
               <div
-                className={`relative rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                className={`relative rounded-md border p-3 cursor-pointer transition-all ${
                   !formData.isPublic
                     ? "border-orange-500 bg-orange-50"
                     : "border-gray-200 bg-white hover:border-gray-300"
@@ -334,28 +326,20 @@ export default function BasicInfoStep({
                     name="visibility"
                     checked={!formData.isPublic}
                     onChange={() => handleInputChange("isPublic", false)}
-                    className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 mt-1"
+                    className="h-3 w-3 text-orange-600 focus:ring-orange-500 border-gray-300 mt-1"
                   />
                   <div className="flex-1">
                     <label
                       htmlFor="visibility-private"
-                      className="block text-sm font-medium text-gray-900 cursor-pointer"
+                      className="block text-xs font-medium text-gray-900 cursor-pointer"
                     >
-                      🔒 Private Campaign - Application Required
+                      🔒 Private - Application Required
                     </label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Promoters must apply and you choose{" "}
-                      <strong>ONE promoter</strong> to work exclusively on your
-                      campaign. You review applications and select the best fit
-                      for your specific needs.
+                    <p className="text-xs text-gray-600 mt-1">
+                      Choose ONE promoter. Better quality control.
                     </p>
-                    <div className="mt-2 text-xs text-orange-700 bg-orange-100 px-2 py-1 rounded inline-block">
-                      ✓ Handpicked promoter • ✓ Exclusive work • ✓ Better
-                      quality control
-                    </div>
-                    <div className="mt-2 text-xs text-gray-500">
-                      <strong>Recommended for:</strong> High-quality content,
-                      specific audience targeting
+                    <div className="mt-1 text-xs text-orange-700 bg-orange-100 px-2 py-0.5 rounded inline-block">
+                      ✓ Handpicked • ✓ Exclusive
                     </div>
                   </div>
                 </div>
@@ -366,22 +350,22 @@ export default function BasicInfoStep({
 
         {/* Info for non-visibility campaigns */}
         {formData.type && formData.type !== CampaignType.VISIBILITY && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
             <div className="flex items-center">
-              <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+              <div className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center mr-2">
                 <span className="text-gray-600 font-bold text-xs">🔒</span>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-xs font-medium text-gray-900">
                   Private Campaign
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs text-gray-600">
                   {formData.type === CampaignType.CONSULTANT &&
-                    "Consultant campaigns are always private - promoters apply and you select the best expert."}
+                    "Promoters apply and you select the best expert."}
                   {formData.type === CampaignType.SELLER &&
-                    "Seller campaigns are always private - promoters apply and you choose one to create and sell your products."}
+                    "Promoters apply and you choose one to create and sell your products."}
                   {formData.type === CampaignType.SALESMAN &&
-                    "Salesman campaigns are always private - promoters apply and you select the best sales representatives."}
+                    "Promoters apply and you select the best sales representatives."}
                 </p>
               </div>
             </div>
@@ -389,25 +373,25 @@ export default function BasicInfoStep({
         )}
 
         {/* Advertiser Types Multi-select */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="bg-white border border-gray-200 rounded-md p-4">
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">
               Product Type(s) *
             </h3>
-            <p className="text-sm text-gray-600">
-              Select the categories that best describe your business
+            <p className="text-xs text-gray-600">
+              Select categories that describe your business
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {Object.values(AdvertiserType).map((type) => (
               <button
                 key={type}
                 type="button"
                 onClick={() => toggleAdvertiserType(type)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all duration-200 ${
+                className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 ${
                   formData.advertiserTypes.includes(type)
-                    ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-blue-300 hover:bg-blue-50 hover:shadow-sm"
+                    ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                 }`}
               >
                 {type.charAt(0) +
@@ -416,29 +400,29 @@ export default function BasicInfoStep({
             ))}
           </div>
           {errors.advertiserTypes && (
-            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{errors.advertiserTypes}</p>
+            <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-xs text-red-600">{errors.advertiserTypes}</p>
             </div>
           )}
         </div>
 
         {/* Campaign Title & Description */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="bg-white border border-gray-200 rounded-md p-4">
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">
               📝 Campaign Details
             </h3>
-            <p className="text-sm text-gray-600">
-              Provide the essential information about your campaign
+            <p className="text-xs text-gray-600">
+              Essential information about your campaign
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Campaign Title */}
             <div>
               <label
                 htmlFor="title"
-                className="block text-sm font-medium text-gray-700 mb-3"
+                className="block text-xs font-medium text-gray-700 mb-2"
               >
                 Campaign Title *
               </label>
@@ -449,29 +433,29 @@ export default function BasicInfoStep({
                 onChange={(e) => handleInputChange("title", e.target.value)}
                 onBlur={() => handleBlur("title")}
                 placeholder="Enter a catchy title for your campaign"
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 transition-all duration-200 ${
                   errors.title
                     ? "border-red-500 bg-red-50"
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
               {errors.title && (
-                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{errors.title}</p>
+                <div className="mt-1 p-2 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-xs text-red-600">{errors.title}</p>
                 </div>
               )}
-              <div className="mt-2 flex justify-between items-center">
-                <p className="text-sm text-gray-500">
+              <div className="mt-1 flex justify-between items-center">
+                <p className="text-xs text-gray-500">
                   Make it clear and engaging
                 </p>
                 <span
-                  className={`text-sm ${
+                  className={`text-xs ${
                     formData.title.length > 90
                       ? "text-orange-600"
                       : "text-gray-500"
                   }`}
                 >
-                  {formData.title.length}/100 characters
+                  {formData.title.length}/100
                 </span>
               </div>
             </div>
@@ -480,43 +464,42 @@ export default function BasicInfoStep({
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-3"
+                className="block text-xs font-medium text-gray-700 mb-2"
               >
                 Campaign Description *
               </label>
               <textarea
                 id="description"
-                rows={5}
+                rows={4}
                 value={formData.description}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)
                 }
                 onBlur={() => handleBlur("description")}
-                placeholder="Describe your campaign goals, your business, target audience, and what you're looking for..."
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 resize-none ${
+                placeholder="Describe your campaign goals, business, target audience, and requirements..."
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 transition-all duration-200 resize-none ${
                   errors.description
                     ? "border-red-500 bg-red-50"
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
               {errors.description && (
-                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{errors.description}</p>
+                <div className="mt-1 p-2 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-xs text-red-600">{errors.description}</p>
                 </div>
               )}
-              <div className="mt-2 flex justify-between items-center">
-                <p className="text-sm text-gray-500">
-                  This is your best opportunity to talk about your products! Be
-                  specific about your goals and requirements
+              <div className="mt-1 flex justify-between items-center">
+                <p className="text-xs text-gray-500">
+                  Be specific about your goals and requirements
                 </p>
                 <span
-                  className={`text-sm ${
+                  className={`text-xs ${
                     formData.description.length > 900
                       ? "text-orange-600"
                       : "text-gray-500"
                   }`}
                 >
-                  {formData.description.length}/1000 characters
+                  {formData.description.length}/1000
                 </span>
               </div>
             </div>
@@ -524,22 +507,22 @@ export default function BasicInfoStep({
         </div>
 
         {/* Target Audience & Campaign Timing */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="bg-white border border-gray-200 rounded-md p-4">
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">
               🎯 Audience & Timeline
             </h3>
-            <p className="text-sm text-gray-600">
-              Define your target audience and campaign schedule
+            <p className="text-xs text-gray-600">
+              Target audience and campaign schedule
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Target Audience */}
             <div className="lg:col-span-2">
               <label
                 htmlFor="targetAudience"
-                className="block text-sm font-medium text-gray-700 mb-3"
+                className="block text-xs font-medium text-gray-700 mb-2"
               >
                 Target Audience (Optional)
               </label>
@@ -551,9 +534,9 @@ export default function BasicInfoStep({
                   handleInputChange("targetAudience", e.target.value)
                 }
                 placeholder="e.g., Young professionals, Tech enthusiasts, Fitness enthusiasts"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 hover:border-gray-400 transition-all duration-200"
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-1 text-xs text-gray-500">
                 💡 Describe your ideal audience demographics or interests
               </p>
             </div>
@@ -562,10 +545,10 @@ export default function BasicInfoStep({
             <div>
               <label
                 htmlFor="startDate"
-                className="block text-sm font-medium text-gray-700 mb-3"
+                className="block text-xs font-medium text-gray-700 mb-2"
               >
                 <div className="flex items-center">
-                  <CalendarIcon className="h-5 w-5 mr-2 text-green-600" />
+                  <CalendarIcon className="h-4 w-4 mr-1 text-green-600" />
                   Start Date *
                 </div>
               </label>
@@ -585,19 +568,19 @@ export default function BasicInfoStep({
                 }
                 onBlur={() => handleBlur("startDate")}
                 min={new Date().toISOString().split("T")[0]}
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 transition-all duration-200 ${
                   errors.startDate
                     ? "border-red-500 bg-red-50"
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
               {errors.startDate && (
-                <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{errors.startDate}</p>
+                <div className="mt-1 p-2 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-xs text-red-600">{errors.startDate}</p>
                 </div>
               )}
-              <p className="mt-2 text-sm text-gray-500">
-                When do you want the campaign to start? (Can start today)
+              <p className="mt-1 text-xs text-gray-500">
+                When to start? (Can start today)
               </p>
             </div>
 
@@ -605,10 +588,10 @@ export default function BasicInfoStep({
             <div>
               <label
                 htmlFor="deadline"
-                className="block text-sm font-medium text-gray-700 mb-3"
+                className="block text-xs font-medium text-gray-700 mb-2"
               >
                 <div className="flex items-center">
-                  <CalendarIcon className="h-5 w-5 mr-2 text-red-600" />
+                  <CalendarIcon className="h-4 w-4 mr-1 text-red-600" />
                   Campaign Deadline *
                 </div>
               </label>
@@ -636,55 +619,51 @@ export default function BasicInfoStep({
                       })()
                     : new Date().toISOString().split("T")[0]
                 }
-                className={`w-full px-4 py-3 border-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 transition-all duration-200 ${
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 transition-all duration-200 ${
                   errors.deadline
                     ? "border-red-500 bg-red-50"
                     : "border-gray-300 hover:border-gray-400"
                 }`}
               />
               {errors.deadline && (
-                <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{errors.deadline}</p>
+                <div className="mt-1 p-2 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-xs text-red-600">{errors.deadline}</p>
                 </div>
               )}
-              <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                <p className="text-sm text-orange-800">
-                  <strong>⏰ Important:</strong> Deadline must be at least 30
-                  days after start date. After this date, your campaign will be
-                  automatically deactivated and no longer visible to promoters
+              <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-md">
+                <p className="text-xs text-orange-800">
+                  <strong>⏰ Important:</strong> Must be 30+ days after start date
                 </p>
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                When should this campaign be completed and automatically
-                deactivated?
+              <p className="mt-1 text-xs text-gray-500">
+                When should campaign complete and auto-deactivate?
               </p>
             </div>
           </div>
         </div>
 
         {/* Campaign Requirements & Preferences */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="bg-white border border-gray-200 rounded-md p-4">
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">
               📋 Requirements & Preferences
             </h3>
-            <p className="text-sm text-gray-600">
-              Set specific requirements and platform preferences for your
-              campaign
+            <p className="text-xs text-gray-600">
+              Set specific requirements and platform preferences
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Requirements */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-xs font-medium text-gray-700 mb-2">
                 Campaign Requirements (Optional)
               </label>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {(formData.requirements || []).map((requirement, index) => (
                   <div
                     key={index}
-                    className="flex items-center space-x-3 group"
+                    className="flex items-center space-x-2 group"
                   >
                     <div className="flex-1">
                       <input
@@ -693,14 +672,14 @@ export default function BasicInfoStep({
                         onChange={(e) =>
                           updateRequirement(index, e.target.value)
                         }
-                        placeholder="e.g., Must have marketing experience, Previous tech product promotion"
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 hover:border-gray-400 transition-all duration-200"
+                        placeholder="e.g., Must have marketing experience"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 hover:border-gray-400 transition-all duration-200"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => removeRequirement(index)}
-                      className="px-3 py-2 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 rounded-lg text-sm font-medium transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                      className="px-2 py-1 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 rounded-md text-xs font-medium transition-colors duration-200 opacity-0 group-hover:opacity-100"
                     >
                       Remove
                     </button>
@@ -709,82 +688,80 @@ export default function BasicInfoStep({
                 <button
                   type="button"
                   onClick={addRequirement}
-                  className="flex items-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-blue-600 hover:border-blue-400 hover:bg-blue-50 text-sm font-medium transition-all duration-200 w-full justify-center"
+                  className="flex items-center px-3 py-2 border border-dashed border-gray-300 rounded-md text-blue-600 hover:border-blue-400 hover:bg-blue-50 text-xs font-medium transition-all duration-200 w-full justify-center"
                 >
-                  <span className="mr-2">+</span> Add Requirement
+                  <span className="mr-1">+</span> Add Requirement
                 </button>
               </div>
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-2 text-xs text-gray-500">
                 💡 Specific requirements or qualifications for promoters
               </p>
             </div>
 
             {/* Preferred Platforms */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-xs font-medium text-gray-700 mb-2">
                 Preferred Social Platforms (Optional)
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {Object.values(SocialPlatform).map((platform) => (
                   <button
                     key={platform}
                     type="button"
                     onClick={() => toggleSocialPlatform(platform)}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium border-2 transition-all duration-200 ${
+                    className={`px-3 py-2 rounded-md text-xs font-medium border transition-all duration-200 ${
                       (formData.preferredPlatforms || []).includes(platform)
-                        ? "bg-purple-600 text-white border-purple-600 shadow-md transform scale-105"
-                        : "bg-white text-gray-700 border-gray-300 hover:border-purple-300 hover:bg-purple-50 hover:shadow-sm"
+                        ? "bg-purple-600 text-white border-purple-600 shadow-sm"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-purple-300 hover:bg-purple-50"
                     }`}
                   >
                     {platform.charAt(0) + platform.slice(1).toLowerCase()}
                   </button>
                 ))}
               </div>
-              <p className="mt-3 text-sm text-gray-500">
-                📱 Select the social media platforms you prefer for this
-                campaign
+              <p className="mt-2 text-xs text-gray-500">
+                📱 Select preferred social media platforms for this campaign
               </p>
             </div>
           </div>
         </div>
 
         {/* Media File Upload */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="bg-white border border-gray-200 rounded-md p-4">
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">
               📁 Supporting Media
             </h3>
-            <p className="text-sm text-gray-600">
-              Upload supporting content to help promoters understand your
-              campaign
+            <p className="text-xs text-gray-600">
+              Upload content to help promoters understand your campaign
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-4">
             {/* Media File Upload */}
             <div>
               <label
                 htmlFor="mediaFile"
-                className="block text-sm font-medium text-gray-700 mb-3"
+                className="block text-xs font-medium text-gray-700 mb-2"
               >
                 <div className="flex items-center">
-                  <PhotoIcon className="h-5 w-5 mr-2 text-blue-600" />
+                  <PhotoIcon className="h-4 w-4 mr-1 text-blue-600" />
                   Supporting Media *
                 </div>
               </label>
               <div
-                className={`mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-dashed rounded-lg transition-all duration-200 ${
+                className={`mt-1 flex justify-center px-4 pt-5 pb-5 border border-dashed rounded-md transition-all duration-200 ${
                   errors.files
                     ? "border-red-300 bg-red-50"
                     : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
                 }`}
               >
-                <div className="space-y-2 text-center">
-                  <PhotoIcon className="mx-auto h-16 w-16 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
+                <div className="space-y-1 text-center">
+                  <PhotoIcon className="mx-auto h-10 w-10 text-gray-400" />
+                  <div className="flex text-xs text-gray-600">
                     <label
                       htmlFor="mediaFile"
-                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 px-2 py-1"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-1 focus-within:ring-offset-1 focus-within:ring-blue-500 px-1 py-0.5"
                     >
                       <span>Upload a file</span>
                       <input
@@ -800,25 +777,25 @@ export default function BasicInfoStep({
                     <p className="pl-1">or drag and drop (up to 10 files)</p>
                   </div>
                   <p className="text-xs text-gray-500">
-                    PNG, JPG, GIF, MP4, PDF up to 10MB each (max 10 files)
+                    PNG, JPG, GIF, MP4, PDF up to 10MB each
                   </p>
                 </div>
               </div>
               {formData.files && formData.files.length > 0 && (
-                <div className="mt-4 space-y-3">
-                  <div className="text-sm font-medium text-gray-700">
+                <div className="mt-3 space-y-2">
+                  <div className="text-xs font-medium text-gray-700">
                     Uploaded Files ({formData.files.length}/10):
                   </div>
                   {formData.files.map((file, index) => (
                     <div
                       key={index}
-                      className="p-4 bg-green-50 rounded-lg border border-green-200"
+                      className="p-3 bg-green-50 rounded-md border border-green-200"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <PhotoIcon className="h-6 w-6 text-green-600 mr-3" />
+                          <PhotoIcon className="h-4 w-4 text-green-600 mr-2" />
                           <div>
-                            <span className="text-sm font-medium text-gray-900 block">
+                            <span className="text-xs font-medium text-gray-900 block">
                               {file.name}
                             </span>
                             <span className="text-xs text-gray-500">
@@ -829,7 +806,7 @@ export default function BasicInfoStep({
                         <button
                           type="button"
                           onClick={() => removeFile(index)}
-                          className="px-3 py-1 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 rounded-md text-sm font-medium transition-colors duration-200"
+                          className="px-2 py-1 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 rounded-md text-xs font-medium transition-colors duration-200"
                         >
                           Remove
                         </button>
@@ -839,14 +816,13 @@ export default function BasicInfoStep({
                 </div>
               )}
               {errors.files && (
-                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{errors.files}</p>
+                <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-xs text-red-600">{errors.files}</p>
                 </div>
               )}
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-2 text-xs text-gray-500">
                 🎯 Upload supporting content like product images, demo videos,
-                or PDFs to help promoters better understand your campaign and
-                brand. You can upload up to 10 files.
+                or PDFs to help promoters understand your campaign and brand.
               </p>
             </div>
           </div>
@@ -855,26 +831,26 @@ export default function BasicInfoStep({
 
       {/* Enhanced Preview Card */}
       {(formData.title || formData.description) && (
-        <div className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
-          <div className="flex items-center mb-4">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-              <span className="text-white font-bold text-sm">👁️</span>
+        <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center mb-3">
+            <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mr-2">
+              <span className="text-white font-bold text-xs">👁️</span>
             </div>
-            <h4 className="text-lg font-semibold text-gray-900">
+            <h4 className="text-sm font-semibold text-gray-900">
               Campaign Preview
             </h4>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-start space-x-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+            <div className="flex items-start space-x-3">
               {currentUser?.avatarUrl ? (
                 <div className="flex-shrink-0">
-                  <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden">
+                  <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
                     <Image
                       src={currentUser.avatarUrl}
                       alt="Advertiser Profile"
-                      width={80}
-                      height={80}
+                      width={48}
+                      height={48}
                       className="object-cover w-full h-full"
                       unoptimized
                       onError={(e) => {
@@ -886,18 +862,18 @@ export default function BasicInfoStep({
                 </div>
               ) : (
                 <div className="flex-shrink-0">
-                  <div className="w-20 h-20 bg-gray-200 rounded-xl flex items-center justify-center">
-                    <span className="text-gray-500 text-sm font-medium">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500 text-xs font-medium">
                       {currentUser?.name?.charAt(0)?.toUpperCase() || "A"}
                     </span>
                   </div>
                 </div>
               )}
               <div className="flex-1">
-                <h5 className="text-xl font-semibold text-gray-900 mb-2">
+                <h5 className="text-base font-semibold text-gray-900 mb-2">
                   {formData.title || "Campaign Title"}
                 </h5>
-                <p className="text-gray-600 mb-4 leading-relaxed">
+                <p className="text-sm text-gray-600 mb-3 leading-relaxed">
                   {formData.description
                     ? formData.description.length > 100
                       ? `${formData.description.substring(0, 100)}...`
@@ -905,9 +881,9 @@ export default function BasicInfoStep({
                     : "Campaign description will appear here..."}
                 </p>
 
-                <div className="flex flex-wrap items-center gap-2 mb-3">
+                <div className="flex flex-wrap items-center gap-1 mb-2">
                   {formData.type && (
-                    <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    <span className="inline-flex items-center px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                       {formData.type === CampaignType.VISIBILITY &&
                         "👁️ Visibility"}
                       {formData.type === CampaignType.CONSULTANT &&
@@ -917,7 +893,7 @@ export default function BasicInfoStep({
                     </span>
                   )}
                   <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       formData.isPublic
                         ? "bg-green-100 text-green-800"
                         : "bg-orange-100 text-orange-800"
@@ -927,10 +903,10 @@ export default function BasicInfoStep({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-500">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-500">
                   {formData.startDate && (
                     <div className="flex items-center">
-                      <CalendarIcon className="h-4 w-4 mr-2 text-green-600" />
+                      <CalendarIcon className="h-3 w-3 mr-1 text-green-600" />
                       <span>
                         Starts: {formData.startDate.toLocaleDateString()}
                       </span>
@@ -938,7 +914,7 @@ export default function BasicInfoStep({
                   )}
                   {formData.deadline && (
                     <div className="flex items-center">
-                      <CalendarIcon className="h-4 w-4 mr-2 text-red-600" />
+                      <CalendarIcon className="h-3 w-3 mr-1 text-red-600" />
                       <span>
                         Deadline: {formData.deadline.toLocaleDateString()}
                       </span>
@@ -951,16 +927,16 @@ export default function BasicInfoStep({
                   (formData.requirements && formData.requirements.length > 0) ||
                   (formData.preferredPlatforms &&
                     formData.preferredPlatforms.length > 0)) && (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="mt-3 pt-3 border-t border-gray-100">
                     {formData.targetAudience && (
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-xs text-gray-600 mb-1">
                         <strong className="text-gray-800">🎯 Target:</strong>{" "}
                         {formData.targetAudience}
                       </p>
                     )}
                     {formData.requirements &&
                       formData.requirements.length > 0 && (
-                        <p className="text-sm text-gray-600 mb-2">
+                        <p className="text-xs text-gray-600 mb-1">
                           <strong className="text-gray-800">
                             📋 Requirements:
                           </strong>{" "}
@@ -970,7 +946,7 @@ export default function BasicInfoStep({
                       )}
                     {formData.preferredPlatforms &&
                       formData.preferredPlatforms.length > 0 && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs text-gray-600">
                           <strong className="text-gray-800">
                             📱 Platforms:
                           </strong>{" "}
