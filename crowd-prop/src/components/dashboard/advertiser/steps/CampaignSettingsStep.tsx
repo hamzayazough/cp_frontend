@@ -17,6 +17,7 @@ import {
   DocumentTextIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import DeliverableSelector from "../DeliverableSelector";
 
 interface CampaignSettingsStepProps {
   formData: CampaignWizardFormData;
@@ -41,15 +42,40 @@ export default function CampaignSettingsStep({
     updateFormData({ [field]: deliverables });
   };
 
-  const toggleDeliverable = (
-    deliverable: Deliverable,
-    currentList: Deliverable[],
-    field: "expectedDeliverables" | "sellerRequirements" | "deliverables"
-  ) => {
-    const newList = currentList.includes(deliverable)
-      ? currentList.filter((d) => d !== deliverable)
-      : [...currentList, deliverable];
-    handleDeliverablesChange(newList, field);
+  // Filter deliverables based on campaign type
+  const getConsultantDeliverables = () => {
+    return [
+      Deliverable.MARKETING_STRATEGY,
+      Deliverable.CONTENT_PLAN,
+      Deliverable.SCRIPT,
+      Deliverable.MARKET_ANALYSIS,
+      Deliverable.BRAND_GUIDELINES,
+      Deliverable.WEEKLY_REPORT,
+      Deliverable.PERFORMANCE_AUDIT,
+      Deliverable.LIVE_SESSION,
+      Deliverable.PRODUCT_FEEDBACK,
+      Deliverable.AD_CONCEPTS,
+      Deliverable.CUSTOM
+    ];
+  };
+
+  const getSellerDeliverables = () => {
+    return [
+      Deliverable.CREATE_SOCIAL_MEDIA_ACCOUNTS,
+      Deliverable.SOCIAL_MEDIA_MANAGEMENT,
+      Deliverable.SPAM_PROMOTION,
+      Deliverable.PROMOTIONAL_VIDEO,
+      Deliverable.VIDEO_EDITING,
+      Deliverable.INSTAGRAM_POST,
+      Deliverable.TIKTOK_VIDEO,
+      Deliverable.BLOG_ARTICLE,
+      Deliverable.EMAIL_CAMPAIGN,
+      Deliverable.PAID_ADS_CREATION,
+      Deliverable.PRODUCT_REVIEW,
+      Deliverable.EVENT_PROMOTION,
+      Deliverable.DIRECT_OUTREACH,
+      Deliverable.CUSTOM
+    ];
   };
 
   const renderVisibilitySettings = () => (
@@ -324,39 +350,15 @@ export default function CampaignSettingsStep({
 
       <div className="space-y-6">
         {/* Expected Deliverables */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            <div className="flex items-center">
-              <DocumentTextIcon className="h-5 w-5 mr-2 text-purple-600" />
-              Expected Deliverables *
-            </div>
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {Object.values(Deliverable).map((deliverable) => (
-              <button
-                key={deliverable}
-                type="button"
-                onClick={() =>
-                  toggleDeliverable(
-                    deliverable,
-                    formData.expectedDeliverables || [],
-                    "expectedDeliverables"
-                  )
-                }
-                className={`px-4 py-3 text-sm rounded-lg border-2 font-medium transition-all duration-200 ${
-                  (formData.expectedDeliverables || []).includes(deliverable)
-                    ? "bg-purple-600 text-white border-purple-600 shadow-md transform scale-105"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-purple-300 hover:bg-purple-50 hover:shadow-sm"
-                }`}
-              >
-                {deliverable.replace(/_/g, " ")}
-              </button>
-            ))}
-          </div>
-          <p className="mt-3 text-sm text-gray-500">
-            📋 Select what you expect the consultant to deliver
-          </p>
-        </div>
+        <DeliverableSelector
+          selectedDeliverables={(formData.expectedDeliverables || []).filter(d => getConsultantDeliverables().includes(d))}
+          availableDeliverables={getConsultantDeliverables()}
+          onSelectionChange={(deliverables) => handleDeliverablesChange(deliverables, "expectedDeliverables")}
+          title="Expected Deliverables *"
+          description="📋 Select what you expect the consultant to deliver during the campaign"
+          colorScheme="purple"
+          campaignType="consultant"
+        />
 
         {/* Budget Configuration */}
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -558,74 +560,26 @@ export default function CampaignSettingsStep({
 
       <div className="space-y-6">
         {/* Seller Requirements */}
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            <div className="flex items-center">
-              <UserIcon className="h-5 w-5 mr-2 text-orange-600" />
-              Seller Requirements
-            </div>
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {Object.values(Deliverable).map((deliverable) => (
-              <button
-                key={deliverable}
-                type="button"
-                onClick={() =>
-                  toggleDeliverable(
-                    deliverable,
-                    formData.sellerRequirements || [],
-                    "sellerRequirements"
-                  )
-                }
-                className={`px-4 py-3 text-sm rounded-lg border-2 font-medium transition-all duration-200 ${
-                  (formData.sellerRequirements || []).includes(deliverable)
-                    ? "bg-orange-600 text-white border-orange-600 shadow-md transform scale-105"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-orange-300 hover:bg-orange-50 hover:shadow-sm"
-                }`}
-              >
-                {deliverable.replace(/_/g, " ")}
-              </button>
-            ))}
-          </div>
-          <p className="mt-3 text-sm text-gray-500">
-            📋 What capabilities should the seller have?
-          </p>
-        </div>
+        <DeliverableSelector
+          selectedDeliverables={(formData.sellerRequirements || []).filter(d => getSellerDeliverables().includes(d))}
+          availableDeliverables={getSellerDeliverables()}
+          onSelectionChange={(deliverables) => handleDeliverablesChange(deliverables, "sellerRequirements")}
+          title="Seller Requirements"
+          description="📋 What capabilities should the seller have?"
+          colorScheme="orange"
+          campaignType="seller"
+        />
 
         {/* Expected Deliverables */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            <div className="flex items-center">
-              <DocumentTextIcon className="h-5 w-5 mr-2 text-green-600" />
-              Expected Deliverables *
-            </div>
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {Object.values(Deliverable).map((deliverable) => (
-              <button
-                key={deliverable}
-                type="button"
-                onClick={() =>
-                  toggleDeliverable(
-                    deliverable,
-                    formData.deliverables || [],
-                    "deliverables"
-                  )
-                }
-                className={`px-4 py-3 text-sm rounded-lg border-2 font-medium transition-all duration-200 ${
-                  (formData.deliverables || []).includes(deliverable)
-                    ? "bg-green-600 text-white border-green-600 shadow-md transform scale-105"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-green-300 hover:bg-green-50 hover:shadow-sm"
-                }`}
-              >
-                {deliverable.replace(/_/g, " ")}
-              </button>
-            ))}
-          </div>
-          <p className="mt-3 text-sm text-gray-500">
-            🎯 What should the seller deliver to you?
-          </p>
-        </div>
+        <DeliverableSelector
+          selectedDeliverables={(formData.deliverables || []).filter(d => getSellerDeliverables().includes(d))}
+          availableDeliverables={getSellerDeliverables()}
+          onSelectionChange={(deliverables) => handleDeliverablesChange(deliverables, "deliverables")}
+          title="Expected Deliverables *"
+          description="🎯 What should the seller deliver to you?"
+          colorScheme="green"
+          campaignType="seller"
+        />
 
         {/* Budget Configuration */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

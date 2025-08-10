@@ -392,7 +392,7 @@ export default function BasicInfoStep({
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Advertiser Type(s) *
+              Product Type(s) *
             </h3>
             <p className="text-sm text-gray-600">
               Select the categories that best describe your business
