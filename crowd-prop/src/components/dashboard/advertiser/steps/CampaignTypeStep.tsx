@@ -64,7 +64,7 @@ const campaignTypes: CampaignTypeConfig[] = [
     whyChoose: 'Choose this if you want someone to create and manage social media accounts, handle daily promotion, or take care of the actual execution of marketing activities.',
     color: 'green',
     isPublic: false,
-    pricing: 'Project budget'
+    pricing: 'Fixed budget'
   },
   {
     type: CampaignType.SALESMAN,
