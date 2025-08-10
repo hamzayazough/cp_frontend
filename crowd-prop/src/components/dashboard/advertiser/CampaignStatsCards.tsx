@@ -1,13 +1,11 @@
 "use client";
 
 import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Target,
-  Users,
-  BarChart3,
-} from "lucide-react";
+  PlayIcon,
+  CheckCircleIcon,
+  CurrencyDollarIcon,
+  BanknotesIcon,
+} from "@heroicons/react/24/outline";
 
 interface CampaignStatsCardsProps {
   summary: {
@@ -32,11 +30,6 @@ export default function CampaignStatsCards({
     }).format(amount);
   };
 
-  const formatNumber = (num: number | undefined) => {
-    if (num === undefined || num === null || isNaN(num)) return "0";
-    return new Intl.NumberFormat("en-US").format(num);
-  };
-
   // Handle null summary
   if (!summary) {
     return (
@@ -56,87 +49,76 @@ export default function CampaignStatsCards({
       </div>
     );
   }
-  const statsCards = [
-    {
-      title: "Total Campaigns",
-      value: (summary.totalActiveCampaigns || 0) + (summary.totalCompletedCampaigns || 0),
-      change: "+0.0%",
-      changeType: "positive" as const,
-      icon: Target,
-      description: `${summary.totalActiveCampaigns || 0} active, ${
-        summary.totalCompletedCampaigns || 0
-      } completed`,
-    },
-    {
-      title: "Monthly Spend",
-      value: formatCurrency(summary.totalSpentThisMonth),
-      change: "+0.0%",
-      changeType: "positive" as const,
-      icon: DollarSign,
-      description: `${formatCurrency(summary.totalRemainingBudget)} remaining budget`,
-    },
-    {
-      title: "Total Allocated",
-      value: formatCurrency(parseFloat(summary.totalAllocatedBudget?.toString() || "0")),
-      change: "+0.0%",
-      changeType: "positive" as const,
-      icon: BarChart3,
-      description: `${formatCurrency(summary.totalSpentThisMonth)} spent this month`,
-    },
-    {
-      title: "Active Campaigns",
-      value: formatNumber(summary.totalActiveCampaigns),
-      change: "+0.0%",
-      changeType: "positive" as const,
-      icon: Users,
-      description: `${summary.totalCompletedCampaigns || 0} completed campaigns`,
-    },
-  ];
+
+  const totalAllocated = parseFloat(summary.totalAllocatedBudget?.toString() || "0");
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {statsCards.map((stat, index) => {
-        const Icon = stat.icon;
-        return (
-          <div
-            key={index}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <Icon className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    {stat.title}
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stat.value}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div
-                  className={`flex items-center space-x-1 ${
-                    stat.changeType === "positive"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {stat.changeType === "positive" ? (
-                    <TrendingUp className="h-4 w-4" />
-                  ) : (
-                    <TrendingDown className="h-4 w-4" />
-                  )}
-                  <span className="text-sm font-medium">{stat.change}</span>
-                </div>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">{stat.description}</p>
+      {/* Active Campaigns */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-3 bg-green-100 rounded-full">
+            <PlayIcon className="h-6 w-6 text-green-600" />
           </div>
-        );
-      })}
+          <div>
+            <p className="text-sm font-medium text-gray-600">Active Campaigns</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {summary.totalActiveCampaigns}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Completed Campaigns */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-3 bg-blue-100 rounded-full">
+            <CheckCircleIcon className="h-6 w-6 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-600">Completed Campaigns</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {summary.totalCompletedCampaigns}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* This Month's Spend */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-3 bg-red-100 rounded-full">
+            <CurrencyDollarIcon className="h-6 w-6 text-red-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-600">This Month</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {formatCurrency(summary.totalSpentThisMonth)}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              of {formatCurrency(totalAllocated)} allocated
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Remaining Budget */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-3 bg-purple-100 rounded-full">
+            <BanknotesIcon className="h-6 w-6 text-purple-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-600">Available Budget</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {formatCurrency(summary.totalRemainingBudget)}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              ready to spend
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

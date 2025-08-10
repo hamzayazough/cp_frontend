@@ -150,7 +150,6 @@ export default function AdvertiserCampaignsContent() {
             Manage your advertising campaigns and track their performance
           </p>
         </div>
-        <CreateCampaignButton />
       </div>
 
       {/* Stats Cards */}
