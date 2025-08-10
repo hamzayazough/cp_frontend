@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   CampaignAdvertiser,
   PromoterApplicationInfo,
@@ -17,10 +16,7 @@ import {
   DollarSign,
   Calendar,
   BarChart3,
-  MessageCircle,
-  ExternalLink,
   UserCheck,
-  Clock,
   Edit,
   Play,
   CheckCircle,
@@ -48,11 +44,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     campaign: null,
     applications: [],
   });
-
-  const handleUserClick = (userId: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent campaign card click
-    router.push(`/user/${userId}`);
-  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -112,14 +103,14 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     const currentIndex = statuses.findIndex(status => status.key === currentStatus);
 
     return (
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center w-full">
         {statuses.map((status, index) => {
           const Icon = status.icon;
           const isActive = index === currentIndex;
           const isCompleted = index < currentIndex;
 
           return (
-            <div key={status.key} className="flex items-center">
+            <div key={status.key} className="flex items-center flex-1 last:flex-none">
               <div className="flex flex-col items-center">
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
@@ -134,7 +125,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                   <Icon className="h-3 w-3" />
                 </div>
                 <span
-                  className={`text-xs mt-1 font-medium ${
+                  className={`text-xs mt-1 font-medium text-center whitespace-nowrap ${
                     isActive
                       ? "text-blue-600"
                       : isCompleted
@@ -147,7 +138,7 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
               </div>
               {index < statuses.length - 1 && (
                 <div
-                  className={`w-8 h-0.5 mx-1 transition-all ${
+                  className={`flex-1 h-0.5 mx-3 transition-all ${
                     isCompleted ? "bg-green-600" : "bg-gray-200"
                   }`}
                 />
@@ -274,16 +265,6 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       campaign: null,
       applications: [],
     });
-  };
-
-  const handleSendMessage = (campaign: CampaignAdvertiser) => {
-    console.log("Send message for campaign:", campaign.id);
-    // TODO: Open message modal or navigate to messages
-  };
-  const handleJoinDiscord = (campaign: CampaignAdvertiser) => {
-    if (campaign.campaign.discordInviteLink) {
-      window.open(campaign.campaign.discordInviteLink, "_blank");
-    }
   };
 
   if (campaigns.length === 0) {
@@ -541,393 +522,70 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                         </div>
                       </div>
                     )}
-                    {/* Visibility campaigns - organized additional metrics */}
-                    {campaign.type === CampaignType.VISIBILITY && (
+                    {/* Visibility campaigns - show active promoters count */}
+                    {campaign.type === CampaignType.VISIBILITY && chosenPromotersArray.length > 0 && (
                       <div className="mb-4 pt-3 border-t border-gray-100">
-                        {/* Campaign Performance */}
-                        <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6 mb-6">
-                          <div className="flex items-center mb-4">
-                            <Eye className="h-5 w-5 text-blue-600 mr-2" />
-                            <h3 className="text-lg font-semibold text-gray-900">
-                              Campaign Performance
-                            </h3>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                              <p className="text-sm text-gray-500">
-                                Cost Per 100 Views
-                              </p>
-                              <p className="mt-1 text-2xl font-bold text-blue-600">
-                                $
-                                {campaign.campaign.type ===
-                                  CampaignType.VISIBILITY &&
-                                campaign.campaign.cpv
-                                  ? Number(campaign.campaign.cpv).toFixed(2)
-                                  : "0.00"}
-                              </p>
+                        <div className="flex items-center justify-between bg-blue-50 rounded-lg p-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
+                              <Users className="h-4 w-4 text-blue-600" />
                             </div>
                             <div>
-                              <p className="text-sm text-gray-500">
-                                Target Views
+                              <p className="text-sm font-medium text-gray-900">
+                                Active Promoters
                               </p>
-                              <p className="mt-1 text-2xl font-bold text-blue-600">
-                                {campaign.campaign.type ===
-                                  CampaignType.VISIBILITY &&
-                                campaign.campaign.maxViews
-                                  ? formatNumber(campaign.campaign.maxViews)
-                                  : "Unlimited"}
+                              <p className="text-xs text-gray-600">
+                                {chosenPromotersArray.length} promoter{chosenPromotersArray.length !== 1 ? 's' : ''} working
                               </p>
                             </div>
                           </div>
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                            {chosenPromotersArray.length}
+                          </span>
                         </div>
-
-                        {/* Chosen Promoters (Visibility Campaigns Only) */}
-                        {(() => {
-                          if (chosenPromotersArray.length === 0) return null;
-
-                          return (
-                            <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6 mb-6">
-                              <div className="flex items-center mb-4">
-                                <div className="flex-shrink-0 bg-blue-50 p-3 rounded-full">
-                                  <Users className="h-5 w-5 text-blue-600" />
-                                </div>
-                                <h3 className="ml-3 text-lg font-semibold text-gray-900">
-                                  {campaign.campaign.isPublic
-                                    ? `Active Promoters (${chosenPromotersArray.length})`
-                                    : "Selected Promoter"}
-                                </h3>
-                              </div>
-
-                              <div className="space-y-4">
-                                {chosenPromotersArray.map(
-                                  (chosenPromoter, index) => (
-                                    <div
-                                      key={chosenPromoter.promoter.id || index}
-                                      className={`${
-                                        index > 0
-                                          ? "border-t border-gray-100 pt-4"
-                                          : ""
-                                      }`}
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-4">
-                                          <button
-                                            onClick={(e) =>
-                                              handleUserClick(
-                                                chosenPromoter.promoter.id,
-                                                e
-                                              )
-                                            }
-                                            className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
-                                            title={`View ${chosenPromoter.promoter.name}'s profile`}
-                                          >
-                                            {chosenPromoter.promoter
-                                              .avatarUrl ? (
-                                              <Image
-                                                src={
-                                                  chosenPromoter.promoter
-                                                    .avatarUrl
-                                                }
-                                                alt={
-                                                  chosenPromoter.promoter.name
-                                                }
-                                                width={40}
-                                                height={40}
-                                                className="w-full h-full object-cover rounded-full"
-                                              />
-                                            ) : (
-                                              chosenPromoter.promoter.name
-                                                .split(" ")
-                                                .map((n) => n[0])
-                                                .join("")
-                                            )}
-                                          </button>
-                                          <div>
-                                            <div className="flex items-center space-x-2">
-                                              <p className="text-base font-medium text-gray-900">
-                                                {chosenPromoter.promoter.name}
-                                              </p>
-                                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                {chosenPromoter.status ||
-                                                  "Active"}
-                                              </span>
-                                            </div>
-                                            <p className="mt-1 text-sm text-gray-500">
-                                              Joined{" "}
-                                              {chosenPromoter.joinedAt
-                                                ? formatDate(
-                                                    chosenPromoter.joinedAt
-                                                  )
-                                                : "Recently"}
-                                            </p>
-                                            {/* Show earnings and views for public campaigns */}
-                                            {campaign.campaign.isPublic && (
-                                              <div className="mt-2 flex items-center space-x-4 text-xs text-gray-600">
-                                                <span>
-                                                  Views:{" "}
-                                                  {formatNumber(
-                                                    chosenPromoter.viewsGenerated ||
-                                                      0
-                                                  )}
-                                                </span>
-                                                <span>
-                                                  Earnings:{" "}
-                                                  {formatCurrency(
-                                                    Number(
-                                                      chosenPromoter.earnings
-                                                    ) || 0
-                                                  )}
-                                                </span>
-                                              </div>
-                                            )}
-                                          </div>
-                                        </div>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (chosenPromoter.promoter?.id) {
-                                              router.push(
-                                                `/user/${chosenPromoter.promoter.id}`
-                                              );
-                                            }
-                                          }}
-                                          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-                                        >
-                                          View Details
-                                        </button>
-                                      </div>
-                                    </div>
-                                  )
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })()}
                       </div>
                     )}{" "}
                     {/* Private Campaign State Management */}
                     {campaign.campaign.type !== CampaignType.VISIBILITY && (
                       <div className="mb-4 pt-2 border-t border-gray-100">
                         {(() => {
-                          const chosenPromoter = chosenPromotersArray[0]; // For private campaigns, there should only be one
-
+                          const chosenPromoter = chosenPromotersArray[0];
                           const pendingApplications =
                             campaign.applicants?.filter(
                               (app) => app.applicationStatus === "PENDING"
                             ) || [];
 
                           if (chosenPromoter) {
-                            // Show selected promoter info with campaign-specific details
+                            // Show selected promoter status
                             return (
-                              <div className="bg-blue-50 rounded-lg p-4">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex items-start space-x-3 flex-1">
-                                    <button
-                                      onClick={(e) =>
-                                        handleUserClick(
-                                          chosenPromoter.promoter.id,
-                                          e
-                                        )
-                                      }
-                                      className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
-                                      title={`View ${chosenPromoter.promoter.name}'s profile`}
-                                    >
-                                      {chosenPromoter.promoter.avatarUrl ? (
-                                        <Image
-                                          src={
-                                            chosenPromoter.promoter.avatarUrl
-                                          }
-                                          alt={chosenPromoter.promoter.name}
-                                          width={40}
-                                          height={40}
-                                          className="w-full h-full object-cover rounded-full"
-                                        />
-                                      ) : (
-                                        <UserCheck className="h-5 w-5 text-blue-600" />
-                                      )}
-                                    </button>
-                                    <div className="flex-1">
-                                      <div className="flex items-center space-x-2 mb-1">
-                                        <p className="text-sm font-medium text-gray-900">
-                                          {chosenPromoter.promoter.name}
-                                        </p>
-                                        <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                                          Active
-                                        </span>
-                                      </div>
-                                      <p className="text-xs text-gray-600 mb-2">
-                                        Joined{" "}
-                                        {chosenPromoter.joinedAt
-                                          ? formatDate(chosenPromoter.joinedAt)
-                                          : "Recently"}
-                                      </p>
-
-                                      {/* Campaign-specific information */}
-                                      {campaign.type ===
-                                        CampaignType.CONSULTANT && (
-                                        <div className="bg-white rounded-md p-3 mb-2 border border-gray-200">
-                                          <div className="grid grid-cols-2 gap-4 text-sm">
-                                            <div>
-                                              <span className="text-gray-600 font-medium">
-                                                Meetings:
-                                              </span>
-                                              <span className="ml-2 font-semibold text-gray-900">
-                                                {chosenPromoter.numberMeetingsDone ||
-                                                  0}
-                                                /8
-                                              </span>
-                                            </div>
-                                            <div>
-                                              <span className="text-gray-600 font-medium">
-                                                Next:
-                                              </span>
-                                              <span className="ml-2 font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-md text-xs">
-                                                TBD
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      {campaign.type ===
-                                        CampaignType.SALESMAN && (
-                                        <div className="bg-white rounded p-2 mb-2">
-                                          <div className="grid grid-cols-2 gap-3 text-xs">
-                                            <div>
-                                              <span className="text-gray-500">
-                                                Sales:
-                                              </span>
-                                              <span className="ml-1 font-medium">
-                                                {campaign.performance
-                                                  .totalSalesMade || 0}
-                                              </span>
-                                            </div>
-                                            <div>
-                                              <span className="text-gray-500">
-                                                Commission:
-                                              </span>
-                                              <span className="ml-1 font-medium">
-                                                {formatCurrency(
-                                                  Number(
-                                                    chosenPromoter.earnings
-                                                  ) || 0
-                                                )}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      {campaign.type ===
-                                        CampaignType.SELLER && (
-                                        <div className="bg-white rounded p-2 mb-2">
-                                          <div className="text-xs">
-                                            <div className="mb-1">
-                                              <span className="text-gray-500">
-                                                Progress:
-                                              </span>
-                                              <span className="ml-1 font-medium">
-                                                In Progress
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center space-x-2 ml-4">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleSendMessage(campaign);
-                                      }}
-                                      className="flex items-center space-x-1 px-3 py-1 bg-white text-blue-600 border border-blue-200 rounded-md hover:bg-blue-50 transition-colors text-xs"
-                                    >
-                                      <MessageCircle className="h-3 w-3" />
-                                      <span>Message</span>
-                                    </button>
-                                    {campaign.campaign.discordInviteLink && (
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleJoinDiscord(campaign);
-                                        }}
-                                        className="flex items-center space-x-1 px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-xs"
-                                      >
-                                        <ExternalLink className="h-3 w-3" />
-                                        <span>Join Discord</span>
-                                      </button>
-                                    )}
-                                    {campaign.campaign.discordThreadUrl && (
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          window.open(campaign.campaign.discordThreadUrl, "_blank");
-                                        }}
-                                        className="flex items-center space-x-1 px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-xs"
-                                      >
-                                        <ExternalLink className="h-3 w-3" />
-                                        <span>Discord Thread</span>
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
+                              <div className="inline-flex items-center space-x-2 bg-blue-50 rounded-full px-3 py-1">
+                                <UserCheck className="h-3 w-3 text-blue-600" />
+                                <span className="text-xs font-medium text-blue-700">Promoter Selected</span>
                               </div>
                             );
                           } else if (pendingApplications.length > 0) {
-                            // Show applications to review
+                            // Show applications notification - compact badge style
                             return (
-                              <div className="bg-amber-50 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-8 h-8 bg-amber-200 rounded-full flex items-center justify-center">
-                                      <Clock className="h-4 w-4 text-amber-600" />
-                                    </div>
-                                    <div>
-                                      <p className="text-sm font-medium text-gray-900">
-                                        {pendingApplications.length} Application
-                                        {pendingApplications.length !== 1
-                                          ? "s"
-                                          : ""}{" "}
-                                        Pending
-                                      </p>
-                                      <p className="text-xs text-gray-600">
-                                        Review and select a promoter for this
-                                        campaign
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleViewApplications(campaign);
-                                    }}
-                                    className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors text-sm font-medium"
-                                  >
-                                    Review Applications
-                                  </button>
-                                </div>
-                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewApplications(campaign);
+                                }}
+                                className="inline-flex items-center space-x-2 bg-amber-100 hover:bg-amber-200 rounded-full px-3 py-1 transition-colors"
+                              >
+                                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                                <span className="text-xs font-medium text-amber-700">
+                                  {pendingApplications.length} pending application
+                                </span>
+                              </button>
                             );
                           } else {
-                            // No applications yet
+                            // No applications yet - minimal indicator
                             return (
-                              <div className="bg-gray-50 rounded-lg p-4">
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                                    <Users className="h-4 w-4 text-gray-500" />
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                      Waiting for Applications
-                                    </p>
-                                    <p className="text-xs text-gray-600">
-                                      No promoters have applied yet
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
+                              <span className="inline-flex items-center space-x-1 text-xs text-gray-500">
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                                <span>Waiting for applications</span>
+                              </span>
                             );
                           }
                         })()}
@@ -936,7 +594,9 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                     
                     {/* Status Progress Indicator */}
                     <div className="mb-3">
-                      {getStatusProgress(campaign.status, campaign.campaign.isPublic)}
+                      <div className="w-full">
+                        {getStatusProgress(campaign.status, campaign.campaign.isPublic)}
+                      </div>
                     </div>
                     
                     {/* Footer Info */}
