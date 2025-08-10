@@ -36,6 +36,7 @@ export const routes = {
   dashboardExploreDetails: (id: string) => `/dashboard/explore/${id}`,
   dashboardEarnings: "/dashboard/earnings",
   dashboardMessages: "/dashboard/messages",
+  dashboardMessageThread: (id: string) => `/dashboard/messages/${id}`,
   dashboardProfile: "/dashboard/profile",
   dashboardSettings: "/dashboard/settings",
 
@@ -80,6 +81,10 @@ export class Router {
 
   static dashboardCampaignDetails(id: string): string {
     return routes.dashboardCampaignDetails(id);
+  }
+
+  static dashboardMessageThread(id: string): string {
+    return routes.dashboardMessageThread(id);
   }
 
   static isCurrentRoute(pathname: string, route: string): boolean {

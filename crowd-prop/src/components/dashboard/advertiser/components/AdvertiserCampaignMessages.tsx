@@ -12,15 +12,15 @@ import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
 import messagingService from "@/services/messaging.service";
 
-interface CampaignMessagesProps {
+interface AdvertiserCampaignMessagesProps {
   campaignId: string;
   campaignTitle?: string; // Optional campaign title for better UX
 }
 
-export default function CampaignMessages({
+export default function AdvertiserCampaignMessages({
   campaignId,
   campaignTitle,
-}: CampaignMessagesProps) {
+}: AdvertiserCampaignMessagesProps) {
   const [messageInput, setMessageInput] = useState("");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [firebaseToken, setFirebaseToken] = useState<string | null>(null);
@@ -185,7 +185,7 @@ export default function CampaignMessages({
     setIsCreatingThread(true);
     setCreateThreadError(null);
     try {
-      // Backend automatically determines promoterId from Firebase token
+      // Backend automatically determines advertiserId from Firebase token
       const newThread = await messagingService.createThread({
         campaignId,
       });
@@ -248,7 +248,7 @@ export default function CampaignMessages({
           No messages yet
         </h3>
         <p className="text-gray-600 mb-4">
-          Start a conversation with the advertiser about{" "}
+          Start a conversation with the promoters about{" "}
           {campaignTitle || "this campaign"}
         </p>
 
@@ -308,9 +308,8 @@ export default function CampaignMessages({
           </div>
         ) : (
           campaignMessages.map((message) => {
-            // For now, we'll use a simple approach - check if senderId matches current user
-            // The backend could provide a flag like isOwnMessage in the future
-            const isOwnMessage = message.senderType === "PROMOTER"; // Assuming this component is for promoters
+            // For advertisers, we'll assume they are the sender when senderType is 'ADVERTISER'
+            const isOwnMessage = message.senderType === "ADVERTISER";
 
             return (
               <div
@@ -333,7 +332,7 @@ export default function CampaignMessages({
                     ) : (
                       <span className="text-xs font-medium text-white">
                         {message.sender?.username?.charAt(0).toUpperCase() ||
-                          "A"}
+                          "P"}
                       </span>
                     )}
                   </div>

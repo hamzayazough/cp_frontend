@@ -14,6 +14,8 @@ import {
 } from "@/app/mocks/campaign-promoter-mock";
 import { getPromoterCampaignById } from "@/utils/promoter-campaigns-storage";
 import { promoterService } from "@/services/promoter.service";
+import { useNewMessageNotification } from "@/hooks/useNewMessageNotification";
+import { auth } from "@/lib/firebase";
 
 // Import all the smaller components
 import CampaignHeader from "./components/CampaignHeader";
@@ -49,6 +51,38 @@ export default function PromoterCampaignDetailsContent({
   const [showShareModal, setShowShareModal] = useState(false);
   const [campaign, setCampaign] = useState<CampaignPromoter | null>(null);
   const [loading, setLoading] = useState(true);
+  const [firebaseToken, setFirebaseToken] = useState<string | null>(null);
+
+  // Get Firebase token for message notifications
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const token = await user.getIdToken();
+          setFirebaseToken(token);
+        } catch (error) {
+          console.error("Failed to get Firebase token:", error);
+        }
+      } else {
+        setFirebaseToken(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Use the new message notification hook
+  const { hasNewMessages, unreadCount, resetNotification } =
+    useNewMessageNotification(campaignId, firebaseToken);
+
+  // Reset notification when user switches to messages tab
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "messages" && hasNewMessages) {
+      // Reset notification when user opens messages tab
+      setTimeout(() => resetNotification(), 1000);
+    }
+  };
 
   // Load campaign data from localStorage, API, or fallback to mock
   useEffect(() => {
@@ -155,7 +189,11 @@ export default function PromoterCampaignDetailsContent({
       case "requirements":
         return <CampaignRequirements campaign={campaign} />;
       case "messages":
-        return <CampaignMessages campaignId={campaignId} />;
+        return (
+          <div className="h-[600px]">
+            <CampaignMessages campaignId={campaignId} />
+          </div>
+        );
       default:
         return <CampaignOverview campaign={campaign} />;
     }
@@ -182,7 +220,12 @@ export default function PromoterCampaignDetailsContent({
         campaignStatus={campaign.status}
       />
       {/* Tabs */}
-      <CampaignTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      <CampaignTabs
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        hasNewMessages={hasNewMessages}
+        unreadCount={unreadCount}
+      />
       {/* Tab Content */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-6">{renderTabContent()}</div>
