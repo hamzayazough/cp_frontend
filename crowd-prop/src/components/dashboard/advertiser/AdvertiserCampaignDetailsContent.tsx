@@ -21,7 +21,6 @@ import AdvertiserCampaignTabs from "./components/AdvertiserCampaignTabs";
 import AdvertiserCampaignOverview from "./components/AdvertiserCampaignOverview";
 import AdvertiserCampaignMedia from "./components/AdvertiserCampaignMedia";
 import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoters";
-import AdvertiserCampaignRequirements from "./components/AdvertiserCampaignRequirements";
 import AdvertiserCampaignPerformance from "./components/AdvertiserCampaignPerformance";
 import AdvertiserPromoterLinks from "./components/AdvertiserPromoterLinks";
 import AdvertiserCampaignMessages from "./components/AdvertiserCampaignMessages";
@@ -267,8 +266,6 @@ export default function AdvertiserCampaignDetailsContent({
         return <AdvertiserCampaignMedia campaign={campaign} />;
       case "performance":
         return <AdvertiserCampaignPerformance campaign={campaign} />;
-      case "requirements":
-        return <AdvertiserCampaignRequirements campaign={campaign} />;
       case "messages":
         // Only show messages if there are chosen promoters
         if (!campaign.chosenPromoters || campaign.chosenPromoters.length === 0) {

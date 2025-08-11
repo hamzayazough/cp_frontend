@@ -3,19 +3,18 @@
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
-import { AdvertiserType } from "@/app/enums/advertiser-type";
 import {
   DollarSign,
-  Target,
-  Tag,
-  Calendar,
+  Users,
+  Globe,
+  CheckCircle,
   MessageCircle,
   Instagram,
   Twitter,
   Youtube,
   Linkedin,
   Facebook,
-  Globe,
+  MapPin,
 } from "lucide-react";
 
 interface AdvertiserCampaignOverviewProps {
@@ -38,355 +37,189 @@ export default function AdvertiserCampaignOverview({
     return new Intl.NumberFormat("en-US").format(num);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const getSocialPlatformIcon = (platform: SocialPlatform, color?: string) => {
-    const iconClass = color === "black" ? "h-4 w-4 text-gray-800" : "h-4 w-4";
+  const getSocialPlatformIcon = (platform: SocialPlatform) => {
     switch (platform) {
       case SocialPlatform.INSTAGRAM:
-        return <Instagram className={iconClass} />;
+        return <Instagram className="h-4 w-4" />;
       case SocialPlatform.TWITTER:
-        return <Twitter className={iconClass} />;
+        return <Twitter className="h-4 w-4" />;
       case SocialPlatform.YOUTUBE:
-        return <Youtube className={iconClass} />;
+        return <Youtube className="h-4 w-4" />;
       case SocialPlatform.LINKEDIN:
-        return <Linkedin className={iconClass} />;
+        return <Linkedin className="h-4 w-4" />;
       case SocialPlatform.FACEBOOK:
-        return <Facebook className={iconClass} />;
+        return <Facebook className="h-4 w-4" />;
       default:
-        return <Globe className={iconClass} />;
+        return <Globe className="h-4 w-4" />;
     }
   };
 
-  const getAdvertiserTypeColor = (type: AdvertiserType) => {
-    switch (type) {
-      case AdvertiserType.EVENTS:
-        return "bg-purple-100 text-purple-800";
-      case AdvertiserType.SPORTS:
-        return "bg-pink-100 text-pink-800";
-      case AdvertiserType.TECH:
-        return "bg-blue-100 text-blue-800";
-      case AdvertiserType.HEALTH:
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+  const getRequirements = () => {
+    const baseRequirements = campaign.campaign.requirements || [];
+    const requirements = [...baseRequirements];
+    
+    if ('minFollowers' in campaign.campaign && campaign.campaign.minFollowers && campaign.campaign.minFollowers > 0) {
+      requirements.push(`Minimum ${campaign.campaign.minFollowers.toLocaleString()} followers required`);
     }
+    
+    return requirements;
   };
 
-  const getAdvertiserTypeLabel = (type: AdvertiserType) => {
-    switch (type) {
-      case AdvertiserType.EVENTS:
-        return "EVENTS";
-      case AdvertiserType.SPORTS:
-        return "SPORTS";
-      case AdvertiserType.TECH:
-        return "TECH";
-      case AdvertiserType.HEALTH:
-        return "HEALTH";
-      default:
-        return type.toUpperCase();
-    }
-  };
-
-  const renderCampaignSpecificDetails = () => {
-    switch (campaign.type) {
+  const getBudgetInfo = () => {
+    switch (campaign.campaign.type) {
       case CampaignType.VISIBILITY:
-        return (
-          <>
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-medium text-gray-600">
-                Cost per 100 Views
-              </span>
-              <span className="text-sm font-semibold text-pink-600">
-                {campaign.campaign.type === CampaignType.VISIBILITY
-                  ? formatCurrency(campaign.campaign.cpv)
-                  : "N/A"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-medium text-gray-600">
-                Max Views
-              </span>
-              <span className="text-sm font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.VISIBILITY
-                  ? formatNumber(campaign.campaign.maxViews)
-                  : "N/A"}
-              </span>
-            </div>
-            {campaign.campaign.type === CampaignType.VISIBILITY &&
-              campaign.campaign.minFollowers && (
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-medium text-gray-600">
-                    Min Followers
-                  </span>
-                  <span className="text-sm font-semibold text-gray-900">
-                    {formatNumber(campaign.campaign.minFollowers)}
-                  </span>
-                </div>
-              )}
-          </>
-        );
-
+        return {
+          mainValue: formatCurrency(campaign.campaign.budgetAllocated),
+          subInfo: `${formatCurrency(campaign.campaign.cpv)} per 100 views • Max ${formatNumber(campaign.campaign.maxViews)} views`
+        };
       case CampaignType.CONSULTANT:
-        return (
-          <>
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-medium text-gray-600">
-                Budget Range
-              </span>
-              <span className="text-sm font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.CONSULTANT
-                  ? `${formatCurrency(
-                      campaign.campaign.minBudget
-                    )} - ${formatCurrency(campaign.campaign.maxBudget)}`
-                  : "N/A"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">
-                Meeting Count
-              </span>
-              <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.CONSULTANT
-                  ? campaign.campaign.meetingCount
-                  : "N/A"}
-              </span>
-            </div>
-          </>
-        );
-
+        return {
+          mainValue: `${formatCurrency(campaign.campaign.minBudget)} - ${formatCurrency(campaign.campaign.maxBudget)}`,
+          subInfo: `${campaign.campaign.meetingCount} meetings required`
+        };
       case CampaignType.SELLER:
-        return (
-          <>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">
-                Budget Range
-              </span>
-              <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.SELLER
-                  ? `${formatCurrency(
-                      campaign.campaign.minBudget
-                    )} - ${formatCurrency(campaign.campaign.maxBudget)}`
-                  : "N/A"}
-              </span>
-            </div>
-            {campaign.campaign.type === CampaignType.SELLER &&
-              campaign.campaign.fixedPrice && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-600">
-                    Fixed Price
-                  </span>
-                  <span className="text-lg font-semibold text-gray-900">
-                    {formatCurrency(campaign.campaign.fixedPrice)}
-                  </span>
-                </div>
-              )}
-          </>
-        );
-
+        return {
+          mainValue: campaign.campaign.fixedPrice 
+            ? formatCurrency(campaign.campaign.fixedPrice)
+            : `${formatCurrency(campaign.campaign.minBudget)} - ${formatCurrency(campaign.campaign.maxBudget)}`,
+          subInfo: campaign.campaign.fixedPrice ? "Fixed price" : "Budget range"
+        };
       case CampaignType.SALESMAN:
-        return (
-          <>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">
-                Commission per Sale
-              </span>
-              <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.SALESMAN
-                  ? formatCurrency(campaign.campaign.commissionPerSale)
-                  : "N/A"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">
-                Sales Tracking
-              </span>
-              <span className="text-lg font-semibold text-gray-900">
-                {campaign.campaign.type === CampaignType.SALESMAN
-                  ? campaign.campaign.trackSalesVia
-                  : "N/A"}
-              </span>
-            </div>
-          </>
-        );
-
+        return {
+          mainValue: formatCurrency(campaign.campaign.commissionPerSale),
+          subInfo: `Commission per sale • Track via ${campaign.campaign.trackSalesVia}`
+        };
       default:
-        return null;
+        return {
+          mainValue: formatCurrency(campaign.campaign.budgetAllocated),
+          subInfo: "Total budget"
+        };
     }
   };
+
+  const budgetInfo = getBudgetInfo();
+
   return (
     <div className="space-y-4">
-      {/* Three cards section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Campaign Details Card */}
-        <div className="bg-blue-50 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="p-1.5 bg-blue-100 rounded-lg">
-              <DollarSign className="h-4 w-4 text-blue-600" />
-            </div>
-            <h3 className="text-base font-semibold text-gray-900">
-              Campaign Details
-            </h3>
+      {/* Campaign Description */}
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <h3 className="font-semibold text-gray-900 mb-2">About This Campaign</h3>
+        <p className="text-gray-700 text-sm leading-relaxed">
+          {campaign.description}
+        </p>
+      </div>
+
+      {/* Key Information - Compact Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        {/* Budget */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center mb-2">
+            <DollarSign className="h-4 w-4 text-green-600 mr-2" />
+            <span className="text-sm font-medium text-gray-900">Budget</span>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-medium text-gray-600">Budget</span>
-              <span className="text-sm font-semibold text-green-600">
-                {formatCurrency(campaign.campaign.budgetAllocated)}
-              </span>
-            </div>
-            {renderCampaignSpecificDetails()}
+          <div className="text-lg font-bold text-green-600 mb-1">
+            {budgetInfo.mainValue}
+          </div>
+          <div className="text-xs text-gray-600">
+            {budgetInfo.subInfo}
           </div>
         </div>
 
-        {/* Target Audience Card */}
-        <div className="bg-green-50 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="p-1.5 bg-green-100 rounded-lg">
-              <Target className="h-4 w-4 text-green-600" />
-            </div>
-            <h3 className="text-base font-semibold text-gray-900">
-              Target Audience
-            </h3>
+        {/* Target Audience */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center mb-2">
+            <Users className="h-4 w-4 text-blue-600 mr-2" />
+            <span className="text-sm font-medium text-gray-900">Target Audience</span>
           </div>
-          <div className="space-y-2">
-            {campaign.campaign.targetAudience && (
-              <p className="text-gray-700 text-xs leading-relaxed">
-                {campaign.campaign.targetAudience}
-              </p>
-            )}
-            {campaign.campaign.preferredPlatforms &&
-              campaign.campaign.preferredPlatforms.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-gray-600 mb-1.5">
-                    Preferred Platforms:
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {campaign.campaign.preferredPlatforms.map(
-                      (platform, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-1 bg-green-100 px-1.5 py-0.5 rounded-full"
-                        >
-                          {getSocialPlatformIcon(platform, "black")}
-                          <span className="text-xs font-medium text-green-700">
-                            {platform}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
+          {campaign.campaign.targetAudience ? (
+            <p className="text-sm text-gray-700 mb-2 line-clamp-2">
+              {campaign.campaign.targetAudience}
+            </p>
+          ) : (
+            <p className="text-sm text-gray-500 mb-2">No specific audience</p>
+          )}
+          {campaign.campaign.preferredPlatforms && campaign.campaign.preferredPlatforms.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {campaign.campaign.preferredPlatforms.slice(0, 3).map((platform, index) => (
+                <div
+                  key={index}
+                  className="flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs"
+                >
+                  {getSocialPlatformIcon(platform)}
+                  <span className="ml-1">{platform}</span>
                 </div>
+              ))}
+              {campaign.campaign.preferredPlatforms.length > 3 && (
+                <span className="text-xs text-gray-500">+{campaign.campaign.preferredPlatforms.length - 3}</span>
               )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Campaign Tags Card */}
-        <div className="bg-purple-50 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="p-1.5 bg-purple-100 rounded-lg">
-              <Tag className="h-4 w-4 text-purple-600" />
+        {/* Requirements */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center mb-2">
+            <CheckCircle className="h-4 w-4 text-orange-600 mr-2" />
+            <span className="text-sm font-medium text-gray-900">Requirements</span>
+          </div>
+          {getRequirements().length > 0 ? (
+            <div className="space-y-1">
+              {getRequirements().slice(0, 2).map((requirement, index) => (
+                <div key={index} className="flex items-start space-x-2">
+                  <div className="h-1.5 w-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                  <span className="text-xs text-gray-700">{requirement}</span>
+                </div>
+              ))}
+              {getRequirements().length > 2 && (
+                <div className="text-xs text-gray-500">+{getRequirements().length - 2} more</div>
+              )}
             </div>
-            <h3 className="text-base font-semibold text-gray-900">
-              Campaign Tags
-            </h3>
-          </div>
-          <div className="space-y-2">
-            {campaign.tags && campaign.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {campaign.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${getAdvertiserTypeColor(
-                      tag
-                    )}`}
-                  >
-                    {getAdvertiserTypeLabel(tag)}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+          ) : (
+            <p className="text-xs text-gray-500">No specific requirements</p>
+          )}
         </div>
+
       </div>
-      
-      {/* Campaign Timeline */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex items-center space-x-2 mb-4">
-          <div className="p-1.5 bg-blue-100 rounded-lg">
-            <Calendar className="h-4 w-4 text-blue-600" />
-          </div>
-          <h3 className="text-base font-semibold text-gray-900">
-            Campaign Timeline
-          </h3>
-        </div>
 
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-xs font-medium text-gray-900">Start Date</p>
-              <p className="text-xs text-gray-600">
-                {formatDate(campaign.campaign.startDate)}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs font-medium text-gray-900">Deadline</p>
-              <p className="text-xs text-gray-600">
-                {formatDate(campaign.campaign.deadline)}
-              </p>
-            </div>
+      {/* Categories - Full Width */}
+      {campaign.tags && campaign.tags.length > 0 && (
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center mb-2">
+            <MapPin className="h-4 w-4 text-purple-600 mr-2" />
+            <span className="text-sm font-medium text-gray-900">Categories</span>
           </div>
-
-          {/* Progress bar */}
-          <div className="relative">
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div
-                className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
-                style={{
-                  width: `${Math.min(
-                    100,
-                    (campaign.campaign.spentBudget /
-                      campaign.campaign.budgetHeld) *
-                      100
-                  )}%`,
-                }}
-              ></div>
-            </div>
+          <div className="flex flex-wrap gap-1">
+            {campaign.tags.map((tag, index) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-medium"
+              >
+                {tag.toUpperCase()}
+              </span>
+            ))}
           </div>
         </div>
-      </div>
-      {/* Campaign Channel Footer */}
+      )}
+
+      {/* Discord Channel */}
       {campaign.campaign.discordInviteLink && (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-6">
+        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-indigo-100 rounded-lg">
-                <MessageCircle className="h-6 w-6 text-indigo-600" />
-              </div>
+            <div className="flex items-center">
+              <MessageCircle className="h-4 w-4 text-indigo-600 mr-2" />
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Join Campaign Channel
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Having questions? Connect directly with the advertiser in the
-                  campaign channel.
-                </p>
+                <span className="text-sm font-medium text-gray-900">Discussion Channel</span>
+                <p className="text-xs text-gray-600">Ask questions & connect</p>
               </div>
             </div>
             <a
               href={campaign.campaign.discordInviteLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+              className="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded hover:bg-indigo-700 transition-colors"
             >
-              <MessageCircle className="h-5 w-5 mr-2" />
-              Join Discord Channel
+              Join
             </a>
           </div>
         </div>
