@@ -218,21 +218,21 @@ export default function AdvertiserPromoterLinks({
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+        <div className="flex items-center justify-center py-3">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
+    <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-sm font-semibold text-gray-900">
           Promoter Work & Deliverables
         </h3>
-        <span className="text-sm text-gray-600">
+        <span className="text-xs text-gray-600">
           {selectedPromoter
             ? `Work from ${getPromoterDisplayName(selectedPromoter.promoter)}`
             : `Work from all promoters`}
@@ -241,19 +241,19 @@ export default function AdvertiserPromoterLinks({
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700 text-sm">{error}</p>
+        <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-700 text-xs">{error}</p>
         </div>
       )}
 
       {/* Deliverables Navigation */}
       {deliverables.length === 0 ? (
-        <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-          <LinkIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-500 font-medium">
+        <div className="text-center py-4 border-2 border-dashed border-gray-200 rounded-lg">
+          <LinkIcon className="h-6 w-6 text-gray-400 mx-auto mb-1" />
+          <p className="text-gray-500 font-medium text-xs">
             No deliverables assigned yet
           </p>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 text-xs">
             {selectedPromoter
               ? "No deliverables found for this promoter"
               : "No deliverables have been set up for this campaign yet"}
@@ -262,10 +262,10 @@ export default function AdvertiserPromoterLinks({
       ) : (
         <>
           {/* Deliverable Tabs */}
-          <div className="mb-6">
+          <div className="mb-3">
             <div className="border-b border-gray-200">
               <nav
-                className="-mb-px flex space-x-8 overflow-x-auto scrollbar-hide pb-2 scroll-smooth"
+                className="-mb-px flex space-x-4 overflow-x-auto scrollbar-hide pb-1 scroll-smooth"
                 aria-label="Deliverables"
               >
                 {deliverables.map((deliverable) => {
@@ -279,7 +279,7 @@ export default function AdvertiserPromoterLinks({
                         setSelectedDeliverableId(deliverable.id || null)
                       }
                       className={`
-                        whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors flex-shrink-0
+                        whitespace-nowrap py-1.5 px-1 border-b-2 font-medium text-xs transition-colors flex-shrink-0
                         ${
                           isSelected
                             ? "border-blue-500 text-blue-600"
@@ -287,13 +287,13 @@ export default function AdvertiserPromoterLinks({
                         }
                       `}
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1">
                         <span>
                           {deliverable.deliverable.replace(/_/g, " ")}
                         </span>
                         <span
                           className={`
-                          inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                          inline-flex items-center px-1 py-0.5 rounded-full text-xs font-medium
                           ${
                             deliverable.isFinished
                               ? "bg-green-100 text-green-800"
@@ -310,8 +310,8 @@ export default function AdvertiserPromoterLinks({
                             : "Pending"}
                         </span>
                         {workCount > 0 && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {workCount} work{workCount !== 1 ? "s" : ""}
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {workCount}
                           </span>
                         )}
                       </div>
@@ -326,13 +326,13 @@ export default function AdvertiserPromoterLinks({
           {selectedDeliverable && (
             <>
               {/* Deliverable Info */}
-              <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <div className="mb-3 p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">
+                    <h4 className="font-medium text-gray-900 mb-1 text-sm">
                       {selectedDeliverable.deliverable.replace(/_/g, " ")}
                     </h4>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-3 text-xs text-gray-600">
                       <span>
                         Created:{" "}
                         {new Date(
@@ -349,7 +349,7 @@ export default function AdvertiserPromoterLinks({
                   <div className="flex items-center space-x-2">
                     <span
                       className={`
-                      inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                      inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                       ${
                         selectedDeliverable.isFinished
                           ? "bg-green-100 text-green-800"
@@ -373,12 +373,12 @@ export default function AdvertiserPromoterLinks({
                             markDeliverableAsFinished(selectedDeliverable.id!)
                           }
                           disabled={markingFinished[selectedDeliverable.id!]}
-                          className="flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-full hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                          className="flex items-center px-2 py-0.5 bg-green-600 text-white text-xs rounded-full hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                         >
                           {markingFinished[selectedDeliverable.id!] ? (
-                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                            <div className="animate-spin rounded-full h-2 w-2 border-b-2 border-white mr-1"></div>
                           ) : (
-                            <CheckIcon className="h-3 w-3 mr-1" />
+                            <CheckIcon className="h-2 w-2 mr-1" />
                           )}
                           Mark as Finished
                         </button>
@@ -393,14 +393,14 @@ export default function AdvertiserPromoterLinks({
 
       {/* Work Items List for Selected Deliverable */}
       {selectedDeliverable && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {currentWorks.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-              <LinkIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-500 font-medium">
+            <div className="text-center py-4 border-2 border-dashed border-gray-200 rounded-lg">
+              <LinkIcon className="h-6 w-6 text-gray-400 mx-auto mb-1" />
+              <p className="text-gray-500 font-medium text-xs">
                 No work submitted for this deliverable
               </p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-400 text-xs">
                 Promoter work submissions will appear here
               </p>
             </div>
@@ -408,15 +408,15 @@ export default function AdvertiserPromoterLinks({
             currentWorks.map((work) => (
               <div
                 key={work.id}
-                className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors space-y-3"
+                className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors space-y-2"
               >
-                <div className="flex items-center gap-3">
-                  <LinkIcon className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                <div className="flex items-center gap-2">
+                  <LinkIcon className="h-3 w-3 text-blue-600 flex-shrink-0" />
                   <a
                     href={work.promoterLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-blue-600 hover:text-blue-800 truncate text-sm font-medium"
+                    className="flex-1 text-blue-600 hover:text-blue-800 truncate text-xs font-medium"
                   >
                     {work.promoterLink}
                   </a>
@@ -424,20 +424,20 @@ export default function AdvertiserPromoterLinks({
                     href={work.promoterLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-gray-600 hover:bg-gray-200 rounded-md transition-colors"
+                    className="p-1 text-gray-600 hover:bg-gray-200 rounded-md transition-colors"
                   >
-                    <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+                    <ArrowTopRightOnSquareIcon className="h-3 w-3" />
                   </a>
                 </div>
 
                 {work.description && (
-                  <p className="text-gray-600 text-sm pl-7">
+                  <p className="text-gray-600 text-xs pl-5">
                     {work.description}
                   </p>
                 )}
 
-                <div className="flex items-center justify-between pl-7">
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
+                <div className="flex items-center justify-between pl-5">
+                  <div className="flex items-center gap-3 text-xs text-gray-500">
                     <span>
                       Added: {new Date(work.createdAt).toLocaleDateString()}
                     </span>
@@ -454,15 +454,14 @@ export default function AdvertiserPromoterLinks({
                       onClick={() => toggleComments(work.id)}
                       className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 transition-colors"
                     >
-                      <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
+                      <ChatBubbleLeftEllipsisIcon className="h-3 w-3" />
                       <span>
-                        {work.comments.length} comment
-                        {work.comments.length > 1 ? "s" : ""}
+                        {work.comments.length}
                       </span>
                       {expandedComments.has(work.id) ? (
-                        <ChevronUpIcon className="h-3 w-3" />
+                        <ChevronUpIcon className="h-2 w-2" />
                       ) : (
-                        <ChevronDownIcon className="h-3 w-3" />
+                        <ChevronDownIcon className="h-2 w-2" />
                       )}
                     </button>
                   ) : (
@@ -470,33 +469,33 @@ export default function AdvertiserPromoterLinks({
                       onClick={() => toggleComments(work.id)}
                       className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
                     >
-                      <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
-                      <span>Add comment</span>
+                      <ChatBubbleLeftEllipsisIcon className="h-3 w-3" />
+                      <span>Comment</span>
                     </button>
                   )}
                 </div>
 
                 {/* Comments section */}
                 {expandedComments.has(work.id) && (
-                  <div className="pl-7 mt-3 border-l-2 border-gray-200">
-                    <div className="pl-3 space-y-3">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  <div className="pl-5 mt-2 border-l-2 border-gray-200">
+                    <div className="pl-2 space-y-2">
+                      <h4 className="text-xs font-medium text-gray-700 mb-1">
                         Comments
                       </h4>
 
                       {/* Existing Comments */}
                       {work.comments && work.comments.length > 0 && (
-                        <div className="space-y-3 mb-4">
+                        <div className="space-y-2 mb-2">
                           {work.comments.map((comment) => (
                             <div
                               key={comment.id}
-                              className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm"
+                              className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm"
                             >
-                              <div className="flex items-start gap-3">
-                                <UserCircleIcon className="h-6 w-6 text-gray-400 flex-shrink-0 mt-0.5" />
+                              <div className="flex items-start gap-2">
+                                <UserCircleIcon className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-sm font-medium text-gray-900">
+                                  <div className="flex items-center gap-2 mb-0.5">
+                                    <span className="text-xs font-medium text-gray-900">
                                       {comment.commentatorName || "You"}
                                     </span>
                                     <span className="text-xs text-gray-500">
@@ -505,7 +504,7 @@ export default function AdvertiserPromoterLinks({
                                       )}
                                     </span>
                                   </div>
-                                  <p className="text-sm text-gray-700 leading-relaxed">
+                                  <p className="text-xs text-gray-700 leading-relaxed">
                                     {comment.commentMessage}
                                   </p>
                                 </div>
@@ -516,7 +515,7 @@ export default function AdvertiserPromoterLinks({
                       )}
 
                       {/* Add New Comment */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-1.5">
                         <input
                           type="text"
                           value={newComments[work.id] || ""}
@@ -526,8 +525,8 @@ export default function AdvertiserPromoterLinks({
                               [work.id]: e.target.value,
                             }))
                           }
-                          placeholder="Add a comment or feedback..."
-                          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-black"
+                          placeholder="Add a comment..."
+                          className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-black"
                           disabled={loading}
                           onKeyPress={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
@@ -539,12 +538,12 @@ export default function AdvertiserPromoterLinks({
                         <button
                           onClick={() => addComment(work.id)}
                           disabled={loading || !newComments[work.id]?.trim()}
-                          className="px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                          className="px-2 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                         >
                           {loading ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <div className="animate-spin rounded-full h-2 w-2 border-b-2 border-white"></div>
                           ) : (
-                            <PaperAirplaneIcon className="h-4 w-4" />
+                            <PaperAirplaneIcon className="h-2 w-2" />
                           )}
                         </button>
                       </div>
@@ -558,17 +557,17 @@ export default function AdvertiserPromoterLinks({
       )}
 
       {/* Info box */}
-      <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+      <div className="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
         <div className="flex items-start gap-2">
-          <InformationCircleIcon className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <InformationCircleIcon className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-blue-700 text-sm">
+            <p className="text-blue-700 text-xs">
               <strong>Review and provide feedback:</strong> These are work
               deliverables submitted by your promoter(s). You can add comments
               to provide feedback and guide their work.
             </p>
             {campaign.type === CampaignType.CONSULTANT ? (
-              <ul className="text-blue-700 text-sm mt-2 ml-4 space-y-1">
+              <ul className="text-blue-700 text-xs mt-1 ml-3 space-y-0.5">
                 <li>• Strategy documents and reports</li>
                 <li>• Presentations and recommendations</li>
                 <li>• Data analysis and campaign metrics</li>
@@ -576,7 +575,7 @@ export default function AdvertiserPromoterLinks({
                 <li>• Live campaign examples and case studies</li>
               </ul>
             ) : (
-              <ul className="text-blue-700 text-sm mt-2 ml-4 space-y-1">
+              <ul className="text-blue-700 text-xs mt-1 ml-3 space-y-0.5">
                 <li>• Product photos and promotional videos</li>
                 <li>• Social media posts and campaigns</li>
                 <li>• Store setup progress and screenshots</li>

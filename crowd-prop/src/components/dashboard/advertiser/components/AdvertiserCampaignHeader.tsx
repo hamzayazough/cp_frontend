@@ -160,36 +160,36 @@ export default function AdvertiserCampaignHeader({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Error Message for Complete Campaign */}
       {completeError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
           <p className="text-red-700 text-sm">{completeError}</p>
         </div>
       )}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <Link
             href="/dashboard/campaigns"
             className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
           >
-            <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+            <ArrowLeftIcon className="h-4 w-4 text-gray-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900">
               {campaign.title}
             </h1>
-            <div className="flex items-center space-x-3 mt-2">
+            <div className="flex items-center space-x-2 mt-1">
               <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
                   campaign.status
                 )}`}
               >
                 {campaign.status}
               </span>
               <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
                   campaign.type
                 )}`}
               >
@@ -199,15 +199,15 @@ export default function AdvertiserCampaignHeader({
           </div>
         </div>
         {/* Remove Chat button if no chosenPromoters */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
           {/* Extend Deadline Button - only show if deadline is within a week and campaign is ongoing */}
           {isDeadlineWithinWeek() &&
             campaign.status === AdvertiserCampaignStatus.ONGOING && (
               <button
                 onClick={() => setShowExtendModal(true)}
-                className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm"
+                className="flex items-center px-3 py-1.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs"
               >
-                <ClockIcon className="h-4 w-4 mr-2" />
+                <ClockIcon className="h-3 w-3 mr-1" />
                 Extend Deadline
               </button>
             )}
@@ -216,12 +216,12 @@ export default function AdvertiserCampaignHeader({
             <button
               onClick={handleCompleteCampaign}
               disabled={isCompletingCampaign}
-              className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors text-sm"
+              className="flex items-center px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors text-xs"
             >
               {isCompletingCampaign ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
               ) : (
-                <CheckCircleIcon className="h-4 w-4 mr-2" />
+                <CheckCircleIcon className="h-3 w-3 mr-1" />
               )}
               {isCompletingCampaign ? "Completing..." : "Complete Campaign"}
             </button>
@@ -230,9 +230,9 @@ export default function AdvertiserCampaignHeader({
             shouldShowChatButton() && (
               <button
                 onClick={onShareClick}
-                className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                className="flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors text-xs"
               >
-                <ShareIcon className="h-4 w-4 mr-2" />
+                <ShareIcon className="h-3 w-3 mr-1" />
                 Link to Share
               </button>
             )}
@@ -241,9 +241,9 @@ export default function AdvertiserCampaignHeader({
               href={campaign.campaign.discordInviteLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+              className="flex items-center px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-xs"
             >
-              <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
+              <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
               Join Discord
             </Link>
           )}
@@ -252,23 +252,23 @@ export default function AdvertiserCampaignHeader({
               href={campaign.campaign.discordThreadUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+              className="flex items-center px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs"
             >
-              <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
+              <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
               Discord Thread
             </Link>
           )}
           {shouldShowChatButton() ? (
             <Link
               href={`/dashboard/messages/${campaignId}`}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs"
             >
-              <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
+              <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
               Chat
             </Link>
           ) : campaign.chosenPromoters ? (
-            <div className="flex items-center px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm">
-              <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
+            <div className="flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded-lg text-xs">
+              <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
               Chat only available when campaign and promoters are active
             </div>
           ) : null}
@@ -277,12 +277,12 @@ export default function AdvertiserCampaignHeader({
             <>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="p-2 text-red-500 hover:text-white hover:bg-red-600 rounded-full transition-colors"
+                className="p-1.5 text-red-500 hover:text-white hover:bg-red-600 rounded-full transition-colors"
                 title="Delete Campaign"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -297,7 +297,7 @@ export default function AdvertiserCampaignHeader({
               </button>
               {showDeleteModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                  <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                  <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-sm">
                     <h2 className="text-lg font-semibold mb-4 text-gray-900">
                       Delete Campaign
                     </h2>

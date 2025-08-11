@@ -270,8 +270,23 @@ export default function AdvertiserCampaignDetailsContent({
       case "requirements":
         return <AdvertiserCampaignRequirements campaign={campaign} />;
       case "messages":
+        // Only show messages if there are chosen promoters
+        if (!campaign.chosenPromoters || campaign.chosenPromoters.length === 0) {
+          return (
+            <div className="text-center py-8">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Promoters Selected
+                </h3>
+                <p className="text-gray-600">
+                  Messages will be available once you have selected promoters for this campaign.
+                </p>
+              </div>
+            </div>
+          );
+        }
         return (
-          <div className="h-[600px]">
+          <div className="h-[400px]">
             <AdvertiserCampaignMessages
               campaignId={campaignId}
               campaignTitle={campaign.title}
@@ -285,8 +300,8 @@ export default function AdvertiserCampaignDetailsContent({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
       </div>
     );
   }
@@ -308,12 +323,12 @@ export default function AdvertiserCampaignDetailsContent({
 
   if (!campaign) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-xl font-bold text-gray-900 mb-3">
             Campaign Not Found
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 mb-3">
             The campaign you&apos;re looking for doesn&apos;t exist or has been
             removed.
           </p>
@@ -329,7 +344,7 @@ export default function AdvertiserCampaignDetailsContent({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Header */}
       <AdvertiserCampaignHeader
         campaign={campaign}
@@ -346,8 +361,8 @@ export default function AdvertiserCampaignDetailsContent({
       />
 
       {/* Promoters Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-4">
           <AdvertiserCampaignPromoters
             campaign={campaign}
             onViewApplications={handleViewApplications}
@@ -367,8 +382,8 @@ export default function AdvertiserCampaignDetailsContent({
       />
 
       {/* Tab Content */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="p-6">{renderTabContent()}</div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-4">{renderTabContent()}</div>
       </div>
 
       {/* Application Review Modal */}

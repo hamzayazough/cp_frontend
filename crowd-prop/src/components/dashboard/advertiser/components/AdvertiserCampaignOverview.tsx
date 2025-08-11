@@ -100,20 +100,20 @@ export default function AdvertiserCampaignOverview({
         return (
           <>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-xs font-medium text-gray-600">
                 Cost per 100 Views
               </span>
-              <span className="text-lg font-semibold text-pink-600">
+              <span className="text-sm font-semibold text-pink-600">
                 {campaign.campaign.type === CampaignType.VISIBILITY
                   ? formatCurrency(campaign.campaign.cpv)
                   : "N/A"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-xs font-medium text-gray-600">
                 Max Views
               </span>
-              <span className="text-lg font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-gray-900">
                 {campaign.campaign.type === CampaignType.VISIBILITY
                   ? formatNumber(campaign.campaign.maxViews)
                   : "N/A"}
@@ -122,10 +122,10 @@ export default function AdvertiserCampaignOverview({
             {campaign.campaign.type === CampaignType.VISIBILITY &&
               campaign.campaign.minFollowers && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-600">
+                  <span className="text-xs font-medium text-gray-600">
                     Min Followers
                   </span>
-                  <span className="text-lg font-semibold text-gray-900">
+                  <span className="text-sm font-semibold text-gray-900">
                     {formatNumber(campaign.campaign.minFollowers)}
                   </span>
                 </div>
@@ -137,10 +137,10 @@ export default function AdvertiserCampaignOverview({
         return (
           <>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-xs font-medium text-gray-600">
                 Budget Range
               </span>
-              <span className="text-lg font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-gray-900">
                 {campaign.campaign.type === CampaignType.CONSULTANT
                   ? `${formatCurrency(
                       campaign.campaign.minBudget
@@ -221,24 +221,23 @@ export default function AdvertiserCampaignOverview({
     }
   };
   return (
-    <div className="space-y-6">
-      {" "}
+    <div className="space-y-4">
       {/* Three cards section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Campaign Details Card */}
-        <div className="bg-blue-50 rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <DollarSign className="h-5 w-5 text-blue-600" />
+        <div className="bg-blue-50 rounded-lg p-4">
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <DollarSign className="h-4 w-4 text-blue-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-base font-semibold text-gray-900">
               Campaign Details
             </h3>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600">Budget</span>
-              <span className="text-lg font-semibold text-green-600">
+              <span className="text-xs font-medium text-gray-600">Budget</span>
+              <span className="text-sm font-semibold text-green-600">
                 {formatCurrency(campaign.campaign.budgetAllocated)}
               </span>
             </div>
@@ -247,33 +246,33 @@ export default function AdvertiserCampaignOverview({
         </div>
 
         {/* Target Audience Card */}
-        <div className="bg-green-50 rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Target className="h-5 w-5 text-green-600" />
+        <div className="bg-green-50 rounded-lg p-4">
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="p-1.5 bg-green-100 rounded-lg">
+              <Target className="h-4 w-4 text-green-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-base font-semibold text-gray-900">
               Target Audience
             </h3>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {campaign.campaign.targetAudience && (
-              <p className="text-gray-700 text-sm leading-relaxed">
+              <p className="text-gray-700 text-xs leading-relaxed">
                 {campaign.campaign.targetAudience}
               </p>
             )}
             {campaign.campaign.preferredPlatforms &&
               campaign.campaign.preferredPlatforms.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-2">
+                  <p className="text-xs font-medium text-gray-600 mb-1.5">
                     Preferred Platforms:
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1">
                     {campaign.campaign.preferredPlatforms.map(
                       (platform, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full"
+                          className="flex items-center space-x-1 bg-green-100 px-1.5 py-0.5 rounded-full"
                         >
                           {getSocialPlatformIcon(platform, "black")}
                           <span className="text-xs font-medium text-green-700">
@@ -289,22 +288,22 @@ export default function AdvertiserCampaignOverview({
         </div>
 
         {/* Campaign Tags Card */}
-        <div className="bg-purple-50 rounded-xl p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Tag className="h-5 w-5 text-purple-600" />
+        <div className="bg-purple-50 rounded-lg p-4">
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="p-1.5 bg-purple-100 rounded-lg">
+              <Tag className="h-4 w-4 text-purple-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-base font-semibold text-gray-900">
               Campaign Tags
             </h3>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {campaign.tags && campaign.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {campaign.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getAdvertiserTypeColor(
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${getAdvertiserTypeColor(
                       tag
                     )}`}
                   >
@@ -316,28 +315,29 @@ export default function AdvertiserCampaignOverview({
           </div>
         </div>
       </div>
+      
       {/* Campaign Timeline */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Calendar className="h-5 w-5 text-blue-600" />
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center space-x-2 mb-4">
+          <div className="p-1.5 bg-blue-100 rounded-lg">
+            <Calendar className="h-4 w-4 text-blue-600" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-base font-semibold text-gray-900">
             Campaign Timeline
           </h3>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium text-gray-900">Start Date</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs font-medium text-gray-900">Start Date</p>
+              <p className="text-xs text-gray-600">
                 {formatDate(campaign.campaign.startDate)}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Deadline</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs font-medium text-gray-900">Deadline</p>
+              <p className="text-xs text-gray-600">
                 {formatDate(campaign.campaign.deadline)}
               </p>
             </div>
@@ -345,9 +345,9 @@ export default function AdvertiserCampaignOverview({
 
           {/* Progress bar */}
           <div className="relative">
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 rounded-full h-1.5">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
                 style={{
                   width: `${Math.min(
                     100,

@@ -46,22 +46,22 @@ export default function AdvertiserCampaignStatsCards({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
       {/* Budget Spent */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <CurrencyDollarIcon className="h-6 w-6 text-blue-600" />
+          <div className="p-1.5 bg-blue-100 rounded-lg">
+            <CurrencyDollarIcon className="h-4 w-4 text-blue-600" />
           </div>
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Budget Spent</p>
-            <p className="text-2xl font-bold text-gray-900">
+          <div className="ml-3">
+            <p className="text-xs font-medium text-gray-600">Budget Spent</p>
+            <p className="text-lg font-bold text-gray-900">
               {formatCurrency(campaign.campaign.spentBudget)}
             </p>
           </div>
         </div>
-        <div className="mt-4">
-          <div className="flex items-center justify-between text-sm">
+        <div className="mt-3">
+          <div className="flex items-center justify-between text-xs">
             <span className="text-gray-500">
               of {formatCurrency(campaign.campaign.budgetHeld)}
             </span>
@@ -69,9 +69,9 @@ export default function AdvertiserCampaignStatsCards({
               {getProgressPercentage(campaign.campaign.spentBudget, campaign.campaign.budgetHeld).toFixed(1)}%
             </span>
           </div>
-          <div className="mt-2 bg-gray-200 rounded-full h-2">
+          <div className="mt-1.5 bg-gray-200 rounded-full h-1.5">
             <div
-              className="bg-blue-600 h-2 rounded-full"
+              className="bg-blue-600 h-1.5 rounded-full"
               style={{
                 width: `${getProgressPercentage(campaign.campaign.spentBudget, campaign.campaign.budgetHeld)}%`,
               }}
@@ -81,16 +81,16 @@ export default function AdvertiserCampaignStatsCards({
       </div>
 
       {/* Views/Performance */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center">
-          <div className="p-2 bg-green-100 rounded-lg">
-            <EyeIcon className="h-6 w-6 text-green-600" />
+          <div className="p-1.5 bg-green-100 rounded-lg">
+            <EyeIcon className="h-4 w-4 text-green-600" />
           </div>
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">
+          <div className="ml-3">
+            <p className="text-xs font-medium text-gray-600">
               {campaign.type === CampaignType.VISIBILITY ? "Views Generated" : "Total Views"}
             </p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-lg font-bold text-gray-900">
               {campaign.type === CampaignType.VISIBILITY && campaign.campaign.type === CampaignType.VISIBILITY
                 ? formatNumber(campaign.campaign.currentViews)
                 : formatNumber(campaign.performance.totalViewsGained || 0)
@@ -99,8 +99,8 @@ export default function AdvertiserCampaignStatsCards({
           </div>
         </div>
         {campaign.type === CampaignType.VISIBILITY && campaign.campaign.type === CampaignType.VISIBILITY && (
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm">
+          <div className="mt-3">
+            <div className="flex items-center justify-between text-xs">
               <span className="text-gray-500">
                 of {formatNumber(campaign.campaign.maxViews)} target
               </span>
@@ -108,9 +108,9 @@ export default function AdvertiserCampaignStatsCards({
                 {getViewsProgress().toFixed(1)}%
               </span>
             </div>
-            <div className="mt-2 bg-gray-200 rounded-full h-2">
+            <div className="mt-1.5 bg-gray-200 rounded-full h-1.5">
               <div
-                className="bg-green-600 h-2 rounded-full"
+                className="bg-green-600 h-1.5 rounded-full"
                 style={{
                   width: `${getViewsProgress()}%`,
                 }}
@@ -121,35 +121,35 @@ export default function AdvertiserCampaignStatsCards({
       </div>
 
       {/* Promoters */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <UsersIcon className="h-6 w-6 text-purple-600" />
+          <div className="p-1.5 bg-purple-100 rounded-lg">
+            <UsersIcon className="h-4 w-4 text-purple-600" />
           </div>
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Promoters</p>
-            <p className="text-2xl font-bold text-gray-900">
+          <div className="ml-3">
+            <p className="text-xs font-medium text-gray-600">Promoters</p>
+            <p className="text-lg font-bold text-gray-900">
               {campaign.promoters?.length || 0}
             </p>
           </div>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-xs text-gray-500 mt-1.5">
           {campaign.promoters?.filter(p => p.status === 'AWAITING_REVIEW').length || 0} pending review
         </p>
       </div>
 
       {/* Days Left */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center">
-          <div className="p-2 bg-orange-100 rounded-lg">
-            <CalendarIcon className="h-6 w-6 text-orange-600" />
+          <div className="p-1.5 bg-orange-100 rounded-lg">
+            <CalendarIcon className="h-4 w-4 text-orange-600" />
           </div>
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Days Left</p>
-            <p className="text-2xl font-bold text-gray-900">{daysLeft}</p>
+          <div className="ml-3">
+            <p className="text-xs font-medium text-gray-600">Days Left</p>
+            <p className="text-lg font-bold text-gray-900">{daysLeft}</p>
           </div>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-xs text-gray-500 mt-1.5">
           Until {new Date(campaign.campaign.deadline).toLocaleDateString()}
         </p>
       </div>

@@ -154,29 +154,29 @@ export default function AdvertiserCampaignPromoters({
   if (!campaign.campaign.isPublic) {
     if (chosenPromoter) {
       return (
-        <div className="space-y-6">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+        <div className="space-y-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-semibold text-gray-900">
                 Selected Promoter
               </h3>
               <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPromoterStatusColor(
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getPromoterStatusColor(
                   chosenPromoter.status
                 )}`}
               >
-                <CheckCircleIcon className="h-4 w-4 mr-1" />
+                <CheckCircleIcon className="h-3 w-3 mr-1" />
                 {chosenPromoter.status}
               </span>
             </div>
 
-            <div className="flex items-start space-x-4">
+            <div className="flex items-start space-x-3">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleUserClick(chosenPromoter.promoter.id);
                 }}
-                className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
+                className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer"
                 title={`View ${getPromoterDisplayName(
                   chosenPromoter.promoter
                 )}'s profile`}
@@ -185,8 +185,8 @@ export default function AdvertiserCampaignPromoters({
                   <Image
                     src={chosenPromoter.promoter.avatarUrl}
                     alt={getPromoterDisplayName(chosenPromoter.promoter)}
-                    width={48}
-                    height={48}
+                    width={40}
+                    height={40}
                     className="w-full h-full object-cover rounded-full"
                   />
                 ) : (
@@ -194,17 +194,17 @@ export default function AdvertiserCampaignPromoters({
                 )}
               </button>
               <div className="flex-1">
-                <h4 className="text-lg font-medium text-gray-900">
+                <h4 className="text-base font-medium text-gray-900">
                   {getPromoterDisplayName(chosenPromoter.promoter)}
                 </h4>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-xs text-gray-600 mb-2">
                   {chosenPromoter.promoter.bio || "No bio available"}
                 </p>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
                     <p className="text-xs text-gray-500">Joined</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs font-medium text-gray-900">
                       {chosenPromoter.joinedAt
                         ? new Date(chosenPromoter.joinedAt).toLocaleDateString()
                         : "Recently"}
@@ -212,20 +212,20 @@ export default function AdvertiserCampaignPromoters({
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Earnings</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs font-medium text-gray-900">
                       {formatCurrency(chosenPromoter.earnings || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Budget Allocated</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs font-medium text-gray-900">
                       {formatCurrency(chosenPromoter.budgetAllocated)}
                     </p>
                   </div>
                   {chosenPromoter.viewsGenerated && (
                     <div>
                       <p className="text-xs text-gray-500">Views Generated</p>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-xs font-medium text-gray-900">
                         {formatNumber(chosenPromoter.viewsGenerated)}
                       </p>
                     </div>
@@ -234,7 +234,7 @@ export default function AdvertiserCampaignPromoters({
 
                 {/* Pay Now Button for Seller and Consultant campaigns */}
                 {shouldShowPayButton(chosenPromoter.status) ? (
-                  <div className="mt-4 pt-4 border-t border-green-200">
+                  <div className="mt-3 pt-3 border-t border-green-200">
                     <button
                       onClick={() => {
                         console.log(
@@ -242,22 +242,22 @@ export default function AdvertiserCampaignPromoters({
                         );
                         handlePayNow(chosenPromoter.promoter);
                       }}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+                      className="bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 transition-colors text-xs flex items-center"
                     >
-                      <CreditCardIcon className="h-4 w-4 mr-2" />
+                      <CreditCardIcon className="h-3 w-3 mr-1" />
                       Pay Now
                     </button>
                   </div>
                 ) : supportsPayments ? (
-                  <div className="mt-4 pt-4 border-t border-green-200">
-                    <p className="text-sm text-gray-500">
+                  <div className="mt-3 pt-3 border-t border-green-200">
+                    <p className="text-xs text-gray-500">
                       Payment only available when campaign and promoter are both
                       active
                     </p>
                   </div>
                 ) : (
-                  <div className="mt-4 pt-4 border-t border-green-200">
-                    <p className="text-sm text-gray-500">
+                  <div className="mt-3 pt-3 border-t border-green-200">
+                    <p className="text-xs text-gray-500">
                       Payment not available for {campaign.campaign.type}{" "}
                       campaigns
                     </p>
