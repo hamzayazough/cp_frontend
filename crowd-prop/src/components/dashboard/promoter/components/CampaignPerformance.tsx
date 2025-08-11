@@ -46,23 +46,42 @@ export default function CampaignPerformance({
       case CampaignType.VISIBILITY:
         return (
           <>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Price per 100 views</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-blue-600 font-medium">Price per 100 views</p>
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-blue-900">
                 ${(campaign.campaign as VisibilityCampaignDetails).cpv}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Views Generated</p>{" "}
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-green-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-green-600 font-medium">Views Generated</p>
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-green-900">
                 {(campaign.earnings.viewsGenerated || 0).toLocaleString()}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">View Target Progress</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-purple-600 font-medium">Progress</p>
+                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-purple-900">
                 {progress.toFixed(1)}%
               </p>
+              <div className="w-full bg-purple-200 rounded-full h-1 mt-1">
+                <div className="bg-purple-600 h-1 rounded-full transition-all duration-500" style={{ width: `${Math.min(progress, 100)}%` }}></div>
+              </div>
             </div>
           </>
         );
@@ -71,32 +90,50 @@ export default function CampaignPerformance({
           campaign.campaign as ConsultantCampaignDetails;
         // Assume meetingsDone comes from campaign.meetingDone or calculate from some field
         const meetingsDone = campaign.meetingDone ? 1 : 0; // Placeholder logic
-        const meetingsRemaining = Math.max(
-          0,
-          consultantDetails.meetingCount - meetingsDone
-        );
+        const consultantDeliverables = consultantDetails.expectedDeliverables || [];
+        const completedConsultantDeliverables = consultantDeliverables.filter(d => d.isFinished).length;
 
         return (
           <>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Meetings Done</p>
-              <p className="text-xl font-bold text-gray-900">{meetingsDone}</p>
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-blue-600 font-medium">Meetings</p>
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v1a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h3z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-blue-900">{meetingsDone}/{consultantDetails.meetingCount}</p>
+              <p className="text-xs text-blue-600">Completed</p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Meetings Remaining</p>
-              <p className="text-xl font-bold text-gray-900">
-                {meetingsRemaining}
-              </p>
-            </div>{" "}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Earned</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-green-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-green-600 font-medium">Deliverables</p>
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-green-900">{completedConsultantDeliverables}/{consultantDeliverables.length}</p>
+              <p className="text-xs text-green-600">Finished</p>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-purple-600 font-medium">Total Earned</p>
+                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-purple-900">
                 ${(campaign.earnings.totalEarned || 0).toLocaleString()}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Max Budget</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-orange-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-orange-600 font-medium">Max Budget</p>
+                <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-orange-900">
                 ${(consultantDetails.maxBudget || 0).toLocaleString()}
               </p>
             </div>
@@ -107,33 +144,52 @@ export default function CampaignPerformance({
         const sellerDetails = campaign.campaign as SellerCampaignDetails;
         // For seller campaigns, check if meetings are required
         const sellerMeetingsDone = campaign.meetingDone ? 1 : 0; // Placeholder logic
-        const sellerMeetingsRemaining = sellerDetails.needMeeting
-          ? Math.max(0, sellerDetails.meetingCount - sellerMeetingsDone)
-          : 0;
+        const sellerDeliverables = sellerDetails.deliverables || [];
+        const completedSellerDeliverables = sellerDeliverables.filter(d => d.isFinished).length;
 
         return (
           <>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Meetings Done</p>
-              <p className="text-xl font-bold text-gray-900">
-                {sellerDetails.needMeeting ? sellerMeetingsDone : "N/A"}
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-blue-600 font-medium">Meetings</p>
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v1a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h3z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-blue-900">
+                {sellerDetails.needMeeting ? `${sellerMeetingsDone}/${sellerDetails.meetingCount}` : "N/A"}
               </p>
+              <p className="text-xs text-blue-600">Completed</p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Meetings Remaining</p>
-              <p className="text-xl font-bold text-gray-900">
-                {sellerDetails.needMeeting ? sellerMeetingsRemaining : "N/A"}
-              </p>
-            </div>{" "}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Earned</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-green-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-green-600 font-medium">Deliverables</p>
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-green-900">{completedSellerDeliverables}/{sellerDeliverables.length}</p>
+              <p className="text-xs text-green-600">Finished</p>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-purple-600 font-medium">Total Earned</p>
+                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-purple-900">
                 ${(campaign.earnings.totalEarned || 0).toLocaleString()}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Max Budget</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-orange-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-orange-600 font-medium">Max Budget</p>
+                <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-orange-900">
                 ${(sellerDetails.maxBudget || 0).toLocaleString()}
               </p>
             </div>
@@ -144,15 +200,25 @@ export default function CampaignPerformance({
       case CampaignType.SALESMAN:
         return (
           <>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Earned</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-green-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-green-600 font-medium">Total Earned</p>
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-green-900">
                 ${campaign.earnings.totalEarned}
               </p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Projected Total</p>
-              <p className="text-xl font-bold text-gray-900">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-blue-600 font-medium">Projected Total</p>
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <p className="text-lg font-bold text-blue-900">
                 ${campaign.earnings.projectedTotal}
               </p>
             </div>
@@ -170,8 +236,8 @@ export default function CampaignPerformance({
       (campaign.campaign as VisibilityCampaignDetails).trackingLink
     ) {
       return (
-        <div>
-          <h4 className="font-medium text-gray-900 mb-2">Your Tracking Link</h4>
+        <div className="bg-white border border-gray-200 rounded-lg p-3">
+          <h4 className="text-sm font-semibold text-gray-900 mb-2">Your Tracking Link</h4>
           <div className="flex items-center space-x-2">
             <input
               type="text"
@@ -180,7 +246,7 @@ export default function CampaignPerformance({
                 ""
               }
               readOnly
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+              className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded bg-gray-50"
             />
             <button
               onClick={() =>
@@ -190,7 +256,7 @@ export default function CampaignPerformance({
                 )
               }
               disabled={isCopied}
-              className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
+              className={`px-3 py-1 text-xs rounded transition-colors flex items-center space-x-1 ${
                 isCopied
                   ? "bg-green-600 text-white"
                   : "bg-blue-600 text-white hover:bg-blue-700"
@@ -199,7 +265,7 @@ export default function CampaignPerformance({
               {isCopied ? (
                 <>
                   <svg
-                    className="w-4 h-4"
+                    className="w-3 h-3"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -233,18 +299,18 @@ export default function CampaignPerformance({
       consultantDetails.expectedDeliverables.length === 0
     ) {
       return (
-        <div className="space-y-4">
-          <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
-          <div className="text-center text-gray-500 py-4">
-            No specific deliverables defined yet
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-gray-900">Deliverables Progress</h4>
+          <div className="text-center text-gray-500 py-3 bg-gray-50 rounded-lg">
+            <p className="text-xs">No specific deliverables defined yet</p>
           </div>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold text-gray-900">Deliverables Progress</h4>
         <div className="space-y-3">
           {consultantDetails.expectedDeliverables.map((deliverable, index) => {
             const completionPercentage = deliverable.isFinished
@@ -257,11 +323,11 @@ export default function CampaignPerformance({
             return (
               <div
                 key={deliverable.id || index}
-                className="bg-purple-50 p-4 rounded-lg border border-purple-200"
+                className="bg-purple-50 p-3 rounded-lg border border-purple-200"
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h5 className="text-sm font-medium text-purple-900 mb-1">
+                    <h5 className="text-xs font-medium text-purple-900 mb-1">
                       {deliverable.deliverable.replace(/_/g, " ")}
                     </h5>
                     <div className="flex items-center space-x-2 text-xs text-purple-700">
@@ -276,36 +342,34 @@ export default function CampaignPerformance({
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        deliverable.isFinished
-                          ? "bg-green-100 text-green-800"
-                          : deliverable.isSubmitted
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {deliverable.isFinished
-                        ? "Completed"
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      deliverable.isFinished
+                        ? "bg-green-100 text-green-800"
                         : deliverable.isSubmitted
-                        ? "Under Review"
-                        : "Pending"}
-                    </span>
-                  </div>
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {deliverable.isFinished
+                      ? "Done"
+                      : deliverable.isSubmitted
+                      ? "Review"
+                      : "Pending"}
+                  </span>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="mb-3">
+                {/* Compact Progress Bar */}
+                <div className="mb-2">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs text-purple-600">Progress</span>
                     <span className="text-xs text-purple-600 font-medium">
                       {completionPercentage}%
                     </span>
                   </div>
-                  <div className="w-full bg-purple-200 rounded-full h-2">
+                  <div className="w-full bg-purple-200 rounded-full h-1">
                     <div
-                      className={`h-2 rounded-full transition-all duration-300 ${
+                      className={`h-1 rounded-full transition-all duration-300 ${
                         deliverable.isFinished
                           ? "bg-green-500"
                           : deliverable.isSubmitted
@@ -317,25 +381,25 @@ export default function CampaignPerformance({
                   </div>
                 </div>
 
-                {/* Work Submissions */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-xs text-purple-700">
-                    <span className="font-medium">Work Submissions:</span>
+                {/* Work Submissions - Compact */}
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center space-x-2 text-purple-700">
+                    <span className="font-medium">Work:</span>
                     <span className="bg-purple-100 px-2 py-1 rounded-full">
                       {workCount} item{workCount !== 1 ? "s" : ""}
                     </span>
                   </div>
                   {workCount > 0 && (
-                    <button className="text-xs text-purple-600 hover:text-purple-800 underline">
-                      View Submissions
+                    <button className="text-purple-600 hover:text-purple-800 underline">
+                      View
                     </button>
                   )}
                 </div>
 
-                {/* Work Items Preview */}
+                {/* Work Items Preview - Very Compact */}
                 {workCount > 0 && (
-                  <div className="mt-3 pt-3 border-t border-purple-200">
-                    <div className="space-y-2">
+                  <div className="mt-2 pt-2 border-t border-purple-200">
+                    <div className="space-y-1">
                       {deliverable.promoterWork
                         ?.slice(0, 2)
                         .map((work, workIndex) => (
@@ -343,7 +407,7 @@ export default function CampaignPerformance({
                             key={work.id || workIndex}
                             className="flex items-center space-x-2 text-xs text-purple-700"
                           >
-                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                            <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
                             <span className="flex-1 truncate">
                               {work.description || "Work submission"}
                             </span>
@@ -353,9 +417,8 @@ export default function CampaignPerformance({
                           </div>
                         ))}
                       {workCount > 2 && (
-                        <div className="text-xs text-purple-600 pl-4">
-                          +{workCount - 2} more submission
-                          {workCount - 2 !== 1 ? "s" : ""}
+                        <div className="text-xs text-purple-600 pl-3">
+                          +{workCount - 2} more
                         </div>
                       )}
                     </div>
@@ -379,18 +442,18 @@ export default function CampaignPerformance({
       sellerDetails.deliverables.length === 0
     ) {
       return (
-        <div className="space-y-4">
-          <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
-          <div className="text-center text-gray-500 py-4">
-            No specific deliverables defined yet
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-gray-900">Deliverables Progress</h4>
+          <div className="text-center text-gray-500 py-3 bg-gray-50 rounded-lg">
+            <p className="text-xs">No specific deliverables defined yet</p>
           </div>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h4 className="font-medium text-gray-900">Deliverables Progress</h4>
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold text-gray-900">Deliverables Progress</h4>
         <div className="space-y-3">
           {sellerDetails.deliverables.map((deliverable, index) => {
             const completionPercentage = deliverable.isFinished
@@ -403,11 +466,11 @@ export default function CampaignPerformance({
             return (
               <div
                 key={deliverable.id || index}
-                className="bg-orange-50 p-4 rounded-lg border border-orange-200"
+                className="bg-orange-50 p-3 rounded-lg border border-orange-200"
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h5 className="text-sm font-medium text-orange-900 mb-1">
+                    <h5 className="text-xs font-medium text-orange-900 mb-1">
                       {deliverable.deliverable.replace(/_/g, " ")}
                     </h5>
                     <div className="flex items-center space-x-2 text-xs text-orange-700">
@@ -422,36 +485,34 @@ export default function CampaignPerformance({
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        deliverable.isFinished
-                          ? "bg-green-100 text-green-800"
-                          : deliverable.isSubmitted
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {deliverable.isFinished
-                        ? "Completed"
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      deliverable.isFinished
+                        ? "bg-green-100 text-green-800"
                         : deliverable.isSubmitted
-                        ? "Under Review"
-                        : "Pending"}
-                    </span>
-                  </div>
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {deliverable.isFinished
+                      ? "Done"
+                      : deliverable.isSubmitted
+                      ? "Review"
+                      : "Pending"}
+                  </span>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="mb-3">
+                {/* Compact Progress Bar */}
+                <div className="mb-2">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs text-orange-600">Progress</span>
                     <span className="text-xs text-orange-600 font-medium">
                       {completionPercentage}%
                     </span>
                   </div>
-                  <div className="w-full bg-orange-200 rounded-full h-2">
+                  <div className="w-full bg-orange-200 rounded-full h-1">
                     <div
-                      className={`h-2 rounded-full transition-all duration-300 ${
+                      className={`h-1 rounded-full transition-all duration-300 ${
                         deliverable.isFinished
                           ? "bg-green-500"
                           : deliverable.isSubmitted
@@ -463,25 +524,25 @@ export default function CampaignPerformance({
                   </div>
                 </div>
 
-                {/* Work Submissions */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-xs text-orange-700">
-                    <span className="font-medium">Work Submissions:</span>
+                {/* Work Submissions - Compact */}
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center space-x-2 text-orange-700">
+                    <span className="font-medium">Work:</span>
                     <span className="bg-orange-100 px-2 py-1 rounded-full">
                       {workCount} item{workCount !== 1 ? "s" : ""}
                     </span>
                   </div>
                   {workCount > 0 && (
-                    <button className="text-xs text-orange-600 hover:text-orange-800 underline">
-                      View Submissions
+                    <button className="text-orange-600 hover:text-orange-800 underline">
+                      View
                     </button>
                   )}
                 </div>
 
-                {/* Work Items Preview */}
+                {/* Work Items Preview - Very Compact */}
                 {workCount > 0 && (
-                  <div className="mt-3 pt-3 border-t border-orange-200">
-                    <div className="space-y-2">
+                  <div className="mt-2 pt-2 border-t border-orange-200">
+                    <div className="space-y-1">
                       {deliverable.promoterWork
                         ?.slice(0, 2)
                         .map((work, workIndex) => (
@@ -489,7 +550,7 @@ export default function CampaignPerformance({
                             key={work.id || workIndex}
                             className="flex items-center space-x-2 text-xs text-orange-700"
                           >
-                            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                            <div className="w-1 h-1 bg-orange-400 rounded-full"></div>
                             <span className="flex-1 truncate">
                               {work.description || "Work submission"}
                             </span>
@@ -499,9 +560,8 @@ export default function CampaignPerformance({
                           </div>
                         ))}
                       {workCount > 2 && (
-                        <div className="text-xs text-orange-600 pl-4">
-                          +{workCount - 2} more submission
-                          {workCount - 2 !== 1 ? "s" : ""}
+                        <div className="text-xs text-orange-600 pl-3">
+                          +{workCount - 2} more
                         </div>
                       )}
                     </div>
@@ -514,36 +574,18 @@ export default function CampaignPerformance({
       </div>
     );
   };
-
-  const renderSalesPerformance = () => {
-    if (
-      campaign.campaign.type !== CampaignType.SELLER &&
-      campaign.campaign.type !== CampaignType.SALESMAN
-    )
-      return null;
-
-    return (
-      <div>
-        <h4 className="font-medium text-gray-900 mb-2">Sales Performance</h4>
-        <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-          <p className="text-sm text-orange-800">
-            Track your sales performance and commission earnings here.
-            {campaign.campaign.type === CampaignType.SALESMAN && (
-              <span> Use your referral code or link to track sales.</span>
-            )}
-          </p>
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold text-gray-900">Performance</h3>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span className="text-xs text-gray-600">Live</span>
         </div>
       </div>
-    );
-  };
-  return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">
-        Performance Analytics
-      </h3>
 
       {/* Performance Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {renderPerformanceStats()}
       </div>
 
@@ -556,15 +598,12 @@ export default function CampaignPerformance({
       {/* Seller Performance Tools */}
       {renderSellerDeliverables()}
 
-      {/* Sales Performance */}
-      {renderSalesPerformance()}
-
       {/* Copy Success Toast */}
       {showCopiedToast && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
-          <div className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2">
+          <div className="bg-green-600 text-white px-3 py-2 rounded-lg shadow-lg flex items-center space-x-2">
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -576,7 +615,7 @@ export default function CampaignPerformance({
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span>Link copied to clipboard!</span>
+            <span className="text-sm">Link copied to clipboard!</span>
           </div>
         </div>
       )}
