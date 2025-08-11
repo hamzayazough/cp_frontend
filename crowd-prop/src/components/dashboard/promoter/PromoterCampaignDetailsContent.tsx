@@ -25,7 +25,6 @@ import PromoterLinks from "./components/PromoterLinks";
 import CampaignTabs from "./components/CampaignTabs";
 import CampaignOverview from "./components/CampaignOverview";
 import CampaignPerformance from "./components/CampaignPerformance";
-import CampaignRequirements from "./components/CampaignRequirements";
 import CampaignMessages from "./components/CampaignMessages";
 import ShareModal from "./components/ShareModal";
 import CampaignNotFound from "./components/CampaignNotFound";
@@ -186,8 +185,6 @@ export default function PromoterCampaignDetailsContent({
         return <CampaignMediaViewer mediaUrls={campaign?.mediaUrls || []} />;
       case "performance":
         return <CampaignPerformance campaign={campaign} />;
-      case "requirements":
-        return <CampaignRequirements campaign={campaign} />;
       case "messages":
         return (
           <div className="h-[600px]">
