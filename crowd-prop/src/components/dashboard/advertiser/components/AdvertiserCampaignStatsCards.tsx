@@ -6,8 +6,15 @@ import {
   UsersIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
+import {
+  Play,
+  CheckCircle,
+  Search,
+  AlertCircle,
+} from "lucide-react";
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType } from "@/app/enums/campaign-type";
+import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
 interface AdvertiserCampaignStatsCardsProps {
   campaign: CampaignAdvertiser;
@@ -46,7 +53,76 @@ export default function AdvertiserCampaignStatsCards({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <div className="space-y-4">
+      {/* Campaign Status Progress */}
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <div className="flex justify-center">
+          <div className="w-[90%] flex items-center space-x-1">
+            {(() => {
+              const statuses = campaign.campaign.isPublic 
+                ? [
+                    { key: AdvertiserCampaignStatus.PENDING_PROMOTER, label: "Waiting", icon: AlertCircle },
+                    { key: AdvertiserCampaignStatus.REVIEWING_APPLICATIONS, label: "Review", icon: Search },
+                    { key: AdvertiserCampaignStatus.ONGOING, label: "Ongoing", icon: Play },
+                    { key: AdvertiserCampaignStatus.COMPLETED, label: "Completed", icon: CheckCircle },
+                  ]
+                : [
+                    { key: AdvertiserCampaignStatus.PENDING_PROMOTER, label: "Waiting", icon: AlertCircle },
+                    { key: AdvertiserCampaignStatus.REVIEWING_APPLICATIONS, label: "Review", icon: Search },
+                    { key: AdvertiserCampaignStatus.ONGOING, label: "Ongoing", icon: Play },
+                    { key: AdvertiserCampaignStatus.COMPLETED, label: "Completed", icon: CheckCircle },
+                  ];
+              
+              const currentIndex = statuses.findIndex(status => status.key === campaign.status);
+              
+              return statuses.map((status, index) => {
+                const Icon = status.icon;
+                const isActive = index === currentIndex;
+                const isCompleted = index < currentIndex;
+                
+                return (
+                  <div key={status.key} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center flex-1">
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center mb-0.5 transition-all ${
+                          isActive
+                            ? "bg-blue-600 text-white shadow-lg"
+                            : isCompleted
+                            ? "bg-green-600 text-white"
+                            : "bg-gray-200 text-gray-400"
+                        }`}
+                      >
+                        <Icon className="h-2.5 w-2.5" />
+                      </div>
+                      <span
+                        className={`text-xs font-medium ${
+                          isActive
+                            ? "text-blue-600"
+                            : isCompleted
+                            ? "text-green-600"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        {status.label}
+                      </span>
+                    </div>
+                    {index < statuses.length - 1 && (
+                      <div
+                        className={`flex-1 h-0.5 mx-1 rounded-full transition-all ${
+                          isCompleted ? "bg-green-600" : "bg-gray-200"
+                        }`}
+                      />
+                    )}
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
       {/* Budget Spent */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center">
@@ -153,6 +229,7 @@ export default function AdvertiserCampaignStatsCards({
           Until {new Date(campaign.campaign.deadline).toLocaleDateString()}
         </p>
       </div>
+    </div>
     </div>
   );
 }

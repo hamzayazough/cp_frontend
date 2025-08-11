@@ -315,40 +315,38 @@ export default function AdvertiserCampaignPromoters({
         </div>
       );
     } else {
-      return (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <EyeIcon className="h-8 w-8 text-gray-400" />
+      return (          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <EyeIcon className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No Applications Yet
+            </h3>
+            <p className="text-gray-600 mb-4">
+              No promoters have applied to this private campaign yet.
+            </p>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No Applications Yet
-          </h3>
-          <p className="text-gray-600 mb-4">
-            No promoters have applied to this private campaign yet.
-          </p>
-        </div>
-      );
+        );
     }
   }
 
   // For public campaigns, show applications overview
   if (applicants.length === 0 && chosenPromotersArray.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <EyeIcon className="h-8 w-8 text-gray-400" />
+    return (        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <EyeIcon className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No Promoters Yet
+          </h3>
+          <p className="text-gray-600 mb-4">
+            No promoters have applied to this campaign yet.
+          </p>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            Share Campaign
+          </button>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          No Promoters Yet
-        </h3>
-        <p className="text-gray-600 mb-4">
-          No promoters have applied to this campaign yet.
-        </p>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          Share Campaign
-        </button>
-      </div>
-    );
+      );
   }
 
   return (
