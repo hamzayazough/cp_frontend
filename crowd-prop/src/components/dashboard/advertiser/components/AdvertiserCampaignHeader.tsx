@@ -15,24 +15,19 @@ import {
 } from "@/app/interfaces/campaign/advertiser-campaign";
 import {
   CampaignType,
-  PromoterCampaignStatus,
 } from "@/app/enums/campaign-type";
 import { useState } from "react";
 import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
 interface AdvertiserCampaignHeaderProps {
   campaign: CampaignAdvertiser;
-  campaignId: string;
   onShareClick: () => void;
-  getStatusColor: (status: AdvertiserCampaignStatus) => string;
   getTypeColor: (type: CampaignType) => string;
 }
 
 export default function AdvertiserCampaignHeader({
   campaign,
-  campaignId,
   onShareClick,
-  getStatusColor,
   getTypeColor,
 }: AdvertiserCampaignHeaderProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -66,27 +61,6 @@ export default function AdvertiserCampaignHeader({
         campaign.type === CampaignType.SELLER) &&
       campaign.status === AdvertiserCampaignStatus.ONGOING &&
       areAllDeliverablesFinished()
-    );
-  };
-
-  // Check if chat button should be shown
-  const shouldShowChatButton = () => {
-    if (
-      !campaign.chosenPromoters ||
-      campaign.status !== AdvertiserCampaignStatus.ONGOING
-    ) {
-      return false;
-    }
-
-    // Handle both single object and array for chosenPromoters
-    const chosenPromotersArray = Array.isArray(campaign.chosenPromoters)
-      ? campaign.chosenPromoters
-      : [campaign.chosenPromoters];
-
-    // Check if at least one promoter is ongoing
-    return chosenPromotersArray.some(
-      (chosenPromoter) =>
-        chosenPromoter.status === PromoterCampaignStatus.ONGOING
     );
   };
 
@@ -180,14 +154,7 @@ export default function AdvertiserCampaignHeader({
             <h1 className="text-xl font-bold text-gray-900">
               {campaign.title}
             </h1>
-            <div className="flex items-center space-x-2 mt-1">
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                  campaign.status
-                )}`}
-              >
-                {campaign.status}
-              </span>
+            <div className="flex items-center mt-1">
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
                   campaign.type
@@ -198,7 +165,6 @@ export default function AdvertiserCampaignHeader({
             </div>
           </div>
         </div>
-        {/* Remove Chat button if no chosenPromoters */}
         <div className="flex items-center space-x-2">
           {/* Extend Deadline Button - only show if deadline is within a week and campaign is ongoing */}
           {isDeadlineWithinWeek() &&
@@ -226,16 +192,15 @@ export default function AdvertiserCampaignHeader({
               {isCompletingCampaign ? "Completing..." : "Complete Campaign"}
             </button>
           )}
-          {campaign.type === CampaignType.VISIBILITY &&
-            shouldShowChatButton() && (
-              <button
-                onClick={onShareClick}
-                className="flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors text-xs"
-              >
-                <ShareIcon className="h-3 w-3 mr-1" />
-                Link to Share
-              </button>
-            )}
+          {campaign.type === CampaignType.VISIBILITY && (
+            <button
+              onClick={onShareClick}
+              className="flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors text-xs"
+            >
+              <ShareIcon className="h-3 w-3 mr-1" />
+              Link to Share
+            </button>
+          )}
           {campaign.campaign.discordInviteLink && (
             <Link
               href={campaign.campaign.discordInviteLink}
@@ -258,20 +223,7 @@ export default function AdvertiserCampaignHeader({
               Discord Thread
             </Link>
           )}
-          {shouldShowChatButton() ? (
-            <Link
-              href={`/dashboard/messages/${campaignId}`}
-              className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs"
-            >
-              <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
-              Chat
-            </Link>
-          ) : campaign.chosenPromoters ? (
-            <div className="flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded-lg text-xs">
-              <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
-              Chat only available when campaign and promoters are active
-            </div>
-          ) : null}
+
           {/* Delete Icon Button - only if no chosenPromoters */}
           {!campaign.chosenPromoters && (
             <>

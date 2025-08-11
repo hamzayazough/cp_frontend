@@ -24,7 +24,6 @@ import AdvertiserCampaignPromoters from "./components/AdvertiserCampaignPromoter
 import AdvertiserCampaignPerformance from "./components/AdvertiserCampaignPerformance";
 import AdvertiserPromoterLinks from "./components/AdvertiserPromoterLinks";
 import AdvertiserCampaignMessages from "./components/AdvertiserCampaignMessages";
-import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
 interface AdvertiserCampaignDetailsContentProps {
   campaignId: string;
@@ -106,33 +105,16 @@ export default function AdvertiserCampaignDetailsContent({
     loadCampaign();
   }, [campaignId, getCampaignDetails]);
 
-  const getStatusColor = (status: AdvertiserCampaignStatus) => {
-    switch (status) {
-      case AdvertiserCampaignStatus.ONGOING:
-        return "bg-green-100 text-green-800";
-      case AdvertiserCampaignStatus.COMPLETED:
-        return "bg-blue-100 text-blue-800";
-      case AdvertiserCampaignStatus.WAITING_FOR_APPLICATIONS:
-        return "bg-gray-100 text-gray-800";
-      case AdvertiserCampaignStatus.REVIEWING_APPLICATIONS:
-        return "bg-yellow-100 text-yellow-800";
-      case AdvertiserCampaignStatus.PENDING_PROMOTER:
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   const getTypeColor = (type: CampaignType) => {
     switch (type) {
       case CampaignType.VISIBILITY:
-        return "bg-purple-100 text-purple-800";
-      case CampaignType.CONSULTANT:
         return "bg-blue-100 text-blue-800";
+      case CampaignType.CONSULTANT:
+        return "bg-purple-100 text-purple-800";
       case CampaignType.SELLER:
-        return "bg-orange-100 text-orange-800";
-      case CampaignType.SALESMAN:
         return "bg-green-100 text-green-800";
+      case CampaignType.SALESMAN:
+        return "bg-orange-100 text-orange-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -345,9 +327,7 @@ export default function AdvertiserCampaignDetailsContent({
       {/* Header */}
       <AdvertiserCampaignHeader
         campaign={campaign}
-        campaignId={campaignId}
         onShareClick={handleShareClick}
-        getStatusColor={getStatusColor}
         getTypeColor={getTypeColor}
       />
 
