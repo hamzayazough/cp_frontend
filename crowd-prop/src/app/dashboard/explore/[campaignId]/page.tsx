@@ -495,6 +495,10 @@ export default function CampaignDetailsPage({
   
   // Add tab state
   const [activeTab, setActiveTab] = useState<'overview' | 'media'>('overview');
+  
+  // Add expansion states
+  const [showAllRequirements, setShowAllRequirements] = useState(false);
+  const [showAllPlatforms, setShowAllPlatforms] = useState(false);
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -714,32 +718,6 @@ export default function CampaignDetailsPage({
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
           {/* Main Content */}
           <div className="lg:col-span-3">
-            {/* Campaign Type Banner */}
-            <div className={`mb-3 p-4 rounded-lg border-2 ${getCampaignTypeColorBg(campaign.type)} ${getCampaignTypeBorder(campaign.type)}`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className={getCampaignTypeColor(campaign.type).replace('bg-', 'text-').replace('-100', '-600')}>
-                    {getCampaignTypeIcon(campaign.type)}
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-blue-600">{campaign.type} Campaign</h2>
-                    <p className="text-sm text-blue-500">
-                      {campaign.type === CampaignType.VISIBILITY && "Effortless exposure - promoters drive traffic while you pay only for results"}
-                      {campaign.type === CampaignType.SALESMAN && "Performance-based sales promotion with commission rewards"}
-                      {campaign.type === CampaignType.CONSULTANT && "Expert consultation services with meeting-based engagement"}
-                      {campaign.type === CampaignType.SELLER && "Product selling campaign with promotional requirements"}
-                    </p>
-                  </div>
-                </div>
-                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1">
-                  <span>Learn More</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
             {/* Advertiser Info Section - Horizontal Layout */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
               <div className="flex items-center justify-between">
@@ -911,7 +889,7 @@ export default function CampaignDetailsPage({
                         </div>
                         <p className="text-gray-700 mb-4">{campaign.targetAudience}</p>
                         <div className="space-y-2">
-                          {campaign.preferredPlatforms?.slice(0, 3).map((platform: string) => (
+                          {campaign.preferredPlatforms?.slice(0, showAllPlatforms ? campaign.preferredPlatforms.length : 3).map((platform: string) => (
                             <span
                               key={platform}
                               className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium mr-2"
@@ -920,9 +898,12 @@ export default function CampaignDetailsPage({
                             </span>
                           ))}
                           {campaign.preferredPlatforms && campaign.preferredPlatforms.length > 3 && (
-                            <span className="text-blue-600 text-sm font-medium">
-                              +{campaign.preferredPlatforms.length - 3} more
-                            </span>
+                            <button
+                              onClick={() => setShowAllPlatforms(!showAllPlatforms)}
+                              className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer"
+                            >
+                              {showAllPlatforms ? 'Show less' : `+${campaign.preferredPlatforms.length - 3} more`}
+                            </button>
                           )}
                         </div>
                       </div>
@@ -989,16 +970,19 @@ export default function CampaignDetailsPage({
                           
                           return (
                             <div className="space-y-2">
-                              {allRequirements.slice(0, 2).map((requirement: string, idx: number) => (
+                              {allRequirements.slice(0, showAllRequirements ? allRequirements.length : 2).map((requirement: string, idx: number) => (
                                 <div key={idx} className="flex items-start space-x-2">
                                   <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
                                   <span className="text-gray-700 text-sm">{requirement}</span>
                                 </div>
                               ))}
                               {allRequirements.length > 2 && (
-                                <p className="text-blue-600 text-sm font-medium">
-                                  +{allRequirements.length - 2} more
-                                </p>
+                                <button
+                                  onClick={() => setShowAllRequirements(!showAllRequirements)}
+                                  className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer"
+                                >
+                                  {showAllRequirements ? 'Show less' : `+${allRequirements.length - 2} more`}
+                                </button>
                               )}
                             </div>
                           );
@@ -1106,38 +1090,6 @@ export default function CampaignDetailsPage({
                   )}
                 </button>
               )}
-            </div>
-
-            {/* Timeline */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Timeline</h3>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-green-500 rounded-full flex-shrink-0"></div>
-                  <div>
-                    <p className="text-xs font-medium text-gray-900">Created</p>
-                    <p className="text-xs text-gray-500">{formatDate(campaign.createdAt)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-green-500 rounded-full flex-shrink-0"></div>
-                  <div>
-                    <p className="text-xs font-medium text-gray-900">Started</p>
-                    <p className="text-xs text-gray-500">{formatDate(campaign.startDate)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div
-                    className={`w-1 h-1 rounded-full flex-shrink-0 ${
-                      isExpired ? "bg-red-500" : "bg-yellow-500"
-                    }`}
-                  ></div>
-                  <div>
-                    <p className="text-xs font-medium text-gray-900">Deadline</p>
-                    <p className="text-xs text-gray-500">{formatDate(campaign.deadline)}</p>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Help */}
