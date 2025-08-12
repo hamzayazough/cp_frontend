@@ -22,7 +22,6 @@ interface CampaignHeaderProps {
 
 export default function CampaignHeader({
   campaign,
-  campaignId,
   onShareClick,
   getTypeColor,
 }: CampaignHeaderProps) {
@@ -115,15 +114,7 @@ export default function CampaignHeader({
               Discord
             </Link>
           )}
-        {campaign.status === PromoterCampaignStatus.ONGOING && (
-          <Link
-            href={routes.messageThread(campaignId)}
-            className="flex items-center bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-          >
-            <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
-            Chat
-          </Link>
-        )}
+        
       </div>
     </div>
   );
