@@ -38,6 +38,7 @@ export default function AdvertiserCampaignOverview({
 }: AdvertiserCampaignOverviewProps) {
   const [showCampaignTypeModal, setShowCampaignTypeModal] = useState(false);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
+  const [showAllPlatforms, setShowAllPlatforms] = useState(false);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -282,18 +283,28 @@ export default function AdvertiserCampaignOverview({
             <p className="text-sm text-gray-500 mb-2">No specific audience</p>
           )}
           {campaign.campaign.preferredPlatforms && campaign.campaign.preferredPlatforms.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {campaign.campaign.preferredPlatforms.slice(0, 3).map((platform, index) => (
-                <div
-                  key={index}
-                  className="flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs"
-                >
-                  {getSocialPlatformIcon(platform)}
-                  <span className="ml-1">{platform}</span>
-                </div>
-              ))}
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-1">
+                {(showAllPlatforms ? campaign.campaign.preferredPlatforms : campaign.campaign.preferredPlatforms.slice(0, 3)).map((platform, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs"
+                  >
+                    {getSocialPlatformIcon(platform)}
+                    <span className="ml-1">{platform}</span>
+                  </div>
+                ))}
+              </div>
               {campaign.campaign.preferredPlatforms.length > 3 && (
-                <span className="text-xs text-gray-500">+{campaign.campaign.preferredPlatforms.length - 3}</span>
+                <button
+                  onClick={() => setShowAllPlatforms(!showAllPlatforms)}
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                >
+                  {showAllPlatforms 
+                    ? "Show less" 
+                    : `+${campaign.campaign.preferredPlatforms.length - 3} more`
+                  }
+                </button>
               )}
             </div>
           )}
