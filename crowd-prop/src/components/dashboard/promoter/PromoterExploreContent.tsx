@@ -443,169 +443,184 @@ export default function PromoterExploreContent() {
         </div>
       </div>{" "}
       {/* Campaigns Grid */}
-      <div className="space-y-4">
-        {campaigns.map((campaign) => (
-          <Link
-            key={campaign.id}
-            href={routes.dashboardExploreDetails(campaign.id)}
-            className={`block bg-white rounded-lg shadow-sm transition-all hover:shadow-md hover:border-blue-200 relative group ${
-              campaign.isPublic
-                ? "border border-gray-200"
-                : "border-2 border-amber-200 bg-amber-50/30"
-            }`}
-          >
-            {/* External Link Icon */}
-            <div className="absolute top-3 right-3 w-6 h-6 bg-blue-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <ArrowTopRightOnSquareIcon className="h-3 w-3 text-blue-600" />
-            </div>
+      <div className="space-y-3">
+        {campaigns.map((campaign) => {
+          const getTypeColorBorder = (type: string) => {
+            switch (type) {
+              case "VISIBILITY":
+                return "border-t-blue-500";
+              case "CONSULTANT":
+                return "border-t-purple-500";
+              case "SELLER":
+                return "border-t-green-500";
+              case "SALESMAN":
+                return "border-t-orange-500";
+              default:
+                return "border-t-gray-500";
+            }
+          };
 
-            <div className="p-4">{" "}
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {campaign.title}
-                    </h3>
-                    {!campaign.isPublic && (
-                      <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
-                        <LockClosedIcon className="h-3 w-3 text-amber-600" />
-                        <span className="text-xs font-medium text-amber-700">
-                          Private
+          const getTypeIcon = (type: string) => {
+            switch (type) {
+              case "VISIBILITY":
+                return <EyeIcon className="h-4 w-4 text-blue-600" />;
+              case "CONSULTANT":
+                return <BuildingOfficeIcon className="h-4 w-4 text-purple-600" />;
+              case "SELLER":
+                return <TagIcon className="h-4 w-4 text-green-600" />;
+              case "SALESMAN":
+                return <CurrencyDollarIcon className="h-4 w-4 text-orange-600" />;
+              default:
+                return <EyeIcon className="h-4 w-4 text-gray-600" />;
+            }
+          };
+
+          return (
+            <Link
+              key={campaign.id}
+              href={routes.dashboardExploreDetails(campaign.id)}
+              className={`block bg-white rounded-lg shadow-sm border-t-4 transition-all hover:shadow-md hover:scale-[1.01] relative group border border-gray-200 ${getTypeColorBorder(
+                campaign.type
+              )} ${
+                !campaign.isPublic ? "bg-amber-50/30 border-amber-200" : ""
+              }`}
+            >
+              {/* External Link Icon */}
+              <div className="absolute top-3 right-3 w-6 h-6 bg-blue-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <ArrowTopRightOnSquareIcon className="h-3 w-3 text-blue-600" />
+              </div>
+
+              <div className="p-4">
+                {/* Header with Icon and Badge */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start space-x-3 flex-1">
+                    {/* Type Icon */}
+                    <div className="mt-1">
+                      {getTypeIcon(campaign.type)}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="text-base font-semibold text-gray-900 truncate">
+                          {campaign.title}
+                        </h3>
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-medium ${getTypeColor(
+                            campaign.type
+                          )}`}
+                        >
+                          {campaign.type}
                         </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          router.push(`/user/${campaign.advertiser.id}`);
-                        }}
-                        className="hover:ring-2 hover:ring-blue-500 rounded transition-all"
-                      >
-                        {campaign.advertiser.profileUrl ? (
-                          <Image 
-                            src={campaign.advertiser.profileUrl} 
-                            alt={campaign.advertiser.companyName}
-                            width={32}
-                            height={32}
-                            className="rounded object-cover"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
-                            <span className="text-gray-500 text-xs font-medium">
-                              {campaign.advertiser.companyName?.charAt(0)?.toUpperCase() || '?'}
+                        {!campaign.isPublic && (
+                          <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                            <LockClosedIcon className="h-3 w-3 text-amber-600" />
+                            <span className="text-xs font-medium text-amber-700">
+                              Private
                             </span>
                           </div>
                         )}
-                      </button>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 flex items-center">
-                          {campaign.advertiser.companyName}
-                          {campaign.advertiser.verified && (
-                            <div className="ml-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
-                              <svg
-                                className="w-2 h-2 text-white"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
+                      </div>
+                      
+                      {/* Company Info */}
+                      <div className="flex items-center space-x-2 mb-2">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            router.push(`/user/${campaign.advertiser.id}`);
+                          }}
+                          className="hover:ring-2 hover:ring-blue-500 rounded transition-all"
+                        >
+                          {campaign.advertiser.profileUrl ? (
+                            <Image 
+                              src={campaign.advertiser.profileUrl} 
+                              alt={campaign.advertiser.companyName}
+                              width={24}
+                              height={24}
+                              className="rounded object-cover"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center">
+                              <span className="text-gray-500 text-xs font-medium">
+                                {campaign.advertiser.companyName?.charAt(0)?.toUpperCase() || '?'}
+                              </span>
                             </div>
                           )}
-                        </div>
-                        <div className="flex items-center">
-                          <StarIcon className="h-3 w-3 text-yellow-400 fill-current" />
-                          <span className="text-xs text-gray-600 ml-1">
-                            {campaign.advertiser.rating}
-                          </span>
+                        </button>
+                        <div>
+                          <div className="text-xs font-medium text-gray-900 flex items-center">
+                            {campaign.advertiser.companyName}
+                            {campaign.advertiser.verified && (
+                              <div className="ml-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
+                                <svg
+                                  className="w-2 h-2 text-white"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center">
+                            <StarIcon className="h-3 w-3 text-yellow-400 fill-current" />
+                            <span className="text-xs text-gray-600 ml-1">
+                              {campaign.advertiser.rating}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <span
-                      className={`px-2 py-0.5 rounded text-xs font-medium ${getTypeColor(
-                        campaign.type
-                      )}`}
-                    >
-                      {campaign.type}
-                    </span>
+                  </div>
+                  
+                  {/* Days Left */}
+                  <div className="text-right ml-3">
+                    <div className="flex items-center text-xs text-gray-500">
+                      <CalendarIcon className="h-3 w-3 mr-1" />
+                      {getDaysLeft(campaign.deadline)} days
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="flex items-center text-xs text-gray-500">
-                    <CalendarIcon className="h-3 w-3 mr-1" />
-                    {getDaysLeft(campaign.deadline)} days
-                  </div>
-                </div>
-              </div>{" "}
-              {/* Prominent Budget Information */}
-              <div className="bg-green-50 border-l-4 border-green-400 px-3 py-2 mb-3">
-                <div className="flex items-center space-x-2">
-                  <CurrencyDollarIcon className="h-4 w-4 text-green-600" />
-                  <p className="text-base font-bold text-green-700">
-                    {formatBudgetInfo(campaign)}
-                  </p>
-                </div>
-              </div>
-              {/* Description */}
-              <p className="text-gray-700 text-sm mb-3 line-clamp-2">{campaign.description}</p>{" "}
-              {/* Requirements */}
-              {(() => {
-                const allRequirements = getAllRequirements(campaign);
-                const maxDisplayed = 3;
-                const displayedRequirements = allRequirements.slice(
-                  0,
-                  maxDisplayed
-                );
-                const hasMore = allRequirements.length > maxDisplayed;
 
-                return allRequirements.length > 0 ? (
-                  <div className="mb-3">
-                    <h4 className="text-xs font-medium text-gray-900 mb-1">
-                      Requirements:
-                    </h4>
-                    <ul className="list-disc list-inside text-xs text-gray-600 space-y-0.5">
-                      {displayedRequirements.map((req, idx) => (
-                        <li key={idx} className="line-clamp-1">{req}</li>
-                      ))}
-                      {hasMore && (
-                        <li className="text-blue-600 font-medium cursor-pointer hover:text-blue-700 transition-colors">
-                          +{allRequirements.length - maxDisplayed} more - view details
-                        </li>
-                      )}
-                    </ul>
+                {/* Budget - Compact Version */}
+                <div className="bg-green-50 border-l-3 border-green-400 px-2 py-1.5 mb-2 rounded-sm">
+                  <div className="flex items-center space-x-1.5">
+                    <CurrencyDollarIcon className="h-3 w-3 text-green-600" />
+                    <p className="text-sm font-bold text-green-700">
+                      {formatBudgetInfo(campaign)}
+                    </p>
                   </div>
-                ) : null;
-              })()}
-              {/* Tags */}
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {campaign.tags.slice(0, 4).map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs"
-                  >
-                    {tag}
-                  </span>
-                ))}
-                {campaign.tags.length > 4 && (
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
-                    +{campaign.tags.length - 4}
-                  </span>
-                )}
-              </div>{" "}
-              {/* Footer */}
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <div className="flex items-center space-x-3 text-xs text-gray-600">
-                  <span>{formatDate(campaign.createdAt)}</span>
                 </div>
-                <div className="flex space-x-2">
+
+                {/* Description - Truncated */}
+                <p className="text-gray-700 text-xs mb-2 line-clamp-1">{campaign.description}</p>
+
+                {/* Compact Requirements and Tags */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-xs text-gray-600">
+                    <span>{formatDate(campaign.createdAt)}</span>
+                    {(() => {
+                      const allRequirements = getAllRequirements(campaign);
+                      return allRequirements.length > 0 ? (
+                        <>
+                          <span>•</span>
+                          <span>{allRequirements.length} requirements</span>
+                        </>
+                      ) : null;
+                    })()}
+                    {campaign.tags.length > 0 && (
+                      <>
+                        <span>•</span>
+                        <span>{campaign.tags.length} tags</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Apply Button */}
                   <button
                     onClick={(e) => {
                       e.preventDefault();
@@ -613,7 +628,7 @@ export default function PromoterExploreContent() {
                       handleApplyClick(campaign);
                     }}
                     disabled={acceptingContract === campaign.id}
-                    className="bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-1.5 text-sm"
+                    className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-1"
                   >
                     {acceptingContract === campaign.id ? (
                       <>
@@ -636,9 +651,9 @@ export default function PromoterExploreContent() {
                   </button>
                 </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>{" "}
       {/* Empty State */}
       {campaigns.length === 0 && !loading && (
