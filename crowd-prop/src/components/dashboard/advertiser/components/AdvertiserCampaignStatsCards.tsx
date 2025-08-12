@@ -62,7 +62,6 @@ export default function AdvertiserCampaignStatsCards({
               const statuses = campaign.campaign.isPublic 
                 ? [
                     { key: AdvertiserCampaignStatus.PENDING_PROMOTER, label: "Waiting", icon: AlertCircle },
-                    { key: AdvertiserCampaignStatus.REVIEWING_APPLICATIONS, label: "Review", icon: Search },
                     { key: AdvertiserCampaignStatus.ONGOING, label: "Ongoing", icon: Play },
                     { key: AdvertiserCampaignStatus.COMPLETED, label: "Completed", icon: CheckCircle },
                   ]
