@@ -27,7 +27,7 @@ import {
   getDaysLeft,
 } from "./promoter-explore-content.constants";
 import { formatDate } from "@/utils/date";
-import { CampaignType } from "@/app/enums/campaign-type";
+import { CampaignType, Deliverable } from "@/app/enums/campaign-type";
 import { CampaignUnion } from "@/app/interfaces/campaign/explore-campaign";
 import { promoterService } from "@/services/promoter.service";
 import { useExploreCampaigns } from "@/hooks/useExploreCampaigns";
@@ -184,6 +184,14 @@ const getAllRequirements = (campaign: CampaignUnion): string[] => {
   return requirements;
 };
 
+// Helper function to format deliverable names
+const formatDeliverableName = (deliverable: Deliverable): string => {
+  return deliverable
+    .split('_')
+    .map(word => word.charAt(0) + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export default function PromoterExploreContent() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -197,6 +205,7 @@ export default function PromoterExploreContent() {
     isOpen: boolean;
     campaign: CampaignUnion | null;
   }>({ isOpen: false, campaign: null });
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -299,6 +308,18 @@ export default function PromoterExploreContent() {
 
   const handleCloseModal = () => {
     setApplicationModal({ isOpen: false, campaign: null });
+  };
+
+  const toggleDescriptionExpansion = (campaignId: string) => {
+    setExpandedDescriptions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(campaignId)) {
+        newSet.delete(campaignId);
+      } else {
+        newSet.add(campaignId);
+      }
+      return newSet;
+    });
   };
   return (
     <div className="space-y-6">
@@ -643,8 +664,92 @@ export default function PromoterExploreContent() {
                   </div>
                 )}
 
-                {/* Description - Truncated */}
-                <p className="text-gray-700 text-xs mb-2 line-clamp-1">{campaign.description}</p>
+                {/* Deliverables Section - Only for Consultant and Seller campaigns */}
+                {(campaign.type === 'CONSULTANT' || campaign.type === 'SELLER') && (
+                  (() => {
+                    let deliverables: Deliverable[] = [];
+                    
+                    if (campaign.type === 'CONSULTANT' && 'expectedDeliverables' in campaign) {
+                      deliverables = campaign.expectedDeliverables || [];
+                    } else if (campaign.type === 'SELLER' && 'deliverables' in campaign) {
+                      deliverables = campaign.deliverables || [];
+                    }
+                    
+                    if (deliverables.length > 0) {
+                      const getDeliverableColor = (type: string): string => {
+                        switch (type) {
+                          case 'CONSULTANT':
+                            return 'bg-purple-100 text-purple-800';
+                          case 'SELLER':
+                            return 'bg-green-100 text-green-800';
+                          default:
+                            return 'bg-blue-100 text-blue-800';
+                        }
+                      };
+
+                      return (
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 mb-3">
+                          <div className="flex items-start space-x-2">
+                            <div className="bg-gray-100 p-1 rounded-full mt-0.5">
+                              <svg className="h-3 w-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-600 font-medium mb-1">Expected Deliverables</p>
+                              <div className="flex flex-wrap gap-1">
+                                {deliverables.slice(0, 3).map((deliverable: Deliverable, index: number) => (
+                                  <span
+                                    key={index}
+                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getDeliverableColor(campaign.type)}`}
+                                  >
+                                    {formatDeliverableName(deliverable)}
+                                  </span>
+                                ))}
+                                {deliverables.length > 3 && (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                                    +{deliverables.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()
+                )}
+
+                {/* Description - Truncated with expand option */}
+                <div className="mb-2">
+                  {(() => {
+                    const isExpanded = expandedDescriptions.has(campaign.id);
+                    const description = campaign.description || "";
+                    const shouldTruncate = description.length > 100;
+                    const displayText = shouldTruncate && !isExpanded 
+                      ? description.substring(0, 100) + "..."
+                      : description;
+
+                    return (
+                      <div className="text-gray-700 text-xs">
+                        <span>{displayText}</span>
+                        {shouldTruncate && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleDescriptionExpansion(campaign.id);
+                            }}
+                            className="ml-1 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                          >
+                            {isExpanded ? "show less" : "see more"}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
 
                 {/* Compact Requirements and Tags */}
                 <div className="flex items-center justify-between">
