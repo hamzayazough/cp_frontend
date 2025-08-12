@@ -364,10 +364,16 @@ class AdvertiserPaymentService {
    */
   async adjustCampaignBudget(
     campaignId: string,
-    newBudget: number
+    additionalBudget: number
   ): Promise<{
     success: boolean;
     message: string;
+    data?: {
+      campaignId: string;
+      previousBudgetCents: number;
+      additionalBudgetCents: number;
+      newBudgetCents: number;
+    };
     requiresAdditionalFunding?: boolean;
     additionalFundingAmount?: number;
   }> {
@@ -375,19 +381,31 @@ class AdvertiserPaymentService {
       const response = await httpService.put<{
         success: boolean;
         data: {
+          campaignId: string;
+          previousBudgetCents: number;
+          additionalBudgetCents: number;
+          newBudgetCents: number;
           requiresAdditionalFunding?: boolean;
           additionalFundingAmount?: number;
         };
         message: string;
       }>(
         `${PAYMENT_ENDPOINTS.ADJUST_CAMPAIGN_BUDGET}/${campaignId}/budget`,
-        { newBudget },
+        { additionalBudget },
         true
       );
 
       return {
         success: response.data.success,
         message: response.data.message,
+        data: response.data.data
+          ? {
+              campaignId: response.data.data.campaignId,
+              previousBudgetCents: response.data.data.previousBudgetCents,
+              additionalBudgetCents: response.data.data.additionalBudgetCents,
+              newBudgetCents: response.data.data.newBudgetCents,
+            }
+          : undefined,
         requiresAdditionalFunding:
           response.data.data?.requiresAdditionalFunding,
         additionalFundingAmount: response.data.data?.additionalFundingAmount,

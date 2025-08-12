@@ -18,6 +18,8 @@ interface FundingVerificationModalProps {
   onClose: () => void;
   onVerified: () => void;
   estimatedBudget: number; // Budget in dollars
+  mode?: 'create' | 'increase'; // New prop to customize content
+  currentMaxBudget?: number; // Current max budget for increase mode
 }
 
 export default function FundingVerificationModal({
@@ -25,6 +27,8 @@ export default function FundingVerificationModal({
   onClose,
   onVerified,
   estimatedBudget,
+  mode = 'create',
+  currentMaxBudget = 0,
 }: FundingVerificationModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,7 +105,7 @@ export default function FundingVerificationModal({
                   <CreditCardIcon className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Verify Campaign Funds
+                  {mode === 'increase' ? 'Verify Budget Increase' : 'Verify Campaign Funds'}
                 </h3>
               </div>
               <button
@@ -140,13 +144,16 @@ export default function FundingVerificationModal({
                 {/* Campaign Budget Info */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-gray-900 mb-3">
-                    Campaign Budget
+                    {mode === 'increase' ? 'Budget Increase' : 'Campaign Budget'}
                   </h4>
                   <div className="text-lg font-semibold text-gray-900">
                     {formatCurrency(feasibility.estimatedBudget)}
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
-                    Estimated maximum budget for this campaign
+                    {mode === 'increase' 
+                      ? `Additional budget to be added (Current max: ${formatCurrency(currentMaxBudget)})`
+                      : 'Estimated maximum budget for this campaign'
+                    }
                   </p>
                 </div>
 
@@ -209,9 +216,10 @@ export default function FundingVerificationModal({
                           ✅ Sufficient Funds Available
                         </h4>
                         <p className="text-sm text-green-700 mt-1">
-                          You have enough funds to create this campaign. The
-                          maximum budget will be held when you create the
-                          campaign.
+                          {mode === 'increase'
+                            ? 'You have enough funds to increase the campaign budget. The additional amount will be held in your account.'
+                            : 'You have enough funds to create this campaign. The maximum budget will be held when you create the campaign.'
+                          }
                         </p>
                       </div>
                     </div>
@@ -226,27 +234,29 @@ export default function FundingVerificationModal({
                       </h4>
                       <p className="text-sm text-red-700 mt-1">
                         You need {formatCurrency(feasibility.shortfallAmount)}{" "}
-                        more to fund this campaign.
+                        more to {mode === 'increase' ? 'increase the campaign budget' : 'fund this campaign'}.
                       </p>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Information Note */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-2">
-                    <InformationCircleIcon className="h-5 w-5 text-gray-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-700">
-                        <strong>How it works:</strong> When you create a
-                        campaign, the maximum budget amount will be temporarily
-                        held in your account to ensure promoters get paid.
-                        Unused funds are released when the campaign ends.
-                      </p>
+                {/* Information Note - only show for create mode */}
+                {mode === 'create' && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-2">
+                      <InformationCircleIcon className="h-5 w-5 text-gray-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-700">
+                          <strong>How it works:</strong> When you create a
+                          campaign, the maximum budget amount will be temporarily
+                          held in your account to ensure promoters get paid.
+                          Unused funds are released when the campaign ends.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex space-x-3 pt-4">
@@ -262,7 +272,7 @@ export default function FundingVerificationModal({
                       onClick={handleCreateCampaign}
                       className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium"
                     >
-                      ✅ Create Campaign
+                      {mode === 'increase' ? '✅ Increase Budget' : '✅ Create Campaign'}
                     </button>
                   ) : (
                     <>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   CurrencyDollarIcon,
   EyeIcon,
@@ -7,6 +8,7 @@ import {
   CalendarIcon,
   DocumentTextIcon,
   BanknotesIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 import {
   Play,
@@ -17,16 +19,24 @@ import {
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
+import { advertiserPaymentService } from "@/services/advertiser-payment.service";
+import FundingVerificationModal from "../FundingVerificationModal";
 
 interface AdvertiserCampaignStatsCardsProps {
   campaign: CampaignAdvertiser;
   daysLeft: number | string;
+  onBudgetUpdated?: () => void; // Callback to refresh campaign data
 }
 
 export default function AdvertiserCampaignStatsCards({
   campaign,
   daysLeft,
+  onBudgetUpdated,
 }: AdvertiserCampaignStatsCardsProps) {
+  const [additionalBudget, setAdditionalBudget] = useState<number>(100);
+  const [showFundingModal, setShowFundingModal] = useState(false);
+  const [isAdjustingBudget, setIsAdjustingBudget] = useState(false);
+  const [adjustBudgetError, setAdjustBudgetError] = useState<string | null>(null);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -52,6 +62,52 @@ export default function AdvertiserCampaignStatsCards({
       return Math.min((current / max) * 100, 100);
     }
     return 0;
+  };
+
+  const handleIncreaseBudget = () => {
+    if (additionalBudget <= 0) {
+      setAdjustBudgetError("Please enter a positive amount");
+      return;
+    }
+    setAdjustBudgetError(null);
+    setShowFundingModal(true);
+  };
+
+  const handleFundingVerified = async () => {
+    setIsAdjustingBudget(true);
+    setAdjustBudgetError(null);
+    
+    try {
+      // Convert additional budget to cents (backend expects cents)
+      const additionalBudgetCents = additionalBudget * 100;
+      const result = await advertiserPaymentService.adjustCampaignBudget(campaign.id, additionalBudgetCents);
+      
+      if (result.success) {
+        // Update the campaign data locally with new budget values (convert from cents to dollars)
+        const newBudgetDollars = result.data?.newBudgetCents ? result.data.newBudgetCents / 100 : campaign.campaign.maxBudget + additionalBudget;
+        
+        // Update both maxBudget and budgetHeld
+        campaign.campaign.maxBudget = newBudgetDollars;
+        campaign.campaign.budgetHeld = newBudgetDollars;
+        
+        // Reset form
+        setAdditionalBudget(100);
+        setShowFundingModal(false);
+        
+        // Trigger refresh if callback provided
+        if (onBudgetUpdated) {
+          onBudgetUpdated();
+        }
+      } else {
+        setAdjustBudgetError(result.message || "Failed to adjust budget");
+        setShowFundingModal(false);
+      }
+    } catch (error) {
+      setAdjustBudgetError(error instanceof Error ? error.message : "Failed to adjust budget");
+      setShowFundingModal(false);
+    } finally {
+      setIsAdjustingBudget(false);
+    }
   };
 
   return (
@@ -210,6 +266,42 @@ export default function AdvertiserCampaignStatsCards({
             </div>
           </div>
         )}
+        {/* Budget Adjustment for Consultant/Seller campaigns */}
+        {(campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER) && (
+          <div className="mt-3 space-y-2">
+            {adjustBudgetError && (
+              <div className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
+                {adjustBudgetError}
+              </div>
+            )}
+            <div className="flex items-center space-x-1">
+              <input
+                type="number"
+                value={additionalBudget}
+                onChange={(e) => setAdditionalBudget(Number(e.target.value))}
+                className="w-16 px-1 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent text-center text-black"
+                min="1"
+                step="10"
+                disabled={isAdjustingBudget}
+              />
+              <button
+                onClick={handleIncreaseBudget}
+                disabled={isAdjustingBudget || additionalBudget <= 0}
+                className="flex items-center px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isAdjustingBudget ? (
+                  <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin mr-1" />
+                ) : (
+                  <PlusIcon className="h-3 w-3 mr-1" />
+                )}
+                {isAdjustingBudget ? "..." : "Add"}
+              </button>
+            </div>
+            <p className="text-xs text-gray-500">
+              Increase max budget
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Deliverables, CPV, or Promoters */}
@@ -285,6 +377,16 @@ export default function AdvertiserCampaignStatsCards({
         </p>
       </div>
     </div>
+
+    {/* Funding Verification Modal */}
+    <FundingVerificationModal
+      isOpen={showFundingModal}
+      onClose={() => setShowFundingModal(false)}
+      onVerified={handleFundingVerified}
+      estimatedBudget={additionalBudget}
+      mode="increase"
+      currentMaxBudget={campaign.campaign.maxBudget}
+    />
     </div>
   );
 }
