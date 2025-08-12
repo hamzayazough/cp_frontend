@@ -586,32 +586,65 @@ export default function PromoterExploreContent() {
                   </div>
                 </div>
 
-                {/* Budget - Modern Card Design */}
-                <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="bg-emerald-100 p-1 rounded-full">
-                        <CurrencyDollarIcon className="h-3 w-3 text-emerald-600" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-emerald-600 font-medium">
-                          {campaign.type === 'VISIBILITY' ? 'Per 100 Views' : 
-                           campaign.type === 'SALESMAN' ? 'Commission' :
-                           campaign.type === 'CONSULTANT' ? 'Project Budget' : 'Budget Range'}
-                        </p>
-                        <p className="text-sm font-bold text-emerald-800">
-                          {formatBudgetInfo(campaign)}
-                        </p>
+                {/* Budget Section - Dual cards for Visibility, single card for others */}
+                {campaign.type === 'VISIBILITY' ? (
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {/* Per View Rate */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg px-2 py-1.5">
+                      <div className="flex items-center space-x-1.5">
+                        <div className="bg-blue-100 p-0.5 rounded-full">
+                          <EyeIcon className="h-2.5 w-2.5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-blue-600 font-medium">Per 100 Views</p>
+                          <p className="text-sm font-bold text-blue-800">
+                            ${Number(campaign.cpv).toFixed(2)}
+                          </p>
+                        </div>
                       </div>
                     </div>
-
-                    {campaign.type === 'SALESMAN' && (
-                      <div className="bg-white bg-opacity-60 px-2 py-0.5 rounded text-xs text-emerald-700 font-medium">
-                        Per Sale
+                    
+                    {/* Total Budget */}
+                    <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg px-2 py-1.5">
+                      <div className="flex items-center space-x-1.5">
+                        <div className="bg-emerald-100 p-0.5 rounded-full">
+                          <CurrencyDollarIcon className="h-2.5 w-2.5 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-emerald-600 font-medium">Total Budget</p>
+                          <p className="text-sm font-bold text-emerald-800">
+                            ${((campaign.maxViews / 100) * Number(campaign.cpv)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          </p>
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="bg-emerald-100 p-1 rounded-full">
+                          <CurrencyDollarIcon className="h-3 w-3 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-emerald-600 font-medium">
+                            {campaign.type === 'SALESMAN' ? 'Commission' :
+                             campaign.type === 'CONSULTANT' ? 'Project Budget' : 'Budget Range'}
+                          </p>
+                          <p className="text-sm font-bold text-emerald-800">
+                            {formatBudgetInfo(campaign)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {campaign.type === 'SALESMAN' && (
+                        <div className="bg-white bg-opacity-60 px-2 py-0.5 rounded text-xs text-emerald-700 font-medium">
+                          Per Sale
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Description - Truncated */}
                 <p className="text-gray-700 text-xs mb-2 line-clamp-1">{campaign.description}</p>
