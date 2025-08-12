@@ -514,9 +514,6 @@ export default function PromoterExploreContent() {
                         {!campaign.isPublic && (
                           <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
                             <LockClosedIcon className="h-3 w-3 text-amber-600" />
-                            <span className="text-xs font-medium text-amber-700">
-                              Private
-                            </span>
                           </div>
                         )}
                       </div>
@@ -613,7 +610,7 @@ export default function PromoterExploreContent() {
                         <div>
                           <p className="text-xs text-emerald-600 font-medium">Total Budget</p>
                           <p className="text-sm font-bold text-emerald-800">
-                            ${((campaign.maxViews / 100) * Number(campaign.cpv)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                            ${((campaign.maxViews / 100) * Number(campaign.cpv)).toFixed(2)}
                           </p>
                         </div>
                       </div>

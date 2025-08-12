@@ -40,13 +40,13 @@ export const formatBudgetInfo = (campaign: CampaignUnion): string => {
     case CampaignType.SALESMAN:
       return `${Number(campaign.commissionPerSale * 100).toFixed(0)}%`;
     case CampaignType.CONSULTANT:
-      return `$${Number(campaign.minBudget).toLocaleString()} - $${Number(
+      return `$${Number(campaign.minBudget).toFixed(2)} - $${Number(
         campaign.maxBudget
-      ).toLocaleString()}`;
+      ).toFixed(2)}`;
     case CampaignType.SELLER:
-      return `$${Number(campaign.minBudget).toLocaleString()} - $${Number(
+      return `$${Number(campaign.minBudget).toFixed(2)} - $${Number(
         campaign.maxBudget
-      ).toLocaleString()}`;
+      ).toFixed(2)}`;
     default:
       return "Contact for details";
   }
