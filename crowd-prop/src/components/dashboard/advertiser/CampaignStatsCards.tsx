@@ -91,7 +91,7 @@ export default function CampaignStatsCards({
             <CurrencyDollarIcon className="h-4 w-4 text-red-600" />
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-600">This Month</p>
+            <p className="text-xs font-medium text-gray-600">This Month Spend</p>
             <p className="text-xl font-bold text-gray-900">
               {formatCurrency(summary.totalSpentThisMonth)}
             </p>
