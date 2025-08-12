@@ -98,24 +98,16 @@ const formatBudgetInfo = (campaign: CampaignUnion) => {
   switch (campaign.type) {
     case CampaignType.VISIBILITY:
       const visibilityCampaign = campaign as VisibilityCampaign;
-      return `$${Number(visibilityCampaign.cpv).toFixed(2)} per 100 view`;
+      return `$${Number(visibilityCampaign.cpv).toFixed(2)} per 100 views`;
     case CampaignType.SALESMAN:
       const salesmanCampaign = campaign as SalesmanCampaign;
-      return `${Number(salesmanCampaign.commissionPerSale * 100).toFixed(
-        0
-      )}% commission`;
+      return `${Number(salesmanCampaign.commissionPerSale * 100).toFixed(2)}% commission`;
     case CampaignType.CONSULTANT:
       const consultantCampaign = campaign as ConsultantCampaign;
-      return `$${Number(
-        consultantCampaign.minBudget
-      ).toLocaleString()} - $${Number(
-        consultantCampaign.maxBudget
-      ).toLocaleString()}`;
+      return `$${Number(consultantCampaign.minBudget).toFixed(2)} - $${Number(consultantCampaign.maxBudget).toFixed(2)}`;
     case CampaignType.SELLER:
       const sellerCampaign = campaign as SellerCampaign;
-      return `$${Number(sellerCampaign.minBudget).toLocaleString()} - $${Number(
-        sellerCampaign.maxBudget
-      ).toLocaleString()}`;
+      return `$${Number(sellerCampaign.minBudget).toFixed(2)} - $${Number(sellerCampaign.maxBudget).toFixed(2)}`;
     default:
       return "Contact for details";
   }
@@ -200,7 +192,7 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-xs text-purple-600 font-medium">Total Budget</p>
                 <p className="text-sm font-bold text-purple-900">
-                  ${((Number(visibilityCampaign.maxViews) * Number(visibilityCampaign.cpv)) / 100).toLocaleString()}
+                  ${((Number(visibilityCampaign.maxViews) * Number(visibilityCampaign.cpv)) / 100).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -218,7 +210,7 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
               <div>
                 <p className="text-xs text-green-600 font-medium">Commission Rate</p>
                 <p className="text-sm font-bold text-green-900">
-                  {Number(salesmanCampaign.commissionPerSale * 100).toFixed(0)}%
+                  {Number(salesmanCampaign.commissionPerSale * 100).toFixed(2)}%
                 </p>
               </div>
             </div>
@@ -255,7 +247,7 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-xs text-purple-600 font-medium">Budget Range</p>
                   <p className="text-sm font-bold text-purple-900">
-                    ${Number(consultantCampaign.minBudget).toLocaleString()}-${Number(consultantCampaign.maxBudget).toLocaleString()}
+                    ${Number(consultantCampaign.minBudget).toFixed(2)}-${Number(consultantCampaign.maxBudget).toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -318,7 +310,7 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
                 <div>
                   <p className="text-xs text-orange-600 font-medium">Budget Range</p>
                   <p className="text-sm font-bold text-orange-900">
-                    ${Number(sellerCampaign.minBudget).toLocaleString()}-${Number(sellerCampaign.maxBudget).toLocaleString()}
+                    ${Number(sellerCampaign.minBudget).toFixed(2)}-${Number(sellerCampaign.maxBudget).toFixed(2)}
                   </p>
                 </div>
               </div>
