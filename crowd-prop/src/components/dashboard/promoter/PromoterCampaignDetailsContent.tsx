@@ -194,8 +194,8 @@ export default function PromoterCampaignDetailsContent({
       <CampaignStatsCards campaign={campaign} daysLeft={daysLeft} />{" "}
       {/* Progress Bar */}
       <CampaignProgress campaign={campaign} />
-      {/* PromoterLinks Section - Only for Consultant Campaigns */}
-      {false && (
+      {/* PromoterLinks Section - Only for Consultant and Seller Campaigns */}
+      {(campaign.campaign.type === CampaignType.CONSULTANT || campaign.campaign.type === CampaignType.SELLER) && (
         <PromoterLinks
           campaign={campaign}
           campaignType={campaign.campaign.type}

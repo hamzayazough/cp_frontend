@@ -335,41 +335,41 @@ export default function PromoterLinks({
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Submit Work for Deliverables
+    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-base font-semibold text-gray-900">
+          Submit Work
         </h3>
-        <span className="text-sm text-gray-600">
-          Add work for each required deliverable
+        <span className="text-xs text-gray-500">
+          Add work for deliverables
         </span>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700 text-sm">{error}</p>
+        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-700 text-xs">{error}</p>
         </div>
       )}
 
       {/* Deliverables Navigation */}
       {deliverables.length === 0 ? (
-        <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-          <LinkIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-500 font-medium">
-            No deliverables assigned yet
+        <div className="text-center py-6 border-2 border-dashed border-gray-200 rounded-md">
+          <LinkIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+          <p className="text-gray-500 text-sm font-medium">
+            No deliverables assigned
           </p>
-          <p className="text-gray-400 text-sm">
-            Deliverables will appear here once the campaign is set up
+          <p className="text-gray-400 text-xs">
+            Deliverables will appear here once assigned
           </p>
         </div>
       ) : (
         <>
           {/* Deliverable Tabs */}
-          <div className="mb-6">
+          <div className="mb-4">
             <div className="border-b border-gray-200">
               <nav
-                className="-mb-px flex space-x-8 overflow-x-auto scrollbar-hide pb-2 scroll-smooth"
+                className="-mb-px flex space-x-6 overflow-x-auto scrollbar-hide pb-1 scroll-smooth"
                 aria-label="Deliverables"
               >
                 {deliverables.map((deliverable) => {
@@ -383,7 +383,7 @@ export default function PromoterLinks({
                         setSelectedDeliverableId(deliverable.id || null)
                       }
                       className={`
-                        whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors flex-shrink-0
+                        whitespace-nowrap py-1.5 px-1 border-b-2 font-medium text-xs transition-colors flex-shrink-0
                         ${
                           isSelected
                             ? "border-purple-500 text-purple-600"
@@ -391,13 +391,13 @@ export default function PromoterLinks({
                         }
                       `}
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5">
                         <span>
                           {deliverable.deliverable.replace(/_/g, " ")}
                         </span>
                         <span
                           className={`
-                          inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                          inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium
                           ${
                             deliverable.isFinished
                               ? "bg-green-100 text-green-800"
@@ -408,14 +408,14 @@ export default function PromoterLinks({
                         `}
                         >
                           {deliverable.isFinished
-                            ? "Complete"
+                            ? "Done"
                             : deliverable.isSubmitted
                             ? "Review"
                             : "Pending"}
                         </span>
                         {workCount > 0 && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            {workCount} work{workCount !== 1 ? "s" : ""}
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                            {workCount}
                           </span>
                         )}
                       </div>
@@ -430,61 +430,57 @@ export default function PromoterLinks({
           {selectedDeliverable && (
             <>
               {/* Deliverable Info */}
-              <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-start justify-between">
+              <div className="mb-3 p-3 bg-gray-50 rounded-md">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">
+                    <h4 className="font-medium text-gray-900 text-sm mb-0.5">
                       {selectedDeliverable.deliverable.replace(/_/g, " ")}
                     </h4>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-3 text-xs text-gray-600">
                       <span>
-                        Created:{" "}
                         {new Date(
                           selectedDeliverable.createdAt
                         ).toLocaleDateString()}
                       </span>
                       <span>•</span>
                       <span>
-                        Work Items:{" "}
-                        {selectedDeliverable.promoterWork?.length || 0}
+                        {selectedDeliverable.promoterWork?.length || 0} items
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`
-                      inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                      ${
-                        selectedDeliverable.isFinished
-                          ? "bg-green-100 text-green-800"
-                          : selectedDeliverable.isSubmitted
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-600"
-                      }
-                    `}
-                    >
-                      {selectedDeliverable.isFinished
-                        ? "Completed"
+                  <span
+                    className={`
+                    inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                    ${
+                      selectedDeliverable.isFinished
+                        ? "bg-green-100 text-green-800"
                         : selectedDeliverable.isSubmitted
-                        ? "Under Review"
-                        : "Pending Submission"}
-                    </span>
-                  </div>
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-600"
+                    }
+                  `}
+                  >
+                    {selectedDeliverable.isFinished
+                      ? "Completed"
+                      : selectedDeliverable.isSubmitted
+                      ? "Under Review"
+                      : "Pending"}
+                  </span>
                 </div>
               </div>
 
               {/* Add New Work for Selected Deliverable */}
-              <div className="mb-6">
-                <div className="space-y-3">
-                  <div className="flex gap-3 text-black">
+              <div className="mb-4">
+                <div className="space-y-2">
+                  <div className="flex gap-2 text-black">
                     <input
                       type="url"
                       value={newLink}
                       onChange={(e) => setNewLink(e.target.value)}
-                      placeholder={`Add a link of your work for ${selectedDeliverable.deliverable
+                      placeholder={`Add work link for ${selectedDeliverable.deliverable
                         .replace(/_/g, " ")
                         .toLowerCase()}`}
-                      className={`flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+                      className={`flex-1 px-3 py-2 text-sm border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
                         newLink.trim() &&
                         !isValidUrl(formatUrlForDisplay(newLink.trim()))
                           ? "border-red-300 bg-red-50"
@@ -502,22 +498,22 @@ export default function PromoterLinks({
                         !isValidUrl(formatUrlForDisplay(newLink.trim())) ||
                         loading
                       }
-                      className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm"
                     >
                       {loading ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
                       ) : (
-                        <PlusIcon className="h-4 w-4 mr-2" />
+                        <PlusIcon className="h-3 w-3 mr-1" />
                       )}
-                      Add Work
+                      Add
                     </button>
                   </div>
                   <input
                     type="text"
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
-                    placeholder="Optional: Add a description for this work"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black"
+                    placeholder="Optional description"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black"
                     disabled={loading}
                   />
                 </div>
@@ -529,32 +525,32 @@ export default function PromoterLinks({
 
       {/* Work Items List for Selected Deliverable */}
       {selectedDeliverable && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {currentWorks.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-              <LinkIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-500 font-medium">
-                No work submitted for this deliverable
+            <div className="text-center py-6 border-2 border-dashed border-gray-200 rounded-md">
+              <LinkIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-500 text-sm font-medium">
+                No work submitted
               </p>
-              <p className="text-gray-400 text-sm">
-                Add links to your work and receive feedback from the client
+              <p className="text-gray-400 text-xs">
+                Add links to receive client feedback
               </p>
             </div>
           ) : (
             currentWorks.map((work) => (
               <div
                 key={work.id}
-                className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3"
+                className="p-3 bg-gray-50 rounded-md border border-gray-200 space-y-2"
               >
                 {editingWorkId === work.id ? (
                   // Edit mode
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
                       <input
                         type="url"
                         value={editingLinkValue}
                         onChange={(e) => setEditingLinkValue(e.target.value)}
-                        className={`flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black ${
+                        className={`flex-1 px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black ${
                           editingLinkValue.trim() &&
                           !isValidUrl(
                             formatUrlForDisplay(editingLinkValue.trim())
@@ -578,16 +574,16 @@ export default function PromoterLinks({
                             formatUrlForDisplay(editingLinkValue.trim())
                           )
                         }
-                        className="p-2 text-green-600 hover:bg-green-100 rounded-md transition-colors disabled:opacity-50"
+                        className="p-1.5 text-green-600 hover:bg-green-100 rounded transition-colors disabled:opacity-50"
                       >
-                        <CheckIcon className="h-4 w-4" />
+                        <CheckIcon className="h-3 w-3" />
                       </button>
                       <button
                         onClick={cancelEditing}
                         disabled={loading}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                        className="p-1.5 text-gray-600 hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
                       >
-                        <XMarkIcon className="h-4 w-4" />
+                        <XMarkIcon className="h-3 w-3" />
                       </button>
                     </div>
                     <input
@@ -596,54 +592,53 @@ export default function PromoterLinks({
                       onChange={(e) =>
                         setEditingDescriptionValue(e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black"
-                      placeholder="Optional: Add a description"
+                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black"
+                      placeholder="Optional description"
                     />
                   </div>
                 ) : (
                   // View mode
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <LinkIcon className="h-4 w-4 text-purple-600 flex-shrink-0" />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <LinkIcon className="h-3 w-3 text-purple-600 flex-shrink-0" />
                       <a
                         href={work.promoterLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 text-blue-600 hover:text-blue-800 truncate text-sm font-medium"
+                        className="flex-1 text-blue-600 hover:text-blue-800 truncate text-xs font-medium"
                       >
                         {work.promoterLink}
                       </a>
                       <button
                         onClick={() => startEditingWork(work)}
                         disabled={loading}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                        className="p-1 text-gray-600 hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
                       >
-                        <PencilIcon className="h-4 w-4" />
+                        <PencilIcon className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => deleteCampaignWork(work.id)}
                         disabled={loading}
-                        className="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors disabled:opacity-50"
+                        className="p-1 text-red-600 hover:bg-red-100 rounded transition-colors disabled:opacity-50"
                       >
-                        <TrashIcon className="h-4 w-4" />
+                        <TrashIcon className="h-3 w-3" />
                       </button>
                     </div>
 
                     {work.description && (
-                      <p className="text-gray-600 text-sm pl-7">
+                      <p className="text-gray-600 text-xs pl-5">
                         {work.description}
                       </p>
                     )}
 
-                    <div className="flex items-center justify-between pl-7">
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center justify-between pl-5">
+                      <div className="flex items-center gap-3 text-xs text-gray-500">
                         <span>
-                          Added: {new Date(work.createdAt).toLocaleDateString()}
+                          {new Date(work.createdAt).toLocaleDateString()}
                         </span>
                         {work.updatedAt !== work.createdAt && (
                           <span>
-                            Updated:{" "}
-                            {new Date(work.updatedAt).toLocaleDateString()}
+                            Updated: {new Date(work.updatedAt).toLocaleDateString()}
                           </span>
                         )}
                       </div>
@@ -653,13 +648,10 @@ export default function PromoterLinks({
                         onClick={() => toggleComments(work.id)}
                         className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 transition-colors"
                       >
-                        <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
+                        <ChatBubbleLeftEllipsisIcon className="h-3 w-3" />
                         {work.comments && work.comments.length > 0 ? (
                           <>
-                            <span>
-                              {work.comments.length} comment
-                              {work.comments.length > 1 ? "s" : ""}
-                            </span>
+                            <span>{work.comments.length}</span>
                             {expandedComments.has(work.id) ? (
                               <ChevronUpIcon className="h-3 w-3" />
                             ) : (
@@ -668,7 +660,7 @@ export default function PromoterLinks({
                           </>
                         ) : (
                           <>
-                            <span>Add comment</span>
+                            <span>Comment</span>
                             {expandedComments.has(work.id) ? (
                               <ChevronUpIcon className="h-3 w-3" />
                             ) : (
@@ -681,23 +673,23 @@ export default function PromoterLinks({
 
                     {/* Comments section */}
                     {expandedComments.has(work.id) && (
-                      <div className="pl-7 mt-3 border-l-2 border-gray-200">
-                        <div className="pl-3 space-y-3">
+                      <div className="pl-5 mt-2 border-l-2 border-gray-200">
+                        <div className="pl-2 space-y-2">
                           {work.comments && work.comments.length > 0 && (
                             <>
-                              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                              <h4 className="text-xs font-medium text-gray-700 mb-1">
                                 Comments
                               </h4>
                               {work.comments.map((comment) => (
                                 <div
                                   key={comment.id}
-                                  className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm"
+                                  className="bg-white p-2 rounded border border-gray-200 shadow-sm"
                                 >
-                                  <div className="flex items-start gap-3">
-                                    <UserCircleIcon className="h-6 w-6 text-gray-400 flex-shrink-0 mt-0.5" />
+                                  <div className="flex items-start gap-2">
+                                    <UserCircleIcon className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                                     <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <span className="text-sm font-medium text-gray-900">
+                                      <div className="flex items-center gap-1.5 mb-0.5">
+                                        <span className="text-xs font-medium text-gray-900">
                                           {comment.commentatorName || "Client"}
                                         </span>
                                         <span className="text-xs text-gray-500">
@@ -706,7 +698,7 @@ export default function PromoterLinks({
                                           )}
                                         </span>
                                       </div>
-                                      <p className="text-sm text-gray-700 leading-relaxed">
+                                      <p className="text-xs text-gray-700 leading-relaxed">
                                         {comment.commentMessage}
                                       </p>
                                     </div>
@@ -717,8 +709,8 @@ export default function PromoterLinks({
                           )}
 
                           {/* Add comment section */}
-                          <div className="mt-3">
-                            <div className="flex gap-2">
+                          <div className="mt-2">
+                            <div className="flex gap-1.5">
                               <input
                                 type="text"
                                 value={newComment[work.id] || ""}
@@ -728,8 +720,8 @@ export default function PromoterLinks({
                                     [work.id]: e.target.value,
                                   }))
                                 }
-                                placeholder="Add a comment..."
-                                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black"
+                                placeholder="Add comment..."
+                                className="flex-1 px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-black"
                                 disabled={loadingComment[work.id]}
                                 onKeyPress={(e) => {
                                   if (e.key === "Enter" && !e.shiftKey) {
@@ -744,7 +736,7 @@ export default function PromoterLinks({
                                   !newComment[work.id]?.trim() ||
                                   loadingComment[work.id]
                                 }
-                                className={`p-2 rounded-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center h-10 w-10 ${
+                                className={`p-1.5 rounded transition-colors disabled:cursor-not-allowed flex items-center justify-center h-8 w-8 ${
                                   newComment[work.id]?.trim()
                                     ? "bg-purple-600 hover:bg-purple-700"
                                     : "bg-gray-300 hover:bg-gray-400"
@@ -752,14 +744,14 @@ export default function PromoterLinks({
                               >
                                 {loadingComment[work.id] ? (
                                   <div
-                                    className={`animate-spin rounded-full h-4 w-4 border-b-2 ${
+                                    className={`animate-spin rounded-full h-3 w-3 border-b-2 ${
                                       newComment[work.id]?.trim()
                                         ? "border-white"
                                         : "border-gray-600"
                                     }`}
                                   ></div>
                                 ) : (
-                                  <PaperAirplaneIcon className="h-4 w-4 text-white" />
+                                  <PaperAirplaneIcon className="h-3 w-3 text-white" />
                                 )}
                               </button>
                             </div>
@@ -776,30 +768,19 @@ export default function PromoterLinks({
       )}
 
       {/* Helper text */}
-      <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
-        <p className="text-purple-700 text-sm">
-          <strong>💡 Important:</strong> These links will be{" "}
-          <strong>visible to your client</strong>. Your client can leave
-          feedback and comments on your work. Share links to your deliverables
-          and work progress such as:
+      <div className="mt-3 p-2 bg-purple-50 rounded-md border border-purple-200">
+        <p className="text-purple-700 text-xs">
+          <strong>💡 Tip:</strong> Share links visible to your client for feedback:
         </p>
         {campaignType === CampaignType.CONSULTANT ? (
-          <ul className="text-purple-700 text-sm mt-2 ml-4 space-y-1">
-            <li>• Google Docs with strategy documents or reports</li>
-            <li>• PowerPoint presentations with your recommendations</li>
-            <li>• Spreadsheets with data analysis or campaign metrics</li>
-            <li>• Figma/Canva designs for marketing materials</li>
-            <li>
-              • Live campaign examples or case studies you&apos;ve created
-            </li>
+          <ul className="text-purple-700 text-xs mt-1 ml-3 space-y-0.5">
+            <li>• Strategy docs, reports, presentations</li>
+            <li>• Analytics, designs, campaign examples</li>
           </ul>
         ) : (
-          <ul className="text-purple-700 text-sm mt-2 ml-4 space-y-1">
-            <li>• Product photos and videos you&apos;ve created</li>
-            <li>• Social media posts showcasing the products</li>
-            <li>• Store setup progress and screenshots</li>
-            <li>• Sales reports and analytics dashboards</li>
-            <li>• Customer testimonials and reviews you&apos;ve collected</li>
+          <ul className="text-purple-700 text-xs mt-1 ml-3 space-y-0.5">
+            <li>• Product photos, social posts, store setup</li>
+            <li>• Sales reports, testimonials, reviews</li>
           </ul>
         )}
       </div>
