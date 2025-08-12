@@ -64,10 +64,10 @@ function ApplicationModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-900">
               Apply to Campaign
             </h2>
             <button
@@ -75,7 +75,7 @@ function ApplicationModal({
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -90,9 +90,9 @@ function ApplicationModal({
             </button>
           </div>
 
-          <div className="mb-4">
-            <h3 className="font-medium text-gray-900">{campaign.title}</h3>
-            <p className="text-sm text-gray-600">
+          <div className="mb-3">
+            <h3 className="font-medium text-gray-900 text-sm">{campaign.title}</h3>
+            <p className="text-xs text-gray-600">
               {campaign.advertiser.companyName}
             </p>
           </div>
@@ -101,7 +101,7 @@ function ApplicationModal({
             <div className="mb-4">
               <label
                 htmlFor="application-message"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Application Message
               </label>
@@ -109,35 +109,35 @@ function ApplicationModal({
                 id="application-message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Tell the advertiser why you're the perfect fit for this campaign..."
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-black"
+                placeholder="Tell the advertiser why you're perfect for this campaign..."
+                rows={3}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-black"
                 required
               />
             </div>
 
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-3 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || !message.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                className="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-1.5"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Submitting...</span>
                   </>
                 ) : (
                   <>
-                    <PaperAirplaneIcon className="h-4 w-4" />
-                    <span>Submit Application</span>
+                    <PaperAirplaneIcon className="h-3 w-3" />
+                    <span>Submit</span>
                   </>
                 )}
               </button>
@@ -301,20 +301,20 @@ export default function PromoterExploreContent() {
     setApplicationModal({ isOpen: false, campaign: null });
   };
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900">
             Explore Campaigns
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 text-sm mt-1">
             Discover new opportunities to earn money
           </p>
         </div>
-        <div className="mt-4 sm:mt-0 flex items-center space-x-3">
+        <div className="mt-3 sm:mt-0 flex items-center space-x-3">
           <span className="text-sm text-gray-600">
-            {campaigns.length} campaigns available
+            {campaigns.length} available
           </span>
           {loading && (
             <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
@@ -323,7 +323,7 @@ export default function PromoterExploreContent() {
       </div>
       {/* Error Message */}
       {error && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
           <div className="flex">
             <div className="ml-3">
               <p className="text-sm text-amber-700">{error}</p>
@@ -332,12 +332,12 @@ export default function PromoterExploreContent() {
         </div>
       )}
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="bg-white p-3 rounded-lg border border-gray-200">
           <div className="flex items-center">
-            <EyeIcon className="h-8 w-8 text-blue-500" />
-            <div className="ml-3 text-black">
-              <p className="text-sm text-gray-600">Visibility</p>
+            <EyeIcon className="h-6 w-6 text-blue-500" />
+            <div className="ml-2 text-black">
+              <p className="text-xs text-gray-600">Visibility</p>
               <p className="text-lg font-semibold">
               {
                 campaigns.filter(
@@ -348,11 +348,11 @@ export default function PromoterExploreContent() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-3 rounded-lg border border-gray-200">
           <div className="flex items-center">
-            <CurrencyDollarIcon className="h-8 w-8 text-green-500" />
-            <div className="ml-3 text-black">
-              <p className="text-sm text-gray-600">Sales</p>
+            <CurrencyDollarIcon className="h-6 w-6 text-orange-500" />
+            <div className="ml-2 text-black">
+              <p className="text-xs text-gray-600">Salesman</p>
               <p className="text-lg font-semibold">
                 {
                   campaigns.filter((c: CampaignUnion) => c.type === "SALESMAN")
@@ -362,11 +362,11 @@ export default function PromoterExploreContent() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-3 rounded-lg border border-gray-200">
           <div className="flex items-center">
-            <BuildingOfficeIcon className="h-8 w-8 text-purple-500" />
-            <div className="ml-3 text-black">
-              <p className="text-sm text-gray-600">Consulting</p>
+            <BuildingOfficeIcon className="h-6 w-6 text-purple-500" />
+            <div className="ml-2 text-black">
+              <p className="text-xs text-gray-600">Consultant</p>
               <p className="text-lg font-semibold">
                 {
                   campaigns.filter(
@@ -377,11 +377,11 @@ export default function PromoterExploreContent() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="bg-white p-3 rounded-lg border border-gray-200">
           <div className="flex items-center">
-            <TagIcon className="h-8 w-8 text-orange-500" />
-            <div className="ml-3 text-black">
-              <p className="text-sm text-gray-600">Content</p>
+            <TagIcon className="h-6 w-6 text-green-500" />
+            <div className="ml-2 text-black">
+              <p className="text-xs text-gray-600">Seller</p>
               <p className="text-lg font-semibold">
                 {
                   campaigns.filter((c: CampaignUnion) => c.type === "SELLER")
@@ -393,26 +393,26 @@ export default function PromoterExploreContent() {
         </div>
       </div>
       {/* Search and Filters */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0 lg:space-x-4">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search campaigns, companies, or tags..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Filters */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+              className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
             >
               {TYPE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -424,7 +424,7 @@ export default function PromoterExploreContent() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+              className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
             >
               {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -435,50 +435,48 @@ export default function PromoterExploreContent() {
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
             >
-              <FunnelIcon className="h-5 w-5 text-gray-600" />
+              <FunnelIcon className="h-4 w-4 text-gray-600" />
             </button>
           </div>
         </div>
       </div>{" "}
       {/* Campaigns Grid */}
-      <div className="space-y-6">
-        {" "}
+      <div className="space-y-4">
         {campaigns.map((campaign) => (
           <Link
             key={campaign.id}
             href={routes.dashboardExploreDetails(campaign.id)}
-            className={`block bg-white rounded-xl shadow-sm transition-all hover:shadow-md hover:border-blue-200 relative group ${
+            className={`block bg-white rounded-lg shadow-sm transition-all hover:shadow-md hover:border-blue-200 relative group ${
               campaign.isPublic
                 ? "border border-gray-200"
                 : "border-2 border-amber-200 bg-amber-50/30"
             }`}
           >
             {/* External Link Icon */}
-            <div className="absolute top-4 right-4 w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <ArrowTopRightOnSquareIcon className="h-4 w-4 text-blue-600" />
+            <div className="absolute top-3 right-3 w-6 h-6 bg-blue-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <ArrowTopRightOnSquareIcon className="h-3 w-3 text-blue-600" />
             </div>
 
-            <div className="p-6">
-              {" "}
+            <div className="p-4">{" "}
               {/* Header */}
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <h3 className="text-xl font-semibold text-gray-900">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
                       {campaign.title}
                     </h3>
                     {!campaign.isPublic && (
-                      <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-2 py-1 rounded-lg">
-                        <LockClosedIcon className="h-4 w-4 text-amber-600" />
+                      <div className="flex items-center space-x-1 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                        <LockClosedIcon className="h-3 w-3 text-amber-600" />
                         <span className="text-xs font-medium text-amber-700">
                           Private
                         </span>
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center space-x-4 mb-3">
+                  <div className="flex items-center space-x-3 mb-2">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={(e) => {
@@ -486,19 +484,19 @@ export default function PromoterExploreContent() {
                           e.stopPropagation();
                           router.push(`/user/${campaign.advertiser.id}`);
                         }}
-                        className="hover:ring-2 hover:ring-blue-500 rounded-md transition-all"
+                        className="hover:ring-2 hover:ring-blue-500 rounded transition-all"
                       >
                         {campaign.advertiser.profileUrl ? (
                           <Image 
                             src={campaign.advertiser.profileUrl} 
                             alt={campaign.advertiser.companyName}
-                            width={40}
-                            height={40}
-                            className="rounded-md object-cover"
+                            width={32}
+                            height={32}
+                            className="rounded object-cover"
                           />
                         ) : (
-                          <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
-                            <span className="text-gray-500 text-sm font-medium">
+                          <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
+                            <span className="text-gray-500 text-xs font-medium">
                               {campaign.advertiser.companyName?.charAt(0)?.toUpperCase() || '?'}
                             </span>
                           </div>
@@ -508,9 +506,9 @@ export default function PromoterExploreContent() {
                         <div className="text-sm font-medium text-gray-900 flex items-center">
                           {campaign.advertiser.companyName}
                           {campaign.advertiser.verified && (
-                            <div className="ml-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                            <div className="ml-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
                               <svg
-                                className="w-2.5 h-2.5 text-white"
+                                className="w-2 h-2 text-white"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                               >
@@ -532,7 +530,7 @@ export default function PromoterExploreContent() {
                       </div>
                     </div>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
+                      className={`px-2 py-0.5 rounded text-xs font-medium ${getTypeColor(
                         campaign.type
                       )}`}
                     >
@@ -543,25 +541,25 @@ export default function PromoterExploreContent() {
                 <div className="text-right">
                   <div className="flex items-center text-xs text-gray-500">
                     <CalendarIcon className="h-3 w-3 mr-1" />
-                    {getDaysLeft(campaign.deadline)} days left
+                    {getDaysLeft(campaign.deadline)} days
                   </div>
                 </div>
               </div>{" "}
               {/* Prominent Budget Information */}
-              <div className="bg-green-50 border-l-4 border-green-400 px-4 py-3 mb-4">
+              <div className="bg-green-50 border-l-4 border-green-400 px-3 py-2 mb-3">
                 <div className="flex items-center space-x-2">
                   <CurrencyDollarIcon className="h-4 w-4 text-green-600" />
-                  <p className="text-lg font-bold text-green-700">
+                  <p className="text-base font-bold text-green-700">
                     {formatBudgetInfo(campaign)}
                   </p>
                 </div>
               </div>
               {/* Description */}
-              <p className="text-gray-700 mb-4">{campaign.description}</p>{" "}
+              <p className="text-gray-700 text-sm mb-3 line-clamp-2">{campaign.description}</p>{" "}
               {/* Requirements */}
               {(() => {
                 const allRequirements = getAllRequirements(campaign);
-                const maxDisplayed = 4;
+                const maxDisplayed = 3;
                 const displayedRequirements = allRequirements.slice(
                   0,
                   maxDisplayed
@@ -569,18 +567,17 @@ export default function PromoterExploreContent() {
                 const hasMore = allRequirements.length > maxDisplayed;
 
                 return allRequirements.length > 0 ? (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                  <div className="mb-3">
+                    <h4 className="text-xs font-medium text-gray-900 mb-1">
                       Requirements:
                     </h4>
-                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                    <ul className="list-disc list-inside text-xs text-gray-600 space-y-0.5">
                       {displayedRequirements.map((req, idx) => (
-                        <li key={idx}>{req}</li>
+                        <li key={idx} className="line-clamp-1">{req}</li>
                       ))}
                       {hasMore && (
                         <li className="text-blue-600 font-medium cursor-pointer hover:text-blue-700 transition-colors">
-                          +{allRequirements.length - maxDisplayed} more
-                          requirements - click to view details
+                          +{allRequirements.length - maxDisplayed} more - view details
                         </li>
                       )}
                     </ul>
@@ -588,23 +585,27 @@ export default function PromoterExploreContent() {
                 ) : null;
               })()}
               {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {campaign.tags.map((tag) => (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {campaign.tags.slice(0, 4).map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
+                    className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs"
                   >
                     {tag}
                   </span>
                 ))}
+                {campaign.tags.length > 4 && (
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
+                    +{campaign.tags.length - 4}
+                  </span>
+                )}
               </div>{" "}
               {/* Footer */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                {" "}
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <span>Posted {formatDate(campaign.createdAt)}</span>
-                </div>{" "}
-                <div className="flex space-x-3">
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                <div className="flex items-center space-x-3 text-xs text-gray-600">
+                  <span>{formatDate(campaign.createdAt)}</span>
+                </div>
+                <div className="flex space-x-2">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
@@ -612,24 +613,24 @@ export default function PromoterExploreContent() {
                       handleApplyClick(campaign);
                     }}
                     disabled={acceptingContract === campaign.id}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2"
+                    className="bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-1.5 text-sm"
                   >
                     {acceptingContract === campaign.id ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         <span>
                           {campaign.isPublic ? "Accepting..." : "Submitting..."}
                         </span>
                       </>
                     ) : campaign.isPublic ? (
                       <>
-                        <DocumentTextIcon className="h-4 w-4" />
-                        <span>Take Contract</span>
+                        <DocumentTextIcon className="h-3 w-3" />
+                        <span>Take</span>
                       </>
                     ) : (
                       <>
-                        <PaperAirplaneIcon className="h-4 w-4" />
-                        <span>Apply Now</span>
+                        <PaperAirplaneIcon className="h-3 w-3" />
+                        <span>Apply</span>
                       </>
                     )}
                   </button>
@@ -641,14 +642,14 @@ export default function PromoterExploreContent() {
       </div>{" "}
       {/* Empty State */}
       {campaigns.length === 0 && !loading && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-          <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <MagnifyingGlassIcon className="h-12 w-12 text-gray-400" />
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+          <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+            <MagnifyingGlassIcon className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-base font-medium text-gray-900 mb-2">
             No campaigns found
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 text-sm mb-4">
             Try adjusting your search terms or filters
           </p>
           <button
@@ -656,7 +657,7 @@ export default function PromoterExploreContent() {
               setSearchTerm("");
               setTypeFilter("ALL");
             }}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
           >
             Clear Filters
           </button>
@@ -673,14 +674,14 @@ export default function PromoterExploreContent() {
       {/* Notification Modal */}
       {notification.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
                   {notification.type === "success" ? (
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-2">
                       <svg
-                        className="w-5 h-5 text-green-600"
+                        className="w-4 h-4 text-green-600"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -692,9 +693,9 @@ export default function PromoterExploreContent() {
                       </svg>
                     </div>
                   ) : (
-                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mr-2">
                       <svg
-                        className="w-5 h-5 text-red-600"
+                        className="w-4 h-4 text-red-600"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -706,7 +707,7 @@ export default function PromoterExploreContent() {
                       </svg>
                     </div>
                   )}
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-gray-900">
                     {notification.title}
                   </h2>
                 </div>
@@ -717,7 +718,7 @@ export default function PromoterExploreContent() {
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -732,14 +733,14 @@ export default function PromoterExploreContent() {
                 </button>
               </div>
 
-              <p className="text-gray-700 mb-6">{notification.message}</p>
+              <p className="text-gray-700 text-sm mb-4">{notification.message}</p>
 
               <div className="flex justify-end">
                 <button
                   onClick={() =>
                     setNotification({ ...notification, isOpen: false })
                   }
-                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  className={`px-4 py-2 text-sm rounded-md font-medium transition-colors ${
                     notification.type === "success"
                       ? "bg-green-600 text-white hover:bg-green-700"
                       : "bg-red-600 text-white hover:bg-red-700"
