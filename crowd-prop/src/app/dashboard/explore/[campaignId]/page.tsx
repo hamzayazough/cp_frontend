@@ -282,13 +282,13 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
           </div>
 
           {consultantCampaign.expectedDeliverables && consultantCampaign.expectedDeliverables.length > 0 && (
-            <div className="bg-blue-50 p-3 rounded border border-blue-200">
-              <h4 className="text-xs font-semibold text-blue-900 mb-2">Expected Deliverables</h4>
+            <div className="bg-purple-50 p-3 rounded border border-purple-200">
+              <h4 className="text-xs font-semibold text-purple-900 mb-2">Expected Deliverables</h4>
               <div className="flex flex-wrap gap-1">
                 {consultantCampaign.expectedDeliverables.map((deliverable: string, idx: number) => (
                   <span
                     key={idx}
-                    className="px-1.5 py-0.5 bg-blue-200 text-blue-800 rounded text-xs font-medium"
+                    className="px-1.5 py-0.5 bg-purple-200 text-purple-800 rounded text-xs font-medium"
                   >
                     {deliverable}
                   </span>
@@ -879,7 +879,7 @@ export default function CampaignDetailsPage({
                           <CurrencyDollarIcon className="h-5 w-5 text-green-600" />
                           <h4 className="font-semibold text-gray-900">Budget</h4>
                         </div>
-                        <div className="text-2xl font-bold text-green-600 mb-2">
+                        <div className="text-lg font-semibold text-green-600 mb-2">
                           {formatBudgetInfo(campaign)}
                         </div>
                         <p className="text-sm text-gray-600">
@@ -897,22 +897,25 @@ export default function CampaignDetailsPage({
                         </div>
                         <p className="text-gray-700 mb-4">{campaign.targetAudience}</p>
                         <div className="space-y-2">
-                          {campaign.preferredPlatforms?.slice(0, showAllPlatforms ? campaign.preferredPlatforms.length : 3).map((platform: string) => (
-                            <span
-                              key={platform}
-                              className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium mr-2"
-                            >
-                              {platform}
-                            </span>
-                          ))}
-                          {campaign.preferredPlatforms && campaign.preferredPlatforms.length > 3 && (
-                            <button
-                              onClick={() => setShowAllPlatforms(!showAllPlatforms)}
-                              className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer"
-                            >
-                              {showAllPlatforms ? 'Show less' : `+${campaign.preferredPlatforms.length - 3} more`}
-                            </button>
-                          )}
+                          <h5 className="text-sm font-medium text-gray-700 mb-2">Preferred Platforms:</h5>
+                          <div>
+                            {campaign.preferredPlatforms?.slice(0, showAllPlatforms ? campaign.preferredPlatforms.length : 3).map((platform: string) => (
+                              <span
+                                key={platform}
+                                className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium mr-2 mb-1"
+                              >
+                                {platform}
+                              </span>
+                            ))}
+                            {campaign.preferredPlatforms && campaign.preferredPlatforms.length > 3 && (
+                              <button
+                                onClick={() => setShowAllPlatforms(!showAllPlatforms)}
+                                className="text-blue-600 hover:text-blue-700 text-xs font-medium cursor-pointer"
+                              >
+                                {showAllPlatforms ? 'Show less' : `+${campaign.preferredPlatforms.length - 3} more`}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
 
