@@ -9,6 +9,10 @@ import {
   ClockIcon,
   GlobeAltIcon,
   LockClosedIcon,
+  EyeIcon,
+  CurrencyDollarIcon,
+  BuildingOfficeIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
 import {
   CampaignAdvertiser,
@@ -40,6 +44,56 @@ export default function AdvertiserCampaignHeader({
   const [showExtendModal, setShowExtendModal] = useState(false);
   const [isExtending, setIsExtending] = useState(false);
   const [extendError, setExtendError] = useState<string | null>(null);
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case CampaignType.VISIBILITY:
+        return <EyeIcon className="h-3 w-3 text-blue-600" />;
+      case CampaignType.CONSULTANT:
+        return <BuildingOfficeIcon className="h-3 w-3 text-purple-600" />;
+      case CampaignType.SELLER:
+        return <TagIcon className="h-3 w-3 text-green-600" />;
+      case CampaignType.SALESMAN:
+        return <CurrencyDollarIcon className="h-3 w-3 text-orange-600" />;
+      default:
+        return <EyeIcon className="h-3 w-3 text-gray-600" />;
+    }
+  };
+
+  const getLargeTypeIcon = (type: string) => {
+    switch (type) {
+      case CampaignType.VISIBILITY:
+        return {
+          icon: <EyeIcon className="h-6 w-6 text-blue-600" />,
+          background: "bg-blue-50",
+          border: "border border-blue-200"
+        };
+      case CampaignType.CONSULTANT:
+        return {
+          icon: <BuildingOfficeIcon className="h-6 w-6 text-purple-600" />,
+          background: "bg-purple-50",
+          border: "border border-purple-200"
+        };
+      case CampaignType.SELLER:
+        return {
+          icon: <TagIcon className="h-6 w-6 text-green-600" />,
+          background: "bg-green-50",
+          border: "border border-green-200"
+        };
+      case CampaignType.SALESMAN:
+        return {
+          icon: <CurrencyDollarIcon className="h-6 w-6 text-orange-600" />,
+          background: "bg-orange-50",
+          border: "border border-orange-200"
+        };
+      default:
+        return {
+          icon: <EyeIcon className="h-6 w-6 text-gray-600" />,
+          background: "bg-gray-50",
+          border: "border border-gray-200"
+        };
+    }
+  };
 
   // Check if all deliverables are finished for Consultant and Seller campaigns
   const areAllDeliverablesFinished = () => {
@@ -135,6 +189,8 @@ export default function AdvertiserCampaignHeader({
     }
   };
 
+  const largeTypeIcon = getLargeTypeIcon(campaign.type);
+
   return (
     <div className="space-y-2">
       {/* Error Message for Complete Campaign */}
@@ -152,17 +208,24 @@ export default function AdvertiserCampaignHeader({
           >
             <ArrowLeftIcon className="h-4 w-4 text-gray-600" />
           </Link>
+          
+          {/* Large Campaign Type Icon */}
+          <div className={`p-2 rounded-lg ${largeTypeIcon.background} ${largeTypeIcon.border}`}>
+            {largeTypeIcon.icon}
+          </div>
+          
           <div>
             <h1 className="text-xl font-bold text-gray-900">
               {campaign.title}
             </h1>
             <div className="flex items-center space-x-2 mt-1">
               <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
+                className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
                   campaign.type
                 )}`}
               >
-                {campaign.type}
+                {getTypeIcon(campaign.type)}
+                <span>{campaign.type}</span>
               </span>
               {/* Public/Private Indicator - icon only */}
               <div className={`${
@@ -239,7 +302,7 @@ export default function AdvertiserCampaignHeader({
           )}
 
           {/* Delete Icon Button - only if no chosenPromoters */}
-          {!campaign.chosenPromoters && (
+          {campaign.chosenPromoters?.length === 0 && (
             <>
               <button
                 onClick={() => setShowDeleteModal(true)}
