@@ -28,6 +28,7 @@ import {
 } from "./promoter-explore-content.constants";
 import { formatDate } from "@/utils/date";
 import { CampaignType, Deliverable } from "@/app/enums/campaign-type";
+import { SocialPlatform } from "@/app/enums/social-platform";
 import { CampaignUnion } from "@/app/interfaces/campaign/explore-campaign";
 import { promoterService } from "@/services/promoter.service";
 import { useExploreCampaigns } from "@/hooks/useExploreCampaigns";
@@ -206,6 +207,8 @@ export default function PromoterExploreContent() {
     campaign: CampaignUnion | null;
   }>({ isOpen: false, campaign: null });
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
+  const [expandedPlatforms, setExpandedPlatforms] = useState<Set<string>>(new Set());
+  const [expandedDeliverables, setExpandedDeliverables] = useState<Set<string>>(new Set());
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -312,6 +315,30 @@ export default function PromoterExploreContent() {
 
   const toggleDescriptionExpansion = (campaignId: string) => {
     setExpandedDescriptions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(campaignId)) {
+        newSet.delete(campaignId);
+      } else {
+        newSet.add(campaignId);
+      }
+      return newSet;
+    });
+  };
+
+  const togglePlatformsExpansion = (campaignId: string) => {
+    setExpandedPlatforms(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(campaignId)) {
+        newSet.delete(campaignId);
+      } else {
+        newSet.add(campaignId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleDeliverablesExpansion = (campaignId: string) => {
+    setExpandedDeliverables(prev => {
       const newSet = new Set(prev);
       if (newSet.has(campaignId)) {
         newSet.delete(campaignId);
@@ -664,6 +691,77 @@ export default function PromoterExploreContent() {
                   </div>
                 )}
 
+                {/* Preferred Platforms Section - Only for Visibility campaigns */}
+                {campaign.type === 'VISIBILITY' && (() => {
+                  const preferredPlatforms = 'preferredPlatforms' in campaign ? campaign.preferredPlatforms : [];
+                  
+                  if (preferredPlatforms && preferredPlatforms.length > 0) {
+                    const formatPlatformName = (platform: SocialPlatform): string => {
+                      switch (platform) {
+                        case SocialPlatform.TIKTOK:
+                          return 'TikTok';
+                        case SocialPlatform.INSTAGRAM:
+                          return 'Instagram';
+                        case SocialPlatform.SNAPCHAT:
+                          return 'Snapchat';
+                        case SocialPlatform.YOUTUBE:
+                          return 'YouTube';
+                        case SocialPlatform.TWITTER:
+                          return 'Twitter';
+                        case SocialPlatform.FACEBOOK:
+                          return 'Facebook';
+                        case SocialPlatform.LINKEDIN:
+                          return 'LinkedIn';
+                        case SocialPlatform.OTHER:
+                          return 'Other';
+                        default:
+                          return platform;
+                      }
+                    };
+
+                    const isExpanded = expandedPlatforms.has(campaign.id);
+                    const displayPlatforms = isExpanded ? preferredPlatforms : preferredPlatforms.slice(0, 3);
+
+                    return (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 mb-3">
+                        <div className="flex items-start space-x-2">
+                          <div className="bg-gray-100 p-1 rounded-full mt-0.5">
+                            <svg className="h-3 w-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-600 font-medium mb-1">Preferred Platforms</p>
+                            <div className="flex flex-wrap gap-1">
+                              {displayPlatforms.map((platform: SocialPlatform, index: number) => (
+                                <span
+                                  key={index}
+                                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                                >
+                                  {formatPlatformName(platform)}
+                                </span>
+                              ))}
+                              {preferredPlatforms.length > 3 && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    togglePlatformsExpansion(campaign.id);
+                                  }}
+                                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                                >
+                                  {isExpanded ? 'show less' : `+${preferredPlatforms.length - 3} more`}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
                 {/* Deliverables Section - Only for Consultant and Seller campaigns */}
                 {(campaign.type === 'CONSULTANT' || campaign.type === 'SELLER') && (
                   (() => {
@@ -687,6 +785,9 @@ export default function PromoterExploreContent() {
                         }
                       };
 
+                      const isExpanded = expandedDeliverables.has(campaign.id);
+                      const displayDeliverables = isExpanded ? deliverables : deliverables.slice(0, 3);
+
                       return (
                         <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 mb-3">
                           <div className="flex items-start space-x-2">
@@ -698,7 +799,7 @@ export default function PromoterExploreContent() {
                             <div className="flex-1 min-w-0">
                               <p className="text-xs text-gray-600 font-medium mb-1">Expected Deliverables</p>
                               <div className="flex flex-wrap gap-1">
-                                {deliverables.slice(0, 3).map((deliverable: Deliverable, index: number) => (
+                                {displayDeliverables.map((deliverable: Deliverable, index: number) => (
                                   <span
                                     key={index}
                                     className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getDeliverableColor(campaign.type)}`}
@@ -707,9 +808,16 @@ export default function PromoterExploreContent() {
                                   </span>
                                 ))}
                                 {deliverables.length > 3 && (
-                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-                                    +{deliverables.length - 3} more
-                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      toggleDeliverablesExpansion(campaign.id);
+                                    }}
+                                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                                  >
+                                    {isExpanded ? 'show less' : `+${deliverables.length - 3} more`}
+                                  </button>
                                 )}
                               </div>
                             </div>
