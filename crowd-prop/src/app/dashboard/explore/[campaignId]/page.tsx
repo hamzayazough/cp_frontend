@@ -35,6 +35,8 @@ import { formatDate, getDaysLeft } from "@/utils/date";
 import { exploreCampaignsStorage } from "@/utils/explore-campaigns-storage";
 import { promoterService } from "@/services/promoter.service";
 import { useAuthGuard } from "@/hooks/useAuth";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { UserRole } from "@/app/interfaces/user";
 
 const getCampaignDisplayStatus = (
   campaign: CampaignUnion,
@@ -174,7 +176,7 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
             <div className="flex items-center space-x-2">
               <EyeIcon className="h-4 w-4 text-blue-600" />
               <div>
-                <p className="text-xs text-blue-600 font-medium">Target Views</p>
+                <p className="text-xs text-blue-600 font-medium">Maximum Views</p>
                 <p className="text-sm font-bold text-blue-900">
                   {Number(visibilityCampaign.maxViews).toLocaleString()}
                 </p>
@@ -482,7 +484,7 @@ export default function CampaignDetailsPage({
 }: CampaignDetailsPageProps) {
   const resolvedParams = use(params);
   const router = useRouter();
-  const { loading: authLoading } = useAuthGuard();
+  const { loading: authLoading, user } = useAuthGuard();
   const [campaign, setCampaign] = useState<CampaignUnion | null>(null);
   const [loading, setLoading] = useState(true);
   const [acceptingContract, setAcceptingContract] = useState<string | null>(
@@ -673,48 +675,56 @@ export default function CampaignDetailsPage({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Compact Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Link
-                href="/dashboard/explore"
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
-              >
-                <ArrowLeftIcon className="h-4 w-4 text-gray-600" />
-              </Link>
-              <div 
-                className={`w-8 h-8 rounded-lg border-2 ${getCampaignTypeColorBg(campaign.type)} ${getCampaignTypeBorder(campaign.type)} flex items-center justify-center`}
-              >
-                <div className={getCampaignTypeColor(campaign.type).replace('bg-', 'text-').replace('-100', '-600')}>
-                  {getCampaignTypeIcon(campaign.type)}
+    <DashboardLayout
+      userRole={user?.role as UserRole || 'PROMOTER'}
+      userName={user?.name}
+      userEmail={user?.email}
+      userAvatar={user?.profileUrl}
+    >
+      {/* Custom Header for Campaign Details */}
+      <div className="bg-white border-b border-gray-200 -mx-6 -mt-6 mb-6">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <div className="flex items-center space-x-3">
+                <Link
+                  href="/dashboard/explore"
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+                </Link>
+                <div 
+                  className={`w-8 h-8 rounded-lg border-2 ${getCampaignTypeColorBg(campaign.type)} ${getCampaignTypeBorder(campaign.type)} flex items-center justify-center`}
+                >
+                  <div className={getCampaignTypeColor(campaign.type).replace('bg-', 'text-').replace('-100', '-600')}>
+                    {getCampaignTypeIcon(campaign.type)}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <h1 className="text-sm font-semibold text-gray-900 truncate max-w-96">
-                  {campaign.title}
-                </h1>
-                <div className="flex items-center space-x-2">
-                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${getCampaignTypeColor(campaign.type)}`}>
-                    {campaign.type}
-                  </span>
-                  <span className={statusInfo.className.replace('px-3 py-1', 'px-1.5 py-0.5').replace('text-sm', 'text-xs')}>{statusInfo.label}</span>
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900 truncate max-w-96">
+                    {campaign.title}
+                  </h1>
+                  <div className="flex items-center space-x-2">
+                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getCampaignTypeColor(campaign.type)}`}>
+                      {campaign.type}
+                    </span>
+                    <span className={statusInfo.className.replace('px-3 py-1', 'px-2 py-1').replace('text-sm', 'text-xs')}>{statusInfo.label}</span>
+                  </div>
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold text-green-600">
+              <div className="text-xl font-bold text-green-600">
                 {formatBudgetInfo(campaign)}
               </div>
-              <p className="text-xs text-gray-500">Compensation</p>
+              <p className="text-sm text-gray-500">Compensation</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      {/* Page content */}
+      <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
           {/* Main Content */}
           <div className="lg:col-span-3">
@@ -1171,6 +1181,6 @@ export default function CampaignDetailsPage({
           </div>
         </div>
       )}
-    </div>
+    </DashboardLayout>
   );
 }
