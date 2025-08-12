@@ -856,27 +856,10 @@ export default function CampaignDetailsPage({
                           <h4 className="font-semibold text-gray-900">Budget</h4>
                         </div>
                         <div className="text-2xl font-bold text-green-600 mb-2">
-                          {(() => {
-                            switch (campaign.type) {
-                              case CampaignType.VISIBILITY:
-                                const visibilityDetails = campaign as VisibilityCampaign;
-                                return `$${((Number(visibilityDetails.maxViews) * Number(visibilityDetails.cpv)) / 100).toLocaleString()}`;
-                              case CampaignType.SALESMAN:
-                                const salesmanDetails = campaign as SalesmanCampaign;
-                                return `${Number(salesmanDetails.commissionPerSale * 100).toFixed(0)}% commission`;
-                              case CampaignType.CONSULTANT:
-                                const consultantDetails = campaign as ConsultantCampaign;
-                                return `$${Number(consultantDetails.minBudget).toLocaleString()}-${Number(consultantDetails.maxBudget).toLocaleString()}`;
-                              case CampaignType.SELLER:
-                                const sellerDetails = campaign as SellerCampaign;
-                                return `$${Number(sellerDetails.minBudget).toLocaleString()}-${Number(sellerDetails.maxBudget).toLocaleString()}`;
-                              default:
-                                return "Contact for details";
-                            }
-                          })()}
+                          {formatBudgetInfo(campaign)}
                         </div>
                         <p className="text-sm text-gray-600">
-                          {campaign.type === CampaignType.VISIBILITY && `$${Number((campaign as VisibilityCampaign).cpv).toFixed(2)} per 100 views • Max ${Number((campaign as VisibilityCampaign).maxViews).toLocaleString()} views`}
+                          {campaign.type === CampaignType.VISIBILITY && `Max ${Number((campaign as VisibilityCampaign).maxViews).toLocaleString()} views available`}
                           {campaign.type === CampaignType.SALESMAN && "Per successful sale"}
                           {(campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER) && "Budget range for this campaign"}
                         </p>
