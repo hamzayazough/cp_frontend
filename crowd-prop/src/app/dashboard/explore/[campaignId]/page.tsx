@@ -493,6 +493,7 @@ export default function CampaignDetailsPage({
   // Add expansion states
   const [showAllRequirements, setShowAllRequirements] = useState(false);
   const [showAllPlatforms, setShowAllPlatforms] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -774,7 +775,38 @@ export default function CampaignDetailsPage({
                       <span className="text-sm text-gray-600">Advertiser</span>
                     </div>
                     <p className="text-gray-600 text-sm max-w-2xl">
-                      {campaign.advertiser.description}
+                      {(() => {
+                        const description = campaign.advertiser.description;
+                        if (description.length <= 150) {
+                          return description;
+                        }
+                        
+                        if (showFullDescription) {
+                          return (
+                            <>
+                              {description}{' '}
+                              <button
+                                onClick={() => setShowFullDescription(false)}
+                                className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                              >
+                                show less
+                              </button>
+                            </>
+                          );
+                        }
+                        
+                        return (
+                          <>
+                            {description.substring(0, 150)}...{' '}
+                            <button
+                              onClick={() => setShowFullDescription(true)}
+                              className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                            >
+                              show more
+                            </button>
+                          </>
+                        );
+                      })()}
                     </p>
                   </div>
                 </div>
@@ -829,7 +861,7 @@ export default function CampaignDetailsPage({
                   <div className="space-y-6">
                     {/* Description */}
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">What you need to do</h3>
                       <p className="text-gray-700 leading-relaxed">{campaign.description}</p>
                     </div>
 
