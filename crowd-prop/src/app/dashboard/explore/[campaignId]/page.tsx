@@ -682,42 +682,33 @@ export default function CampaignDetailsPage({
       userAvatar={user?.profileUrl}
     >
       {/* Custom Header for Campaign Details */}
-      <div className="bg-white border-b border-gray-200 -mx-6 -mt-6 mb-6">
+      <div className="-mx-6 -mt-6 mb-6">
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex items-center space-x-3">
-                <Link
-                  href="/dashboard/explore"
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
-                </Link>
-                <div 
-                  className={`w-8 h-8 rounded-lg border-2 ${getCampaignTypeColorBg(campaign.type)} ${getCampaignTypeBorder(campaign.type)} flex items-center justify-center`}
-                >
-                  <div className={getCampaignTypeColor(campaign.type).replace('bg-', 'text-').replace('-100', '-600')}>
-                    {getCampaignTypeIcon(campaign.type)}
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-lg font-semibold text-gray-900 truncate max-w-96">
-                    {campaign.title}
-                  </h1>
-                  <div className="flex items-center space-x-2">
-                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getCampaignTypeColor(campaign.type)}`}>
-                      {campaign.type}
-                    </span>
-                    <span className={statusInfo.className.replace('px-3 py-1', 'px-2 py-1').replace('text-sm', 'text-xs')}>{statusInfo.label}</span>
-                  </div>
+          <div className="flex items-center h-16">
+            <div className="flex items-center space-x-3">
+              <Link
+                href="/dashboard/explore"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+              </Link>
+              <div 
+                className={`w-8 h-8 rounded-lg border-2 ${getCampaignTypeColorBg(campaign.type)} ${getCampaignTypeBorder(campaign.type)} flex items-center justify-center`}
+              >
+                <div className={getCampaignTypeColor(campaign.type).replace('bg-', 'text-').replace('-100', '-600')}>
+                  {getCampaignTypeIcon(campaign.type)}
                 </div>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xl font-bold text-green-600">
-                {formatBudgetInfo(campaign)}
+              <div>
+                <h1 className="text-lg font-semibold text-gray-900 truncate max-w-96">
+                  {campaign.title}
+                </h1>
+                <div className="flex items-center space-x-2">
+                  <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getCampaignTypeColor(campaign.type)}`}>
+                    {campaign.type}
+                  </span>
+                </div>
               </div>
-              <p className="text-sm text-gray-500">Compensation</p>
             </div>
           </div>
         </div>
