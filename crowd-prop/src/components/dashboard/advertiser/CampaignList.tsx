@@ -25,6 +25,9 @@ import {
   Check,
   Bell,
   Clock,
+  Building,
+  Tag,
+  Banknote,
 } from "lucide-react";
 import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 
@@ -89,10 +92,10 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
         return "bg-blue-500";
       case CampaignType.CONSULTANT:
         return "bg-purple-500";
-      case CampaignType.SALESMAN:
-        return "bg-orange-500";
       case CampaignType.SELLER:
         return "bg-green-500";
+      case CampaignType.SALESMAN:
+        return "bg-orange-500";
       default:
         return "bg-gray-500";
     }
@@ -103,11 +106,11 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
       case CampaignType.VISIBILITY:
         return Eye;
       case CampaignType.CONSULTANT:
-        return Users;
-      case CampaignType.SALESMAN:
-        return DollarSign;
+        return Building;
       case CampaignType.SELLER:
-        return BarChart3;
+        return Tag;
+      case CampaignType.SALESMAN:
+        return Banknote;
       default:
         return Eye;
     }
@@ -247,11 +250,36 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
                 <div className={`h-1 w-full ${getCampaignTypeColor(campaign.type)}`} />
                 
                 <div className="p-4">
-                  {/* Title Row */}
-                  <div className="flex items-start justify-between mb-3">
+                  {/* Title Row */}                    <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-2 flex-1">
-                      <div className="p-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
-                        <Icon className="h-4 w-4 text-blue-600" />
+                      <div className={`p-1.5 rounded-lg border ${(() => {
+                        switch (campaign.type) {
+                          case CampaignType.VISIBILITY:
+                            return "bg-blue-50 border-blue-200";
+                          case CampaignType.CONSULTANT:
+                            return "bg-purple-50 border-purple-200";
+                          case CampaignType.SELLER:
+                            return "bg-green-50 border-green-200";
+                          case CampaignType.SALESMAN:
+                            return "bg-orange-50 border-orange-200";
+                          default:
+                            return "bg-gray-50 border-gray-200";
+                        }
+                      })()}`}>
+                        <Icon className={`h-4 w-4 ${(() => {
+                          switch (campaign.type) {
+                            case CampaignType.VISIBILITY:
+                              return "text-blue-600";
+                            case CampaignType.CONSULTANT:
+                              return "text-purple-600";
+                            case CampaignType.SELLER:
+                              return "text-green-600";
+                            case CampaignType.SALESMAN:
+                              return "text-orange-600";
+                            default:
+                              return "text-gray-600";
+                          }
+                        })()}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base font-bold text-gray-900 mb-0.5 truncate">
