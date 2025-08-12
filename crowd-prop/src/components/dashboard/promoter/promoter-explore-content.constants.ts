@@ -36,19 +36,17 @@ export const getTypeColor = (type: string): string => {
 export const formatBudgetInfo = (campaign: CampaignUnion): string => {
   switch (campaign.type) {
     case CampaignType.VISIBILITY:
-      return `$${Number(campaign.cpv).toFixed(2)} per 100 views`;
+      return `$${Number(campaign.cpv).toFixed(2)}`;
     case CampaignType.SALESMAN:
-      return `${Number(campaign.commissionPerSale * 100).toFixed(
-        0
-      )}% commission`;
+      return `${Number(campaign.commissionPerSale * 100).toFixed(0)}%`;
     case CampaignType.CONSULTANT:
       return `$${Number(campaign.minBudget).toLocaleString()} - $${Number(
         campaign.maxBudget
-      ).toLocaleString()} budget`;
+      ).toLocaleString()}`;
     case CampaignType.SELLER:
       return `$${Number(campaign.minBudget).toLocaleString()} - $${Number(
         campaign.maxBudget
-      ).toLocaleString()} budget`;
+      ).toLocaleString()}`;
     default:
       return "Contact for details";
   }

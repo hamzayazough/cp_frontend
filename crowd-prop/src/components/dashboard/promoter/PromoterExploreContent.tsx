@@ -586,13 +586,30 @@ export default function PromoterExploreContent() {
                   </div>
                 </div>
 
-                {/* Budget - Compact Version */}
-                <div className="bg-green-50 border-l-3 border-green-400 px-2 py-1.5 mb-2 rounded-sm">
-                  <div className="flex items-center space-x-1.5">
-                    <CurrencyDollarIcon className="h-3 w-3 text-green-600" />
-                    <p className="text-sm font-bold text-green-700">
-                      {formatBudgetInfo(campaign)}
-                    </p>
+                {/* Budget - Modern Card Design */}
+                <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="bg-emerald-100 p-1 rounded-full">
+                        <CurrencyDollarIcon className="h-3 w-3 text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-emerald-600 font-medium">
+                          {campaign.type === 'VISIBILITY' ? 'Per 100 Views' : 
+                           campaign.type === 'SALESMAN' ? 'Commission' :
+                           campaign.type === 'CONSULTANT' ? 'Project Budget' : 'Budget Range'}
+                        </p>
+                        <p className="text-sm font-bold text-emerald-800">
+                          {formatBudgetInfo(campaign)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {campaign.type === 'SALESMAN' && (
+                      <div className="bg-white bg-opacity-60 px-2 py-0.5 rounded text-xs text-emerald-700 font-medium">
+                        Per Sale
+                      </div>
+                    )}
                   </div>
                 </div>
 
