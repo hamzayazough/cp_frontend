@@ -28,27 +28,27 @@ export default function CampaignTabs({
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="border-b border-gray-200">
-        <nav className="flex space-x-8 px-6">
+        <nav className="flex space-x-4 px-4">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors relative ${
+                className={`flex items-center py-2 px-1 border-b-2 font-medium text-xs transition-colors relative ${
                   activeTab === tab.id
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                <Icon className="h-4 w-4 mr-2" />
+                <Icon className="h-3 w-3 mr-1" />
                 {tab.label}
                 {/* Show notification badge for Messages tab */}
                 {tab.id === "messages" && hasNewMessages && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center min-w-[20px]">
-                    {unreadCount > 99 ? "99+" : unreadCount}
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center min-w-[16px]">
+                    {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </button>

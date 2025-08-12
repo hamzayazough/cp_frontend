@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CampaignPromoter,
   VisibilityCampaignDetails,
@@ -38,6 +39,11 @@ interface CampaignOverviewProps {
 
 export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
   const [showAllRequirements, setShowAllRequirements] = useState(false);
+  const router = useRouter();
+
+  const handleAdvertiserClick = () => {
+    router.push(`/user/${campaign.advertiser.id}`);
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -229,7 +235,10 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           <Building className="h-3 w-3 text-blue-600 mr-1" />
           <span className="text-xs font-medium text-gray-900">Advertiser</span>
         </div>
-        <div className="flex items-center space-x-3">
+        <div 
+          className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
+          onClick={handleAdvertiserClick}
+        >
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
             {campaign.advertiser.profileUrl ? (
               <Image
@@ -245,7 +254,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-1 mb-1">
-              <h4 className="font-medium text-gray-900 text-sm truncate">
+              <h4 className="font-medium text-gray-900 text-sm truncate hover:text-blue-600 transition-colors">
                 {campaign.advertiser.companyName}
               </h4>
               {campaign.advertiser.verified && (
@@ -263,6 +272,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-700 text-xs truncate"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   Website →
                 </a>

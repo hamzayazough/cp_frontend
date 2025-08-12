@@ -187,7 +187,7 @@ export default function PromoterCampaignDetailsContent({
         return <CampaignPerformance campaign={campaign} />;
       case "messages":
         return (
-          <div className="h-[600px]">
+          <div className="h-[400px]">
             <CampaignMessages campaignId={campaignId} />
           </div>
         );
@@ -197,7 +197,7 @@ export default function PromoterCampaignDetailsContent({
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Header */}
       <CampaignHeader
         campaign={campaign}
@@ -211,11 +211,13 @@ export default function PromoterCampaignDetailsContent({
       {/* Progress Bar */}
       <CampaignProgress campaign={campaign} />
       {/* PromoterLinks Section - Only for Consultant Campaigns */}
-      <PromoterLinks
-        campaign={campaign}
-        campaignType={campaign.campaign.type}
-        campaignStatus={campaign.status}
-      />
+      {false && (
+        <PromoterLinks
+          campaign={campaign}
+          campaignType={campaign.campaign.type}
+          campaignStatus={campaign.status}
+        />
+      )}
       {/* Tabs */}
       <CampaignTabs
         activeTab={activeTab}
@@ -224,8 +226,8 @@ export default function PromoterCampaignDetailsContent({
         unreadCount={unreadCount}
       />
       {/* Tab Content */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="p-6">{renderTabContent()}</div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-4">{renderTabContent()}</div>
       </div>
       {/* Share Modal */}
       {showShareModal && campaign.campaign.type === CampaignType.VISIBILITY && (

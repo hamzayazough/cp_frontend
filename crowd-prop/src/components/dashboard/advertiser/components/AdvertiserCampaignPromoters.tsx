@@ -342,9 +342,6 @@ export default function AdvertiserCampaignPromoters({
           <p className="text-gray-600 mb-4">
             No promoters have applied to this campaign yet.
           </p>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            Share Campaign
-          </button>
         </div>
       );
   }
