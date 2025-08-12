@@ -7,6 +7,8 @@ import {
   ChatBubbleLeftRightIcon,
   CheckCircleIcon,
   ClockIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import {
   CampaignAdvertiser,
@@ -154,7 +156,7 @@ export default function AdvertiserCampaignHeader({
             <h1 className="text-xl font-bold text-gray-900">
               {campaign.title}
             </h1>
-            <div className="flex items-center mt-1">
+            <div className="flex items-center space-x-2 mt-1">
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
                   campaign.type
@@ -162,6 +164,18 @@ export default function AdvertiserCampaignHeader({
               >
                 {campaign.type}
               </span>
+              {/* Public/Private Indicator - icon only */}
+              <div className={`${
+                campaign.campaign.isPublic 
+                  ? "text-green-600" 
+                  : "text-gray-500"
+              }`} title={campaign.campaign.isPublic ? "Public Campaign" : "Private Campaign"}>
+                {campaign.campaign.isPublic ? (
+                  <GlobeAltIcon className="h-4 w-4" />
+                ) : (
+                  <LockClosedIcon className="h-4 w-4" />
+                )}
+              </div>
             </div>
           </div>
         </div>

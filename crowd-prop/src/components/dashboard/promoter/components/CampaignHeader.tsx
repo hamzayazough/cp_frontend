@@ -6,6 +6,8 @@ import {
   ArrowLeftIcon,
   ShareIcon,
   ChatBubbleLeftRightIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { CampaignPromoter } from "@/app/interfaces/campaign/promoter-campaign-details";
 import {
@@ -88,6 +90,18 @@ export default function CampaignHeader({
             >
               {campaign.campaign.type}
             </span>
+            {/* Public/Private Indicator - icon only */}
+            <div className={`${
+              campaign.campaign.isPublic 
+                ? "text-green-600" 
+                : "text-gray-500"
+            }`} title={campaign.campaign.isPublic ? "Public Campaign" : "Private Campaign"}>
+              {campaign.campaign.isPublic ? (
+                <GlobeAltIcon className="h-4 w-4" />
+              ) : (
+                <LockClosedIcon className="h-4 w-4" />
+              )}
+            </div>
           </div>
         </div>
       </div>
