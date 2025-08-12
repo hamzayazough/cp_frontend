@@ -31,6 +31,7 @@ export default function AdvertiserCampaignOverview({
   campaign,
 }: AdvertiserCampaignOverviewProps) {
   const [showCampaignTypeModal, setShowCampaignTypeModal] = useState(false);
+  const [showAllRequirements, setShowAllRequirements] = useState(false);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -260,14 +261,22 @@ export default function AdvertiserCampaignOverview({
           </div>
           {getRequirements().length > 0 ? (
             <div className="space-y-1">
-              {getRequirements().slice(0, 2).map((requirement, index) => (
+              {(showAllRequirements ? getRequirements() : getRequirements().slice(0, 2)).map((requirement, index) => (
                 <div key={index} className="flex items-start space-x-2">
                   <div className="h-1.5 w-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                   <span className="text-xs text-gray-700">{requirement}</span>
                 </div>
               ))}
               {getRequirements().length > 2 && (
-                <div className="text-xs text-gray-500">+{getRequirements().length - 2} more</div>
+                <button
+                  onClick={() => setShowAllRequirements(!showAllRequirements)}
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium mt-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                >
+                  {showAllRequirements 
+                    ? "Show less" 
+                    : `+${getRequirements().length - 2} more`
+                  }
+                </button>
               )}
             </div>
           ) : (
