@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
+import {
+  VisibilityCampaignDetails,
+  ConsultantCampaignDetails,
+  SellerCampaignDetails,
+  SalesmanCampaignDetails,
+} from "@/app/interfaces/campaign/advertiser-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
 import {
@@ -62,12 +68,52 @@ export default function AdvertiserCampaignOverview({
     }
   };
 
-  const getRequirements = () => {
-    const baseRequirements = campaign.campaign.requirements || [];
-    const requirements = [...baseRequirements];
-    
-    if ('minFollowers' in campaign.campaign && campaign.campaign.minFollowers && campaign.campaign.minFollowers > 0) {
-      requirements.push(`Minimum ${campaign.campaign.minFollowers.toLocaleString()} followers required`);
+  const getAllRequirements = () => {
+    const requirements = [];
+
+    // Campaign type specific requirements
+    switch (campaign.campaign.type) {
+      case CampaignType.VISIBILITY:
+        const visibilityDetails = campaign.campaign as VisibilityCampaignDetails;
+        if (visibilityDetails.minFollowers) {
+          requirements.push(`Minimum ${visibilityDetails.minFollowers.toLocaleString()} followers required on social media`);
+        }
+        break;
+
+      case CampaignType.CONSULTANT:
+        const consultantDetails = campaign.campaign as ConsultantCampaignDetails;
+        if (consultantDetails.expertiseRequired) {
+          requirements.push(`Required Expertise: ${consultantDetails.expertiseRequired}`);
+        }
+        if (consultantDetails.meetingPlan) {
+          requirements.push(`Meeting Schedule: ${consultantDetails.meetingPlan} meetings`);
+        }
+        break;
+
+      case CampaignType.SELLER:
+        const sellerDetails = campaign.campaign as SellerCampaignDetails;
+        if (sellerDetails.minFollowers) {
+          requirements.push(`Minimum ${sellerDetails.minFollowers.toLocaleString()} followers for product promotion`);
+        }
+        if (sellerDetails.needMeeting) {
+          requirements.push(`Meeting with advertiser required before starting`);
+        }
+        if (sellerDetails.sellerRequirements && sellerDetails.sellerRequirements.length > 0) {
+          requirements.push(`Seller Requirements: ${sellerDetails.sellerRequirements.join(', ')}`);
+        }
+        break;
+
+      case CampaignType.SALESMAN:
+        const salesmanDetails = campaign.campaign as SalesmanCampaignDetails;
+        if (salesmanDetails.minFollowers) {
+          requirements.push(`Minimum ${salesmanDetails.minFollowers.toLocaleString()} followers for sales promotion`);
+        }
+        break;
+    }
+
+    // General requirements
+    if (campaign.campaign.requirements && campaign.campaign.requirements.length > 0) {
+      requirements.push(...campaign.campaign.requirements);
     }
     
     return requirements;
@@ -199,7 +245,7 @@ export default function AdvertiserCampaignOverview({
 
       {/* Campaign Description */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <h3 className="font-semibold text-gray-900 mb-2">About This Campaign</h3>
+        <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
         <p className="text-gray-700 text-sm leading-relaxed">
           {campaign.description}
         </p>
@@ -259,22 +305,22 @@ export default function AdvertiserCampaignOverview({
             <CheckCircle className="h-4 w-4 text-orange-600 mr-2" />
             <span className="text-sm font-medium text-gray-900">Requirements</span>
           </div>
-          {getRequirements().length > 0 ? (
+          {getAllRequirements().length > 0 ? (
             <div className="space-y-1">
-              {(showAllRequirements ? getRequirements() : getRequirements().slice(0, 2)).map((requirement, index) => (
+              {(showAllRequirements ? getAllRequirements() : getAllRequirements().slice(0, 2)).map((requirement, index) => (
                 <div key={index} className="flex items-start space-x-2">
                   <div className="h-1.5 w-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                   <span className="text-xs text-gray-700">{requirement}</span>
                 </div>
               ))}
-              {getRequirements().length > 2 && (
+              {getAllRequirements().length > 2 && (
                 <button
                   onClick={() => setShowAllRequirements(!showAllRequirements)}
                   className="text-xs text-blue-600 hover:text-blue-700 font-medium mt-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
                 >
                   {showAllRequirements 
                     ? "Show less" 
-                    : `+${getRequirements().length - 2} more`
+                    : `+${getAllRequirements().length - 2} more`
                   }
                 </button>
               )}

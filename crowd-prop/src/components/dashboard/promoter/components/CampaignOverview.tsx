@@ -282,6 +282,14 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
         </div>
       </div>
 
+      {/* Description */}
+      <div className="bg-white border border-gray-200 rounded-lg p-3">
+        <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+        <p className="text-xs text-gray-700 leading-relaxed">
+          {campaign.description}
+        </p>
+      </div>
+
       {/* Main Grid - 3 columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         
@@ -355,17 +363,6 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
           </div>
         </div>
 
-      </div>
-
-      {/* Description - Full Width */}
-      <div className="bg-white border border-gray-200 rounded-lg p-3">
-        <div className="flex items-center mb-2">
-          <Target className="h-3 w-3 text-purple-600 mr-1" />
-          <span className="text-xs font-medium text-gray-700">Campaign Description</span>
-        </div>
-        <p className="text-xs text-gray-700 leading-relaxed">
-          {campaign.description}
-        </p>
       </div>
 
       {/* Bottom Row - 2 columns */}
