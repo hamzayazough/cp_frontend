@@ -81,7 +81,7 @@ export default function AdvertiserCampaignPerformance({
               </svg>
             </div>
             <p className="text-lg font-bold text-purple-900">{formatCurrency(cpv)}</p>
-            <p className="text-xs text-purple-600 mt-1">Cost per view</p>
+            <p className="text-xs text-purple-600 mt-1">Cost per 100 views</p>
           </div>
 
           <div className="bg-orange-50 p-3 rounded-lg">

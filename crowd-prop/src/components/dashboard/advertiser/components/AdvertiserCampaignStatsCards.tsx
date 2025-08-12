@@ -5,6 +5,8 @@ import {
   EyeIcon,
   UsersIcon,
   CalendarIcon,
+  DocumentTextIcon,
+  BanknotesIcon,
 } from "@heroicons/react/24/outline";
 import {
   Play,
@@ -155,18 +157,33 @@ export default function AdvertiserCampaignStatsCards({
         </div>
       </div>
 
-      {/* Views/Performance */}
+      {/* Views/Performance or Budget Range */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center">
-          <div className="p-1.5 bg-green-100 rounded-lg">
-            <EyeIcon className="h-4 w-4 text-green-600" />
+          <div className={`p-1.5 rounded-lg ${
+            campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER
+              ? "bg-blue-100" 
+              : "bg-green-100"
+          }`}>
+            {campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER ? (
+              <BanknotesIcon className="h-4 w-4 text-blue-600" />
+            ) : (
+              <EyeIcon className="h-4 w-4 text-green-600" />
+            )}
           </div>
           <div className="ml-3">
             <p className="text-xs font-medium text-gray-600">
-              {campaign.type === CampaignType.VISIBILITY ? "Views Generated" : "Total Views"}
+              {campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER
+                ? "Budget Range"
+                : campaign.type === CampaignType.VISIBILITY 
+                ? "Views Generated" 
+                : "Total Views"
+              }
             </p>
             <p className="text-lg font-bold text-gray-900">
-              {campaign.type === CampaignType.VISIBILITY && campaign.campaign.type === CampaignType.VISIBILITY
+              {campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER
+                ? `${formatCurrency(campaign.campaign.minBudget)} - ${formatCurrency(campaign.campaign.maxBudget)}`
+                : campaign.type === CampaignType.VISIBILITY && campaign.campaign.type === CampaignType.VISIBILITY
                 ? formatNumber(campaign.campaign.currentViews)
                 : formatNumber(campaign.performance.totalViewsGained || 0)
               }
@@ -195,21 +212,60 @@ export default function AdvertiserCampaignStatsCards({
         )}
       </div>
 
-      {/* Promoters */}
+      {/* Deliverables, CPV, or Promoters */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center">
-          <div className="p-1.5 bg-purple-100 rounded-lg">
-            <UsersIcon className="h-4 w-4 text-purple-600" />
+          <div className={`p-1.5 rounded-lg ${
+            campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER
+              ? "bg-green-100"
+              : campaign.type === CampaignType.VISIBILITY
+              ? "bg-yellow-100"
+              : "bg-purple-100"
+          }`}>
+            {campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER ? (
+              <DocumentTextIcon className="h-4 w-4 text-green-600" />
+            ) : campaign.type === CampaignType.VISIBILITY ? (
+              <CurrencyDollarIcon className="h-4 w-4 text-yellow-600" />
+            ) : (
+              <UsersIcon className="h-4 w-4 text-purple-600" />
+            )}
           </div>
           <div className="ml-3">
-            <p className="text-xs font-medium text-gray-600">Promoters</p>
+            <p className="text-xs font-medium text-gray-600">
+              {campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER
+                ? "Deliverables"
+                : campaign.type === CampaignType.VISIBILITY
+                ? "Cost per 100 Views"
+                : "Promoters"
+              }
+            </p>
             <p className="text-lg font-bold text-gray-900">
-              {campaign.promoters?.length || 0}
+              {campaign.type === CampaignType.CONSULTANT
+                ? (() => {
+                    const deliverables = campaign.campaign.expectedDeliverables || [];
+                    const finished = deliverables.filter(d => d.isFinished).length;
+                    return `${finished}/${deliverables.length}`;
+                  })()
+                : campaign.type === CampaignType.SELLER
+                ? (() => {
+                    const deliverables = campaign.campaign.deliverables || [];
+                    const finished = deliverables.filter(d => d.isFinished).length;
+                    return `${finished}/${deliverables.length}`;
+                  })()
+                : campaign.type === CampaignType.VISIBILITY && campaign.campaign.type === CampaignType.VISIBILITY
+                ? formatCurrency(campaign.campaign.cpv)
+                : campaign.promoters?.length || 0
+              }
             </p>
           </div>
         </div>
         <p className="text-xs text-gray-500 mt-1.5">
-          {campaign.promoters?.filter(p => p.status === 'AWAITING_REVIEW').length || 0} pending review
+          {campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER
+            ? "completed"
+            : campaign.type === CampaignType.VISIBILITY
+            ? "per 100 views"
+            : `${campaign.promoters?.filter(p => p.status === 'AWAITING_REVIEW').length || 0} pending review`
+          }
         </p>
       </div>
 

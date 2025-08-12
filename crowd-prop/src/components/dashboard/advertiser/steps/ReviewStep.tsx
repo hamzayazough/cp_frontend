@@ -538,7 +538,7 @@ export default function ReviewStep({ formData }: ReviewStepProps) {
                     <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                       <div className="flex items-center space-x-2 mb-2">
                         <EyeIcon className="h-4 w-4 text-blue-600" />
-                        <span className="text-xs font-semibold text-gray-700">Cost Per View</span>
+                        <span className="text-xs font-semibold text-gray-700">Cost Per 100 Views</span>
                       </div>
                       <p className="text-lg font-bold text-blue-600">${formData.cpv}/100 views</p>
                       <p className="text-xs text-gray-500 mt-1">Payment per 100 views delivered</p>
