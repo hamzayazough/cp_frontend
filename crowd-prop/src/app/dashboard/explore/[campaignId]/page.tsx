@@ -153,41 +153,41 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
     case CampaignType.VISIBILITY:
       const visibilityCampaign = campaign as VisibilityCampaign;
       return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <EyeIcon className="h-8 w-8 text-blue-600" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <EyeIcon className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="text-sm text-blue-600 font-medium">
+                <p className="text-xs text-blue-600 font-medium">
                   Target Views
-                </p>{" "}
-                <p className="text-2xl font-bold text-blue-900">
+                </p>
+                <p className="text-lg font-bold text-blue-900">
                   {Number(visibilityCampaign.maxViews).toLocaleString()}
                 </p>
               </div>
             </div>
-          </div>{" "}
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
+          </div>
+          <div className="bg-green-50 p-3 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <CurrencyDollarIcon className="h-6 w-6 text-green-600" />
               <div>
-                <p className="text-sm text-green-600 font-medium">
-                  Payment Per 100 Views
-                </p>{" "}
-                <p className="text-2xl font-bold text-green-900">
+                <p className="text-xs text-green-600 font-medium">
+                  Per 100 Views
+                </p>
+                <p className="text-lg font-bold text-green-900">
                   ${Number(visibilityCampaign.cpv).toFixed(2)}
                 </p>
               </div>
             </div>
-          </div>{" "}
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <CurrencyDollarIcon className="h-8 w-8 text-purple-600" />
+          </div>
+          <div className="bg-purple-50 p-3 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <CurrencyDollarIcon className="h-6 w-6 text-purple-600" />
               <div>
-                <p className="text-sm text-purple-600 font-medium">
-                  Campaign Budget
-                </p>{" "}
-                <p className="text-2xl font-bold text-purple-900">
+                <p className="text-xs text-purple-600 font-medium">
+                  Total Budget
+                </p>
+                <p className="text-lg font-bold text-purple-900">
                   $
                   {(
                     (Number(visibilityCampaign.maxViews) *
@@ -204,37 +204,37 @@ const renderCampaignSpecificInfo = (campaign: CampaignUnion) => {
     case CampaignType.SALESMAN:
       const salesmanCampaign = campaign as SalesmanCampaign;
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-green-50 p-6 rounded-lg">
-            <div className="flex items-center space-x-3 mb-4">
-              <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="bg-green-50 p-3 rounded-lg">
+            <div className="flex items-center space-x-2 mb-2">
+              <CurrencyDollarIcon className="h-6 w-6 text-green-600" />
               <div>
-                <p className="text-sm text-green-600 font-medium">
+                <p className="text-xs text-green-600 font-medium">
                   Commission Rate
-                </p>{" "}
-                <p className="text-3xl font-bold text-green-900">
+                </p>
+                <p className="text-xl font-bold text-green-900">
                   {Number(salesmanCampaign.commissionPerSale * 100).toFixed(0)}%
                 </p>
               </div>
             </div>
-            <p className="text-sm text-gray-600">Per successful sale</p>
+            <p className="text-xs text-gray-600">Per successful sale</p>
           </div>
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <div className="flex items-center space-x-3 mb-4">
-              <GlobeAltIcon className="h-8 w-8 text-blue-600" />
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <div className="flex items-center space-x-2 mb-2">
+              <GlobeAltIcon className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="text-sm text-blue-600 font-medium">
+                <p className="text-xs text-blue-600 font-medium">
                   Tracking Method
                 </p>
-                <p className="text-lg font-semibold text-blue-900">
+                <p className="text-sm font-semibold text-blue-900">
                   {salesmanCampaign.trackSalesVia}
                 </p>
               </div>
             </div>
             {salesmanCampaign.refLink && (
-              <div className="mt-3">
+              <div className="mt-2">
                 <p className="text-xs text-gray-500 mb-1">Reference Link:</p>
-                <p className="text-sm text-blue-600 truncate">
+                <p className="text-xs text-blue-600 truncate">
                   {salesmanCampaign.refLink}
                 </p>
               </div>
@@ -691,67 +691,67 @@ export default function CampaignDetailsPage({
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <Link
                 href="/dashboard/explore"
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+                <ArrowLeftIcon className="h-4 w-4 text-gray-600" />
               </Link>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <div
-                  className={`p-2 rounded-lg ${getCampaignTypeColor(
+                  className={`p-1.5 rounded-lg ${getCampaignTypeColor(
                     campaign.type
                   )}`}
                 >
                   {getCampaignTypeIcon(campaign.type)}
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">
+                  <h1 className="text-lg font-bold text-gray-900">
                     {campaign.title}
                   </h1>
-                  <p className="text-sm text-gray-600">Campaign Details</p>
+                  <p className="text-xs text-gray-600">Campaign Details</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${getCampaignTypeColor(
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getCampaignTypeColor(
                   campaign.type
                 )}`}
               >
                 {campaign.type}
               </span>
-              <span className={statusInfo.className}>{statusInfo.label}</span>
+              <span className={statusInfo.className.replace('text-sm', 'text-xs')}>{statusInfo.label}</span>
             </div>
           </div>
         </div>
       </div>{" "}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Advertiser Info Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
           <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={() => router.push(`/user/${campaign.advertiser.id}`)}
-                className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+                className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer flex-shrink-0"
               >
                 {campaign.advertiser.profileUrl ? (
                   <Image
                     src={campaign.advertiser.profileUrl}
                     alt={campaign.advertiser.companyName}
-                    width={64}
-                    height={64}
+                    width={48}
+                    height={48}
                     className="w-full h-full object-cover"
                     unoptimized
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                       e.currentTarget.parentElement!.innerHTML = `
                         <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                          <span class="text-gray-500 text-sm font-medium">${campaign.advertiser.companyName
+                          <span class="text-gray-500 text-xs font-medium">${campaign.advertiser.companyName
                             .charAt(0)
                             .toUpperCase()}</span>
                         </div>
@@ -760,21 +760,21 @@ export default function CampaignDetailsPage({
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-500 text-sm font-medium">
+                    <span className="text-gray-500 text-xs font-medium">
                       {campaign.advertiser.companyName.charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
               </button>
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <h2 className="text-xl font-semibold text-gray-900">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2 mb-1">
+                  <h2 className="text-lg font-semibold text-gray-900 truncate">
                     {campaign.advertiser.companyName}
                   </h2>
                   {campaign.advertiser.verified && (
-                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-3 h-3 text-white"
+                        className="w-2.5 h-2.5 text-white"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -787,22 +787,19 @@ export default function CampaignDetailsPage({
                     </div>
                   )}
                 </div>
-                <div className="flex items-center space-x-4 mb-3">
+                <div className="flex items-center space-x-3 mb-2">
                   <div className="flex items-center space-x-1">
-                    <StarIconSolid className="h-4 w-4 text-yellow-400" />{" "}
-                    <span className="text-sm font-medium text-gray-900">
+                    <StarIconSolid className="h-3 w-3 text-yellow-400" />
+                    <span className="text-xs font-medium text-gray-900">
                       {Number(campaign.advertiser.rating).toFixed(1)}
                     </span>
-                    <span className="text-sm text-gray-600">
-                      Company Rating
-                    </span>
-                  </div>{" "}
-                  <div className="flex flex-wrap gap-2">
-                    {campaign.advertiser.advertiserTypes?.map(
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {campaign.advertiser.advertiserTypes?.slice(0, 2).map(
                       (type: string) => (
                         <span
                           key={type}
-                          className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
+                          className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs"
                         >
                           {type}
                         </span>
@@ -810,7 +807,7 @@ export default function CampaignDetailsPage({
                     )}
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm mb-2">
+                <p className="text-gray-700 text-xs mb-1 line-clamp-2">
                   {campaign.advertiser.description}
                 </p>
                 {campaign.advertiser.website && (
@@ -818,21 +815,19 @@ export default function CampaignDetailsPage({
                     href={campaign.advertiser.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium inline-block"
+                    className="text-blue-600 hover:text-blue-700 text-xs font-medium inline-block"
                   >
                     Visit Website →
                   </a>
                 )}
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500 mb-1">Company Rating</p>
+            <div className="text-right flex-shrink-0">
               <div className="flex items-center space-x-1">
-                {" "}
                 {[1, 2, 3, 4, 5].map((star) => (
                   <StarIconSolid
                     key={star}
-                    className={`h-4 w-4 ${
+                    className={`h-3 w-3 ${
                       star <= Math.floor(Number(campaign.advertiser.rating))
                         ? "text-yellow-400"
                         : "text-gray-300"
@@ -840,25 +835,26 @@ export default function CampaignDetailsPage({
                   />
                 ))}
               </div>
+              <p className="text-xs text-gray-500 mt-0.5">Company Rating</p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-4">
             {/* Campaign Overview */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-start justify-between mb-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {campaign.title}
                   </h3>
-                  <p className="text-gray-700 text-lg">
+                  <p className="text-gray-700 text-sm leading-relaxed">
                     {campaign.description}
                   </p>
                 </div>
-              </div>{" "}
+              </div>
               {/* Campaign Specific Information */}
               {renderCampaignSpecificInfo(campaign)}
             </div>
@@ -868,25 +864,25 @@ export default function CampaignDetailsPage({
             )}{" "}
             {/* Requirements */}
             {campaign.requirements && campaign.requirements.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
                   Requirements
-                </h3>{" "}
-                <div className="space-y-3">
+                </h3>
+                <div className="space-y-2">
                   {campaign.requirements.map(
                     (requirement: string, idx: number) => (
-                      <div key={idx} className="flex items-center space-x-3">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span className="text-gray-700">{requirement}</span>
+                      <div key={idx} className="flex items-start space-x-2">
+                        <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-700 text-sm">{requirement}</span>
                       </div>
                     )
                   )}
                   {/* Add min followers requirement for visibility campaigns */}
                   {campaign.type === CampaignType.VISIBILITY &&
                     (campaign as VisibilityCampaign).minFollowers && (
-                      <div className="flex items-center space-x-3">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span className="text-gray-700">
+                      <div className="flex items-start space-x-2">
+                        <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-700 text-sm">
                           Minimum{" "}
                           {(
                             campaign as VisibilityCampaign
@@ -899,32 +895,32 @@ export default function CampaignDetailsPage({
               </div>
             )}
             {/* Target Audience & Platforms */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 Campaign Details
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">
+                  <h4 className="font-medium text-gray-900 mb-1.5 text-sm">
                     Target Audience
                   </h4>
-                  <p className="text-gray-700">{campaign.targetAudience}</p>
+                  <p className="text-gray-700 text-sm">{campaign.targetAudience}</p>
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">
+                  <h4 className="font-medium text-gray-900 mb-1.5 text-sm">
                     Preferred Platforms
-                  </h4>{" "}
-                  <div className="flex flex-wrap gap-2">
+                  </h4>
+                  <div className="flex flex-wrap gap-1">
                     {campaign.preferredPlatforms?.map((platform: string) => (
                       <span
                         key={platform}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                        className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
                       >
                         {platform}
                       </span>
                     )) || (
-                      <span className="text-gray-500">
+                      <span className="text-gray-500 text-sm">
                         No platforms specified
                       </span>
                     )}
@@ -933,15 +929,15 @@ export default function CampaignDetailsPage({
               </div>
             </div>
             {/* Tags */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 Campaign Tags
-              </h3>{" "}
-              <div className="flex flex-wrap gap-2">
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
                 {campaign.tags.map((tag: string) => (
                   <span
                     key={tag}
-                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium"
+                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium"
                   >
                     {tag}
                   </span>
@@ -951,18 +947,17 @@ export default function CampaignDetailsPage({
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Action Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="text-center mb-6">
-                <div className="text-3xl font-bold text-green-600 mb-2">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="text-center mb-4">
+                <div className="text-2xl font-bold text-green-600 mb-1">
                   {formatBudgetInfo(campaign)}
                 </div>
-                <p className="text-gray-600">Compensation</p>
+                <p className="text-gray-600 text-sm">Compensation</p>
               </div>
-              <div className="space-y-4 mb-6">
-                {" "}
-                <div className="flex items-center justify-between text-sm">
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-gray-600">Status:</span>
                   <span
                     className={`font-medium ${
@@ -977,14 +972,14 @@ export default function CampaignDetailsPage({
                   >
                     {statusInfo.label}
                   </span>
-                </div>{" "}
-                <div className="flex items-center justify-between text-sm">
+                </div>
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-gray-600">Posted:</span>
                   <span className="font-medium text-gray-900">
                     {formatDate(campaign.createdAt)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-gray-600">Deadline:</span>
                   <span
                     className={`font-medium ${
@@ -994,28 +989,28 @@ export default function CampaignDetailsPage({
                     {isExpired ? "Expired" : `${daysLeft} days left`}
                   </span>
                 </div>
-              </div>{" "}
+              </div>
               {statusInfo.label === "Active" && (
                 <button
                   onClick={() => handleApplyClick(campaign)}
                   disabled={acceptingContract === campaign.id}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2"
+                  className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2 text-sm"
                 >
                   {acceptingContract === campaign.id ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       <span>
                         {campaign.isPublic ? "Accepting..." : "Submitting..."}
                       </span>
                     </>
                   ) : campaign.isPublic ? (
                     <>
-                      <DocumentTextIcon className="h-5 w-5" />
+                      <DocumentTextIcon className="h-4 w-4" />
                       <span>Take Contract</span>
                     </>
                   ) : (
                     <>
-                      <PaperAirplaneIcon className="h-5 w-5" />
+                      <PaperAirplaneIcon className="h-4 w-4" />
                       <span>Apply Now</span>
                     </>
                   )}
@@ -1023,16 +1018,16 @@ export default function CampaignDetailsPage({
               )}
             </div>
             {/* Timeline */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <h3 className="text-base font-semibold text-gray-900 mb-3">
                 Campaign Timeline
               </h3>
 
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>{" "}
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs font-medium text-gray-900">
                       Campaign Created
                     </p>
                     <p className="text-xs text-gray-500">
@@ -1041,10 +1036,10 @@ export default function CampaignDetailsPage({
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>{" "}
+                <div className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0"></div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs font-medium text-gray-900">
                       Campaign Started
                     </p>
                     <p className="text-xs text-gray-500">
@@ -1053,14 +1048,14 @@ export default function CampaignDetailsPage({
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
                   <div
-                    className={`w-2 h-2 rounded-full ${
+                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
                       isExpired ? "bg-red-500" : "bg-yellow-500"
                     }`}
-                  ></div>{" "}
+                  ></div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs font-medium text-gray-900">
                       Campaign Deadline
                     </p>
                     <p className="text-xs text-gray-500">
@@ -1071,22 +1066,22 @@ export default function CampaignDetailsPage({
               </div>
             </div>
             {/* Contact */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <h3 className="text-base font-semibold text-gray-900 mb-3">
                 Need Help?
               </h3>
-              <div className="space-y-3">
-                <button className="w-full flex items-center justify-center space-x-2 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <ChatBubbleLeftRightIcon className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm text-gray-700">Contact Support</span>
+              <div className="space-y-2">
+                <button className="w-full flex items-center justify-center space-x-2 py-2 px-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <ChatBubbleLeftRightIcon className="h-3 w-3 text-gray-600" />
+                  <span className="text-xs text-gray-700">Contact Support</span>
                 </button>
 
-                <button className="w-full flex items-center justify-center space-x-2 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <DocumentTextIcon className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm text-gray-700">View Guidelines</span>
+                <button className="w-full flex items-center justify-center space-x-2 py-2 px-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <DocumentTextIcon className="h-3 w-3 text-gray-600" />
+                  <span className="text-xs text-gray-700">View Guidelines</span>
                 </button>
               </div>
-            </div>{" "}
+            </div>
           </div>
         </div>
       </div>
