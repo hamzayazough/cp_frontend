@@ -29,7 +29,6 @@ import CampaignMessages from "./components/CampaignMessages";
 import ShareModal from "./components/ShareModal";
 import CampaignNotFound from "./components/CampaignNotFound";
 import CampaignMediaViewer from "@/components/ui/CampaignMediaViewer";
-import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 interface PromoterCampaignDetailsContentProps {
   campaignId: string;
@@ -128,28 +127,15 @@ export default function PromoterCampaignDetailsContent({
   }, [campaignId]);
 
   // Helper functions for styling
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case PromoterCampaignStatus.ONGOING:
-        return "bg-green-100 text-green-800";
-      case PromoterCampaignStatus.AWAITING_REVIEW:
-        return "bg-yellow-100 text-yellow-800";
-      case PromoterCampaignStatus.COMPLETED:
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   const getTypeColor = (type: string) => {
     switch (type) {
       case "VISIBILITY":
         return "bg-blue-100 text-blue-800";
-      case "SALESMAN":
-        return "bg-green-100 text-green-800";
       case "CONSULTANT":
         return "bg-purple-100 text-purple-800";
       case "SELLER":
+        return "bg-green-100 text-green-800";
+      case "SALESMAN":
         return "bg-orange-100 text-orange-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -203,7 +189,6 @@ export default function PromoterCampaignDetailsContent({
         campaign={campaign}
         campaignId={campaignId}
         onShareClick={() => setShowShareModal(true)}
-        getStatusColor={getStatusColor}
         getTypeColor={getTypeColor}
       />
       {/* Stats Cards */}
