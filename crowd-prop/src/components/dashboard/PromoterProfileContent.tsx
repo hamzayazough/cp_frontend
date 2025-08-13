@@ -183,7 +183,7 @@ export default function PromoterProfileContent({
                     </h1>
                     <div className="flex items-center gap-2">
                       <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                        {user.promoterDetails?.isBusiness ? 'Business Creator' : 'Content Creator'}
+                        {user.promoterDetails?.isBusiness ? 'Company' : 'Individual'}
                       </span>
                       {user.promoterDetails?.verified && (
                         <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium flex items-center gap-1">
@@ -318,97 +318,98 @@ export default function PromoterProfileContent({
 
           {/* Performance Stats */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Performance Stats</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Performance Overview</h2>
             
-            {/* Main Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <ChartBarIcon className="w-6 h-6 text-blue-600" />
+            {/* Main Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-green-50 rounded-lg p-4 text-center">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <CurrencyDollarIcon className="w-5 h-5 text-green-600" />
                 </div>
-                <div className="text-2xl font-bold text-blue-600 mb-1">
-                  {user.promoterDetails?.numberOfCampaignDone || 0}
-                </div>
-                <div className="text-sm text-gray-500">Total Campaigns</div>
-              </div>
-
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <CurrencyDollarIcon className="w-6 h-6 text-green-600" />
-                </div>
-                <div className="text-2xl font-bold text-green-600 mb-1">
+                <div className="text-xl font-bold text-green-600 mb-1">
                   {formatCurrency(user.promoterDetails?.totalSales || 0)}
                 </div>
-                <div className="text-sm text-gray-500">Total Sales</div>
+                <div className="text-xs text-gray-600">Total Sales</div>
               </div>
 
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <EyeIcon className="w-6 h-6 text-purple-600" />
+              <div className="bg-purple-50 rounded-lg p-4 text-center">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <EyeIcon className="w-5 h-5 text-purple-600" />
                 </div>
-                <div className="text-2xl font-bold text-purple-600 mb-1">
+                <div className="text-xl font-bold text-purple-600 mb-1">
                   {formatNumber(user.promoterDetails?.totalViewsGenerated || 0)}
                 </div>
-                <div className="text-sm text-gray-500">Views Generated</div>
+                <div className="text-xs text-gray-600">Views Generated</div>
               </div>
 
-              <div className="text-center">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <StarIcon className="w-6 h-6 text-orange-600" />
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <StarIcon className="w-5 h-5 text-orange-600" />
                 </div>
-                <div className="text-2xl font-bold text-orange-600 mb-1">
+                <div className="text-xl font-bold text-orange-600 mb-1">
                   {user.rating ? user.rating.toFixed(1) : 'N/A'}
                 </div>
-                <div className="text-sm text-gray-500">Rating</div>
+                <div className="text-xs text-gray-600">Rating</div>
               </div>
             </div>
 
-            {/* Campaign Type Breakdown */}
-            {(user.promoterDetails?.numberOfVisibilityCampaignDone || 
-              user.promoterDetails?.numberOfSellerCampaignDone || 
-              user.promoterDetails?.numberOfSalesmanCampaignDone || 
-              user.promoterDetails?.numberOfConsultantCampaignDone) && (
-              <div>
-                <h3 className="text-md font-semibold text-gray-800 mb-4">Campaign Types Completed</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {user.promoterDetails?.numberOfVisibilityCampaignDone > 0 && (
-                    <div className="text-center p-3 bg-indigo-50 rounded-lg">
-                      <div className="text-lg font-bold text-indigo-600 mb-1">
-                        {user.promoterDetails.numberOfVisibilityCampaignDone}
-                      </div>
-                      <div className="text-xs text-gray-600">Visibility</div>
+            {/* Campaign Types Breakdown */}
+            <div className="border-t pt-6">
+              <h3 className="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <ChartBarIcon className="w-5 h-5 text-gray-600" />
+                Campaign Types Completed
+              </h3>
+              
+              {/* Total Campaigns Summary */}
+              <div className="bg-blue-50 rounded-lg p-4 mb-4 border border-blue-100">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <ChartBarIcon className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {user.promoterDetails?.numberOfCampaignDone || 0}
                     </div>
-                  )}
-                  
-                  {user.promoterDetails?.numberOfSellerCampaignDone > 0 && (
-                    <div className="text-center p-3 bg-emerald-50 rounded-lg">
-                      <div className="text-lg font-bold text-emerald-600 mb-1">
-                        {user.promoterDetails.numberOfSellerCampaignDone}
-                      </div>
-                      <div className="text-xs text-gray-600">Seller</div>
-                    </div>
-                  )}
-                  
-                  {user.promoterDetails?.numberOfSalesmanCampaignDone > 0 && (
-                    <div className="text-center p-3 bg-amber-50 rounded-lg">
-                      <div className="text-lg font-bold text-amber-600 mb-1">
-                        {user.promoterDetails.numberOfSalesmanCampaignDone}
-                      </div>
-                      <div className="text-xs text-gray-600">Salesman</div>
-                    </div>
-                  )}
-                  
-                  {user.promoterDetails?.numberOfConsultantCampaignDone > 0 && (
-                    <div className="text-center p-3 bg-violet-50 rounded-lg">
-                      <div className="text-lg font-bold text-violet-600 mb-1">
-                        {user.promoterDetails.numberOfConsultantCampaignDone}
-                      </div>
-                      <div className="text-xs text-gray-600">Consultant</div>
-                    </div>
-                  )}
+                    <div className="text-sm text-gray-600">Total Campaigns Completed</div>
+                  </div>
                 </div>
               </div>
-            )}
+              
+              {/* Campaign Type Breakdown */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-indigo-50 rounded-lg p-3 text-center border border-indigo-100">
+                  <div className="text-lg font-bold text-indigo-600 mb-1">
+                    {user.promoterDetails?.numberOfVisibilityCampaignDone || 0}
+                  </div>
+                  <div className="text-xs text-indigo-700 font-medium">Visibility</div>
+                  <div className="text-xs text-gray-500">Campaigns</div>
+                </div>
+                
+                <div className="bg-emerald-50 rounded-lg p-3 text-center border border-emerald-100">
+                  <div className="text-lg font-bold text-emerald-600 mb-1">
+                    {user.promoterDetails?.numberOfSellerCampaignDone || 0}
+                  </div>
+                  <div className="text-xs text-emerald-700 font-medium">Seller</div>
+                  <div className="text-xs text-gray-500">Campaigns</div>
+                </div>
+                
+                <div className="bg-amber-50 rounded-lg p-3 text-center border border-amber-100">
+                  <div className="text-lg font-bold text-amber-600 mb-1">
+                    {user.promoterDetails?.numberOfSalesmanCampaignDone || 0}
+                  </div>
+                  <div className="text-xs text-amber-700 font-medium">Salesman</div>
+                  <div className="text-xs text-gray-500">Campaigns</div>
+                </div>
+                
+                <div className="bg-violet-50 rounded-lg p-3 text-center border border-violet-100">
+                  <div className="text-lg font-bold text-violet-600 mb-1">
+                    {user.promoterDetails?.numberOfConsultantCampaignDone || 0}
+                  </div>
+                  <div className="text-xs text-violet-700 font-medium">Consultant</div>
+                  <div className="text-xs text-gray-500">Campaigns</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Portfolio Section */}
@@ -467,19 +468,6 @@ export default function PromoterProfileContent({
 
         {/* Right Column - Sidebar Info */}
         <div className="space-y-6">
-          {/* Account Type */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Type</h3>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <UserIcon className="w-4 h-4 text-green-600" />
-              </div>
-              <span className="font-medium text-green-700">
-                {user.promoterDetails?.isBusiness ? 'Business Creator' : 'Individual Creator'}
-              </span>
-            </div>
-          </div>
-
           {/* Social Media */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Social Media</h3>
