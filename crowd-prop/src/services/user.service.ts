@@ -91,6 +91,20 @@ export class UserService {
   }
 
   /**
+   * Check if the user has completed setup and can use full features
+   */
+  isSetupComplete(): boolean {
+    return this.currentUser ? this.currentUser.isSetupDone : false;
+  }
+
+  /**
+   * Check if API calls that require completed setup should be allowed
+   */
+  canMakeSetupRequiredCalls(): boolean {
+    return this.isSetupComplete();
+  }
+
+  /**
    * Clear current user data (logout)
    */
   clearCurrentUser(): void {
@@ -161,6 +175,89 @@ export class UserService {
       }
 
       throw new Error("Failed to load user profile. Please try again.");
+    }
+  }
+
+  /**
+   * Check if a username/name is available
+   */
+  async checkNameAvailability(name: string): Promise<{
+    success: boolean;
+    available: boolean;
+    message: string;
+  }> {
+    try {
+      if (!name || name.trim().length === 0) {
+        throw new Error("Name is required");
+      }
+
+      const response = await httpService.get<{
+        success: boolean;
+        available: boolean;
+        message: string;
+      }>(
+        `/user/check/username?username=${encodeURIComponent(name.trim())}`,
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to check name availability for ${name}:`, error);
+
+      return {
+        success: false,
+        available: false,
+        message:
+          error instanceof Error && error.message
+            ? error.message
+            : "Failed to check name availability. Please try again.",
+      };
+    }
+  }
+
+  /**
+   * Check if a company name is available
+   */
+  async checkCompanyNameAvailability(companyName: string): Promise<{
+    success: boolean;
+    available: boolean;
+    message: string;
+  }> {
+    try {
+      if (!companyName || companyName.trim().length === 0) {
+        throw new Error("Company name is required");
+      }
+
+      const response = await httpService.get<{
+        success: boolean;
+        available: boolean;
+        message: string;
+      }>(
+        `/user/check/company-name?companyName=${encodeURIComponent(
+          companyName.trim()
+        )}`,
+        true
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Failed to check company name availability for ${companyName}:`,
+        error
+      );
+
+      if (error instanceof Error) {
+        if (error.message.includes("400")) {
+          throw new Error("Invalid company name provided");
+        }
+        if (error.message.includes("401")) {
+          throw new Error("Authentication required");
+        }
+      }
+
+      throw new Error(
+        "Failed to check company name availability. Please try again."
+      );
     }
   }
 }

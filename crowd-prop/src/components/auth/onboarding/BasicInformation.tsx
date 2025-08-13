@@ -1,6 +1,8 @@
 "use client";
 
+import { useState, useEffect, useCallback, useRef } from "react";
 import { OnboardingData } from "../UserOnboarding";
+import { userService } from "@/services/user.service";
 
 interface BasicInformationProps {
   data: OnboardingData;
@@ -15,6 +17,74 @@ export default function BasicInformation({
   onNext,
   onBack,
 }: BasicInformationProps) {
+  const [nameStatus, setNameStatus] = useState<{
+    isChecking: boolean;
+    isAvailable: boolean | null;
+    message: string;
+  }>({
+    isChecking: false,
+    isAvailable: null,
+    message: "",
+  });
+
+  const nameTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const checkNameAvailability = useCallback(async (name: string) => {
+    if (!name || name.trim().length < 2) {
+      setNameStatus({
+        isChecking: false,
+        isAvailable: null,
+        message: "Name must be at least 2 characters long",
+      });
+      return;
+    }
+
+    setNameStatus((prev) => ({ ...prev, isChecking: true }));
+
+    try {
+      const response = await userService.checkNameAvailability(name);
+      setNameStatus({
+        isChecking: false,
+        isAvailable: response.available,
+        message: response.message,
+      });
+    } catch (error) {
+      console.error("Failed to check name availability:", error);
+      setNameStatus({
+        isChecking: false,
+        isAvailable: false,
+        message: "Failed to check name availability. Please try again.",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (nameTimeoutRef.current) {
+      clearTimeout(nameTimeoutRef.current);
+    }
+
+    const name = data.name || "";
+
+    if (name.trim().length > 0) {
+      const timeout = setTimeout(() => {
+        checkNameAvailability(name);
+      }, 500); // Debounce for 500ms
+
+      nameTimeoutRef.current = timeout;
+    } else {
+      setNameStatus({
+        isChecking: false,
+        isAvailable: null,
+        message: "",
+      });
+    }
+
+    return () => {
+      if (nameTimeoutRef.current) {
+        clearTimeout(nameTimeoutRef.current);
+      }
+    };
+  }, [data.name, checkNameAvailability]);
   const handleInputChange = (field: keyof OnboardingData, value: string) => {
     onUpdate({ [field]: value });
   };
@@ -46,8 +116,10 @@ export default function BasicInformation({
   };
 
   const isValid =
-    data.name.trim().length > 0 && data.country && data.usedCurrency;
-
+    data.name.trim().length > 0 &&
+    data.country &&
+    data.usedCurrency &&
+    nameStatus.isAvailable === true;
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -67,14 +139,40 @@ export default function BasicInformation({
           >
             Full Name *
           </label>
-          <input
-            id="name"
-            type="text"
-            value={data.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
-            placeholder="Enter your full name"
-          />
+          <div className="relative">
+            <input
+              id="name"
+              type="text"
+              value={data.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 ${
+                nameStatus.isAvailable === false
+                  ? "border-red-300 bg-red-50"
+                  : nameStatus.isAvailable === true
+                  ? "border-green-300 bg-green-50"
+                  : "border-gray-300"
+              }`}
+              placeholder="Enter your full name"
+            />
+            {nameStatus.isChecking && (
+              <div className="absolute right-3 top-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+              </div>
+            )}
+          </div>
+          {nameStatus.message && (
+            <p
+              className={`text-xs mt-1 ${
+                nameStatus.isAvailable === false
+                  ? "text-red-600"
+                  : nameStatus.isAvailable === true
+                  ? "text-green-600"
+                  : "text-gray-500"
+              }`}
+            >
+              {nameStatus.message}
+            </p>
+          )}
         </div>
 
         <div>

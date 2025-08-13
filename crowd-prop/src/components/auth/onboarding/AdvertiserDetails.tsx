@@ -1,7 +1,9 @@
-'use client';
+"use client";
 
-import { OnboardingData } from '../UserOnboarding';
-import { AdvertiserType } from '@/app/enums/advertiser-type';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { OnboardingData } from "../UserOnboarding";
+import { AdvertiserType } from "@/app/enums/advertiser-type";
+import { userService } from "@/services/user.service";
 
 interface AdvertiserDetailsProps {
   data: OnboardingData;
@@ -10,41 +12,122 @@ interface AdvertiserDetailsProps {
   onBack: () => void;
 }
 
-export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: AdvertiserDetailsProps) {
+export default function AdvertiserDetails({
+  data,
+  onUpdate,
+  onNext,
+  onBack,
+}: AdvertiserDetailsProps) {
+  const [companyNameStatus, setCompanyNameStatus] = useState<{
+    isChecking: boolean;
+    isAvailable: boolean | null;
+    message: string;
+  }>({
+    isChecking: false,
+    isAvailable: null,
+    message: "",
+  });
+
+  const companyNameTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const checkCompanyNameAvailability = useCallback(
+    async (companyName: string) => {
+      if (!companyName || companyName.trim().length < 2) {
+        setCompanyNameStatus({
+          isChecking: false,
+          isAvailable: null,
+          message: "Company name must be at least 2 characters long",
+        });
+        return;
+      }
+
+      setCompanyNameStatus((prev) => ({ ...prev, isChecking: true }));
+
+      try {
+        const response = await userService.checkCompanyNameAvailability(
+          companyName
+        );
+        setCompanyNameStatus({
+          isChecking: false,
+          isAvailable: response.available,
+          message: response.message,
+        });
+      } catch (error) {
+        setCompanyNameStatus({
+          isChecking: false,
+          isAvailable: false,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Failed to check company name availability",
+        });
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (companyNameTimeoutRef.current) {
+      clearTimeout(companyNameTimeoutRef.current);
+    }
+
+    const companyName = data.advertiserDetails?.companyName || "";
+
+    if (companyName.trim().length > 0) {
+      const timeout = setTimeout(() => {
+        checkCompanyNameAvailability(companyName);
+      }, 500); // Debounce for 500ms
+
+      companyNameTimeoutRef.current = timeout;
+    } else {
+      setCompanyNameStatus({
+        isChecking: false,
+        isAvailable: null,
+        message: "",
+      });
+    }
+
+    return () => {
+      if (companyNameTimeoutRef.current) {
+        clearTimeout(companyNameTimeoutRef.current);
+      }
+    };
+  }, [data.advertiserDetails?.companyName, checkCompanyNameAvailability]);
+
   // Create a mapping for display names
   const advertiserTypeLabels: Record<AdvertiserType, string> = {
-    [AdvertiserType.EDUCATION]: 'Education',
-    [AdvertiserType.CLOTHING]: 'Clothing & Fashion',
-    [AdvertiserType.TECH]: 'Technology',
-    [AdvertiserType.BEAUTY]: 'Beauty & Cosmetics',
-    [AdvertiserType.FOOD]: 'Food & Beverage',
-    [AdvertiserType.HEALTH]: 'Health & Fitness',
-    [AdvertiserType.ENTERTAINMENT]: 'Entertainment',
-    [AdvertiserType.TRAVEL]: 'Travel & Tourism',
-    [AdvertiserType.FINANCE]: 'Finance',
-    [AdvertiserType.OTHER]: 'Other',
-    [AdvertiserType.SPORTS]: 'Sports',
-    [AdvertiserType.AUTOMOTIVE]: 'Automotive',
-    [AdvertiserType.ART]: 'Art',
-    [AdvertiserType.GAMING]: 'Gaming',
-    [AdvertiserType.ECOMMERCE]: 'E-commerce',
-    [AdvertiserType.MEDIA]: 'Media',
-    [AdvertiserType.NON_PROFIT]: 'Non-Profit',
-    [AdvertiserType.REAL_ESTATE]: 'Real Estate',
-    [AdvertiserType.HOME_SERVICES]: 'Home & Garden',
-    [AdvertiserType.EVENTS]: 'Events',
-    [AdvertiserType.CONSULTING]: 'Consulting',
-    [AdvertiserType.BOOKS]: 'Books',
-    [AdvertiserType.MUSIC]: 'Music',
-    [AdvertiserType.PETS]: 'Pets',
-    [AdvertiserType.TOYS]: 'Toys',
-    [AdvertiserType.BABY]: 'Baby',
-    [AdvertiserType.JEWELRY]: 'Jewelry',
-    [AdvertiserType.SCIENCE]: 'Science',
-    [AdvertiserType.HARDWARE]: 'Hardware',
-    [AdvertiserType.ENERGY]: 'Energy',
-    [AdvertiserType.AGRICULTURE]: 'Agriculture',
-    [AdvertiserType.GOVERNMENT]: 'Government',
+    [AdvertiserType.EDUCATION]: "Education",
+    [AdvertiserType.CLOTHING]: "Clothing & Fashion",
+    [AdvertiserType.TECH]: "Technology",
+    [AdvertiserType.BEAUTY]: "Beauty & Cosmetics",
+    [AdvertiserType.FOOD]: "Food & Beverage",
+    [AdvertiserType.HEALTH]: "Health & Fitness",
+    [AdvertiserType.ENTERTAINMENT]: "Entertainment",
+    [AdvertiserType.TRAVEL]: "Travel & Tourism",
+    [AdvertiserType.FINANCE]: "Finance",
+    [AdvertiserType.OTHER]: "Other",
+    [AdvertiserType.SPORTS]: "Sports",
+    [AdvertiserType.AUTOMOTIVE]: "Automotive",
+    [AdvertiserType.ART]: "Art",
+    [AdvertiserType.GAMING]: "Gaming",
+    [AdvertiserType.ECOMMERCE]: "E-commerce",
+    [AdvertiserType.MEDIA]: "Media",
+    [AdvertiserType.NON_PROFIT]: "Non-Profit",
+    [AdvertiserType.REAL_ESTATE]: "Real Estate",
+    [AdvertiserType.HOME_SERVICES]: "Home & Garden",
+    [AdvertiserType.EVENTS]: "Events",
+    [AdvertiserType.CONSULTING]: "Consulting",
+    [AdvertiserType.BOOKS]: "Books",
+    [AdvertiserType.MUSIC]: "Music",
+    [AdvertiserType.PETS]: "Pets",
+    [AdvertiserType.TOYS]: "Toys",
+    [AdvertiserType.BABY]: "Baby",
+    [AdvertiserType.JEWELRY]: "Jewelry",
+    [AdvertiserType.SCIENCE]: "Science",
+    [AdvertiserType.HARDWARE]: "Hardware",
+    [AdvertiserType.ENERGY]: "Energy",
+    [AdvertiserType.AGRICULTURE]: "Agriculture",
+    [AdvertiserType.GOVERNMENT]: "Government",
   };
 
   const advertiserTypes = Object.values(AdvertiserType);
@@ -55,8 +138,8 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
         ...data.advertiserDetails,
         companyName: value,
         advertiserTypes: data.advertiserDetails?.advertiserTypes || [],
-        companyWebsite: data.advertiserDetails?.companyWebsite || ''
-      }
+        companyWebsite: data.advertiserDetails?.companyWebsite || "",
+      },
     });
   };
 
@@ -64,31 +147,32 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
     onUpdate({
       advertiserDetails: {
         ...data.advertiserDetails,
-        companyName: data.advertiserDetails?.companyName || '',
+        companyName: data.advertiserDetails?.companyName || "",
         advertiserTypes: data.advertiserDetails?.advertiserTypes || [],
-        companyWebsite: value
-      }
+        companyWebsite: value,
+      },
     });
   };
 
   const handleTypeToggle = (type: AdvertiserType) => {
     const currentTypes = data.advertiserDetails?.advertiserTypes || [];
     const newTypes = currentTypes.includes(type)
-      ? currentTypes.filter(t => t !== type)
+      ? currentTypes.filter((t) => t !== type)
       : [...currentTypes, type];
 
     onUpdate({
       advertiserDetails: {
         ...data.advertiserDetails,
-        companyName: data.advertiserDetails?.companyName || '',
-        companyWebsite: data.advertiserDetails?.companyWebsite || '',
-        advertiserTypes: newTypes
-      }
+        companyName: data.advertiserDetails?.companyName || "",
+        companyWebsite: data.advertiserDetails?.companyWebsite || "",
+        advertiserTypes: newTypes,
+      },
     });
   };
 
-  const isValid = 
-    (data.advertiserDetails?.companyName || '').trim().length > 0 &&
+  const isValid =
+    (data.advertiserDetails?.companyName || "").trim().length > 0 &&
+    companyNameStatus.isAvailable === true &&
     (data.advertiserDetails?.advertiserTypes || []).length > 0;
 
   return (
@@ -104,27 +188,73 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="company-name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="company-name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Company/Business Name *
           </label>
           <input
             id="company-name"
             type="text"
-            value={data.advertiserDetails?.companyName || ''}
+            value={data.advertiserDetails?.companyName || ""}
             onChange={(e) => handleCompanyNameChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-gray-900 placeholder-gray-500 ${
+              companyNameStatus.isAvailable === true
+                ? "border-green-300 focus:ring-green-500"
+                : companyNameStatus.isAvailable === false
+                ? "border-red-300 focus:ring-red-500"
+                : "border-gray-300 focus:ring-blue-500"
+            }`}
             placeholder="Enter your company name"
           />
+          {companyNameStatus.isChecking && (
+            <p className="text-xs text-blue-600 mt-1 flex items-center">
+              <svg className="animate-spin h-3 w-3 mr-1" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              Checking availability...
+            </p>
+          )}
+          {!companyNameStatus.isChecking && companyNameStatus.message && (
+            <p
+              className={`text-xs mt-1 ${
+                companyNameStatus.isAvailable === true
+                  ? "text-green-600"
+                  : companyNameStatus.isAvailable === false
+                  ? "text-red-600"
+                  : "text-gray-500"
+              }`}
+            >
+              {companyNameStatus.message}
+            </p>
+          )}
         </div>
 
         <div>
-          <label htmlFor="company-website" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="company-website"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Company Website
           </label>
           <input
             id="company-website"
             type="url"
-            value={data.advertiserDetails?.companyWebsite || ''}
+            value={data.advertiserDetails?.companyWebsite || ""}
             onChange={(e) => handleWebsiteChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             placeholder="https://yourcompany.com"
@@ -137,7 +267,9 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {advertiserTypes.map((type) => {
-              const isSelected = (data.advertiserDetails?.advertiserTypes || []).includes(type);
+              const isSelected = (
+                data.advertiserDetails?.advertiserTypes || []
+              ).includes(type);
               return (
                 <button
                   key={type}
@@ -145,8 +277,8 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
                   onClick={() => handleTypeToggle(type)}
                   className={`p-3 text-sm border rounded-lg text-left transition-all duration-200 ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-200 hover:border-gray-300 text-gray-700"
                   }`}
                 >
                   {advertiserTypeLabels[type]}
@@ -155,7 +287,8 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
             })}
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            Selected: {(data.advertiserDetails?.advertiserTypes || []).length} categories
+            Selected: {(data.advertiserDetails?.advertiserTypes || []).length}{" "}
+            categories
           </p>
         </div>
       </div>
@@ -163,8 +296,16 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start">
           <div className="flex-shrink-0">
-            <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
           <div className="ml-3">
@@ -172,7 +313,8 @@ export default function AdvertiserDetails({ data, onUpdate, onNext, onBack }: Ad
               Verification Process
             </h3>
             <p className="text-sm text-blue-700 mt-1">
-              Your business information will be reviewed for verification. This helps build trust with promoters and ensures quality partnerships.
+              Your business information will be reviewed for verification. This
+              helps build trust with promoters and ensures quality partnerships.
             </p>
           </div>
         </div>

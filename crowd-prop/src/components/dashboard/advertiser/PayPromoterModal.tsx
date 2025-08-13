@@ -47,6 +47,7 @@ export default function PayPromoterModal({
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   console.log("PayPromoterModal props:", {
     isOpen,
@@ -178,11 +179,16 @@ export default function PayPromoterModal({
         Math.round(paymentAmount * 100) // Convert to cents
       );
 
+      // Show success message
+      setShowSuccess(true);
+
       // Call success callback
       onPaymentSuccess(paymentAmount);
 
-      // Close modal
-      onClose();
+      // Wait 2 seconds for user to see confirmation, then reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Payment failed");
     } finally {
@@ -194,6 +200,7 @@ export default function PayPromoterModal({
     setPaymentAmount(0);
     setError(null);
     setLoading(false);
+    setShowSuccess(false);
     onClose();
   };
 
@@ -203,6 +210,46 @@ export default function PayPromoterModal({
   }
 
   console.log("Modal should render now...");
+
+  // Show success confirmation
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-black bg-opacity-25 transition-opacity" />
+
+        {/* Success Modal */}
+        <div className="flex min-h-full items-center justify-center p-4">
+          <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all">
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
+                <CheckCircleIcon className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">
+                Payment Successful!
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                {formatCurrency(paymentAmount)} has been successfully paid to{" "}
+                {getPromoterDisplayName(promoter)}.
+              </p>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-sm text-green-800">
+                  The page will refresh automatically to show updated payment
+                  information.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center justify-center">
+                <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+                <span className="text-sm text-gray-600">
+                  Refreshing page...
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">

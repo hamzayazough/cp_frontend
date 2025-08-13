@@ -16,6 +16,7 @@ import {
   ErrorPayload,
 } from "@/interfaces/messaging";
 import { httpService } from "./http.service";
+import { userService } from "./user.service";
 
 class MessagingService {
   private socket: Socket | null = null;
@@ -26,8 +27,24 @@ class MessagingService {
       process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:3000/messaging";
   }
 
+  // Helper method to check if messaging operations should be allowed
+  private canPerformMessagingOperations(): boolean {
+    return userService.canMakeSetupRequiredCalls();
+  }
+
+  // Helper method to throw error if setup not complete
+  private ensureSetupComplete(): void {
+    if (!this.canPerformMessagingOperations()) {
+      throw new Error(
+        "User must complete account setup before using messaging features"
+      );
+    }
+  }
+
   // WebSocket Connection Management
   connect(firebaseToken: string): Socket {
+    this.ensureSetupComplete();
+
     this.socket = io(this.wsUrl, {
       auth: { token: firebaseToken },
     });
@@ -183,6 +200,8 @@ class MessagingService {
     limit?: number,
     campaignId?: string
   ): Promise<MessageThreadResponse[]> {
+    this.ensureSetupComplete();
+
     const params = new URLSearchParams();
     if (page) params.append("page", page.toString());
     if (limit) params.append("limit", limit.toString());
@@ -199,6 +218,8 @@ class MessagingService {
   }
 
   async getThread(threadId: string): Promise<MessageThreadResponse> {
+    this.ensureSetupComplete();
+
     const response = await httpService.get<MessageThreadResponse>(
       `/messaging/threads/${threadId}`,
       true
@@ -212,6 +233,8 @@ class MessagingService {
     limit?: number,
     before?: Date
   ): Promise<MessageResponse[]> {
+    this.ensureSetupComplete();
+
     const params = new URLSearchParams();
     if (page) params.append("page", page.toString());
     if (limit) params.append("limit", limit.toString());
@@ -232,6 +255,8 @@ class MessagingService {
   async getThreadForCampaign(
     campaignId: string
   ): Promise<MessageThreadResponse | null> {
+    this.ensureSetupComplete();
+
     try {
       const response = await httpService.get<MessageThreadResponse>(
         `/messaging/campaigns/${campaignId}/thread`,
@@ -251,6 +276,8 @@ class MessagingService {
   async createThread(
     request: CreateMessageThreadRequest
   ): Promise<MessageThreadResponse> {
+    this.ensureSetupComplete();
+
     const response = await httpService.post<MessageThreadResponse>(
       "/messaging/threads",
       request,
@@ -264,6 +291,8 @@ class MessagingService {
     threadId: string,
     content: string
   ): Promise<MessageResponse> {
+    this.ensureSetupComplete();
+
     const response = await httpService.post<MessageResponse>(
       `/messaging/threads/${threadId}/messages`,
       { content },
@@ -273,6 +302,8 @@ class MessagingService {
   }
 
   async markMessageAsReadHTTP(messageId: string): Promise<void> {
+    this.ensureSetupComplete();
+
     await httpService.patch<void>(
       `/messaging/messages/${messageId}/read`,
       undefined,
@@ -281,6 +312,8 @@ class MessagingService {
   }
 
   async markThreadAsReadHTTP(threadId: string): Promise<void> {
+    this.ensureSetupComplete();
+
     await httpService.patch<void>(
       `/messaging/threads/${threadId}/read`,
       undefined,
@@ -292,6 +325,8 @@ class MessagingService {
   async hasNewMessagesForCampaign(
     campaignId: string
   ): Promise<{ hasNewMessages: boolean; unreadCount: number }> {
+    this.ensureSetupComplete();
+
     const response = await httpService.get<{
       hasNewMessages: boolean;
       unreadCount: number;

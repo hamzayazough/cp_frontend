@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { Deliverable } from "@/app/enums/campaign-type";
-import { InformationCircleIcon, XMarkIcon, EyeIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import {
+  InformationCircleIcon,
+  XMarkIcon,
+  EyeIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/24/outline";
 import DeliverableGlossaryModal from "./DeliverableGlossaryModal";
 
 interface DeliverableSelectorProps {
@@ -17,132 +23,159 @@ interface DeliverableSelectorProps {
 }
 
 // Deliverable descriptions and metadata
-const DELIVERABLE_INFO: Record<Deliverable, { name: string; description: string; category: string }> = {
+const DELIVERABLE_INFO: Record<
+  Deliverable,
+  { name: string; description: string; category: string }
+> = {
   // Consultant Deliverables
   [Deliverable.MARKETING_STRATEGY]: {
     name: "Marketing Strategy",
-    description: "A comprehensive plan outlining how to promote your product/service, including target audience analysis, messaging, and channel recommendations.",
-    category: "Strategy"
+    description:
+      "A comprehensive plan outlining how to promote your product/service, including target audience analysis, messaging, and channel recommendations.",
+    category: "Strategy",
   },
   [Deliverable.CONTENT_PLAN]: {
     name: "Content Plan",
-    description: "A detailed calendar and strategy for content creation, including topics, posting schedules, and content types across different platforms.",
-    category: "Planning"
+    description:
+      "A detailed calendar and strategy for content creation, including topics, posting schedules, and content types across different platforms.",
+    category: "Planning",
   },
   [Deliverable.SCRIPT]: {
     name: "Script Writing",
-    description: "Written scripts for videos, ads, sales pitches, or other promotional content tailored to your brand voice and objectives.",
-    category: "Creative"
+    description:
+      "Written scripts for videos, ads, sales pitches, or other promotional content tailored to your brand voice and objectives.",
+    category: "Creative",
   },
   [Deliverable.MARKET_ANALYSIS]: {
     name: "Market Analysis",
-    description: "In-depth research and analysis of your market, competitors, trends, and opportunities to inform strategic decisions.",
-    category: "Research"
+    description:
+      "In-depth research and analysis of your market, competitors, trends, and opportunities to inform strategic decisions.",
+    category: "Research",
   },
   [Deliverable.BRAND_GUIDELINES]: {
     name: "Brand Guidelines",
-    description: "Recommendations for your brand's visual identity, tone of voice, messaging consistency, and overall brand presentation.",
-    category: "Branding"
+    description:
+      "Recommendations for your brand's visual identity, tone of voice, messaging consistency, and overall brand presentation.",
+    category: "Branding",
   },
   [Deliverable.WEEKLY_REPORT]: {
     name: "Weekly Reports",
-    description: "Regular progress updates and performance reports detailing campaign metrics, insights, and recommended optimizations.",
-    category: "Reporting"
+    description:
+      "Regular progress updates and performance reports detailing campaign metrics, insights, and recommended optimizations.",
+    category: "Reporting",
   },
   [Deliverable.PERFORMANCE_AUDIT]: {
     name: "Performance Audit",
-    description: "A thorough review and analysis of your current marketing efforts, identifying strengths, weaknesses, and improvement opportunities.",
-    category: "Analysis"
+    description:
+      "A thorough review and analysis of your current marketing efforts, identifying strengths, weaknesses, and improvement opportunities.",
+    category: "Analysis",
   },
   [Deliverable.LIVE_SESSION]: {
     name: "Live Sessions",
-    description: "One-on-one coaching calls, Q&A sessions, or workshops to provide personalized guidance and answer your questions.",
-    category: "Consultation"
+    description:
+      "One-on-one coaching calls, Q&A sessions, or workshops to provide personalized guidance and answer your questions.",
+    category: "Consultation",
   },
   [Deliverable.PRODUCT_FEEDBACK]: {
     name: "Product Feedback",
-    description: "Detailed review and improvement suggestions for your product, service, or offering from a marketing perspective.",
-    category: "Review"
+    description:
+      "Detailed review and improvement suggestions for your product, service, or offering from a marketing perspective.",
+    category: "Review",
   },
   [Deliverable.AD_CONCEPTS]: {
     name: "Ad Concepts",
-    description: "Creative ideas and concepts for advertising campaigns, including copy suggestions, visual direction, and targeting strategies.",
-    category: "Creative"
+    description:
+      "Creative ideas and concepts for advertising campaigns, including copy suggestions, visual direction, and targeting strategies.",
+    category: "Creative",
   },
 
   // Seller Deliverables
   [Deliverable.CREATE_SOCIAL_MEDIA_ACCOUNTS]: {
     name: "Create Social Media Accounts",
-    description: "Set up new social media profiles specifically dedicated to promoting your product or service across relevant platforms.",
-    category: "Setup"
+    description:
+      "Set up new social media profiles specifically dedicated to promoting your product or service across relevant platforms.",
+    category: "Setup",
   },
   [Deliverable.SOCIAL_MEDIA_MANAGEMENT]: {
     name: "Social Media Management",
-    description: "Ongoing management of social media accounts including content posting, community engagement, follower growth, and brand representation.",
-    category: "Management"
+    description:
+      "Ongoing management of social media accounts including content posting, community engagement, follower growth, and brand representation.",
+    category: "Management",
   },
   [Deliverable.SPAM_PROMOTION]: {
     name: "Mass Promotion",
-    description: "Large-scale posting and distribution of your content across multiple channels, forums, and platforms to maximize reach.",
-    category: "Distribution"
+    description:
+      "Large-scale posting and distribution of your content across multiple channels, forums, and platforms to maximize reach.",
+    category: "Distribution",
   },
   [Deliverable.PROMOTIONAL_VIDEO]: {
     name: "Promotional Video",
-    description: "A fully produced promotional video from concept to completion, including scripting, filming, editing, and final delivery.",
-    category: "Video"
+    description:
+      "A fully produced promotional video from concept to completion, including scripting, filming, editing, and final delivery.",
+    category: "Video",
   },
   [Deliverable.VIDEO_EDITING]: {
     name: "Video Editing",
-    description: "Professional editing of your raw footage into polished marketing videos with transitions, effects, and optimized for your target platforms.",
-    category: "Video"
+    description:
+      "Professional editing of your raw footage into polished marketing videos with transitions, effects, and optimized for your target platforms.",
+    category: "Video",
   },
   [Deliverable.INSTAGRAM_POST]: {
     name: "Instagram Content",
-    description: "Creation of Instagram posts including images, carousels, reels, stories, and captions optimized for engagement and your brand.",
-    category: "Social Content"
+    description:
+      "Creation of Instagram posts including images, carousels, reels, stories, and captions optimized for engagement and your brand.",
+    category: "Social Content",
   },
   [Deliverable.TIKTOK_VIDEO]: {
     name: "TikTok Videos",
-    description: "Short-form video content specifically created for TikTok, following current trends and optimized for the platform's algorithm.",
-    category: "Social Content"
+    description:
+      "Short-form video content specifically created for TikTok, following current trends and optimized for the platform's algorithm.",
+    category: "Social Content",
   },
   [Deliverable.BLOG_ARTICLE]: {
     name: "Blog Articles",
-    description: "SEO-optimized written content and articles that drive traffic to your website and establish thought leadership in your industry.",
-    category: "Content"
+    description:
+      "SEO-optimized written content and articles that drive traffic to your website and establish thought leadership in your industry.",
+    category: "Content",
   },
   [Deliverable.EMAIL_CAMPAIGN]: {
     name: "Email Campaigns",
-    description: "Designed and written email marketing campaigns including templates, copy, and targeting strategies to reach your audience.",
-    category: "Email Marketing"
+    description:
+      "Designed and written email marketing campaigns including templates, copy, and targeting strategies to reach your audience.",
+    category: "Email Marketing",
   },
   [Deliverable.PAID_ADS_CREATION]: {
     name: "Paid Ads Creation",
-    description: "Creation and setup of paid advertising campaigns on platforms like Facebook, Google, TikTok, or other advertising networks.",
-    category: "Advertising"
+    description:
+      "Creation and setup of paid advertising campaigns on platforms like Facebook, Google, TikTok, or other advertising networks.",
+    category: "Advertising",
   },
   [Deliverable.PRODUCT_REVIEW]: {
     name: "Product Reviews",
-    description: "Authentic written or video reviews of your product or service, showcasing features, benefits, and personal experience.",
-    category: "Review"
+    description:
+      "Authentic written or video reviews of your product or service, showcasing features, benefits, and personal experience.",
+    category: "Review",
   },
   [Deliverable.EVENT_PROMOTION]: {
     name: "Event Promotion",
-    description: "Promotion of your events through livestreams, giveaways, coverage, and audience engagement to drive attendance and awareness.",
-    category: "Events"
+    description:
+      "Promotion of your events through livestreams, giveaways, coverage, and audience engagement to drive attendance and awareness.",
+    category: "Events",
   },
   [Deliverable.DIRECT_OUTREACH]: {
     name: "Direct Outreach",
-    description: "Proactive outreach to potential customers through DMs, emails, cold calls, and other direct communication channels.",
-    category: "Outreach"
+    description:
+      "Proactive outreach to potential customers through DMs, emails, cold calls, and other direct communication channels.",
+    category: "Outreach",
   },
 
   // Shared
   [Deliverable.CUSTOM]: {
     name: "Custom Deliverable",
-    description: "A custom deliverable that you can define specifically for your campaign needs. Details to be discussed with the promoter.",
-    category: "Custom"
-  }
+    description:
+      "A custom deliverable that you can define specifically for your campaign needs. Details to be discussed with the promoter.",
+    category: "Custom",
+  },
 };
 
 export default function DeliverableSelector({
@@ -153,7 +186,7 @@ export default function DeliverableSelector({
   description,
   className = "",
   colorScheme = "purple",
-  campaignType
+  campaignType,
 }: DeliverableSelectorProps) {
   const [showModal, setShowModal] = useState<Deliverable | null>(null);
   const [showTooltip, setShowTooltip] = useState<Deliverable | null>(null);
@@ -162,7 +195,7 @@ export default function DeliverableSelector({
 
   const toggleDeliverable = (deliverable: Deliverable) => {
     const newSelection = selectedDeliverables.includes(deliverable)
-      ? selectedDeliverables.filter(d => d !== deliverable)
+      ? selectedDeliverables.filter((d) => d !== deliverable)
       : [...selectedDeliverables, deliverable];
     onSelectionChange(newSelection);
   };
@@ -175,7 +208,7 @@ export default function DeliverableSelector({
         icon: "text-purple-600",
         selected: "bg-purple-600 text-white border-purple-600",
         hover: "hover:border-purple-300 hover:bg-purple-50",
-        selectedBadge: "bg-purple-600 text-white"
+        selectedBadge: "bg-purple-600 text-white",
       },
       orange: {
         bg: "bg-orange-50",
@@ -183,7 +216,7 @@ export default function DeliverableSelector({
         icon: "text-orange-600",
         selected: "bg-orange-600 text-white border-orange-600",
         hover: "hover:border-orange-300 hover:bg-orange-50",
-        selectedBadge: "bg-orange-600 text-white"
+        selectedBadge: "bg-orange-600 text-white",
       },
       green: {
         bg: "bg-green-50",
@@ -191,7 +224,7 @@ export default function DeliverableSelector({
         icon: "text-green-600",
         selected: "bg-green-600 text-white border-green-600",
         hover: "hover:border-green-300 hover:bg-green-50",
-        selectedBadge: "bg-green-600 text-white"
+        selectedBadge: "bg-green-600 text-white",
       },
       blue: {
         bg: "bg-blue-50",
@@ -199,8 +232,8 @@ export default function DeliverableSelector({
         icon: "text-blue-600",
         selected: "bg-blue-600 text-white border-blue-600",
         hover: "hover:border-blue-300 hover:bg-blue-50",
-        selectedBadge: "bg-blue-600 text-white"
-      }
+        selectedBadge: "bg-blue-600 text-white",
+      },
     };
     return colors[colorScheme];
   };
@@ -218,7 +251,9 @@ export default function DeliverableSelector({
   };
 
   return (
-    <div className={`${colors.bg} ${colors.border} border rounded-lg p-4 ${className}`}>
+    <div
+      className={`${colors.bg} ${colors.border} border rounded-lg p-4 ${className}`}
+    >
       <div className="flex items-center justify-between mb-3">
         <label className="block text-sm font-medium text-gray-700">
           {title}
@@ -255,17 +290,20 @@ export default function DeliverableSelector({
           )}
         </div>
       </div>
-      
+
       {description && (
         <p className="text-sm text-gray-500 mb-4">{description}</p>
       )}
 
       {/* Compact Grid Layout */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-        {(isExpanded ? availableDeliverables : availableDeliverables.slice(0, 8)).map((deliverable) => {
+        {(isExpanded
+          ? availableDeliverables
+          : availableDeliverables.slice(0, 8)
+        ).map((deliverable) => {
           const info = DELIVERABLE_INFO[deliverable];
           const isSelected = selectedDeliverables.includes(deliverable);
-          
+
           return (
             <div key={deliverable} className="relative">
               <button
@@ -279,21 +317,20 @@ export default function DeliverableSelector({
               >
                 <div className="flex items-center justify-between">
                   <span className="flex-1 pr-1 leading-tight">{info.name}</span>
-                  <button
-                    type="button"
+                  <span
                     onClick={(e) => handleInfoClick(e, deliverable)}
-                    className={`flex-shrink-0 transition-colors ${
-                      isSelected 
-                        ? "text-white/80 hover:text-white" 
+                    className={`flex-shrink-0 transition-colors cursor-pointer ${
+                      isSelected
+                        ? "text-white/80 hover:text-white"
                         : "text-gray-400 hover:text-gray-600"
                     }`}
                     aria-label={`More info about ${info.name}`}
                   >
                     <InformationCircleIcon className="h-3 w-3" />
-                  </button>
+                  </span>
                 </div>
               </button>
-              
+
               {/* Desktop Tooltip */}
               {showTooltip === deliverable && (
                 <div className="absolute z-50 bottom-full left-0 mb-2 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg w-64 hidden md:block">
@@ -309,7 +346,7 @@ export default function DeliverableSelector({
             </div>
           );
         })}
-        
+
         {/* Show hidden items indicator */}
         {!isExpanded && availableDeliverables.length > 8 && (
           <button
@@ -326,11 +363,12 @@ export default function DeliverableSelector({
       {selectedDeliverables.length > 0 && (
         <div className="mt-3 p-2 bg-white border border-gray-200 rounded-md">
           <p className="text-xs text-gray-600 mb-1">
-            <span className="font-medium">{selectedDeliverables.length}</span> selected
+            <span className="font-medium">{selectedDeliverables.length}</span>{" "}
+            selected
           </p>
           <div className="flex flex-wrap gap-1">
             {selectedDeliverables.slice(0, 3).map((deliverable) => (
-              <span 
+              <span
                 key={deliverable}
                 className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${colors.selectedBadge}`}
               >
@@ -379,7 +417,7 @@ export default function DeliverableSelector({
                     : `bg-gray-100 text-gray-700 hover:bg-gray-200`
                 }`}
               >
-                {selectedDeliverables.includes(showModal) ? 'Remove' : 'Add'}
+                {selectedDeliverables.includes(showModal) ? "Remove" : "Add"}
               </button>
             </div>
           </div>
@@ -388,8 +426,8 @@ export default function DeliverableSelector({
 
       {/* Click outside handler for desktop tooltip */}
       {showTooltip && (
-        <div 
-          className="fixed inset-0 z-40" 
+        <div
+          className="fixed inset-0 z-40"
           onClick={() => setShowTooltip(null)}
         />
       )}
