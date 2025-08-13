@@ -18,6 +18,13 @@ import {
 import { httpService } from "./http.service";
 import { userService } from "./user.service";
 
+// Import the global error handler
+let globalAuthErrorHandler: (() => void) | null = null;
+
+export function setGlobalSocketErrorHandler(handler: () => void) {
+  globalAuthErrorHandler = handler;
+}
+
 class MessagingService {
   private socket: Socket | null = null;
   private wsUrl: string;
@@ -25,6 +32,69 @@ class MessagingService {
   constructor() {
     this.wsUrl =
       process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:3000/messaging";
+  }
+
+  // Helper method to check if error is related to authentication/network issues
+  private isWebSocketAuthNetworkError(error: unknown): boolean {
+    if (typeof error === "string") {
+      const message = error.toLowerCase();
+      return (
+        message.includes("authentication failed") ||
+        message.includes("token verification failed") ||
+        message.includes("unauthorized") ||
+        message.includes("forbidden") ||
+        message.includes("connection failed") ||
+        message.includes("enotfound") ||
+        message.includes("network error") ||
+        message.includes("timeout")
+      );
+    }
+
+    if (error && typeof error === "object") {
+      const errorObj = error as Record<string, unknown>;
+      const message = (errorObj.message || errorObj.description || "")
+        .toString()
+        .toLowerCase();
+      const type = (errorObj.type || "").toString().toLowerCase();
+
+      return (
+        message.includes("authentication failed") ||
+        message.includes("token verification failed") ||
+        message.includes("unauthorized") ||
+        message.includes("forbidden") ||
+        message.includes("connection failed") ||
+        message.includes("enotfound") ||
+        message.includes("network error") ||
+        message.includes("timeout") ||
+        type.includes("transport error") ||
+        type.includes("transport close")
+      );
+    }
+
+    return false;
+  }
+
+  // Helper method to handle WebSocket authentication/network errors
+  private handleWebSocketAuthNetworkError(
+    error: unknown,
+    context: string
+  ): void {
+    if (this.isWebSocketAuthNetworkError(error)) {
+      console.error(`WebSocket ${context} error detected:`, error);
+
+      // Show error modal if handler is available
+      if (globalAuthErrorHandler) {
+        globalAuthErrorHandler();
+      } else {
+        // Fallback to automatic reload if no handler is set
+        console.warn(
+          "No global error handler set for WebSocket, falling back to automatic reload"
+        );
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    }
   }
 
   // Helper method to check if messaging operations should be allowed
@@ -69,10 +139,37 @@ class MessagingService {
 
     this.socket.on("error", (error: ErrorPayload) => {
       console.error("❌ WebSocket Event - error:", error);
+      this.handleWebSocketAuthNetworkError(error, "general error");
     });
 
     this.socket.on("disconnect", (reason: string) => {
       console.log("🔌 WebSocket Event - disconnect:", reason);
+
+      // Handle specific disconnect reasons that indicate auth/network issues
+      if (
+        reason === "io server disconnect" ||
+        reason === "transport error" ||
+        reason === "transport close"
+      ) {
+        this.handleWebSocketAuthNetworkError(reason, "disconnect");
+      }
+    });
+
+    // Handle connection errors
+    this.socket.on("connect_error", (error: Error) => {
+      console.error("❌ WebSocket Connection Error:", error);
+      this.handleWebSocketAuthNetworkError(error, "connection error");
+    });
+
+    // Handle authentication errors
+    this.socket.on("connect", () => {
+      console.log("🔌 WebSocket Connected successfully");
+    });
+
+    // Handle any other generic errors
+    this.socket.io.on("error", (error: Error) => {
+      console.error("❌ WebSocket IO Error:", error);
+      this.handleWebSocketAuthNetworkError(error, "io error");
     });
   }
 

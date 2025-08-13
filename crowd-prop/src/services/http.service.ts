@@ -1,5 +1,12 @@
 import { auth } from "@/lib/firebase";
 
+// Global error handler function - will be set by the provider
+let globalAuthErrorHandler: (() => void) | null = null;
+
+export function setGlobalAuthErrorHandler(handler: () => void) {
+  globalAuthErrorHandler = handler;
+}
+
 export interface RequestConfig {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers?: Record<string, string>;
@@ -35,6 +42,10 @@ export class HttpService {
       return await user.getIdToken();
     } catch (error) {
       console.error("Error getting auth token:", error);
+
+      // Check if this is an auth/network error that requires page reload
+      this.handleAuthNetworkError(error);
+
       return null;
     }
   }
@@ -58,6 +69,46 @@ export class HttpService {
     }
 
     return headers;
+  }
+
+  /**
+   * Check if error is related to authentication/network issues that require page reload
+   */
+  private isAuthNetworkError(error: unknown): boolean {
+    if (error instanceof Error) {
+      const message = error.message.toLowerCase();
+      return (
+        message.includes("authentication failed") ||
+        message.includes("token verification failed") ||
+        message.includes("enotfound identitytoolkit.googleapis.com") ||
+        message.includes("getaddrinfo enotfound") ||
+        (message.includes("http 401") &&
+          message.includes("token verification failed"))
+      );
+    }
+    return false;
+  }
+
+  /**
+   * Handle authentication/network errors by showing error modal
+   */
+  private handleAuthNetworkError(error: unknown): void {
+    if (this.isAuthNetworkError(error)) {
+      console.error("Authentication/Network error detected:", error);
+
+      // Show error modal if handler is available
+      if (globalAuthErrorHandler) {
+        globalAuthErrorHandler();
+      } else {
+        // Fallback to automatic reload if no handler is set
+        console.warn(
+          "No global error handler set, falling back to automatic reload"
+        );
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
+    }
   }
 
   /**
@@ -108,6 +159,10 @@ export class HttpService {
       };
     } catch (error) {
       console.error("HTTP Request failed:", error);
+
+      // Check if this is an auth/network error that requires page reload
+      this.handleAuthNetworkError(error);
+
       throw error;
     }
   }
@@ -234,6 +289,10 @@ export class HttpService {
       };
     } catch (error) {
       console.error("File upload failed:", error);
+
+      // Check if this is an auth/network error that requires page reload
+      this.handleAuthNetworkError(error);
+
       throw error;
     }
   }
@@ -279,6 +338,10 @@ export class HttpService {
       };
     } catch (error) {
       console.error("Form data upload failed:", error);
+
+      // Check if this is an auth/network error that requires page reload
+      this.handleAuthNetworkError(error);
+
       throw error;
     }
   }
