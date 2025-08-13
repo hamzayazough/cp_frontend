@@ -132,11 +132,11 @@ export default function PromoterProfileContent({
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Hero Section with Cover and Profile */}
-      <div className="relative">
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Header Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {/* Cover Image */}
-        <div className="h-48 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl relative overflow-hidden">
+        <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
           {user.backgroundUrl ? (
             <img
               src={user.backgroundUrl}
@@ -146,156 +146,149 @@ export default function PromoterProfileContent({
           ) : (
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
           )}
-          <div className="absolute inset-0 bg-black bg-opacity-20" />
+          <div className="absolute inset-0 bg-black bg-opacity-10" />
         </div>
 
-        {/* Profile Info Overlay */}
-        <div className="absolute -bottom-6 left-6 right-6">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                {/* Avatar */}
-                <div className="relative">
-                  {user.avatarUrl ? (
-                    <img
-                      src={user.avatarUrl}
-                      alt={user.name}
-                      className="w-24 h-24 rounded-xl object-cover border-4 border-white shadow-lg"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-lg">
-                      <span className="text-2xl font-bold text-white">
-                        {(user.promoterDetails?.isBusiness && user.promoterDetails?.businessName 
-                          ? user.promoterDetails.businessName 
-                          : user.name).charAt(0).toUpperCase()}
+        {/* Profile Content */}
+        <div className="px-6 py-6">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+            <div className="flex flex-col sm:flex-row gap-6">
+              {/* Avatar */}
+              <div className="relative -mt-12 sm:-mt-12">
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    className="w-20 h-20 rounded-xl object-cover border-4 border-white shadow-lg bg-white"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-lg">
+                    <span className="text-xl font-bold text-white">
+                      {(user.promoterDetails?.isBusiness && user.promoterDetails?.businessName 
+                        ? user.promoterDetails.businessName 
+                        : user.name).charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Name and Info */}
+              <div className="flex-1 sm:pt-0 pt-2">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {user.promoterDetails?.isBusiness && user.promoterDetails?.businessName 
+                      ? user.promoterDetails.businessName 
+                      : user.name}
+                  </h1>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                      {user.promoterDetails?.isBusiness ? 'Company' : 'Individual'}
+                    </span>
+                    {user.promoterDetails?.verified && (
+                      <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium flex items-center gap-1">
+                        <CheckBadgeIcon className="w-3 h-3" />
+                        Verified
                       </span>
+                    )}
+                    {user.rating && (
+                      <span className="px-2.5 py-1 bg-yellow-50 text-yellow-800 rounded-full text-xs font-medium flex items-center gap-1">
+                        <StarIconSolid className="w-3 h-3 text-yellow-500" />
+                        {user.rating.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Contact Info */}
+                <div className="space-y-1 mb-3">
+                  {user.promoterDetails?.isBusiness && user.promoterDetails?.businessName ? (
+                    <div className="text-sm text-gray-600">
+                      Contact: {user.name} • {user.email}
+                      {user.phoneNumber && <span> • {user.phoneNumber}</span>}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-600">
+                      {user.email}
+                      {user.phoneNumber && <span> • {user.phoneNumber}</span>}
                     </div>
                   )}
                 </div>
-
-                {/* Name and Basic Info */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-2xl font-bold text-gray-900">
-                      {user.promoterDetails?.isBusiness && user.promoterDetails?.businessName 
-                        ? user.promoterDetails.businessName 
-                        : user.name}
-                    </h1>
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                        {user.promoterDetails?.isBusiness ? 'Company' : 'Individual'}
-                      </span>
-                      {user.promoterDetails?.verified && (
-                        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium flex items-center gap-1">
-                          <CheckBadgeIcon className="w-3 h-3" />
-                          Verified
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Personal name for business accounts */}
-                  {user.promoterDetails?.isBusiness && user.promoterDetails?.businessName && (
-                    <div className="text-sm text-gray-600 mb-2">
-                      Contact: {user.name} • {user.email}
-                      {user.phoneNumber && (
-                        <span> • {user.phoneNumber}</span>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Email for individual accounts */}
-                  {!user.promoterDetails?.isBusiness && (
-                    <div className="text-sm text-gray-600 mb-2">
-                      {user.email}
-                      {user.phoneNumber && (
-                        <span> • {user.phoneNumber}</span>
-                      )}
-                    </div>
-                  )}
-                  
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                    {user.promoterDetails?.location && (
-                      <div className="flex items-center gap-1">
-                        <MapPinIcon className="w-4 h-4" />
-                        <span>{user.promoterDetails.location}</span>
-                      </div>
-                    )}
-                    
-                    {user.country && (
-                      <div className="flex items-center gap-1">
-                        <span className="text-lg">🌍</span>
-                        <span>{user.country}</span>
-                      </div>
-                    )}
-                    
-                    {user.usedCurrency && (
-                      <div className="flex items-center gap-1">
-                        <CurrencyDollarIcon className="w-4 h-4" />
-                        <span>{user.usedCurrency}</span>
-                      </div>
-                    )}
-                    
-                    {user.rating && (
-                      <div className="flex items-center gap-1">
-                        <StarIconSolid className="w-4 h-4 text-yellow-400" />
-                        <span className="font-medium">{user.rating.toFixed(1)}</span>
-                      </div>
-                    )}
-                    
+                
+                {/* Metadata */}
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  {user.promoterDetails?.location && (
                     <div className="flex items-center gap-1">
-                      <UserIcon className="w-4 h-4" />
-                      <span>Member since {new Date(user.createdAt).getFullYear()}</span>
+                      <MapPinIcon className="w-4 h-4" />
+                      <span>{user.promoterDetails.location}</span>
                     </div>
+                  )}
+                  
+                  {user.country && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-base">🌍</span>
+                      <span>{user.country}</span>
+                    </div>
+                  )}
+                  
+                  {user.usedCurrency && (
+                    <div className="flex items-center gap-1">
+                      <CurrencyDollarIcon className="w-4 h-4" />
+                      <span>{user.usedCurrency}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-1">
+                    <UserIcon className="w-4 h-4" />
+                    <span>Member since {new Date(user.createdAt).getFullYear()}</span>
                   </div>
                 </div>
               </div>
-
-              {/* Action Button */}
-              {!isViewOnly && (
-                <div className="flex gap-2">
-                  {isEditing ? (
-                    <>
-                      <button
-                        onClick={handleCancel}
-                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium flex items-center gap-2"
-                      >
-                        {isSaving ? (
-                          <>
-                            <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Saving...
-                          </>
-                        ) : (
-                          'Save Changes'
-                        )}
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => setIsEditing(!isEditing)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      Edit Profile
-                    </button>
-                  )}
-                </div>
-              )}
             </div>
+
+            {/* Action Button */}
+            {!isViewOnly && (
+              <div className="flex gap-2 sm:pt-0 pt-4">
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={handleCancel}
+                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium flex items-center gap-2 text-sm"
+                    >
+                      {isSaving ? (
+                        <>
+                          <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Changes'
+                      )}
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                  >
+                    Edit Profile
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Content Grid */}
-      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Main Info */}
         <div className="lg:col-span-2 space-y-6">
           {/* About Section */}
