@@ -198,6 +198,9 @@ export default function PromoterProfileContent({
                   {user.promoterDetails?.isBusiness && user.promoterDetails?.businessName && (
                     <div className="text-sm text-gray-600 mb-2">
                       Contact: {user.name} • {user.email}
+                      {user.phoneNumber && (
+                        <span> • {user.phoneNumber}</span>
+                      )}
                     </div>
                   )}
                   
@@ -205,6 +208,9 @@ export default function PromoterProfileContent({
                   {!user.promoterDetails?.isBusiness && (
                     <div className="text-sm text-gray-600 mb-2">
                       {user.email}
+                      {user.phoneNumber && (
+                        <span> • {user.phoneNumber}</span>
+                      )}
                     </div>
                   )}
                   
@@ -313,7 +319,9 @@ export default function PromoterProfileContent({
           {/* Performance Stats */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-6">Performance Stats</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            
+            {/* Main Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
               <div className="text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <ChartBarIcon className="w-6 h-6 text-blue-600" />
@@ -321,7 +329,7 @@ export default function PromoterProfileContent({
                 <div className="text-2xl font-bold text-blue-600 mb-1">
                   {user.promoterDetails?.numberOfCampaignDone || 0}
                 </div>
-                <div className="text-sm text-gray-500">Campaigns Done</div>
+                <div className="text-sm text-gray-500">Total Campaigns</div>
               </div>
 
               <div className="text-center">
@@ -354,6 +362,53 @@ export default function PromoterProfileContent({
                 <div className="text-sm text-gray-500">Rating</div>
               </div>
             </div>
+
+            {/* Campaign Type Breakdown */}
+            {(user.promoterDetails?.numberOfVisibilityCampaignDone || 
+              user.promoterDetails?.numberOfSellerCampaignDone || 
+              user.promoterDetails?.numberOfSalesmanCampaignDone || 
+              user.promoterDetails?.numberOfConsultantCampaignDone) && (
+              <div>
+                <h3 className="text-md font-semibold text-gray-800 mb-4">Campaign Types Completed</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {user.promoterDetails?.numberOfVisibilityCampaignDone > 0 && (
+                    <div className="text-center p-3 bg-indigo-50 rounded-lg">
+                      <div className="text-lg font-bold text-indigo-600 mb-1">
+                        {user.promoterDetails.numberOfVisibilityCampaignDone}
+                      </div>
+                      <div className="text-xs text-gray-600">Visibility</div>
+                    </div>
+                  )}
+                  
+                  {user.promoterDetails?.numberOfSellerCampaignDone > 0 && (
+                    <div className="text-center p-3 bg-emerald-50 rounded-lg">
+                      <div className="text-lg font-bold text-emerald-600 mb-1">
+                        {user.promoterDetails.numberOfSellerCampaignDone}
+                      </div>
+                      <div className="text-xs text-gray-600">Seller</div>
+                    </div>
+                  )}
+                  
+                  {user.promoterDetails?.numberOfSalesmanCampaignDone > 0 && (
+                    <div className="text-center p-3 bg-amber-50 rounded-lg">
+                      <div className="text-lg font-bold text-amber-600 mb-1">
+                        {user.promoterDetails.numberOfSalesmanCampaignDone}
+                      </div>
+                      <div className="text-xs text-gray-600">Salesman</div>
+                    </div>
+                  )}
+                  
+                  {user.promoterDetails?.numberOfConsultantCampaignDone > 0 && (
+                    <div className="text-center p-3 bg-violet-50 rounded-lg">
+                      <div className="text-lg font-bold text-violet-600 mb-1">
+                        {user.promoterDetails.numberOfConsultantCampaignDone}
+                      </div>
+                      <div className="text-xs text-gray-600">Consultant</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Portfolio Section */}
