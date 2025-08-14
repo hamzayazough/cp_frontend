@@ -13,7 +13,7 @@ import {
   PlusIcon,
   CurrencyDollarIcon,
   CheckBadgeIcon,
-  CalendarIcon,
+  UserIcon,
 } from '@heroicons/react/24/outline';
 
 interface AdvertiserProfileContentProps {
@@ -85,8 +85,8 @@ const socialPlatforms = [
 export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnly = false }: AdvertiserProfileContentProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showPortfolioManager, setShowPortfolioManager] = useState(false);
-  const [selectedWork, setSelectedWork] = useState<AdvertiserWork | null>(null);
+  const [showProductManager, setShowProductManager] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<AdvertiserWork | null>(null);
   const [editData, setEditData] = useState({
     name: user.name,
     bio: user.bio || '',
@@ -158,7 +158,7 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
     setIsEditing(false);
   };
 
-  const handlePortfolioUpdate = async (works: AdvertiserWork[]) => {
+  const handleProductUpdate = async (works: AdvertiserWork[]) => {
     try {
       setIsSaving(true);
       const response = await authService.updateUserInfo({
@@ -173,7 +173,7 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
       const updatedUser = response.user;
       onUserUpdate(updatedUser);
     } catch (error) {
-      console.error('Failed to update portfolio:', error);
+      console.error('Failed to update products:', error);
     } finally {
       setIsSaving(false);
     }
@@ -225,13 +225,13 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                 {user.avatarUrl ? (
                   <img
                     src={user.avatarUrl}
-                    alt={user.name}
+                    alt={user.advertiserDetails?.companyName || user.name}
                     className="w-20 h-20 rounded-xl object-cover border-4 border-white shadow-lg bg-white"
                   />
                 ) : (
                   <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-lg">
-                    <span className="text-3xl font-bold text-white">
-                      {user.name.charAt(0).toUpperCase()}
+                    <span className="text-xl font-bold text-white">
+                      {(user.advertiserDetails?.companyName || user.name).charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
@@ -241,22 +241,12 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
               <div className="flex-1 sm:pt-0 pt-2">
                 <div className="flex flex-wrap items-center gap-3 mb-3">
                   <h1 className="text-2xl font-bold text-gray-900">
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editData.companyName}
-                        onChange={(e) => setEditData(prev => ({ ...prev, companyName: e.target.value }))}
-                        className="text-2xl font-bold text-gray-900 border-b-2 border-gray-300 focus:border-blue-500 outline-none bg-transparent"
-                        placeholder="Company Name"
-                      />
-                    ) : (
-                      user.advertiserDetails?.companyName || user.name
-                    )}
+                    {user.advertiserDetails?.companyName || user.name}
                   </h1>
                   <div className="flex items-center gap-2">
                     {user.advertiserDetails?.verified && (
-                      <span className="flex items-center gap-1 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
-                        <CheckBadgeIcon className="w-4 h-4" />
+                      <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium flex items-center gap-1">
+                        <CheckBadgeIcon className="w-3 h-3" />
                         Verified
                       </span>
                     )}
@@ -264,30 +254,32 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                 </div>
                 
                 {/* Contact Info */}
-                <div className="space-y-1 mb-3 text-gray-600">
-                  <span>{user.email}</span>
-                  {user.phoneNumber && <span> &middot; {user.phoneNumber}</span>}
+                <div className="space-y-1 mb-3">
+                  <div className="text-sm text-gray-600">
+                    Contact: {user.name} • {user.email}
+                    {user.phoneNumber && <span> • {user.phoneNumber}</span>}
+                  </div>
                 </div>
                 
                 {/* Metadata */}
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                   {user.country && (
                     <div className="flex items-center gap-1">
-                      <GlobeAltIcon className="w-4 h-4" />
-                      {user.country}
+                      <span className="text-base">🌍</span>
+                      <span>{user.country}</span>
                     </div>
                   )}
                   
                   {user.usedCurrency && (
                     <div className="flex items-center gap-1">
                       <CurrencyDollarIcon className="w-4 h-4" />
-                      {user.usedCurrency}
+                      <span>{user.usedCurrency}</span>
                     </div>
                   )}
                   
                   <div className="flex items-center gap-1">
-                    <CalendarIcon className="w-4 h-4" />
-                    Member since {new Date(user.createdAt).getFullYear()}
+                    <UserIcon className="w-4 h-4" />
+                    <span>Member since {new Date(user.createdAt).getFullYear()}</span>
                   </div>
                 </div>
               </div>
@@ -307,9 +299,18 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm disabled:opacity-50"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium flex items-center gap-2 text-sm"
                     >
-                      {isSaving ? 'Saving...' : 'Save'}
+                      {isSaving ? (
+                        <>
+                          <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Changes'
+                      )}
                     </button>
                   </>
                 ) : (
@@ -348,17 +349,17 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
             </div>
           )}
 
-          {/* Portfolio Section */}
+          {/* Products Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Portfolio</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Products</h2>
               {!isViewOnly && (
                 <button
-                  onClick={() => setShowPortfolioManager(true)}
+                  onClick={() => setShowProductManager(true)}
                   className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
                   <PlusIcon className="w-4 h-4" />
-                  Add Work
+                  Add Product
                 </button>
               )}
             </div>
@@ -368,14 +369,18 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                 {user.advertiserDetails.advertiserWork.map((work, index) => (
                   <div
                     key={index}
-                    onClick={() => setSelectedWork(work)}
+                    onClick={() => setSelectedProduct(work)}
                     className="group cursor-pointer bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors"
                   >
-                    <h3 className="font-semibold text-gray-800 group-hover:text-blue-600">{work.title}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">{work.description}</p>
+                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {work.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                      {work.description}
+                    </p>
                     {work.mediaUrls && work.mediaUrls.length > 0 && (
-                      <div className="mt-2">
-                        <img src={work.mediaUrls[0]} alt={work.title} className="w-full h-32 object-cover rounded-md" />
+                      <div className="mt-3 text-xs text-blue-600">
+                        {work.mediaUrls.length} media file{work.mediaUrls.length !== 1 ? 's' : ''}
                       </div>
                     )}
                   </div>
@@ -386,9 +391,9 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <PlusIcon className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No portfolio items yet</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products shown yet</h3>
                 <p className="text-gray-600">
-                  {isViewOnly ? 'This advertiser has not added any portfolio items.' : 'Add your previous work to attract promoters.'}
+                  {isViewOnly ? 'This advertiser has not added any products.' : "Add your company's products to attract promoters."}
                 </p>
               </div>
             )}
@@ -423,13 +428,13 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                   return (
                     <a
                       key={platform.key}
-                      href={url}
+                      href={url.startsWith('http') ? url : `https://${url}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-80 ${platform.color}`}
+                      className={`flex items-center gap-3 p-3 rounded-lg hover:scale-105 transition-transform ${platform.color}`}
                     >
                       {platform.icon}
-                      <span>{platform.name}</span>
+                      <span className="font-medium">{platform.name}</span>
                     </a>
                   );
                 })
@@ -491,10 +496,10 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                     <button
                       key={option.value}
                       onClick={() => handleAdvertiserTypeToggle(option.value)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                         editData.advertiserTypes.includes(option.value)
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-200 text-gray-800'
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                       }`}
                     >
                       {option.display}
@@ -503,11 +508,8 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {user.advertiserDetails.advertiserTypes.map((type) => (
-                    <span
-                      key={type}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
-                    >
+                  {user.advertiserDetails?.advertiserTypes.map(type => (
+                    <span key={type} className="px-3 py-1 bg-blue-50 text-blue-800 rounded-full text-sm font-medium">
                       {getAdvertiserTypeDisplay(type)}
                     </span>
                   ))}
@@ -518,19 +520,21 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
         </div>
       </div>
 
-      {/* Modals */}
-      {showPortfolioManager && (
+      {showProductManager && (
         <AdvertiserPortfolioManager
-          works={user.advertiserDetails?.advertiserWork || []}
-          onUpdate={handlePortfolioUpdate}
-          onClose={() => setShowPortfolioManager(false)}
+          isOpen={showProductManager}
+          onClose={() => setShowProductManager(false)}
+          initialWorks={user.advertiserDetails?.advertiserWork || []}
+          onSave={handleProductUpdate}
+          isSaving={isSaving}
         />
       )}
 
-      {selectedWork && (
+      {selectedProduct && (
         <AdvertiserPortfolioDetailModal
-          work={selectedWork}
-          onClose={() => setSelectedWork(null)}
+          isOpen={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          work={selectedProduct}
         />
       )}
     </div>
