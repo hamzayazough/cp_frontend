@@ -248,36 +248,6 @@ class AdvertiserService {
       };
     }
   }
-
-  async fundCampaign(
-    campaignId: string,
-    amount: number,
-    paymentMethodId?: string
-  ): Promise<{ success: boolean; message: string }> {
-    try {
-      const response = await httpService.post<{
-        success: boolean;
-        message: string;
-      }>(
-        `${this.baseUrl}/campaigns/${campaignId}/fund`,
-        { amount, paymentMethodId },
-        true
-      );
-
-      return {
-        success: true,
-        message:
-          (response.data as { message?: string })?.message ||
-          "Campaign funded successfully",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to fund campaign",
-      };
-    }
-  }
   async getStats(): Promise<GetAdvertiserStatsResponse> {
     const response = await httpService.get<GetAdvertiserStatsResponse>(
       `${this.baseUrl}/stats`,

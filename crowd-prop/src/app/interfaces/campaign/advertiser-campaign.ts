@@ -181,12 +181,6 @@ export interface AdvertiserCampaignListResponse {
   };
 }
 
-export interface FundCampaignRequest {
-  campaignId: string;
-  amount: number;
-  stripePaymentMethodId: string;
-}
-
 export interface ReviewPromoterApplicationRequest {
   campaignId: string;
   applicationId: string;

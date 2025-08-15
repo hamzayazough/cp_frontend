@@ -283,50 +283,6 @@ class AdvertiserPaymentService {
   }
 
   /**
-   * Fund a specific campaign
-   */
-  async fundCampaign(
-    campaignId: string,
-    request: {
-      amount: number;
-      source: "wallet" | "direct";
-      paymentMethodId?: string;
-    }
-  ): Promise<{
-    success: boolean;
-    message: string;
-    paymentIntentId?: string;
-    clientSecret?: string;
-  }> {
-    try {
-      const response = await httpService.post<{
-        success: boolean;
-        data: {
-          paymentIntentId?: string;
-          clientSecret?: string;
-        };
-        message: string;
-      }>(
-        `${PAYMENT_ENDPOINTS.FUND_CAMPAIGN}/${campaignId}/fund`,
-        request,
-        true
-      );
-
-      return {
-        success: response.data.success,
-        message: response.data.message,
-        paymentIntentId: response.data.data?.paymentIntentId,
-        clientSecret: response.data.data?.clientSecret,
-      };
-    } catch (error) {
-      console.error("Failed to fund campaign:", error);
-      throw new Error(
-        error instanceof Error ? error.message : "Failed to fund campaign"
-      );
-    }
-  }
-
-  /**
    * Get campaign funding status
    */
   async getCampaignFundingStatus(
