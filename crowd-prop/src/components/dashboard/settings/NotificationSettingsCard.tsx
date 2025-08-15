@@ -161,7 +161,7 @@ export function NotificationSettingsCard({
               ) : (
                 <div className="px-3 py-2 bg-white border border-gray-200 rounded-lg">
                   <span className="text-gray-900 font-medium text-sm">
-                    {formatTime(settings.quietHoursStart)}
+                    {settings.quietHoursStart ? formatTime(settings.quietHoursStart) : "N/A"}
                   </span>
                 </div>
               )}
@@ -185,7 +185,7 @@ export function NotificationSettingsCard({
               ) : (
                 <div className="px-3 py-2 bg-white border border-gray-200 rounded-lg">
                   <span className="text-gray-900 font-medium text-sm">
-                    {formatTime(settings.quietHoursEnd)}
+                    {settings.quietHoursEnd ? formatTime(settings.quietHoursEnd) : "N/A"}
                   </span>
                 </div>
               )}
