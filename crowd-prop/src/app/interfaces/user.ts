@@ -9,9 +9,11 @@ export type UserRole = "ADVERTISER" | "PROMOTER" | "ADMIN";
 export interface User {
   id: string;
   email: string;
+  phoneNumber?: string;
   name: string;
   role: UserRole;
   createdAt: string;
+  updatedAt?: string;
   isSetupDone: boolean;
 
   avatarUrl?: string; // Profile picture (S3 URL)
@@ -58,6 +60,10 @@ export interface PromoterDetails {
   verified?: boolean;
   totalSales?: number;
   numberOfCampaignDone?: number;
+  numberOfVisibilityCampaignDone?: number;
+  numberOfSellerCampaignDone?: number;
+  numberOfSalesmanCampaignDone?: number;
+  numberOfConsultantCampaignDone?: number;
   totalViewsGenerated?: number;
   isBusiness: boolean;
   businessName?: string;

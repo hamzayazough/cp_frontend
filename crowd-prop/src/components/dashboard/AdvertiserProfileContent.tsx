@@ -1,13 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { User } from '@/app/interfaces/user';
 import { AdvertiserType } from '@/app/enums/advertiser-type';
 import { AdvertiserWork } from '@/app/interfaces/advertiser-work';
 import { authService } from '@/services/auth.service';
 import AdvertiserPortfolioManager from './AdvertiserPortfolioManager';
 import AdvertiserPortfolioDetailModal from './AdvertiserPortfolioDetailModal';
+import {
+  BuildingOfficeIcon,
+  GlobeAltIcon,
+  PlusIcon,
+  CurrencyDollarIcon,
+  CheckBadgeIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline';
 
 interface AdvertiserProfileContentProps {
   user: User;
@@ -15,11 +22,71 @@ interface AdvertiserProfileContentProps {
   isViewOnly?: boolean;
 }
 
+// Social media platform configurations with SVG icons
+const socialPlatforms = [
+  { 
+    key: 'tiktokUrl', 
+    name: 'TikTok', 
+    color: 'bg-black text-white', 
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+      </svg>
+    )
+  },
+  { 
+    key: 'instagramUrl', 
+    name: 'Instagram', 
+    color: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white', 
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+      </svg>
+    )
+  },
+  { 
+    key: 'youtubeUrl', 
+    name: 'YouTube', 
+    color: 'bg-red-600 text-white', 
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+      </svg>
+    )
+  },
+  { 
+    key: 'snapchatUrl', 
+    name: 'Snapchat', 
+    color: 'bg-yellow-400 text-white', 
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.219-5.160 1.219-5.160s-.312-.623-.312-1.543c0-1.446.839-2.523 1.883-2.523.888 0 1.317.664 1.317 1.463 0 .891-.568 2.225-.861 3.462-.245 1.041.522 1.887 1.549 1.887 1.861 0 3.293-1.964 3.293-4.799 0-2.511-1.804-4.266-4.384-4.266-2.987 0-4.749 2.240-4.749 4.558 0 .901.347 1.869.78 2.397.085.103.097.194.072.299-.079.332-.256 1.033-.290 1.178-.045.184-.147.223-.339.135-1.249-.581-2.03-2.407-2.03-3.874 0-3.308 2.402-6.346 6.919-6.346 3.636 0 6.460 2.592 6.460 6.056 0 3.614-2.277 6.521-5.437 6.521-1.062 0-2.062-.552-2.404-1.209 0 0-.526 2.006-.654 2.497-.237.915-.877 2.061-1.305 2.759.982.304 2.023.466 3.104.466 6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001.017.001z"/>
+      </svg>
+    )
+  },
+  { 
+    key: 'twitterUrl', 
+    name: 'X', 
+    color: 'bg-black text-white', 
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+    )
+  },
+  { 
+    key: 'websiteUrl', 
+    name: 'Website', 
+    color: 'bg-gray-600 text-white', 
+    icon: <GlobeAltIcon className="w-5 h-5" />
+  },
+];
+
 export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnly = false }: AdvertiserProfileContentProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showPortfolioManager, setShowPortfolioManager] = useState(false);
-  const [selectedWork, setSelectedWork] = useState<AdvertiserWork | null>(null);
+  const [showProductManager, setShowProductManager] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<AdvertiserWork | null>(null);
   const [editData, setEditData] = useState({
     name: user.name,
     bio: user.bio || '',
@@ -35,57 +102,9 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
     discordChannelUrl: user.advertiserDetails?.discordChannelUrl || '',
   });
 
-  // Helper function to truncate text
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-  };
-
-  // Advertiser type mapping for display purposes
-  const advertiserTypeOptions = [
-    { value: AdvertiserType.EDUCATION, display: 'Education' },
-    { value: AdvertiserType.CLOTHING, display: 'Clothing & Fashion' },
-    { value: AdvertiserType.TECH, display: 'Technology' },
-    { value: AdvertiserType.BEAUTY, display: 'Beauty & Cosmetics' },
-    { value: AdvertiserType.FOOD, display: 'Food & Beverage' },
-    { value: AdvertiserType.HEALTH, display: 'Health & Fitness' },
-    { value: AdvertiserType.ENTERTAINMENT, display: 'Entertainment' },
-    { value: AdvertiserType.TRAVEL, display: 'Travel & Tourism' },
-    { value: AdvertiserType.FINANCE, display: 'Finance & Banking' },
-    { value: AdvertiserType.SPORTS, display: 'Sports & Recreation' },
-    { value: AdvertiserType.AUTOMOTIVE, display: 'Automotive' },
-    { value: AdvertiserType.ART, display: 'Art & Design' },
-    { value: AdvertiserType.GAMING, display: 'Gaming' },
-    { value: AdvertiserType.ECOMMERCE, display: 'E-commerce' },
-    { value: AdvertiserType.MEDIA, display: 'Media & Publishing' },
-    { value: AdvertiserType.NON_PROFIT, display: 'Non-Profit' },
-    { value: AdvertiserType.REAL_ESTATE, display: 'Real Estate' },
-    { value: AdvertiserType.HOME_SERVICES, display: 'Home Services' },
-    { value: AdvertiserType.EVENTS, display: 'Events & Venues' },
-    { value: AdvertiserType.CONSULTING, display: 'Consulting' },
-    { value: AdvertiserType.BOOKS, display: 'Books & Literature' },
-    { value: AdvertiserType.MUSIC, display: 'Music & Audio' },
-    { value: AdvertiserType.PETS, display: 'Pets & Animals' },
-    { value: AdvertiserType.TOYS, display: 'Toys & Games' },
-    { value: AdvertiserType.BABY, display: 'Baby & Kids' },
-    { value: AdvertiserType.JEWELRY, display: 'Jewelry & Accessories' },
-    { value: AdvertiserType.SCIENCE, display: 'Science & Research' },
-    { value: AdvertiserType.HARDWARE, display: 'Hardware & Tools' },
-    { value: AdvertiserType.ENERGY, display: 'Energy & Environment' },
-    { value: AdvertiserType.AGRICULTURE, display: 'Agriculture & Farming' },
-    { value: AdvertiserType.GOVERNMENT, display: 'Government & Public' },
-    { value: AdvertiserType.OTHER, display: 'Other' },
-  ];
-
-  const getAdvertiserTypeDisplay = (type: AdvertiserType) => {
-    const option = advertiserTypeOptions.find(opt => opt.value === type);
-    return option ? option.display : type;
-  };
-
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Clean and prepare the update data - only include editable fields
       const updateData = {
         name: editData.name?.trim(),
         bio: editData.bio?.trim(),
@@ -103,7 +122,6 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
         }
       };
 
-      // Remove empty/undefined fields
       Object.keys(updateData).forEach(key => {
         const typedKey = key as keyof typeof updateData;
         if (updateData[typedKey] === undefined || updateData[typedKey] === '') {
@@ -111,27 +129,18 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
         }
       });
 
-      console.log('Sending update data:', updateData);
-
-      // Update user profile via authService
       const response = await authService.updateUserInfo(updateData);
-
       const updatedUser = response.user;
-
-      // Update the parent component with the updated user
       onUserUpdate(updatedUser);
-      console.log('Updated user:', updatedUser);
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update profile:', error);
-      // TODO: Show error message to user
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleCancel = () => {
-    // Reset edit data to original values
     setEditData({
       name: user.name,
       bio: user.bio || '',
@@ -149,16 +158,7 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
     setIsEditing(false);
   };
 
-  const handleAdvertiserTypeToggle = (type: AdvertiserType) => {
-    setEditData(prev => ({
-      ...prev,
-      advertiserTypes: prev.advertiserTypes.includes(type)
-        ? prev.advertiserTypes.filter(t => t !== type)
-        : [...prev.advertiserTypes, type]
-    }));
-  };
-
-  const handlePortfolioUpdate = async (works: AdvertiserWork[]) => {
+  const handleProductUpdate = async (works: AdvertiserWork[]) => {
     try {
       setIsSaving(true);
       const response = await authService.updateUserInfo({
@@ -170,589 +170,371 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
           advertiserWork: works,
         }
       });
-
       const updatedUser = response.user;
       onUserUpdate(updatedUser);
     } catch (error) {
-      console.error('Failed to update portfolio:', error);
+      console.error('Failed to update products:', error);
     } finally {
       setIsSaving(false);
     }
   };
 
+  const advertiserTypeOptions = Object.values(AdvertiserType).map(type => ({
+    value: type,
+    display: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+  }));
+
+  const getAdvertiserTypeDisplay = (type: AdvertiserType) => {
+    const option = advertiserTypeOptions.find(opt => opt.value === type);
+    return option ? option.display : type;
+  };
+
+  const handleAdvertiserTypeToggle = (type: AdvertiserType) => {
+    setEditData(prev => ({
+      ...prev,
+      advertiserTypes: prev.advertiserTypes.includes(type)
+        ? prev.advertiserTypes.filter(t => t !== type)
+        : [...prev.advertiserTypes, type]
+    }));
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Profile Header */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        {/* Cover Photo */}
-        <div className="relative h-32 overflow-hidden">
-          {/* Background gradient - this will be visible if image fails */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 z-0"></div>
-          
-          {/* Pattern overlay for visual interest */}
-          <div className="absolute inset-0 opacity-20 z-10">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              backgroundSize: '30px 30px'
-            }}></div>
-          </div>
-          
-          {/* Company-themed overlay pattern */}
-          <div className="absolute inset-0 bg-black bg-opacity-10 z-20"></div>
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Header Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {/* Cover Image */}
+        <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
+          {user.backgroundUrl ? (
+            <img
+              src={user.backgroundUrl}
+              alt="Cover"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+          )}
+          <div className="absolute inset-0 bg-black bg-opacity-10" />
         </div>
 
-        {/* Profile Info */}
-        <div className="px-6 pb-6 relative z-30">
-          <div className="flex items-start justify-between -mt-12 mb-4">
-            <div className="flex items-end space-x-4">
-              {/* Profile Picture */}
-              <div className="w-24 h-24 rounded-full bg-white p-1 shadow-lg">
+        {/* Profile Content */}
+        <div className="px-6 py-6">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+            <div className="flex flex-col sm:flex-row gap-6">
+              {/* Avatar */}
+              <div className="relative -mt-12 sm:-mt-12">
                 {user.avatarUrl ? (
-                  <Image
+                  <img
                     src={user.avatarUrl}
-                    alt={user.name}
-                    width={96}
-                    height={96}
-                    className="w-full h-full rounded-full object-cover"
-                    unoptimized
+                    alt={user.advertiserDetails?.companyName || user.name}
+                    className="w-20 h-20 rounded-xl object-cover border-4 border-white shadow-lg bg-white"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-xl font-bold text-gray-500">
-                      {user.name.charAt(0).toUpperCase()}
+                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-lg">
+                    <span className="text-xl font-bold text-white">
+                      {(user.advertiserDetails?.companyName || user.name).charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
               </div>
 
-              {/* Name and Role */}
-              <div className="pt-8">
-                <h1 className="text-xl font-bold text-gray-900">{user.name}</h1>
-                <p className="text-gray-600 font-medium">
-                  {user.advertiserDetails?.companyName || 'Advertiser'}
-                </p>
-                {user.advertiserDetails?.verified && (
-                  <div className="flex items-center mt-1">
-                    <span className="text-green-500 mr-1">✓</span>
-                    <span className="text-sm text-gray-600">Verified</span>
+              {/* Name and Info */}
+              <div className="flex-1 sm:pt-0 pt-2">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {user.advertiserDetails?.companyName || user.name}
+                  </h1>
+                  <div className="flex items-center gap-2">
+                    {user.advertiserDetails?.verified && (
+                      <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium flex items-center gap-1">
+                        <CheckBadgeIcon className="w-3 h-3" />
+                        Verified
+                      </span>
+                    )}
                   </div>
-                )}
+                </div>
+                
+                {/* Contact Info */}
+                <div className="space-y-1 mb-3">
+                  <div className="text-sm text-gray-600">
+                    Contact: {user.name} • {user.email}
+                    {user.phoneNumber && <span> • {user.phoneNumber}</span>}
+                  </div>
+                </div>
+                
+                {/* Metadata */}
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  {user.country && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-base">🌍</span>
+                      <span>{user.country}</span>
+                    </div>
+                  )}
+                  
+                  {user.usedCurrency && (
+                    <div className="flex items-center gap-1">
+                      <CurrencyDollarIcon className="w-4 h-4" />
+                      <span>{user.usedCurrency}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-1">
+                    <UserIcon className="w-4 h-4" />
+                    <span>Member since {new Date(user.createdAt).getFullYear()}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Edit Button */}
+            {/* Action Button */}
             {!isViewOnly && (
-              <div className="pt-8">
-                {!isEditing ? (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    title="Edit Profile"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                ) : (
-                  <div className="flex space-x-2">
+              <div className="flex gap-2 sm:pt-0 pt-4">
+                {isEditing ? (
+                  <>
                     <button
                       onClick={handleCancel}
-                      className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                      title={isSaving ? 'Saving...' : 'Save Changes'}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium flex items-center gap-2 text-sm"
                     >
                       {isSaving ? (
-                        <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
+                        <>
+                          <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Saving...
+                        </>
                       ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                        'Save Changes'
                       )}
                     </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                  >
+                    Edit Profile
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Main Info */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* About Section */}
+          {(user.bio || isEditing) && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">About</h2>
+              {isEditing ? (
+                <textarea
+                  value={editData.bio}
+                  onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
+                  placeholder="Tell us about your company..."
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-400"
+                  rows={4}
+                />
+              ) : (
+                <p className="text-gray-700 leading-relaxed">{user.bio}</p>
+              )}
+            </div>
+          )}
+
+          {/* Products Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-gray-900">Products</h2>
+              {!isViewOnly && (
+                <button
+                  onClick={() => setShowProductManager(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
+                  <PlusIcon className="w-4 h-4" />
+                  Add Product
+                </button>
+              )}
+            </div>
+
+            {user.advertiserDetails?.advertiserWork && user.advertiserDetails.advertiserWork.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {user.advertiserDetails.advertiserWork.map((work, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setSelectedProduct(work)}
+                    className="group cursor-pointer bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors"
+                  >
+                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {work.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                      {work.description}
+                    </p>
+                    {work.mediaUrls && work.mediaUrls.length > 0 && (
+                      <div className="mt-3 text-xs text-blue-600">
+                        {work.mediaUrls.length} media file{work.mediaUrls.length !== 1 ? 's' : ''}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Company Info and Bio - Side by side */}
-          <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Company Name */}
-            <div>
-              <h3 className="text-base font-semibold text-gray-900 mb-2">Company Name</h3>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editData.companyName}
-                  onChange={(e) => setEditData(prev => ({ ...prev, companyName: e.target.value }))}
-                  placeholder="Enter your company name"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
-                />
-              ) : (
-                <p className="text-gray-600 text-sm">
-                  {user.advertiserDetails?.companyName || 'No company name specified'}
-                </p>
-              )}
-            </div>
-
-            {/* Company Website */}
-            <div>
-              <h3 className="text-base font-semibold text-gray-900 mb-2">Company Website</h3>
-              {isEditing ? (
-                <input
-                  type="url"
-                  value={editData.companyWebsite}
-                  onChange={(e) => setEditData(prev => ({ ...prev, companyWebsite: e.target.value }))}
-                  placeholder="https://yourcompany.com"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
-                />
-              ) : (
-                user.advertiserDetails?.companyWebsite ? (
-                  <a
-                    href={user.advertiserDetails.companyWebsite}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 text-sm underline"
-                  >
-                    {user.advertiserDetails.companyWebsite}
-                  </a>
-                ) : (
-                  <p className="text-gray-600 text-sm">No website specified</p>
-                )
-              )}
-            </div>
-          </div>
-
-          {/* Bio */}
-          <div className="mt-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-2">About Company</h3>
-            {isEditing ? (
-              <textarea
-                value={editData.bio}
-                onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
-                placeholder="Tell us about your company..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-400"
-                rows={3}
-              />
-            ) : (
-              <p className="text-gray-600 leading-relaxed text-sm">
-                {user.bio || 'No company description provided yet.'}
-              </p>
-            )}
-          </div>
-
-          {/* Social Media Links */}
-          <div className="mt-8 mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">Social Media & Links</h3>
-            {isEditing ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">TikTok</label>
-                  <input
-                    type="url"
-                    value={editData.tiktokUrl}
-                    onChange={(e) => setEditData(prev => ({ ...prev, tiktokUrl: e.target.value }))}
-                    placeholder="https://tiktok.com/@company"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Instagram</label>
-                  <input
-                    type="url"
-                    value={editData.instagramUrl}
-                    onChange={(e) => setEditData(prev => ({ ...prev, instagramUrl: e.target.value }))}
-                    placeholder="https://instagram.com/company"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">YouTube</label>
-                  <input
-                    type="url"
-                    value={editData.youtubeUrl}
-                    onChange={(e) => setEditData(prev => ({ ...prev, youtubeUrl: e.target.value }))}
-                    placeholder="https://youtube.com/@company"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">X (Twitter)</label>
-                  <input
-                    type="url"
-                    value={editData.twitterUrl}
-                    onChange={(e) => setEditData(prev => ({ ...prev, twitterUrl: e.target.value }))}
-                    placeholder="https://x.com/company"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Snapchat</label>
-                  <input
-                    type="url"
-                    value={editData.snapchatUrl}
-                    onChange={(e) => setEditData(prev => ({ ...prev, snapchatUrl: e.target.value }))}
-                    placeholder="https://snapchat.com/add/company"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Website</label>
-                  <input
-                    type="url"
-                    value={editData.websiteUrl}
-                    onChange={(e) => setEditData(prev => ({ ...prev, websiteUrl: e.target.value }))}
-                    placeholder="https://yourwebsite.com"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
-                  />
-                </div>
+                ))}
               </div>
             ) : (
-              <div className="flex flex-wrap gap-2">
-                {/* TikTok */}
-                {user.tiktokUrl ? (
-                  <a
-                    href={user.tiktokUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors text-xs"
-                    style={{ backgroundColor: '#000000', color: 'white' }}
-                  >
-                    <span>TikTok</span>
-                  </a>
-                ) : (
-                  <span className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs border" style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}>
-                    <span>TikTok</span>
-                  </span>
-                )}
-                
-                {/* Instagram */}
-                {user.instagramUrl ? (
-                  <a
-                    href={user.instagramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors text-xs"
-                    style={{ background: 'linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045)', color: 'white' }}
-                  >
-                    <span>Instagram</span>
-                  </a>
-                ) : (
-                  <span className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs border" style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}>
-                    <span>Instagram</span>
-                  </span>
-                )}
-                
-                {/* YouTube */}
-                {user.youtubeUrl ? (
-                  <a
-                    href={user.youtubeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors text-xs"
-                    style={{ backgroundColor: '#dc2626', color: 'white' }}
-                  >
-                    <span>YouTube</span>
-                  </a>
-                ) : (
-                  <span className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs border" style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}>
-                    <span>YouTube</span>
-                  </span>
-                )}
-                
-                {/* X (Twitter) */}
-                {user.twitterUrl ? (
-                  <a
-                    href={user.twitterUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors text-xs"
-                    style={{ backgroundColor: '#000000', color: 'white' }}
-                  >
-                    <span>𝕏</span>
-                  </a>
-                ) : (
-                  <span className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs border" style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}>
-                    <span>𝕏</span>
-                  </span>
-                )}
-                
-                {/* Snapchat */}
-                {user.snapchatUrl ? (
-                  <a
-                    href={user.snapchatUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors text-xs"
-                    style={{ backgroundColor: '#FFFC00', color: 'black', fontWeight: 'bold' }}
-                  >
-                    <span>👻</span>
-                  </a>
-                ) : (
-                  <span className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs border" style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}>
-                    <span>👻</span>
-                  </span>
-                )}
-                
-                {/* Website */}
-                {(user as User & { websiteUrl?: string }).websiteUrl ? (
-                  <a
-                    href={(user as User & { websiteUrl?: string }).websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors text-xs"
-                    style={{ backgroundColor: '#4b5563', color: 'white' }}
-                  >
-                    <span>Website</span>
-                  </a>
-                ) : (
-                  <span className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs border" style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}>
-                    <span>Website</span>
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Discord Channel Section */}
-          <div className="mt-6 mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">
-              Join the {user.advertiserDetails?.companyName || 'Company'} Discord Channel
-            </h3>
-            {isEditing ? (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Discord Channel URL</label>
-                <input
-                  type="url"
-                  value={editData.discordChannelUrl}
-                  onChange={(e) => setEditData(prev => ({ ...prev, discordChannelUrl: e.target.value }))}
-                  placeholder="https://discord.gg/yourchannel"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-400"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Share your Discord server invite link for promoters to join your community
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <PlusIcon className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products shown yet</h3>
+                <p className="text-gray-600">
+                  {isViewOnly ? 'This advertiser has not added any products.' : "Add your company's products to attract promoters."}
                 </p>
               </div>
-            ) : (
-              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4">
-                {user.advertiserDetails?.discordChannelUrl ? (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Connect with our company</h4>
-                        <p className="text-sm text-gray-600">
-                          Join our public channel on the platform Discord server to discuss collaborations
-                        </p>
-                      </div>
-                    </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column - Sidebar Info */}
+        <div className="space-y-6">
+          {/* Social Media */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Social Media</h3>
+            <div className="space-y-3">
+              {isEditing ? (
+                socialPlatforms.map(platform => (
+                  <div key={platform.key}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{platform.name}</label>
+                    <input
+                      type="url"
+                      value={editData[platform.key as keyof typeof editData]}
+                      onChange={(e) => setEditData(prev => ({ ...prev, [platform.key]: e.target.value }))
+                      }
+                      placeholder={`https://${platform.name.toLowerCase()}.com/your-profile`}
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    />
+                  </div>
+                ))
+              ) : (
+                socialPlatforms.map((platform) => {
+                  const url = user[platform.key as keyof User] as string;
+                  if (!url) return null;
+                  
+                  return (
                     <a
-                      href={user.advertiserDetails.discordChannelUrl}
+                      key={platform.key}
+                      href={url.startsWith('http') ? url : `https://${url}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+                      className={`flex items-center gap-3 p-3 rounded-lg hover:scale-105 transition-transform ${platform.color}`}
                     >
-                      <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
-                      </svg>
-                      Join Discord
+                      {platform.icon}
+                      <span className="font-medium">{platform.name}</span>
                     </a>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Company Info */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Company Info</h3>
+            {isEditing ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                  <input
+                    type="text"
+                    value={editData.companyName}
+                    onChange={(e) => setEditData(prev => ({ ...prev, companyName: e.target.value }))}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Company Website</label>
+                  <input
+                    type="url"
+                    value={editData.companyWebsite}
+                    onChange={(e) => setEditData(prev => ({ ...prev, companyWebsite: e.target.value }))}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {user.advertiserDetails?.companyName && (
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <BuildingOfficeIcon className="w-5 h-5 text-gray-500" />
+                    <span>{user.advertiserDetails.companyName}</span>
                   </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
-                      </svg>
-                    </div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">No Discord channel yet</h4>
-                    <p className="text-sm text-gray-600">
-                      {isViewOnly 
-                        ? "This company hasn't set up a Discord channel yet" 
-                        : "Add a Discord server link to connect with promoters"
-                      }
-                    </p>
+                )}
+                {user.advertiserDetails?.companyWebsite && (
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <GlobeAltIcon className="w-5 h-5 text-gray-500" />
+                    <a href={user.advertiserDetails.companyWebsite} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      {user.advertiserDetails.companyWebsite}
+                    </a>
                   </div>
                 )}
               </div>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Business Stats */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Overview</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {user.advertiserDetails?.verified ? '✓' : '⏳'}
+          {/* Advertiser Types */}
+          {((user.advertiserDetails?.advertiserTypes && user.advertiserDetails.advertiserTypes.length > 0) || isEditing) && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
+              {isEditing ? (
+                <div className="flex flex-wrap gap-2">
+                  {advertiserTypeOptions.map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleAdvertiserTypeToggle(option.value)}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                        editData.advertiserTypes.includes(option.value)
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                      }`}
+                    >
+                      {option.display}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {user.advertiserDetails?.advertiserTypes.map(type => (
+                    <span key={type} className="px-3 py-1 bg-blue-50 text-blue-800 rounded-full text-sm font-medium">
+                      {getAdvertiserTypeDisplay(type)}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="text-sm text-gray-500 mt-1">
-              {user.advertiserDetails?.verified ? 'Verified' : 'Pending Verification'}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              ${user.walletBalance?.toFixed(2) || '0.00'}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">Wallet Balance</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">
-              {user.advertiserDetails?.advertiserTypes?.length || 0}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">Business Categories</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Business Categories */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-3">Business Categories</h3>
-        {isEditing ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
-            {advertiserTypeOptions.map((type) => (
-              <label key={type.value} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={editData.advertiserTypes.includes(type.value)}
-                  onChange={() => handleAdvertiserTypeToggle(type.value)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <span className="text-xs text-gray-700">{type.display}</span>
-              </label>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-1">
-            {user.advertiserDetails?.advertiserTypes?.map((type) => (
-              <span
-                key={type}
-                className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium"
-              >
-                {getAdvertiserTypeDisplay(type)}
-              </span>
-            )) || <span className="text-gray-500 text-sm">No categories specified</span>}
-          </div>
-        )}
-      </div>
-
-      {/* Products/Services Portfolio */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-semibold text-gray-900">Products & Services</h3>
-          {!isViewOnly && (
-            <button 
-              onClick={() => setShowPortfolioManager(true)}
-              className="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              title="Manage Products & Services"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-              </svg>
-            </button>
           )}
         </div>
-        
-        {user.advertiserDetails?.advertiserWork && user.advertiserDetails.advertiserWork.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {user.advertiserDetails.advertiserWork.map((work: AdvertiserWork, index: number) => (
-              <div 
-                key={index} 
-                className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => setSelectedWork(work)}
-              >
-                <div className="aspect-video bg-gray-100 relative">
-                  {work.mediaUrl && (
-                    <Image
-                      src={work.mediaUrl}
-                      alt={work.title}
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
-                  )}
-                  {work.price && (
-                    <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">
-                      ${work.price}
-                    </div>
-                  )}
-                </div>
-                <div className="p-3">
-                  <h4 className="font-medium text-gray-900 mb-1 text-sm">
-                    {truncateText(work.title, 30)}
-                  </h4>
-                  <p className="text-xs text-gray-600 mb-2">
-                    {truncateText(work.description, 60)}
-                  </p>
-                  {work.websiteUrl && (
-                    <a
-                      href={work.websiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:text-blue-800 underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Learn More
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-6">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <h4 className="text-base font-medium text-gray-900 mb-1">No products or services yet</h4>
-            <p className="text-gray-500 mb-3 text-sm">
-              {isViewOnly 
-                ? "This advertiser hasn't added any products or services yet" 
-                : "Showcase your products and services to attract promoters"
-              }
-            </p>
-            {!isViewOnly && (
-              <button 
-                onClick={() => setShowPortfolioManager(true)}
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-              >
-                Add Product/Service
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Portfolio Manager Modal */}
-      {showPortfolioManager && (
+      {showProductManager && (
         <AdvertiserPortfolioManager
-          works={user.advertiserDetails?.advertiserWork || []}
-          onUpdate={handlePortfolioUpdate}
-          onClose={() => setShowPortfolioManager(false)}
+          isOpen={showProductManager}
+          onClose={() => setShowProductManager(false)}
+          initialWorks={user.advertiserDetails?.advertiserWork || []}
+          onSave={handleProductUpdate}
+          isSaving={isSaving}
         />
       )}
 
-      {/* Portfolio Detail Modal */}
-      {selectedWork && (
+      {selectedProduct && (
         <AdvertiserPortfolioDetailModal
-          work={selectedWork}
-          onClose={() => setSelectedWork(null)}
+          isOpen={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          work={selectedProduct}
         />
       )}
     </div>
