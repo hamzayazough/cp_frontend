@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-import { userService } from '@/services/user.service';
-import { User as AppUser } from '@/app/interfaces/user';
-import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import { useEffect, useState } from "react";
+import { User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { userService } from "@/services/user.service";
+import { User as AppUser } from "@/app/interfaces/user";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { NotificationSettings } from "@/components/dashboard/settings/NotificationSettings";
 
 export default function SettingsPage() {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
@@ -18,9 +19,9 @@ export default function SettingsPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       setFirebaseUser(authUser);
-      
+
       if (!authUser) {
-        router.push('/auth');
+        router.push("/auth");
         setLoading(false);
         return;
       }
@@ -37,8 +38,8 @@ export default function SettingsPage() {
           setAppUser(fetchedUser);
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
-        router.push('/onboarding');
+        console.error("Error fetching user:", error);
+        router.push("/onboarding");
       }
 
       setLoading(false);
@@ -69,55 +70,72 @@ export default function SettingsPage() {
   }
 
   if (!appUser.isSetupDone) {
-    router.push('/onboarding');
+    router.push("/onboarding");
     return null;
   }
 
   // Render role-based settings content
   const renderSettingsContent = () => {
+    const commonNotificationSettings = (
+      <NotificationSettings userId={appUser.id} />
+    );
+
     switch (appUser.role) {
-      case 'PROMOTER':
+      case "PROMOTER":
         return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Promoter Settings
-            </h2>
-            <p className="text-gray-600">
-              Manage your account preferences, integrations, and notifications.
-            </p>
+          <div className="space-y-8">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Promoter Settings
+              </h2>
+              <p className="text-gray-600">
+                Manage your account preferences, integrations, and
+                notifications.
+              </p>
+            </div>
+            {commonNotificationSettings}
           </div>
         );
-      case 'ADVERTISER':
+      case "ADVERTISER":
         return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Advertiser Settings
-            </h2>
-            <p className="text-gray-600">
-              Manage your account settings, billing, and team preferences.
-            </p>
+          <div className="space-y-8">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Advertiser Settings
+              </h2>
+              <p className="text-gray-600">
+                Manage your account settings, billing, and team preferences.
+              </p>
+            </div>
+            {commonNotificationSettings}
           </div>
         );
-      case 'ADMIN':
+      case "ADMIN":
         return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Platform Settings
-            </h2>
-            <p className="text-gray-600">
-              Manage platform-wide settings and configurations.
-            </p>
+          <div className="space-y-8">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Platform Settings
+              </h2>
+              <p className="text-gray-600">
+                Manage platform-wide settings and configurations.
+              </p>
+            </div>
+            {commonNotificationSettings}
           </div>
         );
       default:
         return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Settings
-            </h2>
-            <p className="text-gray-600">
-              Manage your account settings and preferences.
-            </p>
+          <div className="space-y-8">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Settings
+              </h2>
+              <p className="text-gray-600">
+                Manage your account settings and preferences.
+              </p>
+            </div>
+            {commonNotificationSettings}
           </div>
         );
     }

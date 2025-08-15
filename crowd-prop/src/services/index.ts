@@ -58,6 +58,12 @@ export type {
 // Advertiser Payment Service - Payment management for advertisers
 export { advertiserPaymentService } from "./advertiser-payment.service";
 
+// Notification Service - Notification preferences and settings management
+export {
+  NotificationService,
+  notificationService,
+} from "./notification.service";
+
 // Import service instances separately for the services object
 import { httpService } from "./http.service";
 import { authService } from "./auth.service";
@@ -65,6 +71,7 @@ import { userService } from "./user.service";
 import { promoterService } from "./promoter.service";
 import { advertiserService } from "./advertiser.service";
 import { stripeService } from "./stripe.service";
+import { notificationService } from "./notification.service";
 
 // Re-export commonly used service instances for convenience
 export const services = {
@@ -74,4 +81,5 @@ export const services = {
   promoter: promoterService,
   advertiser: advertiserService,
   stripe: stripeService,
+  notification: notificationService,
 } as const;
