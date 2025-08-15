@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { UserRole } from "@/app/interfaces/user";
 import {
@@ -14,6 +14,9 @@ import { logout } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { routes } from "@/lib/router";
+import NotificationBadge from "@/components/ui/NotificationBadge";
+import NotificationDropdown from "@/components/ui/NotificationDropdown";
+import { notificationSystemService } from "@/services/notification-system.service";
 
 interface DashboardHeaderProps {
   userName?: string;
@@ -32,11 +35,34 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
+
+  // Fetch unread count on component mount
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const count = await notificationSystemService.getUnreadCount();
+        setUnreadCount(count);
+      } catch (error) {
+        console.error("Failed to fetch unread count:", error);
+      }
+    };
+
+    fetchUnreadCount();
+
+    // Poll for updates every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
     router.push("/auth");
+  };
+
+  const handleViewAllNotifications = () => {
+    router.push(routes.dashboardNotifications);
   };
 
   const getRoleBadgeColor = (role: UserRole) => {
@@ -88,39 +114,20 @@ export default function DashboardHeader({
               className="p-2 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 relative"
             >
               <BellIcon className="h-6 w-6" />
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
+              {unreadCount > 0 && (
+                <NotificationBadge
+                  count={unreadCount}
+                  size="sm"
+                  variant="danger"
+                />
+              )}
             </button>
 
-            {/* Notifications dropdown */}
-            {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-                <div className="p-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
-                    Notifications
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50">
-                      <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-900">
-                          New campaign application received
-                        </p>
-                        <p className="text-xs text-gray-500">2 minutes ago</p>
-                      </div>
-                    </div>
-                    <div className="text-center py-2">
-                      <Link
-                        href="#"
-                        className="text-sm text-blue-600 hover:text-blue-500"
-                        onClick={() => setNotificationsOpen(false)}
-                      >
-                        View all notifications
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            <NotificationDropdown
+              isOpen={notificationsOpen}
+              onClose={() => setNotificationsOpen(false)}
+              onViewAll={handleViewAllNotifications}
+            />
           </div>
 
           {/* User menu */}

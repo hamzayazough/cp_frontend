@@ -1,0 +1,36 @@
+export enum NotificationTypes {
+  PAYOUT_PROCESSED = "PAYOUT_PROCESSED",
+  CAMPAIGN_APPROVED = "CAMPAIGN_APPROVED",
+  CAMPAIGN_REJECTED = "CAMPAIGN_REJECTED",
+  APPLICATION_APPROVED = "APPLICATION_APPROVED",
+  APPLICATION_REJECTED = "APPLICATION_REJECTED",
+  EARNINGS_UPDATE = "EARNINGS_UPDATE",
+  MESSAGE_RECEIVED = "MESSAGE_RECEIVED",
+  CAMPAIGN_DEADLINE = "CAMPAIGN_DEADLINE",
+  SYSTEM_ANNOUNCEMENT = "SYSTEM_ANNOUNCEMENT",
+  PAYMENT_REMINDER = "PAYMENT_REMINDER",
+  PROFILE_UPDATE_REQUIRED = "PROFILE_UPDATE_REQUIRED",
+  SECURITY_ALERT = "SECURITY_ALERT",
+}
+
+export enum NotificationPriority {
+  LOW = "low",
+  MEDIUM = "medium",
+  HIGH = "high",
+  URGENT = "urgent",
+}
+
+export enum NotificationCategory {
+  PAYMENT = "payment",
+  CAMPAIGN = "campaign",
+  COMMUNICATION = "communication",
+  SYSTEM = "system",
+  ACCOUNT = "account",
+}
+
+export enum NotificationStatus {
+  UNREAD = "unread",
+  READ = "read",
+  CLICKED = "clicked",
+  DISMISSED = "dismissed",
+}

@@ -39,6 +39,7 @@ export const routes = {
   dashboardMessageThread: (id: string) => `/dashboard/messages/${id}`,
   dashboardProfile: "/dashboard/profile",
   dashboardSettings: "/dashboard/settings",
+  dashboardNotifications: "/dashboard/notifications",
 
   // API routes
   api: {
@@ -123,6 +124,7 @@ export const routeGuards = {
     routes.dashboardMessages,
     routes.dashboardProfile,
     routes.dashboardSettings,
+    routes.dashboardNotifications,
     routes.campaignCreate,
     routes.messages,
   ],

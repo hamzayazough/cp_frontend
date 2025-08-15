@@ -64,6 +64,12 @@ export {
   notificationService,
 } from "./notification.service";
 
+// Notification System Service - In-app notification management
+export {
+  NotificationSystemService,
+  notificationSystemService,
+} from "./notification-system.service";
+
 // Import service instances separately for the services object
 import { httpService } from "./http.service";
 import { authService } from "./auth.service";
@@ -72,6 +78,7 @@ import { promoterService } from "./promoter.service";
 import { advertiserService } from "./advertiser.service";
 import { stripeService } from "./stripe.service";
 import { notificationService } from "./notification.service";
+import { notificationSystemService } from "./notification-system.service";
 
 // Re-export commonly used service instances for convenience
 export const services = {
@@ -82,4 +89,5 @@ export const services = {
   advertiser: advertiserService,
   stripe: stripeService,
   notification: notificationService,
+  notificationSystem: notificationSystemService,
 } as const;
