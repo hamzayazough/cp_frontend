@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   NotificationDropdownProps,
   Notification,
 } from "@/app/interfaces/notification-system";
 import { notificationSystemService } from "@/services/notification-system.service";
+import { getNotificationRoute } from "@/app/const/notification-constants";
 import NotificationList from "./NotificationList";
 
 export default function NotificationDropdown({
@@ -14,6 +16,7 @@ export default function NotificationDropdown({
   onViewAll,
   maxItems = 5,
 }: NotificationDropdownProps) {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -61,6 +64,20 @@ export default function NotificationDropdown({
     } catch (error) {
       console.error("Failed to dismiss notification:", error);
     }
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    // Close the dropdown first
+    onClose();
+    
+    // Mark as read if it's unread
+    if (!notification.readAt) {
+      handleMarkAsRead(notification.id);
+    }
+    
+    // Navigate to the appropriate route
+    const route = getNotificationRoute(notification);
+    router.push(route);
   };
 
   const handleViewAll = () => {
@@ -111,6 +128,7 @@ export default function NotificationDropdown({
             loading={loading}
             onMarkAsRead={handleMarkAsRead}
             onDismiss={handleDismiss}
+            onNotificationClick={handleNotificationClick}
             compact={true}
           />
         </div>
