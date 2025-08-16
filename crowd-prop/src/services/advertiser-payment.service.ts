@@ -49,16 +49,13 @@ class AdvertiserPaymentService {
   /**
    * Complete payment setup (create Stripe customer)
    */
-  async completePaymentSetup(setupData: {
-    companyName?: string;
-    email?: string;
-  }): Promise<StripeCustomer> {
+  async completePaymentSetup(): Promise<StripeCustomer> {
     try {
       const response = await httpService.post<{
         success: boolean;
         data: StripeCustomer;
         message: string;
-      }>(PAYMENT_ENDPOINTS.SETUP_PAYMENT, setupData, true);
+      }>(PAYMENT_ENDPOINTS.SETUP_PAYMENT, {}, true);
 
       if (!response.data.success) {
         throw new Error(

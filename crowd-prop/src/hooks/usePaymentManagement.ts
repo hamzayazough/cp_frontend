@@ -38,7 +38,7 @@ interface UsePaymentManagementResult {
 
   // Actions
   refreshPaymentStatus: () => Promise<void>;
-  completePaymentSetup: (setupData?: { companyName?: string }) => Promise<void>;
+  completePaymentSetup: () => Promise<void>;
   refreshPaymentMethods: () => Promise<void>;
   addPaymentMethod: (
     paymentMethodId: string,
@@ -117,35 +117,29 @@ export function usePaymentManagement(): UsePaymentManagementResult {
   }, [currentUser]);
 
   // Complete payment setup
-  const completePaymentSetup = useCallback(
-    async (setupData?: { companyName?: string }) => {
-      if (!currentUser) return;
+  const completePaymentSetup = useCallback(async () => {
+    if (!currentUser) return;
 
-      try {
-        setIsPaymentStatusLoading(true);
-        setPaymentStatusError(null);
+    try {
+      setIsPaymentStatusLoading(true);
+      setPaymentStatusError(null);
 
-        await paymentService.completePaymentSetup({
-          email: currentUser.email,
-          companyName: setupData?.companyName,
-        });
+      await paymentService.completePaymentSetup();
 
-        // Refresh status after setup
-        await refreshPaymentStatus();
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Failed to complete payment setup";
-        setPaymentStatusError(errorMessage);
-        console.error("Failed to complete payment setup:", error);
-        throw error;
-      } finally {
-        setIsPaymentStatusLoading(false);
-      }
-    },
-    [currentUser, refreshPaymentStatus]
-  );
+      // Refresh status after setup
+      await refreshPaymentStatus();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to complete payment setup";
+      setPaymentStatusError(errorMessage);
+      console.error("Failed to complete payment setup:", error);
+      throw error;
+    } finally {
+      setIsPaymentStatusLoading(false);
+    }
+  }, [currentUser, refreshPaymentStatus]);
 
   // Refresh payment methods
   const refreshPaymentMethods = useCallback(async () => {
