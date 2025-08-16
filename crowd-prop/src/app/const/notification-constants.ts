@@ -596,7 +596,7 @@ export const getNotificationConfig = (
 export const getNotificationCategory = (
   type: NotificationSystemType
 ): NotificationCategory => {
-  return NOTIFICATION_CATEGORIES_MAP[type];
+  return NOTIFICATION_CATEGORIES_MAP[type] || NotificationCategory.SYSTEM;
 };
 
 export const getNotificationRoute = (notification: Notification): string => {
@@ -617,7 +617,12 @@ export const getNotificationsByCategory = (
 
   notifications.forEach((notification) => {
     const category = getNotificationCategory(notification.notificationType);
-    categorized[category].push(notification);
+    if (categorized[category]) {
+      categorized[category].push(notification);
+    } else {
+      // Fallback to SYSTEM category if category is somehow still undefined
+      categorized[NotificationCategory.SYSTEM].push(notification);
+    }
   });
 
   return categorized;
