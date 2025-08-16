@@ -234,20 +234,12 @@ class AdvertiserPaymentService {
   /**
    * Get wallet transactions
    */
-  async getWalletTransactions(params?: {
-    page?: number;
-    limit?: number;
-    type?: string;
-  }): Promise<{
+  async getWalletTransactions(params?: { type?: string }): Promise<{
     transactions: WalletTransaction[];
     total: number;
-    page: number;
-    totalPages: number;
   }> {
     try {
       const queryParams = new URLSearchParams();
-      if (params?.page) queryParams.append("page", params.page.toString());
-      if (params?.limit) queryParams.append("limit", params.limit.toString());
       if (params?.type) queryParams.append("type", params.type);
 
       const url = `${PAYMENT_ENDPOINTS.GET_WALLET_TRANSACTIONS}${
@@ -259,8 +251,6 @@ class AdvertiserPaymentService {
         data: {
           transactions: WalletTransaction[];
           total: number;
-          page: number;
-          totalPages: number;
         };
         message: string;
       }>(url, true);

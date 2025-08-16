@@ -16,44 +16,36 @@ export const NOTIFICATION_TYPE_CONFIGS: Record<
   NotificationSystemType,
   NotificationTypeConfig
 > = {
-  [NotificationTypes.PAYOUT_PROCESSED]: {
-    type: NotificationTypes.PAYOUT_PROCESSED,
-    label: "Payment Processed",
-    description: "Your earnings have been processed and transferred",
-    icon: "💰",
-    color: "text-green-600",
+  // Campaign related
+  [NotificationTypes.CAMPAIGN_CREATED]: {
+    type: NotificationTypes.CAMPAIGN_CREATED,
+    label: "Campaign Created",
+    description: "Your campaign has been created successfully",
+    icon: "🚀",
+    color: "text-blue-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_APPLICATION_RECEIVED]: {
+    type: NotificationTypes.CAMPAIGN_APPLICATION_RECEIVED,
+    label: "New Application",
+    description: "You have received a new campaign application",
+    icon: "📝",
+    color: "text-blue-600",
     priority: NotificationPriority.HIGH,
     showInDropdown: true,
   },
-  [NotificationTypes.CAMPAIGN_APPROVED]: {
-    type: NotificationTypes.CAMPAIGN_APPROVED,
-    label: "Campaign Approved",
-    description: "Your campaign has been approved and is now live",
-    icon: "✅",
-    color: "text-green-600",
-    priority: NotificationPriority.HIGH,
-    showInDropdown: true,
-  },
-  [NotificationTypes.CAMPAIGN_REJECTED]: {
-    type: NotificationTypes.CAMPAIGN_REJECTED,
-    label: "Campaign Rejected",
-    description: "Your campaign submission needs attention",
-    icon: "❌",
-    color: "text-red-600",
-    priority: NotificationPriority.HIGH,
-    showInDropdown: true,
-  },
-  [NotificationTypes.APPLICATION_APPROVED]: {
-    type: NotificationTypes.APPLICATION_APPROVED,
-    label: "Application Approved",
+  [NotificationTypes.CAMPAIGN_APPLICATION_ACCEPTED]: {
+    type: NotificationTypes.CAMPAIGN_APPLICATION_ACCEPTED,
+    label: "Application Accepted",
     description: "Your campaign application has been accepted",
     icon: "🎉",
     color: "text-green-600",
     priority: NotificationPriority.HIGH,
     showInDropdown: true,
   },
-  [NotificationTypes.APPLICATION_REJECTED]: {
-    type: NotificationTypes.APPLICATION_REJECTED,
+  [NotificationTypes.CAMPAIGN_APPLICATION_REJECTED]: {
+    type: NotificationTypes.CAMPAIGN_APPLICATION_REJECTED,
     label: "Application Rejected",
     description: "Your campaign application was not accepted",
     icon: "😞",
@@ -61,17 +53,165 @@ export const NOTIFICATION_TYPE_CONFIGS: Record<
     priority: NotificationPriority.MEDIUM,
     showInDropdown: true,
   },
-  [NotificationTypes.EARNINGS_UPDATE]: {
-    type: NotificationTypes.EARNINGS_UPDATE,
-    label: "Earnings Updated",
-    description: "Your earnings have been updated",
-    icon: "📈",
+  [NotificationTypes.CAMPAIGN_WORK_SUBMITTED]: {
+    type: NotificationTypes.CAMPAIGN_WORK_SUBMITTED,
+    label: "Work Submitted",
+    description: "Campaign work has been submitted for review",
+    icon: "📤",
     color: "text-blue-600",
     priority: NotificationPriority.MEDIUM,
     showInDropdown: true,
   },
-  [NotificationTypes.MESSAGE_RECEIVED]: {
-    type: NotificationTypes.MESSAGE_RECEIVED,
+  [NotificationTypes.CAMPAIGN_WORK_APPROVED]: {
+    type: NotificationTypes.CAMPAIGN_WORK_APPROVED,
+    label: "Work Approved",
+    description: "Your campaign work has been approved",
+    icon: "✅",
+    color: "text-green-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_WORK_REJECTED]: {
+    type: NotificationTypes.CAMPAIGN_WORK_REJECTED,
+    label: "Work Rejected",
+    description: "Your campaign work needs revision",
+    icon: "❌",
+    color: "text-red-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_DETAILS_CHANGED]: {
+    type: NotificationTypes.CAMPAIGN_DETAILS_CHANGED,
+    label: "Campaign Updated",
+    description: "Campaign details have been updated",
+    icon: "📝",
+    color: "text-orange-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_ENDING_SOON]: {
+    type: NotificationTypes.CAMPAIGN_ENDING_SOON,
+    label: "Campaign Ending Soon",
+    description: "Campaign deadline is approaching",
+    icon: "⏰",
+    color: "text-orange-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_ENDED]: {
+    type: NotificationTypes.CAMPAIGN_ENDED,
+    label: "Campaign Ended",
+    description: "Campaign has reached its deadline",
+    icon: "🏁",
+    color: "text-gray-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_EXPIRED]: {
+    type: NotificationTypes.CAMPAIGN_EXPIRED,
+    label: "Campaign Expired",
+    description: "Campaign has expired without completion",
+    icon: "⏱️",
+    color: "text-red-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_BUDGET_INCREASED]: {
+    type: NotificationTypes.CAMPAIGN_BUDGET_INCREASED,
+    label: "Budget Increased",
+    description: "Campaign budget has been increased",
+    icon: "💰",
+    color: "text-green-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+  [NotificationTypes.CAMPAIGN_DEADLINE_EXTENDED]: {
+    type: NotificationTypes.CAMPAIGN_DEADLINE_EXTENDED,
+    label: "Deadline Extended",
+    description: "Campaign deadline has been extended",
+    icon: "📅",
+    color: "text-blue-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+  [NotificationTypes.PROMOTER_JOINED_CAMPAIGN]: {
+    type: NotificationTypes.PROMOTER_JOINED_CAMPAIGN,
+    label: "Promoter Joined",
+    description: "A promoter has joined your campaign",
+    icon: "👋",
+    color: "text-green-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+
+  // Payment related
+  [NotificationTypes.PAYMENT_RECEIVED]: {
+    type: NotificationTypes.PAYMENT_RECEIVED,
+    label: "Payment Received",
+    description: "You have received a payment",
+    icon: "💰",
+    color: "text-green-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.PAYMENT_SENT]: {
+    type: NotificationTypes.PAYMENT_SENT,
+    label: "Payment Sent",
+    description: "Your payment has been sent",
+    icon: "💸",
+    color: "text-blue-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+  [NotificationTypes.PAYMENT_FAILED]: {
+    type: NotificationTypes.PAYMENT_FAILED,
+    label: "Payment Failed",
+    description: "A payment transaction has failed",
+    icon: "❌",
+    color: "text-red-600",
+    priority: NotificationPriority.URGENT,
+    showInDropdown: true,
+  },
+  [NotificationTypes.PAYOUT_PROCESSED]: {
+    type: NotificationTypes.PAYOUT_PROCESSED,
+    label: "Payout Processed",
+    description: "Your earnings have been processed and transferred",
+    icon: "💰",
+    color: "text-green-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.STRIPE_ACCOUNT_VERIFIED]: {
+    type: NotificationTypes.STRIPE_ACCOUNT_VERIFIED,
+    label: "Payment Account Verified",
+    description: "Your payment account has been verified",
+    icon: "✅",
+    color: "text-green-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.STRIPE_ACCOUNT_ISSUE]: {
+    type: NotificationTypes.STRIPE_ACCOUNT_ISSUE,
+    label: "Payment Account Issue",
+    description: "There's an issue with your payment account",
+    icon: "⚠️",
+    color: "text-red-600",
+    priority: NotificationPriority.URGENT,
+    showInDropdown: true,
+  },
+  [NotificationTypes.WALLET_BALANCE_LOW]: {
+    type: NotificationTypes.WALLET_BALANCE_LOW,
+    label: "Low Wallet Balance",
+    description: "Your wallet balance is running low",
+    icon: "🪫",
+    color: "text-orange-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+
+  // Messaging related
+  [NotificationTypes.NEW_MESSAGE]: {
+    type: NotificationTypes.NEW_MESSAGE,
     label: "New Message",
     description: "You have received a new message",
     icon: "💬",
@@ -80,41 +220,101 @@ export const NOTIFICATION_TYPE_CONFIGS: Record<
     showInDropdown: true,
     autoMarkAsRead: true,
   },
-  [NotificationTypes.CAMPAIGN_DEADLINE]: {
-    type: NotificationTypes.CAMPAIGN_DEADLINE,
-    label: "Campaign Deadline",
-    description: "Campaign deadline is approaching",
+  [NotificationTypes.NEW_CONVERSATION]: {
+    type: NotificationTypes.NEW_CONVERSATION,
+    label: "New Conversation",
+    description: "A new conversation has been started",
+    icon: "💬",
+    color: "text-blue-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+
+  // Meeting related
+  [NotificationTypes.MEETING_SCHEDULED]: {
+    type: NotificationTypes.MEETING_SCHEDULED,
+    label: "Meeting Scheduled",
+    description: "A new meeting has been scheduled",
+    icon: "📅",
+    color: "text-blue-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.MEETING_REMINDER]: {
+    type: NotificationTypes.MEETING_REMINDER,
+    label: "Meeting Reminder",
+    description: "You have an upcoming meeting",
     icon: "⏰",
     color: "text-orange-600",
     priority: NotificationPriority.HIGH,
     showInDropdown: true,
   },
-  [NotificationTypes.SYSTEM_ANNOUNCEMENT]: {
-    type: NotificationTypes.SYSTEM_ANNOUNCEMENT,
-    label: "System Announcement",
-    description: "Important platform announcement",
-    icon: "📢",
-    color: "text-purple-600",
+  [NotificationTypes.MEETING_CANCELLED]: {
+    type: NotificationTypes.MEETING_CANCELLED,
+    label: "Meeting Cancelled",
+    description: "A meeting has been cancelled",
+    icon: "❌",
+    color: "text-red-600",
     priority: NotificationPriority.MEDIUM,
-    showInDropdown: false,
+    showInDropdown: true,
   },
-  [NotificationTypes.PAYMENT_REMINDER]: {
-    type: NotificationTypes.PAYMENT_REMINDER,
-    label: "Payment Reminder",
-    description: "Payment action required",
-    icon: "💳",
+  [NotificationTypes.MEETING_RESCHEDULED]: {
+    type: NotificationTypes.MEETING_RESCHEDULED,
+    label: "Meeting Rescheduled",
+    description: "A meeting has been rescheduled",
+    icon: "📅",
+    color: "text-orange-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: true,
+  },
+
+  // Account related
+  [NotificationTypes.ACCOUNT_VERIFICATION_REQUIRED]: {
+    type: NotificationTypes.ACCOUNT_VERIFICATION_REQUIRED,
+    label: "Verification Required",
+    description: "Please verify your account to continue",
+    icon: "🔍",
     color: "text-orange-600",
     priority: NotificationPriority.HIGH,
     showInDropdown: true,
   },
-  [NotificationTypes.PROFILE_UPDATE_REQUIRED]: {
-    type: NotificationTypes.PROFILE_UPDATE_REQUIRED,
-    label: "Profile Update Required",
-    description: "Please update your profile information",
+  [NotificationTypes.ACCOUNT_VERIFIED]: {
+    type: NotificationTypes.ACCOUNT_VERIFIED,
+    label: "Account Verified",
+    description: "Your account has been successfully verified",
+    icon: "✅",
+    color: "text-green-600",
+    priority: NotificationPriority.HIGH,
+    showInDropdown: true,
+  },
+  [NotificationTypes.PROFILE_INCOMPLETE]: {
+    type: NotificationTypes.PROFILE_INCOMPLETE,
+    label: "Complete Your Profile",
+    description: "Please complete your profile information",
     icon: "👤",
     color: "text-yellow-600",
     priority: NotificationPriority.MEDIUM,
     showInDropdown: true,
+  },
+
+  // System related
+  [NotificationTypes.SYSTEM_MAINTENANCE]: {
+    type: NotificationTypes.SYSTEM_MAINTENANCE,
+    label: "System Maintenance",
+    description: "Scheduled system maintenance notification",
+    icon: "🔧",
+    color: "text-purple-600",
+    priority: NotificationPriority.MEDIUM,
+    showInDropdown: false,
+  },
+  [NotificationTypes.FEATURE_ANNOUNCEMENT]: {
+    type: NotificationTypes.FEATURE_ANNOUNCEMENT,
+    label: "New Feature",
+    description: "A new feature has been released",
+    icon: "🎉",
+    color: "text-purple-600",
+    priority: NotificationPriority.LOW,
+    showInDropdown: false,
   },
   [NotificationTypes.SECURITY_ALERT]: {
     type: NotificationTypes.SECURITY_ALERT,
@@ -132,17 +332,53 @@ export const NOTIFICATION_CATEGORIES_MAP: Record<
   NotificationSystemType,
   NotificationCategory
 > = {
+  // Campaign related
+  [NotificationTypes.CAMPAIGN_CREATED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_APPLICATION_RECEIVED]:
+    NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_APPLICATION_ACCEPTED]:
+    NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_APPLICATION_REJECTED]:
+    NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_WORK_SUBMITTED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_WORK_APPROVED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_WORK_REJECTED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_DETAILS_CHANGED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_ENDING_SOON]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_ENDED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_EXPIRED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_BUDGET_INCREASED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.CAMPAIGN_DEADLINE_EXTENDED]: NotificationCategory.CAMPAIGN,
+  [NotificationTypes.PROMOTER_JOINED_CAMPAIGN]: NotificationCategory.CAMPAIGN,
+
+  // Payment related
+  [NotificationTypes.PAYMENT_RECEIVED]: NotificationCategory.PAYMENT,
+  [NotificationTypes.PAYMENT_SENT]: NotificationCategory.PAYMENT,
+  [NotificationTypes.PAYMENT_FAILED]: NotificationCategory.PAYMENT,
   [NotificationTypes.PAYOUT_PROCESSED]: NotificationCategory.PAYMENT,
-  [NotificationTypes.PAYMENT_REMINDER]: NotificationCategory.PAYMENT,
-  [NotificationTypes.CAMPAIGN_APPROVED]: NotificationCategory.CAMPAIGN,
-  [NotificationTypes.CAMPAIGN_REJECTED]: NotificationCategory.CAMPAIGN,
-  [NotificationTypes.APPLICATION_APPROVED]: NotificationCategory.CAMPAIGN,
-  [NotificationTypes.APPLICATION_REJECTED]: NotificationCategory.CAMPAIGN,
-  [NotificationTypes.EARNINGS_UPDATE]: NotificationCategory.CAMPAIGN,
-  [NotificationTypes.CAMPAIGN_DEADLINE]: NotificationCategory.CAMPAIGN,
-  [NotificationTypes.MESSAGE_RECEIVED]: NotificationCategory.COMMUNICATION,
-  [NotificationTypes.SYSTEM_ANNOUNCEMENT]: NotificationCategory.SYSTEM,
-  [NotificationTypes.PROFILE_UPDATE_REQUIRED]: NotificationCategory.ACCOUNT,
+  [NotificationTypes.STRIPE_ACCOUNT_VERIFIED]: NotificationCategory.PAYMENT,
+  [NotificationTypes.STRIPE_ACCOUNT_ISSUE]: NotificationCategory.PAYMENT,
+  [NotificationTypes.WALLET_BALANCE_LOW]: NotificationCategory.PAYMENT,
+
+  // Messaging related
+  [NotificationTypes.NEW_MESSAGE]: NotificationCategory.COMMUNICATION,
+  [NotificationTypes.NEW_CONVERSATION]: NotificationCategory.COMMUNICATION,
+
+  // Meeting related
+  [NotificationTypes.MEETING_SCHEDULED]: NotificationCategory.COMMUNICATION,
+  [NotificationTypes.MEETING_REMINDER]: NotificationCategory.COMMUNICATION,
+  [NotificationTypes.MEETING_CANCELLED]: NotificationCategory.COMMUNICATION,
+  [NotificationTypes.MEETING_RESCHEDULED]: NotificationCategory.COMMUNICATION,
+
+  // Account related
+  [NotificationTypes.ACCOUNT_VERIFICATION_REQUIRED]:
+    NotificationCategory.ACCOUNT,
+  [NotificationTypes.ACCOUNT_VERIFIED]: NotificationCategory.ACCOUNT,
+  [NotificationTypes.PROFILE_INCOMPLETE]: NotificationCategory.ACCOUNT,
+
+  // System related
+  [NotificationTypes.SYSTEM_MAINTENANCE]: NotificationCategory.SYSTEM,
+  [NotificationTypes.FEATURE_ANNOUNCEMENT]: NotificationCategory.SYSTEM,
   [NotificationTypes.SECURITY_ALERT]: NotificationCategory.ACCOUNT,
 };
 
@@ -151,61 +387,183 @@ export const NOTIFICATION_ROUTES: Record<
   NotificationSystemType,
   NotificationRoute
 > = {
+  // Campaign related routes
+  [NotificationTypes.CAMPAIGN_CREATED]: {
+    type: NotificationTypes.CAMPAIGN_CREATED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_APPLICATION_RECEIVED]: {
+    type: NotificationTypes.CAMPAIGN_APPLICATION_RECEIVED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_APPLICATION_ACCEPTED]: {
+    type: NotificationTypes.CAMPAIGN_APPLICATION_ACCEPTED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_APPLICATION_REJECTED]: {
+    type: NotificationTypes.CAMPAIGN_APPLICATION_REJECTED,
+    getRoute: () => routes.dashboardExplore,
+  },
+  [NotificationTypes.CAMPAIGN_WORK_SUBMITTED]: {
+    type: NotificationTypes.CAMPAIGN_WORK_SUBMITTED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_WORK_APPROVED]: {
+    type: NotificationTypes.CAMPAIGN_WORK_APPROVED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_WORK_REJECTED]: {
+    type: NotificationTypes.CAMPAIGN_WORK_REJECTED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_DETAILS_CHANGED]: {
+    type: NotificationTypes.CAMPAIGN_DETAILS_CHANGED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_ENDING_SOON]: {
+    type: NotificationTypes.CAMPAIGN_ENDING_SOON,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_ENDED]: {
+    type: NotificationTypes.CAMPAIGN_ENDED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_EXPIRED]: {
+    type: NotificationTypes.CAMPAIGN_EXPIRED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_BUDGET_INCREASED]: {
+    type: NotificationTypes.CAMPAIGN_BUDGET_INCREASED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.CAMPAIGN_DEADLINE_EXTENDED]: {
+    type: NotificationTypes.CAMPAIGN_DEADLINE_EXTENDED,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+  [NotificationTypes.PROMOTER_JOINED_CAMPAIGN]: {
+    type: NotificationTypes.PROMOTER_JOINED_CAMPAIGN,
+    getRoute: (notification: Notification) =>
+      notification.campaignId
+        ? routes.dashboardCampaignDetails(notification.campaignId)
+        : routes.dashboardCampaigns,
+  },
+
+  // Payment related routes
+  [NotificationTypes.PAYMENT_RECEIVED]: {
+    type: NotificationTypes.PAYMENT_RECEIVED,
+    getRoute: () => routes.dashboardEarnings,
+  },
+  [NotificationTypes.PAYMENT_SENT]: {
+    type: NotificationTypes.PAYMENT_SENT,
+    getRoute: () => routes.dashboardEarnings,
+  },
+  [NotificationTypes.PAYMENT_FAILED]: {
+    type: NotificationTypes.PAYMENT_FAILED,
+    getRoute: () => routes.dashboardEarnings,
+  },
   [NotificationTypes.PAYOUT_PROCESSED]: {
     type: NotificationTypes.PAYOUT_PROCESSED,
     getRoute: () => routes.dashboardEarnings,
   },
-  [NotificationTypes.CAMPAIGN_APPROVED]: {
-    type: NotificationTypes.CAMPAIGN_APPROVED,
-    getRoute: (notification: Notification) =>
-      notification.campaignId
-        ? routes.dashboardCampaignDetails(notification.campaignId)
-        : routes.dashboardCampaigns,
-  },
-  [NotificationTypes.CAMPAIGN_REJECTED]: {
-    type: NotificationTypes.CAMPAIGN_REJECTED,
-    getRoute: (notification: Notification) =>
-      notification.campaignId
-        ? routes.dashboardCampaignDetails(notification.campaignId)
-        : routes.dashboardCampaigns,
-  },
-  [NotificationTypes.APPLICATION_APPROVED]: {
-    type: NotificationTypes.APPLICATION_APPROVED,
-    getRoute: (notification: Notification) =>
-      notification.campaignId
-        ? routes.dashboardCampaignDetails(notification.campaignId)
-        : routes.dashboardCampaigns,
-  },
-  [NotificationTypes.APPLICATION_REJECTED]: {
-    type: NotificationTypes.APPLICATION_REJECTED,
-    getRoute: () => routes.dashboardExplore,
-  },
-  [NotificationTypes.EARNINGS_UPDATE]: {
-    type: NotificationTypes.EARNINGS_UPDATE,
+  [NotificationTypes.STRIPE_ACCOUNT_VERIFIED]: {
+    type: NotificationTypes.STRIPE_ACCOUNT_VERIFIED,
     getRoute: () => routes.dashboardEarnings,
   },
-  [NotificationTypes.MESSAGE_RECEIVED]: {
-    type: NotificationTypes.MESSAGE_RECEIVED,
+  [NotificationTypes.STRIPE_ACCOUNT_ISSUE]: {
+    type: NotificationTypes.STRIPE_ACCOUNT_ISSUE,
+    getRoute: () => routes.dashboardEarnings,
+  },
+  [NotificationTypes.WALLET_BALANCE_LOW]: {
+    type: NotificationTypes.WALLET_BALANCE_LOW,
+    getRoute: () => routes.dashboardEarnings,
+  },
+
+  // Messaging related routes
+  [NotificationTypes.NEW_MESSAGE]: {
+    type: NotificationTypes.NEW_MESSAGE,
     getRoute: () => routes.dashboardMessages,
   },
-  [NotificationTypes.CAMPAIGN_DEADLINE]: {
-    type: NotificationTypes.CAMPAIGN_DEADLINE,
-    getRoute: (notification: Notification) =>
-      notification.campaignId
-        ? routes.dashboardCampaignDetails(notification.campaignId)
-        : routes.dashboardCampaigns,
+  [NotificationTypes.NEW_CONVERSATION]: {
+    type: NotificationTypes.NEW_CONVERSATION,
+    getRoute: () => routes.dashboardMessages,
   },
-  [NotificationTypes.SYSTEM_ANNOUNCEMENT]: {
-    type: NotificationTypes.SYSTEM_ANNOUNCEMENT,
+
+  // Meeting related routes
+  [NotificationTypes.MEETING_SCHEDULED]: {
+    type: NotificationTypes.MEETING_SCHEDULED,
     getRoute: () => routes.dashboard,
   },
-  [NotificationTypes.PAYMENT_REMINDER]: {
-    type: NotificationTypes.PAYMENT_REMINDER,
-    getRoute: () => routes.dashboardEarnings,
+  [NotificationTypes.MEETING_REMINDER]: {
+    type: NotificationTypes.MEETING_REMINDER,
+    getRoute: () => routes.dashboard,
   },
-  [NotificationTypes.PROFILE_UPDATE_REQUIRED]: {
-    type: NotificationTypes.PROFILE_UPDATE_REQUIRED,
+  [NotificationTypes.MEETING_CANCELLED]: {
+    type: NotificationTypes.MEETING_CANCELLED,
+    getRoute: () => routes.dashboard,
+  },
+  [NotificationTypes.MEETING_RESCHEDULED]: {
+    type: NotificationTypes.MEETING_RESCHEDULED,
+    getRoute: () => routes.dashboard,
+  },
+
+  // Account related routes
+  [NotificationTypes.ACCOUNT_VERIFICATION_REQUIRED]: {
+    type: NotificationTypes.ACCOUNT_VERIFICATION_REQUIRED,
     getRoute: () => routes.dashboardProfile,
+  },
+  [NotificationTypes.ACCOUNT_VERIFIED]: {
+    type: NotificationTypes.ACCOUNT_VERIFIED,
+    getRoute: () => routes.dashboard,
+  },
+  [NotificationTypes.PROFILE_INCOMPLETE]: {
+    type: NotificationTypes.PROFILE_INCOMPLETE,
+    getRoute: () => routes.dashboardProfile,
+  },
+
+  // System related routes
+  [NotificationTypes.SYSTEM_MAINTENANCE]: {
+    type: NotificationTypes.SYSTEM_MAINTENANCE,
+    getRoute: () => routes.dashboard,
+  },
+  [NotificationTypes.FEATURE_ANNOUNCEMENT]: {
+    type: NotificationTypes.FEATURE_ANNOUNCEMENT,
+    getRoute: () => routes.dashboard,
   },
   [NotificationTypes.SECURITY_ALERT]: {
     type: NotificationTypes.SECURITY_ALERT,
@@ -217,7 +575,22 @@ export const NOTIFICATION_ROUTES: Record<
 export const getNotificationConfig = (
   type: NotificationSystemType
 ): NotificationTypeConfig => {
-  return NOTIFICATION_TYPE_CONFIGS[type];
+  const config = NOTIFICATION_TYPE_CONFIGS[type];
+
+  // Fallback for unknown notification types
+  if (!config) {
+    return {
+      type: type,
+      label: "Notification",
+      description: "You have a new notification",
+      icon: "🔔",
+      color: "text-gray-600",
+      priority: NotificationPriority.MEDIUM,
+      showInDropdown: true,
+    };
+  }
+
+  return config;
 };
 
 export const getNotificationCategory = (

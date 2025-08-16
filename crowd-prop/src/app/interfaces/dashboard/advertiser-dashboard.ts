@@ -109,6 +109,11 @@ export interface GetAdvertiserDashboardRequest {
   messageLimit?: number;
 }
 
+export interface GetAdvertiserTransactionsRequest {
+  // No page or limit parameters - backend doesn't accept them
+  type?: string;
+}
+
 // Response interfaces
 export interface GetAdvertiserDashboardResponse {
   success: boolean;

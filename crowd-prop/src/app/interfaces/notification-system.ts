@@ -1,16 +1,6 @@
-export type NotificationSystemType =
-  | "PAYOUT_PROCESSED"
-  | "CAMPAIGN_APPROVED"
-  | "CAMPAIGN_REJECTED"
-  | "APPLICATION_APPROVED"
-  | "APPLICATION_REJECTED"
-  | "EARNINGS_UPDATE"
-  | "MESSAGE_RECEIVED"
-  | "CAMPAIGN_DEADLINE"
-  | "SYSTEM_ANNOUNCEMENT"
-  | "PAYMENT_REMINDER"
-  | "PROFILE_UPDATE_REQUIRED"
-  | "SECURITY_ALERT";
+import { NotificationTypes } from "@/app/enums/notification";
+
+export type NotificationSystemType = NotificationTypes;
 
 export interface NotificationMetadata {
   amount?: number;

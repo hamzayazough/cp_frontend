@@ -98,7 +98,7 @@ export default function NotificationItem({
   };
 
   const getPriorityIndicator = () => {
-    if (config.priority === "urgent") {
+    if (config?.priority === "urgent") {
       return <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />;
     }
     return null;
@@ -124,15 +124,14 @@ export default function NotificationItem({
       <div className={`flex items-start space-x-3 ${isUnread ? "ml-4" : ""}`}>
         {/* Icon/Emoji */}
         <div className="flex-shrink-0 mt-1">
-          <span className="text-lg">{config.icon}</span>
+          <span className="text-lg">{config?.icon || "🔔"}</span>
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between">
+        <div className="flex-1 min-w-0">              <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
-                <h4 className={`text-sm font-medium ${config.color} truncate`}>
+                <h4 className={`text-sm font-medium ${config?.color || "text-gray-600"} truncate`}>
                   {notification.title}
                 </h4>
                 {getPriorityIndicator()}

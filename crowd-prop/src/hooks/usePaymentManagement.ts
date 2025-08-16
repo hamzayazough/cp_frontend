@@ -308,9 +308,7 @@ export function usePaymentManagement(): UsePaymentManagementResult {
     try {
       setIsTransactionsLoading(true);
       setTransactionsError(null);
-      const response = await paymentService.getWalletTransactions({
-        limit: 10,
-      });
+      const response = await paymentService.getWalletTransactions();
       setTransactions(response.transactions);
     } catch (error) {
       const errorMessage =
