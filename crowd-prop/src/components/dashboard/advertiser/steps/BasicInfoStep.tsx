@@ -88,8 +88,8 @@ export default function BasicInfoStep({
         if (!value || typeof value !== "string" || value.trim().length < 10) {
           return "Description must be at least 10 characters long";
         }
-        if (value.length > 1000) {
-          return "Description must be less than 1000 characters";
+        if (value.length > 10000) {
+          return "Description must be less than 10,000 characters";
         }
         break;
       case "files":
@@ -494,12 +494,12 @@ export default function BasicInfoStep({
                 </p>
                 <span
                   className={`text-xs ${
-                    formData.description.length > 900
+                    formData.description.length > 9000
                       ? "text-orange-600"
                       : "text-gray-500"
                   }`}
                 >
-                  {formData.description.length}/1000
+                  {formData.description.length}/10,000
                 </span>
               </div>
             </div>
