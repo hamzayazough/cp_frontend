@@ -124,7 +124,7 @@ export default function PromoterCampaignsContent() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
         <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center">
             <div className="p-1.5 bg-green-100 rounded-md">
@@ -134,6 +134,20 @@ export default function PromoterCampaignsContent() {
               <p className="text-xs font-medium text-gray-600">Active</p>
               <p className="text-lg font-bold text-gray-900">
                 {summary.totalActive}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center">
+            <div className="p-1.5 bg-orange-100 rounded-md">
+              <ClockIcon className="h-4 w-4 text-orange-600" />
+            </div>
+            <div className="ml-3">
+              <p className="text-xs font-medium text-gray-600">Awaiting</p>
+              <p className="text-lg font-bold text-gray-900">
+                {summary.totalPending}
               </p>
             </div>
           </div>
