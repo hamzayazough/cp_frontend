@@ -8,6 +8,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { routes } from "@/lib/router";
 import useNotifications from "@/hooks/useNotificationSystem";
 import NotificationList from "@/components/ui/NotificationList";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { UserRole } from "@/app/interfaces/user";
 import {
   getNotificationsByCategory,
   NOTIFICATION_TYPE_CONFIGS,
@@ -30,8 +32,15 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
+// Extended User interface to include custom claims
+interface ExtendedUser extends User {
+  customClaims?: {
+    role: UserRole;
+  };
+}
+
 // Authenticated notifications content component
-function NotificationsContent() {
+function NotificationsContent({ user }: { user: User }) {
   const router = useRouter();
   const {
     notifications,
@@ -214,8 +223,13 @@ function NotificationsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <DashboardLayout
+      userRole={(user as ExtendedUser).customClaims?.role || 'PROMOTER' as UserRole}
+      userName={user.displayName || undefined}
+      userEmail={user.email || undefined}
+      userAvatar={user.photoURL || undefined}
+    >
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -234,7 +248,7 @@ function NotificationsContent() {
               <button
                 onClick={handleRefresh}
                 disabled={loading}
-                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-600"
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
                 title="Refresh notifications"
               >
                 <ArrowPathIcon
@@ -427,7 +441,7 @@ function NotificationsContent() {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
 
@@ -467,5 +481,5 @@ export default function NotificationsPage() {
   }
 
   // Render the authenticated content
-  return <NotificationsContent />;
+  return <NotificationsContent user={firebaseUser} />;
 }

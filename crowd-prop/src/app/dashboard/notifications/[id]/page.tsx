@@ -8,6 +8,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { notificationSystemService } from "@/services/notification-system.service";
 import { Notification } from "@/app/interfaces/notification-system";
 import { NOTIFICATION_TYPE_CONFIGS } from "@/app/const/notification-constants";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { UserRole } from "@/app/interfaces/user";
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -17,69 +19,60 @@ import {
 } from "@heroicons/react/24/outline";
 import { formatDistanceToNow } from "date-fns";
 
-export default function NotificationDetailPage() {
+// Extended User interface to include custom claims
+interface ExtendedUser extends User {
+  customClaims?: {
+    role: UserRole;
+  };
+}
+
+// Notification detail content component
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function NotificationDetailContent({ user }: { user: User }) {
   const params = useParams();
   const router = useRouter();
-  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const notificationId = params.id as string;
 
-  // Authentication check
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      setFirebaseUser(authUser);
-      setAuthLoading(false);
-      
-      if (!authUser) {
-        router.push('/auth');
-        return;
-      }
-    });
+    const fetchNotification = async () => {
+      try {
+        setLoading(true);
+        const data = await notificationSystemService.getNotificationById(
+          notificationId
+        );
+        setNotification(data);
 
-    return () => unsubscribe();
-  }, [router]);
-
-  useEffect(() => {
-    // Only fetch notification if user is authenticated and notificationId exists
-    if (!authLoading && firebaseUser && notificationId) {
-      const fetchNotification = async () => {
-        try {
-          setLoading(true);
-          const data = await notificationSystemService.getNotificationById(
-            notificationId
+        // Mark as read if not already read
+        if (!data.readAt) {
+          await notificationSystemService.markAsRead(notificationId);
+          setNotification((prev) =>
+            prev ? { ...prev, readAt: new Date().toISOString() } : null
           );
-          setNotification(data);
-
-          // Mark as read if not already read
-          if (!data.readAt) {
-            await notificationSystemService.markAsRead(notificationId);
-            setNotification((prev) =>
-              prev ? { ...prev, readAt: new Date().toISOString() } : null
-            );
-          }
-
-          // Mark as clicked
-          if (!data.clickedAt) {
-            await notificationSystemService.markAsClicked(notificationId);
-            setNotification((prev) =>
-              prev ? { ...prev, clickedAt: new Date().toISOString() } : null
-            );
-          }
-        } catch (err) {
-          console.error("Error fetching notification:", err);
-          setError("Failed to load notification details");
-        } finally {
-          setLoading(false);
         }
-      };
 
+        // Mark as clicked
+        if (!data.clickedAt) {
+          await notificationSystemService.markAsClicked(notificationId);
+          setNotification((prev) =>
+            prev ? { ...prev, clickedAt: new Date().toISOString() } : null
+          );
+        }
+      } catch (err) {
+        console.error("Error fetching notification:", err);
+        setError("Failed to load notification details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (notificationId) {
       fetchNotification();
     }
-  }, [authLoading, firebaseUser, notificationId]);
+  }, [notificationId]);
 
   const handleMarkAsDismissed = async () => {
     if (!notification) return;
@@ -98,9 +91,9 @@ export default function NotificationDetailPage() {
     router.back();
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-8">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -108,7 +101,7 @@ export default function NotificationDetailPage() {
 
   if (error || !notification) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
             {error || "Notification Not Found"}
@@ -128,7 +121,7 @@ export default function NotificationDetailPage() {
   const config = NOTIFICATION_TYPE_CONFIGS[notification.notificationType];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -330,5 +323,50 @@ export default function NotificationDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main component with authentication
+export default function NotificationDetailPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
+
+      if (!currentUser) {
+        router.push("/auth");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const extendedUser = user as ExtendedUser;
+
+  return (
+    <DashboardLayout
+      userRole={(extendedUser.customClaims?.role || "PROMOTER") as UserRole}
+      userName={user.displayName || undefined}
+      userEmail={user.email || undefined}
+      userAvatar={user.photoURL || undefined}
+    >
+      <NotificationDetailContent user={user} />
+    </DashboardLayout>
   );
 }
