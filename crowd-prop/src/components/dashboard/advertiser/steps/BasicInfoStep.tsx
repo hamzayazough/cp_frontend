@@ -470,7 +470,7 @@ export default function BasicInfoStep({
               </label>
               <textarea
                 id="description"
-                rows={4}
+                rows={8}
                 value={formData.description}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)
