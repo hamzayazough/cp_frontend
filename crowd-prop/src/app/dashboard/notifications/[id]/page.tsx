@@ -88,7 +88,7 @@ function NotificationDetailContent({ user }: { user: User }) {
   };
 
   const handleGoBack = () => {
-    router.back();
+    router.push('/dashboard/notifications');
   };
 
   if (loading) {
