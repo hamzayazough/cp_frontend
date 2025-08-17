@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { notificationSystemService } from "@/services/notification-system.service";
 import { Notification } from "@/app/interfaces/notification-system";
 import { NOTIFICATION_TYPE_CONFIGS } from "@/app/const/notification-constants";
@@ -17,48 +20,66 @@ import { formatDistanceToNow } from "date-fns";
 export default function NotificationDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const notificationId = params.id as string;
 
+  // Authentication check
   useEffect(() => {
-    const fetchNotification = async () => {
-      try {
-        setLoading(true);
-        const data = await notificationSystemService.getNotificationById(
-          notificationId
-        );
-        setNotification(data);
-
-        // Mark as read if not already read
-        if (!data.readAt) {
-          await notificationSystemService.markAsRead(notificationId);
-          setNotification((prev) =>
-            prev ? { ...prev, readAt: new Date().toISOString() } : null
-          );
-        }
-
-        // Mark as clicked
-        if (!data.clickedAt) {
-          await notificationSystemService.markAsClicked(notificationId);
-          setNotification((prev) =>
-            prev ? { ...prev, clickedAt: new Date().toISOString() } : null
-          );
-        }
-      } catch (err) {
-        console.error("Error fetching notification:", err);
-        setError("Failed to load notification details");
-      } finally {
-        setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+      setFirebaseUser(authUser);
+      setAuthLoading(false);
+      
+      if (!authUser) {
+        router.push('/auth');
+        return;
       }
-    };
+    });
 
-    if (notificationId) {
+    return () => unsubscribe();
+  }, [router]);
+
+  useEffect(() => {
+    // Only fetch notification if user is authenticated and notificationId exists
+    if (!authLoading && firebaseUser && notificationId) {
+      const fetchNotification = async () => {
+        try {
+          setLoading(true);
+          const data = await notificationSystemService.getNotificationById(
+            notificationId
+          );
+          setNotification(data);
+
+          // Mark as read if not already read
+          if (!data.readAt) {
+            await notificationSystemService.markAsRead(notificationId);
+            setNotification((prev) =>
+              prev ? { ...prev, readAt: new Date().toISOString() } : null
+            );
+          }
+
+          // Mark as clicked
+          if (!data.clickedAt) {
+            await notificationSystemService.markAsClicked(notificationId);
+            setNotification((prev) =>
+              prev ? { ...prev, clickedAt: new Date().toISOString() } : null
+            );
+          }
+        } catch (err) {
+          console.error("Error fetching notification:", err);
+          setError("Failed to load notification details");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       fetchNotification();
     }
-  }, [notificationId]);
+  }, [authLoading, firebaseUser, notificationId]);
 
   const handleMarkAsDismissed = async () => {
     if (!notification) return;
@@ -77,7 +98,7 @@ export default function NotificationDetailPage() {
     router.back();
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>

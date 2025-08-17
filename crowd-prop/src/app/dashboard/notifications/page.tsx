@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { routes } from "@/lib/router";
 import useNotifications from "@/hooks/useNotificationSystem";
 import NotificationList from "@/components/ui/NotificationList";
@@ -27,7 +30,8 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
-export default function NotificationsPage() {
+// Authenticated notifications content component
+function NotificationsContent() {
   const router = useRouter();
   const {
     notifications,
@@ -61,47 +65,47 @@ export default function NotificationsPage() {
     if (selectedCategory !== "all") {
       const categoryMap = {
         [NotificationCategory.PAYMENT]: [
-          NotificationTypes.PAYOUT_PROCESSED,
-          NotificationTypes.PAYMENT_RECEIVED,
-          NotificationTypes.PAYMENT_SENT,
-          NotificationTypes.PAYMENT_FAILED,
-          NotificationTypes.STRIPE_ACCOUNT_VERIFIED,
-          NotificationTypes.STRIPE_ACCOUNT_ISSUE,
-          NotificationTypes.WALLET_BALANCE_LOW,
+          "PAYOUT_PROCESSED",
+          "PAYMENT_RECEIVED", 
+          "PAYMENT_SENT",
+          "PAYMENT_FAILED",
+          "STRIPE_ACCOUNT_VERIFIED",
+          "STRIPE_ACCOUNT_ISSUE",
+          "WALLET_BALANCE_LOW",
         ],
         [NotificationCategory.CAMPAIGN]: [
-          NotificationTypes.CAMPAIGN_CREATED,
-          NotificationTypes.CAMPAIGN_APPLICATION_RECEIVED,
-          NotificationTypes.CAMPAIGN_APPLICATION_ACCEPTED,
-          NotificationTypes.CAMPAIGN_APPLICATION_REJECTED,
-          NotificationTypes.CAMPAIGN_WORK_SUBMITTED,
-          NotificationTypes.CAMPAIGN_WORK_APPROVED,
-          NotificationTypes.CAMPAIGN_WORK_REJECTED,
-          NotificationTypes.CAMPAIGN_DETAILS_CHANGED,
-          NotificationTypes.CAMPAIGN_ENDING_SOON,
-          NotificationTypes.CAMPAIGN_ENDED,
-          NotificationTypes.CAMPAIGN_EXPIRED,
-          NotificationTypes.CAMPAIGN_BUDGET_INCREASED,
-          NotificationTypes.CAMPAIGN_DEADLINE_EXTENDED,
-          NotificationTypes.PROMOTER_JOINED_CAMPAIGN,
+          "CAMPAIGN_CREATED",
+          "CAMPAIGN_APPLICATION_RECEIVED",
+          "CAMPAIGN_APPLICATION_ACCEPTED",
+          "CAMPAIGN_APPLICATION_REJECTED",
+          "CAMPAIGN_WORK_SUBMITTED",
+          "CAMPAIGN_WORK_APPROVED",
+          "CAMPAIGN_WORK_REJECTED",
+          "CAMPAIGN_DETAILS_CHANGED",
+          "CAMPAIGN_ENDING_SOON",
+          "CAMPAIGN_ENDED",
+          "CAMPAIGN_EXPIRED",
+          "CAMPAIGN_BUDGET_INCREASED",
+          "CAMPAIGN_DEADLINE_EXTENDED",
+          "PROMOTER_JOINED_CAMPAIGN",
         ],
         [NotificationCategory.COMMUNICATION]: [
-          NotificationTypes.NEW_MESSAGE,
-          NotificationTypes.NEW_CONVERSATION,
-          NotificationTypes.MEETING_SCHEDULED,
-          NotificationTypes.MEETING_REMINDER,
-          NotificationTypes.MEETING_CANCELLED,
-          NotificationTypes.MEETING_RESCHEDULED,
+          "NEW_MESSAGE",
+          "NEW_CONVERSATION",
+          "MEETING_SCHEDULED",
+          "MEETING_REMINDER",
+          "MEETING_CANCELLED",
+          "MEETING_RESCHEDULED",
         ],
         [NotificationCategory.SYSTEM]: [
-          NotificationTypes.SYSTEM_MAINTENANCE,
-          NotificationTypes.FEATURE_ANNOUNCEMENT,
+          "SYSTEM_MAINTENANCE",
+          "FEATURE_ANNOUNCEMENT",
         ],
         [NotificationCategory.ACCOUNT]: [
-          NotificationTypes.ACCOUNT_VERIFICATION_REQUIRED,
-          NotificationTypes.ACCOUNT_VERIFIED,
-          NotificationTypes.PROFILE_INCOMPLETE,
-          NotificationTypes.SECURITY_ALERT,
+          "ACCOUNT_VERIFICATION_REQUIRED",
+          "ACCOUNT_VERIFIED",
+          "PROFILE_INCOMPLETE",
+          "SECURITY_ALERT",
         ],
       };
 
@@ -230,7 +234,7 @@ export default function NotificationsPage() {
               <button
                 onClick={handleRefresh}
                 disabled={loading}
-                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-600"
                 title="Refresh notifications"
               >
                 <ArrowPathIcon
@@ -425,4 +429,43 @@ export default function NotificationsPage() {
       </div>
     </div>
   );
+}
+
+// Main page component with authentication handling
+export default function NotificationsPage() {
+  const router = useRouter();
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Handle authentication
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+      setFirebaseUser(authUser);
+      
+      if (!authUser) {
+        router.push('/auth');
+      }
+      
+      setAuthLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  // Don't render anything while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!firebaseUser) {
+    return null;
+  }
+
+  // Render the authenticated content
+  return <NotificationsContent />;
 }
