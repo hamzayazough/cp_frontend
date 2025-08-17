@@ -110,6 +110,7 @@ export interface NotificationItemProps {
   onRead: (id: string) => void;
   onDismiss: (id: string) => void;
   onClick?: (notification: Notification) => void;
+  onViewRelatedContent?: (notification: Notification) => void;
   showActions?: boolean;
   compact?: boolean;
 }
@@ -118,6 +119,7 @@ export interface NotificationListProps {
   notifications: Notification[];
   loading?: boolean;
   onNotificationClick?: (notification: Notification) => void;
+  onViewRelatedContent?: (notification: Notification) => void;
   onMarkAsRead?: (id: string) => void;
   onDismiss?: (id: string) => void;
   showPagination?: boolean;

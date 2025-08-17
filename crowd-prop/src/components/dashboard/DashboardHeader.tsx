@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { routes } from "@/lib/router";
 import NotificationBadge from "@/components/ui/NotificationBadge";
-import NotificationDropdown from "@/components/ui/NotificationDropdown";
 import { notificationSystemService } from "@/services/notification-system.service";
 
 interface DashboardHeaderProps {
@@ -34,7 +33,6 @@ export default function DashboardHeader({
   onMenuClick,
 }: DashboardHeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
 
@@ -61,8 +59,24 @@ export default function DashboardHeader({
     router.push("/auth");
   };
 
-  const handleViewAllNotifications = () => {
-    router.push(routes.dashboardNotifications);
+  const handleViewAllNotifications = async () => {
+    try {
+      // Get the most recent unread notification
+      const recentNotifications = await notificationSystemService.getDropdownNotifications(1);
+      
+      if (recentNotifications.length > 0) {
+        // Navigate to the most recent unread notification detail page
+        const mostRecentNotification = recentNotifications[0];
+        router.push(routes.dashboardNotificationDetails(mostRecentNotification.id));
+      } else {
+        // No unread notifications, go to the general notifications page
+        router.push(routes.dashboardNotifications);
+      }
+    } catch (error) {
+      console.error("Failed to fetch recent notifications:", error);
+      // Fallback to notifications page
+      router.push(routes.dashboardNotifications);
+    }
   };
 
   const getRoleBadgeColor = (role: UserRole) => {
@@ -110,7 +124,7 @@ export default function DashboardHeader({
           {/* Notifications */}
           <div className="relative">
             <button
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              onClick={handleViewAllNotifications}
               className="p-2 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 relative"
             >
               <BellIcon className="h-6 w-6" />
@@ -122,12 +136,6 @@ export default function DashboardHeader({
                 />
               )}
             </button>
-
-            <NotificationDropdown
-              isOpen={notificationsOpen}
-              onClose={() => setNotificationsOpen(false)}
-              onViewAll={handleViewAllNotifications}
-            />
           </div>
 
           {/* User menu */}

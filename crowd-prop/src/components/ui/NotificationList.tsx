@@ -15,6 +15,7 @@ export default function NotificationList({
   notifications,
   loading = false,
   onNotificationClick,
+  onViewRelatedContent,
   onMarkAsRead,
   onDismiss,
   showPagination = false,
@@ -29,6 +30,12 @@ export default function NotificationList({
   const handleDismiss = async (id: string) => {
     if (onDismiss) {
       await onDismiss(id);
+    }
+  };
+
+  const handleViewRelatedContent = (notification: Notification) => {
+    if (onViewRelatedContent) {
+      onViewRelatedContent(notification);
     }
   };
 
@@ -80,6 +87,7 @@ export default function NotificationList({
           onRead={handleMarkAsRead}
           onDismiss={handleDismiss}
           onClick={handleNotificationClick}
+          onViewRelatedContent={handleViewRelatedContent}
           compact={compact}
           showActions={!compact}
         />

@@ -40,6 +40,8 @@ export const routes = {
   dashboardProfile: "/dashboard/profile",
   dashboardSettings: "/dashboard/settings",
   dashboardNotifications: "/dashboard/notifications",
+  dashboardNotificationDetails: (id: string) =>
+    `/dashboard/notifications/${id}`,
 
   // API routes
   api: {

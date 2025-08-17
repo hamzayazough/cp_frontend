@@ -79,7 +79,7 @@ export class NotificationSystemService {
    */
   async markAsClicked(id: string): Promise<NotificationActionResponse> {
     const response = await httpService.patch<NotificationActionResponse>(
-      `${this.baseEndpoint}/${id}/clicked`,
+      `${this.baseEndpoint}/${id}/click`,
       undefined,
       true
     );
@@ -152,15 +152,28 @@ export class NotificationSystemService {
   async pollForNewNotifications(
     lastCheckTime: string
   ): Promise<Notification[]> {
-    const queryParams = new URLSearchParams();
-    queryParams.append("since", lastCheckTime);
-    queryParams.append("limit", "50");
+    try {
+      // Use the regular getNotifications endpoint with unread filter
+      // as the poll endpoint might not be implemented yet
+      const response = await this.getNotifications({
+        limit: 10,
+        unread: true,
+        page: 1,
+      });
 
-    const response = await httpService.get<GetNotificationsResponse>(
-      `${this.baseEndpoint}/poll?${queryParams.toString()}`,
-      true
-    );
-    return response.data.notifications;
+      // Filter notifications created after the last check time
+      const newNotifications = response.notifications.filter((notification) => {
+        const notificationTime = new Date(notification.createdAt).getTime();
+        const lastCheckTimestamp = new Date(lastCheckTime).getTime();
+        return notificationTime > lastCheckTimestamp;
+      });
+
+      return newNotifications;
+    } catch (error) {
+      console.error("Polling for notifications failed:", error);
+      // Return empty array if polling fails to prevent breaking the app
+      return [];
+    }
   }
 }
 

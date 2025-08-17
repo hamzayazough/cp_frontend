@@ -13,6 +13,7 @@ import {
   XMarkIcon,
   ChevronRightIcon,
   ExclamationTriangleIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 
 export default function NotificationItem({
@@ -20,6 +21,7 @@ export default function NotificationItem({
   onRead,
   onDismiss,
   onClick,
+  onViewRelatedContent,
   showActions = true,
   compact = false,
 }: NotificationItemProps) {
@@ -73,6 +75,20 @@ export default function NotificationItem({
     setIsLoading(true);
     try {
       await onDismiss(notification.id);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleViewRelatedContent = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      if (onViewRelatedContent) {
+        onViewRelatedContent(notification);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -179,6 +195,17 @@ export default function NotificationItem({
                     disabled={isLoading}
                   >
                     <EyeIcon className="h-4 w-4" />
+                  </button>
+                )}
+
+                {onViewRelatedContent && (
+                  <button
+                    onClick={handleViewRelatedContent}
+                    className="p-1 rounded-full hover:bg-gray-200 text-gray-500 hover:text-gray-700"
+                    title="View related content"
+                    disabled={isLoading}
+                  >
+                    <ArrowTopRightOnSquareIcon className="h-4 w-4" />
                   </button>
                 )}
 

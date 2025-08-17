@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { routes } from "@/lib/router";
 import useNotifications from "@/hooks/useNotificationSystem";
 import NotificationList from "@/components/ui/NotificationList";
 import {
@@ -137,7 +138,26 @@ export default function NotificationsPage() {
         await markAsRead(notification.id);
       }
 
-      // Navigate to the appropriate route
+      // Navigate to the notification details page
+      router.push(routes.dashboardNotificationDetails(notification.id));
+    } catch (error) {
+      console.error("Error handling notification click:", error);
+    }
+  };
+
+  const handleViewRelatedContent = async (notification: Notification) => {
+    try {
+      // Mark as clicked and read if needed
+      await markAsClicked(notification.id);
+
+      if (
+        !notification.readAt &&
+        shouldAutoMarkAsRead(notification.notificationType)
+      ) {
+        await markAsRead(notification.id);
+      }
+
+      // Navigate to the appropriate route based on notification type
       const route = getNotificationRoute(notification);
       router.push(route);
     } catch (error) {
@@ -303,7 +323,7 @@ export default function NotificationsPage() {
                       e.target.value as NotificationSystemType | "all"
                     )
                   }
-                  className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm text-gray-700"
                 >
                   <option value="all">All Types</option>
                   {Object.values(NOTIFICATION_TYPE_CONFIGS).map((config) => (
@@ -350,6 +370,7 @@ export default function NotificationsPage() {
                   notifications={filteredNotifications}
                   loading={loading}
                   onNotificationClick={handleNotificationClick}
+                  onViewRelatedContent={handleViewRelatedContent}
                   onMarkAsRead={markAsRead}
                   onDismiss={markAsDismissed}
                   showPagination={true}
@@ -365,6 +386,7 @@ export default function NotificationsPage() {
                     notifications={filteredNotifications}
                     loading={loading}
                     onNotificationClick={handleNotificationClick}
+                    onViewRelatedContent={handleViewRelatedContent}
                     onMarkAsRead={markAsRead}
                     onDismiss={markAsDismissed}
                   />
