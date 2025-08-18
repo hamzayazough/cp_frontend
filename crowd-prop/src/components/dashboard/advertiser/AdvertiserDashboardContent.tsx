@@ -310,72 +310,165 @@ export default function AdvertiserDashboardContent({
               dashboardData.activeCampaigns.map((campaign) => (
                 <div
                   key={campaign.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                  className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors bg-white"
                 >
-                  <div className="flex items-center justify-between mb-3">
+                  {/* Campaign Header */}
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <h3 className="font-medium text-gray-900">
-                        {campaign.title}
-                      </h3>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          campaign.status
-                        )}`}
-                      >
-                        {getStatusIcon(campaign.status)}
-                        <span className="ml-1">
-                          {campaign.status.replace("_", " ")}
-                        </span>
-                      </span>
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <EyeIcon className="h-5 w-5 text-blue-600" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {campaign.title}
+                        </h3>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                              campaign.status
+                            )}`}
+                          >
+                            {getStatusIcon(campaign.status)}
+                            <span className="ml-1">
+                              {campaign.status === "PENDING_PROMOTER" 
+                                ? "PENDING PROMOTER" 
+                                : campaign.status.replace("_", " ")}
+                            </span>
+                          </span>
+                          <span className="text-xs text-gray-500 font-medium">
+                            {campaign.type}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handlePauseCampaign(campaign.id)}
-                        className="p-2 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                         title="Pause Campaign"
                       >
                         <PauseIcon className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleResumeCampaign(campaign.id)}
-                        className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         title="Resume Campaign"
                       >
                         <PlayIcon className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-4 mb-3">
-                    <div className="text-center">
-                      <div className="text-lg font-semibold text-gray-900">
-                        {formatNumber(campaign.views)}
-                      </div>
-                      <div className="text-xs text-gray-500">Views</div>
+
+                  {/* Campaign Progress */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                      <span>Campaign Progress</span>
+                      <span className="font-medium">
+                        {campaign.status === "ONGOING" ? "In Progress" : 
+                         campaign.status === "PENDING_PROMOTER" ? "Waiting for Applicants" : 
+                         "Completed"}
+                      </span>
                     </div>
-                    <div className="text-center">
-                      <div className="text-lg font-semibold text-gray-900">
-                        {formatCurrency(campaign.spent)}
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          campaign.status === "ONGOING" || campaign.status === "PENDING_PROMOTER" 
+                            ? "bg-green-500" 
+                            : "bg-gray-300"
+                        }`}></div>
+                        <span className="text-xs text-gray-600">Waiting</span>
                       </div>
-                      <div className="text-xs text-gray-500">Spent</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-semibold text-gray-900">
-                        {campaign.applications}
+                      <div className="flex-1 h-1 bg-gray-200 rounded-full">
+                        <div 
+                          className={`h-1 rounded-full transition-all duration-300 ${
+                            campaign.status === "ONGOING" 
+                              ? "bg-blue-500 w-1/2" 
+                              : campaign.status === "PENDING_PROMOTER"
+                              ? "bg-gray-300 w-1/4"
+                              : "bg-green-500 w-full"
+                          }`}
+                        ></div>
                       </div>
-                      <div className="text-xs text-gray-500">Applications</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-semibold text-gray-900">
-                        {campaign.conversions}
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          campaign.status === "ONGOING" 
+                            ? "bg-blue-500" 
+                            : campaign.status === "COMPLETED"
+                            ? "bg-green-500"
+                            : "bg-gray-300"
+                        }`}></div>
+                        <span className="text-xs text-gray-600">
+                          {campaign.status === "ONGOING" ? "Ongoing" : "Completed"}
+                        </span>
                       </div>
-                      <div className="text-xs text-gray-500">Conversions</div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm text-gray-500">
-                    <span>Type: {campaign.type}</span>
+
+                  {/* Budget Usage */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="text-sm text-green-700 mb-1">Budget Usage</div>
+                      <div className="text-xs text-green-600">
+                        <span className="font-semibold">
+                          {campaign.spent > 0 ? 
+                            `${((campaign.spent / (campaign.spent + 100)) * 100).toFixed(0)}%` : 
+                            "0%"
+                          }
+                        </span> {formatCurrency(campaign.spent)} spent
+                      </div>
+                      <div className="text-xs text-green-600">
+                        of estimated total
+                      </div>
+                    </div>
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                      {campaign.type === "VISIBILITY" ? (
+                        <>
+                          <div className="flex items-center space-x-2 mb-1">
+                            <EyeIcon className="h-4 w-4 text-purple-600" />
+                            <span className="text-sm text-purple-700">Views</span>
+                          </div>
+                          <div className="text-lg font-semibold text-purple-900">
+                            {formatNumber(campaign.views)}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center py-4">
+                          <span className="text-sm text-gray-500">No metrics available</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Promoters Section */}
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-600 mb-2">Promoters</div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <ClockIcon className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          {campaign.status === "PENDING_PROMOTER" 
+                            ? "Waiting for applications"
+                            : `${campaign.applications} promoter${campaign.applications !== 1 ? 's' : ''} applied`
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Campaign Footer */}
+                  <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-gray-100">
+                    <span>Type: <span className="font-medium">{campaign.type}</span></span>
                     <span>
-                      Deadline:{" "}
-                      {new Date(campaign.deadline).toLocaleDateString()}
+                      Deadline: <span className="font-medium">
+                        {new Date(campaign.deadline).toLocaleDateString()}
+                      </span>
+                    </span>
+                    <span>
+                      Created: <span className="font-medium">
+                        {new Date(campaign.createdAt).toLocaleDateString()}
+                      </span>
                     </span>
                   </div>
                 </div>
