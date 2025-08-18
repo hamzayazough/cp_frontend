@@ -204,9 +204,7 @@ export default function AdvertiserDashboardContent({
                     : "text-green-600"
                 }`}
               >
-                <ArrowTrendingUpIcon className="h-4 w-4 mr-1" />
-                {dashboardData.stats.spendingPercentageChange >= 0 ? "+" : ""}
-                {dashboardData.stats.spendingPercentageChange}% from last week
+                
               </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-full">
