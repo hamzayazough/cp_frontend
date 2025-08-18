@@ -35,46 +35,10 @@ export default function AdvertiserDashboardContent({
     loading,
     error,
     refetch,
-    pauseCampaign,
-    resumeCampaign,
   } = useAdvertiserDashboard();
 
   // Add payment status check
   const { paymentStatus } = usePaymentManagement();
-
-  const handlePauseCampaign = async (campaignId: string) => {
-    try {
-      const result = await pauseCampaign(campaignId);
-      if (result.success) {
-        alert("Campaign paused successfully!");
-      } else {
-        alert(`Failed to pause campaign: ${result.message}`);
-      }
-    } catch (err) {
-      alert(
-        `Error pausing campaign: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    }
-  };
-
-  const handleResumeCampaign = async (campaignId: string) => {
-    try {
-      const result = await resumeCampaign(campaignId);
-      if (result.success) {
-        alert("Campaign resumed successfully!");
-      } else {
-        alert(`Failed to resume campaign: ${result.message}`);
-      }
-    } catch (err) {
-      alert(
-        `Error resuming campaign: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    }
-  };
 
   if (loading) {
     return (
@@ -376,22 +340,6 @@ export default function AdvertiserDashboardContent({
                           </span>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handlePauseCampaign(campaign.id)}
-                        className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                        title="Pause Campaign"
-                      >
-                        <PauseIcon className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleResumeCampaign(campaign.id)}
-                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="Resume Campaign"
-                      >
-                        <PlayIcon className="h-4 w-4" />
-                      </button>
                     </div>
                   </div>
 
