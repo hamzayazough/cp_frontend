@@ -133,6 +133,37 @@ export default function AdvertiserDashboardContent({
     }
   };
 
+  const getCampaignTypeColor = (type: string) => {
+    switch (type) {
+      case "VISIBILITY":
+        return "bg-blue-500";
+      case "CONSULTANT":
+        return "bg-purple-500";
+      case "SELLER":
+        return "bg-green-500";
+      case "SALESMAN":
+        return "bg-orange-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const getTypeBadge = (type: string) => {
+    const baseClasses = "px-2 py-1 rounded-md text-xs font-medium";
+    switch (type) {
+      case "VISIBILITY":
+        return `${baseClasses} bg-blue-100 text-blue-800`;
+      case "CONSULTANT":
+        return `${baseClasses} bg-purple-100 text-purple-800`;
+      case "SALESMAN":
+        return `${baseClasses} bg-orange-100 text-orange-800`;
+      case "SELLER":
+        return `${baseClasses} bg-green-100 text-green-800`;
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-800`;
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case PromoterCampaignStatus.ONGOING:
@@ -310,7 +341,7 @@ export default function AdvertiserDashboardContent({
               dashboardData.activeCampaigns.map((campaign) => (
                 <div
                   key={campaign.id}
-                  className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors bg-white"
+                  className={`border-2 ${getCampaignTypeColor(campaign.type)} rounded-lg p-6 hover:shadow-lg transition-all duration-300 bg-white overflow-hidden`}
                 >
                   {/* Campaign Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -337,7 +368,7 @@ export default function AdvertiserDashboardContent({
                                 : campaign.status.replace("_", " ")}
                             </span>
                           </span>
-                          <span className="text-xs text-gray-500 font-medium">
+                          <span className={getTypeBadge(campaign.type)}>
                             {campaign.type}
                           </span>
                         </div>
@@ -362,7 +393,7 @@ export default function AdvertiserDashboardContent({
                   </div>
 
                   {/* Campaign Progress */}
-                  <div className="mb-4">
+                  <div className="mb-4 px-6">
                     <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                       <span>Campaign Progress</span>
                       <span className="font-medium">
@@ -407,7 +438,7 @@ export default function AdvertiserDashboardContent({
                   </div>
 
                   {/* Budget Usage */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-2 gap-4 mb-4 px-6">
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <div className="text-sm text-green-700 mb-1">Budget Usage</div>
                       <div className="text-xs text-green-600">
@@ -442,7 +473,7 @@ export default function AdvertiserDashboardContent({
                   </div>
 
                   {/* Promoters Section */}
-                  <div className="mb-4">
+                  <div className="mb-4 px-6 pb-6">
                     <div className="text-sm text-gray-600 mb-2">Promoters</div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
@@ -455,21 +486,6 @@ export default function AdvertiserDashboardContent({
                         </span>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Campaign Footer */}
-                  <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-gray-100">
-                    <span>Type: <span className="font-medium">{campaign.type}</span></span>
-                    <span>
-                      Deadline: <span className="font-medium">
-                        {new Date(campaign.deadline).toLocaleDateString()}
-                      </span>
-                    </span>
-                    <span>
-                      Created: <span className="font-medium">
-                        {new Date(campaign.createdAt).toLocaleDateString()}
-                      </span>
-                    </span>
                   </div>
                 </div>
               ))
