@@ -340,7 +340,13 @@ export function usePaymentManagement(): UsePaymentManagementResult {
       refreshWalletBalance();
       refreshTransactions();
     }
-  }, [currentUser, refreshPaymentStatus, refreshPaymentMethods, refreshWalletBalance, refreshTransactions]); // Include all refresh functions
+  }, [
+    currentUser,
+    refreshPaymentStatus,
+    refreshPaymentMethods,
+    refreshWalletBalance,
+    refreshTransactions,
+  ]); // Include all refresh functions
 
   return {
     // Payment Setup
