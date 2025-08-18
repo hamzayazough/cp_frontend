@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { CampaignStatus, CampaignType } from '@/app/enums/campaign-type';
+import { CampaignType } from '@/app/enums/campaign-type';
+import { AdvertiserCampaignStatus } from '@/app/interfaces/dashboard/advertiser-dashboard';
 import { MOCK_CAMPAIGN_FILTERS } from '@/app/mocks/advertiser-campaign-mock';
 import { AdvertiserCampaignSortField } from '@/app/interfaces/campaign/advertiser-campaign';
 import { Search, Filter, SortAsc, SortDesc, X } from 'lucide-react';
@@ -11,8 +12,8 @@ interface CampaignFiltersProps {
   onSearchChange: (query: string) => void;
   onSearchBlur?: () => void;
   onSearchKeyDown?: (e: React.KeyboardEvent) => void;
-  statusFilter: CampaignStatus[];
-  onStatusFilterChange: (statuses: CampaignStatus[]) => void;
+  statusFilter: AdvertiserCampaignStatus[];
+  onStatusFilterChange: (statuses: AdvertiserCampaignStatus[]) => void;
   typeFilter: CampaignType[];
   onTypeFilterChange: (types: CampaignType[]) => void;
   sortBy: AdvertiserCampaignSortField;
@@ -22,7 +23,7 @@ interface CampaignFiltersProps {
   onClearFilters: () => void;
   resultsCount: number;
   totalCount: number;
-  availableStatuses?: CampaignStatus[];
+  availableStatuses?: AdvertiserCampaignStatus[];
   availableTypes?: CampaignType[];
 }
 
@@ -47,7 +48,7 @@ export default function CampaignFilters({
 }: CampaignFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
 
-  const handleStatusToggle = (status: CampaignStatus) => {
+  const handleStatusToggle = (status: AdvertiserCampaignStatus) => {
     if (statusFilter.includes(status)) {
       onStatusFilterChange(statusFilter.filter(s => s !== status));
     } else {
@@ -63,12 +64,16 @@ export default function CampaignFilters({
     }
   };
 
-  const getStatusBadgeColor = (status: CampaignStatus) => {
+  const getStatusBadgeColor = (status: AdvertiserCampaignStatus) => {
     switch (status) {
-      case CampaignStatus.ACTIVE:
+      case AdvertiserCampaignStatus.ONGOING:
         return 'bg-green-100 text-green-800 border-green-200';
-      case CampaignStatus.PAUSED:
+      case AdvertiserCampaignStatus.COMPLETED:
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case AdvertiserCampaignStatus.REVIEWING_APPLICATIONS:
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case AdvertiserCampaignStatus.PENDING_PROMOTER:
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }

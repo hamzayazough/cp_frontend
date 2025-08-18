@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { usePaymentManagement } from '@/hooks/usePaymentManagement';
 import { BanknotesIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import { WalletTransaction } from '@/app/interfaces/payment';
 
 interface RecentTransactionsCardProps {
   showHeader?: boolean;
@@ -25,7 +26,7 @@ export default function RecentTransactionsCard({
     }).format(Math.abs(amount));
   };
 
-  const getTransactionDisplay = (transaction) => {
+  const getTransactionDisplay = (transaction: WalletTransaction) => {
     const isPositive = transaction.amount >= 0;
     const icon = isPositive ? ArrowUpIcon : ArrowDownIcon;
     const iconBgColor = isPositive ? 'bg-green-100' : 'bg-red-100';
@@ -80,25 +81,23 @@ export default function RecentTransactionsCard({
                   </div>
                   <div>
                     <div className="font-medium text-gray-900">
-                      {transaction.type === 'WALLET_DEPOSIT' ? 'Wallet Deposit' : 
-                       transaction.type === 'DIRECT_PAYMENT' ? 'Direct Payment' :
+                      {transaction.type === 'DEPOSIT' ? 'Wallet Deposit' : 
                        transaction.type === 'CAMPAIGN_FUNDING' ? 'Campaign Funding' :
+                       transaction.type === 'WITHDRAWAL' ? 'Withdrawal' :
+                       transaction.type === 'REFUND' ? 'Refund' :
                        transaction.type}
                     </div>
                     <div className="text-sm text-gray-600">
                       {transaction.description}
                     </div>
                     <div className="text-xs text-gray-500">
-                      Status: {transaction.status} • {transaction.paymentMethod}
+                      Status: {transaction.status}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className={`font-medium ${display.amountColor}`}>
                     {display.amountPrefix}{formatCurrency(transaction.amount)}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Gross: {formatCurrency(transaction.grossAmount)}
                   </div>
                   <div className="text-sm text-gray-500">
                     {new Date(transaction.createdAt).toLocaleDateString()}

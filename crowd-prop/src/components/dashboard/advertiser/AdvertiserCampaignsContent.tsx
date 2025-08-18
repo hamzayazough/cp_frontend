@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CampaignType } from "@/app/enums/campaign-type";
-import { CampaignStatus } from "@/app/enums/campaign-type";
+import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 import { AdvertiserCampaignSortField } from "@/app/interfaces/campaign/advertiser-campaign";
 import { useAdvertiserCampaigns } from "@/hooks/useAdvertiserCampaigns";
 import CampaignStatsCards from "./CampaignStatsCards";
@@ -13,7 +13,7 @@ import CreateCampaignButton from "./CreateCampaignButton";
 export default function AdvertiserCampaignsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [appliedSearchQuery, setAppliedSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<CampaignStatus[]>([]);
+  const [statusFilter, setStatusFilter] = useState<AdvertiserCampaignStatus[]>([]);
   const [typeFilter, setTypeFilter] = useState<CampaignType[]>([]);
   const [sortBy, setSortBy] = useState<AdvertiserCampaignSortField>(
     AdvertiserCampaignSortField.UPDATED_AT

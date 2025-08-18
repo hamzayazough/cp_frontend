@@ -306,14 +306,14 @@ function NotificationDetailContent({ user }: { user: User }) {
               </div>
 
               {/* Additional Data */}
-              {notification.data && Object.keys(notification.data).length > 0 && (
+              {notification.metadata && Object.keys(notification.metadata).length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 mb-2">
                     Additional Information
                   </h4>
                   <div className="bg-gray-50 rounded-lg p-4">
                     <pre className="text-xs text-gray-600 whitespace-pre-wrap">
-                      {JSON.stringify(notification.data, null, 2)}
+                      {JSON.stringify(notification.metadata, null, 2)}
                     </pre>
                   </div>
                 </div>

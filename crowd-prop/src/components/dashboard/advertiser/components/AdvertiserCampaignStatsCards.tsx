@@ -16,7 +16,12 @@ import {
   Search,
   AlertCircle,
 } from "lucide-react";
-import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
+import { 
+  CampaignAdvertiser, 
+  AdvertiserConsultantCampaignDetails,
+  AdvertiserSellerCampaignDetails 
+} from "@/app/interfaces/campaign/advertiser-campaign";
+import { ApplicationStatus } from "@/app/interfaces/campaign-application";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 import { advertiserPaymentService } from "@/services/advertiser-payment.service";
@@ -84,10 +89,19 @@ export default function AdvertiserCampaignStatsCards({
       
       if (result.success) {
         // Update the campaign data locally with new budget values (convert from cents to dollars)
-        const newBudgetDollars = result.data?.newBudgetCents ? result.data.newBudgetCents / 100 : campaign.campaign.maxBudget + additionalBudget;
+        const hasMaxBudget = campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER;
+        const currentBudget = hasMaxBudget && 'maxBudget' in campaign.campaign ? 
+          (campaign.campaign as AdvertiserConsultantCampaignDetails | AdvertiserSellerCampaignDetails).maxBudget : 
+          campaign.campaign.budgetAllocated;
         
-        // Update both maxBudget and budgetHeld
-        campaign.campaign.maxBudget = newBudgetDollars;
+        const newBudgetDollars = result.data?.newBudgetCents ? 
+          result.data.newBudgetCents / 100 : 
+          currentBudget + additionalBudget;
+        
+        // Update budget based on campaign type
+        if (hasMaxBudget && 'maxBudget' in campaign.campaign) {
+          (campaign.campaign as AdvertiserConsultantCampaignDetails | AdvertiserSellerCampaignDetails).maxBudget = newBudgetDollars;
+        }
         campaign.campaign.budgetHeld = newBudgetDollars;
         
         // Reset form
@@ -238,7 +252,10 @@ export default function AdvertiserCampaignStatsCards({
             </p>
             <p className="text-lg font-bold text-gray-900">
               {campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER
-                ? `${formatCurrency(campaign.campaign.minBudget)} - ${formatCurrency(campaign.campaign.maxBudget)}`
+                ? (() => {
+                    const campaignDetails = campaign.campaign as AdvertiserConsultantCampaignDetails | AdvertiserSellerCampaignDetails;
+                    return `${formatCurrency(campaignDetails.minBudget)} - ${formatCurrency(campaignDetails.maxBudget)}`;
+                  })()
                 : campaign.type === CampaignType.VISIBILITY && campaign.campaign.type === CampaignType.VISIBILITY
                 ? formatNumber(campaign.campaign.currentViews)
                 : formatNumber(campaign.performance.totalViewsGained || 0)
@@ -334,19 +351,21 @@ export default function AdvertiserCampaignStatsCards({
             <p className="text-lg font-bold text-gray-900">
               {campaign.type === CampaignType.CONSULTANT
                 ? (() => {
-                    const deliverables = campaign.campaign.expectedDeliverables || [];
+                    const consultantDetails = campaign.campaign as AdvertiserConsultantCampaignDetails;
+                    const deliverables = consultantDetails.expectedDeliverables || [];
                     const finished = deliverables.filter(d => d.isFinished).length;
                     return `${finished}/${deliverables.length}`;
                   })()
                 : campaign.type === CampaignType.SELLER
                 ? (() => {
-                    const deliverables = campaign.campaign.deliverables || [];
+                    const sellerDetails = campaign.campaign as AdvertiserSellerCampaignDetails;
+                    const deliverables = sellerDetails.deliverables || [];
                     const finished = deliverables.filter(d => d.isFinished).length;
                     return `${finished}/${deliverables.length}`;
                   })()
                 : campaign.type === CampaignType.VISIBILITY && campaign.campaign.type === CampaignType.VISIBILITY
                 ? formatCurrency(campaign.campaign.cpv)
-                : campaign.promoters?.length || 0
+                : campaign.applicants?.length || 0
               }
             </p>
           </div>
@@ -356,7 +375,7 @@ export default function AdvertiserCampaignStatsCards({
             ? "completed"
             : campaign.type === CampaignType.VISIBILITY
             ? "per 100 views"
-            : `${campaign.promoters?.filter(p => p.status === 'AWAITING_REVIEW').length || 0} pending review`
+            : `${campaign.applicants?.filter(p => p.applicationStatus === ApplicationStatus.PENDING).length || 0} pending review`
           }
         </p>
       </div>
@@ -385,7 +404,12 @@ export default function AdvertiserCampaignStatsCards({
       onVerified={handleFundingVerified}
       estimatedBudget={additionalBudget}
       mode="increase"
-      currentMaxBudget={campaign.campaign.maxBudget}
+      currentMaxBudget={
+        (campaign.type === CampaignType.CONSULTANT || campaign.type === CampaignType.SELLER) && 
+        'maxBudget' in campaign.campaign 
+          ? (campaign.campaign as AdvertiserConsultantCampaignDetails | AdvertiserSellerCampaignDetails).maxBudget 
+          : campaign.campaign.budgetAllocated
+      }
     />
     </div>
   );

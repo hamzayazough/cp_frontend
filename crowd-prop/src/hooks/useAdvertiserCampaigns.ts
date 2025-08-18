@@ -5,7 +5,8 @@ import {
   AdvertiserCampaignListRequest,
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
-import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignType } from "@/app/enums/campaign-type";
+import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 import {
   ADVERTISER_CAMPAIGN_MOCKS,
   getFilteredCampaigns,
@@ -32,7 +33,7 @@ interface UseAdvertiserCampaignsReturn {
     totalRemainingBudget: number;
   };
   filters: {
-    statuses: CampaignStatus[];
+    statuses: AdvertiserCampaignStatus[];
     types: CampaignType[];
   };
   refetch: () => Promise<void>;

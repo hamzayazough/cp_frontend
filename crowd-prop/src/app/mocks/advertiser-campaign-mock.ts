@@ -1,13 +1,12 @@
 import {
-  CampaignStatus,
   CampaignType,
   MeetingPlan,
   Deliverable,
   SalesTrackingMethod,
-  PromoterCampaignStatus,
 } from "../enums/campaign-type";
 import { SocialPlatform } from "../enums/social-platform";
 import { AdvertiserType } from "../enums/advertiser-type";
+import { ApplicationStatus } from "../interfaces/campaign-application";
 import {
   CampaignAdvertiser,
   AdvertiserCampaignListResponse,
@@ -38,7 +37,9 @@ const MOCK_PROMOTERS: Promoter[] = [
     location: "Los Angeles, CA",
     languagesSpoken: [],
     followersEstimate: [],
-    skills: ["Creative Strategy", "Brand Campaigns", "Content Creation"],
+    skills: ["Content Creation", "Brand Strategy", "Video Editing"],
+    isBusiness: false,
+    country: "US",
   },
   {
     id: "promoter-2",
@@ -56,6 +57,8 @@ const MOCK_PROMOTERS: Promoter[] = [
     languagesSpoken: [],
     followersEstimate: [],
     skills: ["SaaS Marketing", "Growth Strategy", "Tech Consulting"],
+    isBusiness: false,
+    country: "US",
   },
   {
     id: "promoter-3",
@@ -76,6 +79,8 @@ const MOCK_PROMOTERS: Promoter[] = [
       "Audience Engagement",
       "Campaign Strategy",
     ],
+    isBusiness: false,
+    country: "US",
   },
 ];
 
@@ -83,15 +88,15 @@ const MOCK_PROMOTERS: Promoter[] = [
 const MOCK_PROMOTER_APPLICATIONS: PromoterApplicationInfo[] = [
   {
     promoter: MOCK_PROMOTERS[0],
-    status: PromoterCampaignStatus.AWAITING_REVIEW,
+    applicationStatus: ApplicationStatus.PENDING,
   },
   {
     promoter: MOCK_PROMOTERS[1],
-    status: PromoterCampaignStatus.AWAITING_REVIEW,
+    applicationStatus: ApplicationStatus.PENDING,
   },
   {
     promoter: MOCK_PROMOTERS[2],
-    status: PromoterCampaignStatus.AWAITING_REVIEW,
+    applicationStatus: ApplicationStatus.PENDING,
   },
 ];
 
@@ -109,7 +114,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
         mediaUrl: "https://example.com/summer-fashion.jpg",
         mediaType: "image",
         isPrimary: true,
-      }
+      },
     ],
     status: AdvertiserCampaignStatus.ONGOING,
     description:
@@ -140,7 +145,6 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
       totalViewsGained: 45230,
     },
     tags: [AdvertiserType.CLOTHING, AdvertiserType.BEAUTY],
-    promoters: [],
   },
 
   // Consultant Campaign with Applications
@@ -155,7 +159,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
         mediaUrl: "https://example.com/creative-consultation.jpg",
         mediaType: "image",
         isPrimary: true,
-      }
+      },
     ],
     status: AdvertiserCampaignStatus.ONGOING,
     description: "Looking for creative input on our new marketing campaign",
@@ -195,7 +199,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
     } as AdvertiserConsultantCampaignDetails,
     performance: {},
     tags: [AdvertiserType.CONSULTING, AdvertiserType.TECH],
-    promoters: MOCK_PROMOTER_APPLICATIONS,
+    applicants: MOCK_PROMOTER_APPLICATIONS,
   },
 
   // Salesman Campaign
@@ -210,7 +214,7 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
         mediaUrl: "https://example.com/affiliate-program.jpg",
         mediaType: "image",
         isPrimary: true,
-      }
+      },
     ],
     status: AdvertiserCampaignStatus.ONGOING,
     description: "Join our affiliate program and earn commission on every sale",
@@ -243,7 +247,6 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
       totalSalesMade: 0,
     },
     tags: [AdvertiserType.ECOMMERCE, AdvertiserType.TECH],
-    promoters: [],
   },
 ];
 
@@ -251,8 +254,9 @@ export const MOCK_ADVERTISER_CAMPAIGNS: CampaignAdvertiser[] = [
 export const MOCK_CAMPAIGN_FILTERS = {
   statuses: [
     AdvertiserCampaignStatus.ONGOING,
-    CampaignStatus.PAUSED,
-    CampaignStatus.INACTIVE,
+    AdvertiserCampaignStatus.COMPLETED,
+    AdvertiserCampaignStatus.REVIEWING_APPLICATIONS,
+    AdvertiserCampaignStatus.PENDING_PROMOTER,
   ],
   types: [
     CampaignType.VISIBILITY,
@@ -267,14 +271,14 @@ export const getApplicationsByCampaignId = (
   campaignId: string
 ): PromoterApplicationInfo[] => {
   const campaign = MOCK_ADVERTISER_CAMPAIGNS.find((c) => c.id === campaignId);
-  return campaign?.promoters || [];
+  return campaign?.applicants || [];
 };
 
 // Helper function to get filtered campaigns
 export const getFilteredCampaigns = (
   campaigns: CampaignAdvertiser[],
   filters: {
-    status?: CampaignStatus[];
+    status?: AdvertiserCampaignStatus[];
     type?: CampaignType[];
     searchQuery?: string;
     isPublic?: boolean;

@@ -382,9 +382,9 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                       {work.description}
                     </p>
-                    {work.mediaUrls && work.mediaUrls.length > 0 && (
+                    {work.mediaUrl && (
                       <div className="mt-3 text-xs text-blue-600">
-                        {work.mediaUrls.length} media file{work.mediaUrls.length !== 1 ? 's' : ''}
+                        1 media file
                       </div>
                     )}
                   </div>
@@ -526,11 +526,9 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
 
       {showProductManager && (
         <AdvertiserPortfolioManager
-          isOpen={showProductManager}
+          works={user.advertiserDetails?.advertiserWork || []}
+          onUpdate={handleProductUpdate}
           onClose={() => setShowProductManager(false)}
-          initialWorks={user.advertiserDetails?.advertiserWork || []}
-          onSave={handleProductUpdate}
-          isSaving={isSaving}
         />
       )}
 

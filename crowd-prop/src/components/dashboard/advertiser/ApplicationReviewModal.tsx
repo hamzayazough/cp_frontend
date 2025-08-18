@@ -1,6 +1,6 @@
 "use client";
 
-import { PromoterApplicationInfo } from "@/app/interfaces/promoter-campaign";
+import { PromoterApplicationInfo } from "@/app/interfaces/campaign/advertiser-campaign";
 import {
   getPromoterDisplayName,
   getPromoterInitials,

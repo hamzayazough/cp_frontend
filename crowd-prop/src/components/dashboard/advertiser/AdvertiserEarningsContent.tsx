@@ -81,7 +81,7 @@ export default function AdvertiserEarningsContent() {
                       new Intl.NumberFormat("en-US", {
                         style: "currency",
                         currency: "USD",
-                      }).format(dashboardData.stats.totalSpent || 0)
+                      }).format(dashboardData.stats.spendingTotal || 0)
                       : '$0.00'
                     }
                   </p>

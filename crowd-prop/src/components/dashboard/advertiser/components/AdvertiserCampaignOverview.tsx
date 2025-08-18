@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { CampaignAdvertiser } from "@/app/interfaces/campaign/advertiser-campaign";
 import {
-  VisibilityCampaignDetails,
-  ConsultantCampaignDetails,
-  SellerCampaignDetails,
-  SalesmanCampaignDetails,
-} from "@/app/interfaces/campaign/advertiser-campaign-details";
+  AdvertiserBaseCampaignDetails,
+  AdvertiserVisibilityCampaignDetails,
+  AdvertiserConsultantCampaignDetails,
+  AdvertiserSellerCampaignDetails,
+  AdvertiserSalesmanCampaignDetails,
+} from "@/app/interfaces/campaign/advertiser-campaign";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
 import {
@@ -75,14 +76,14 @@ export default function AdvertiserCampaignOverview({
     // Campaign type specific requirements
     switch (campaign.campaign.type) {
       case CampaignType.VISIBILITY:
-        const visibilityDetails = campaign.campaign as VisibilityCampaignDetails;
+        const visibilityDetails = campaign.campaign as AdvertiserVisibilityCampaignDetails;
         if (visibilityDetails.minFollowers) {
           requirements.push(`Minimum ${visibilityDetails.minFollowers.toLocaleString()} followers required on social media`);
         }
         break;
 
       case CampaignType.CONSULTANT:
-        const consultantDetails = campaign.campaign as ConsultantCampaignDetails;
+        const consultantDetails = campaign.campaign as AdvertiserConsultantCampaignDetails;
         if (consultantDetails.expertiseRequired) {
           requirements.push(`Required Expertise: ${consultantDetails.expertiseRequired}`);
         }
@@ -92,7 +93,7 @@ export default function AdvertiserCampaignOverview({
         break;
 
       case CampaignType.SELLER:
-        const sellerDetails = campaign.campaign as SellerCampaignDetails;
+        const sellerDetails = campaign.campaign as AdvertiserSellerCampaignDetails;
         if (sellerDetails.minFollowers) {
           requirements.push(`Minimum ${sellerDetails.minFollowers.toLocaleString()} followers for product promotion`);
         }
@@ -105,7 +106,7 @@ export default function AdvertiserCampaignOverview({
         break;
 
       case CampaignType.SALESMAN:
-        const salesmanDetails = campaign.campaign as SalesmanCampaignDetails;
+        const salesmanDetails = campaign.campaign as AdvertiserSalesmanCampaignDetails;
         if (salesmanDetails.minFollowers) {
           requirements.push(`Minimum ${salesmanDetails.minFollowers.toLocaleString()} followers for sales promotion`);
         }
@@ -145,8 +146,9 @@ export default function AdvertiserCampaignOverview({
           subInfo: `Commission per sale • Track via ${campaign.campaign.trackSalesVia}`
         };
       default:
+        const baseDetails = campaign.campaign as AdvertiserBaseCampaignDetails;
         return {
-          mainValue: formatCurrency(campaign.campaign.budgetAllocated),
+          mainValue: formatCurrency(baseDetails.budgetAllocated),
           subInfo: "Total budget"
         };
     }

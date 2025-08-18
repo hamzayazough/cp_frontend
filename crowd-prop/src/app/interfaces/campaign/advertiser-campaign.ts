@@ -6,7 +6,6 @@ import {
   PromoterCampaignStatus,
 } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
-import { CampaignStatus } from "@/app/enums/campaign-type";
 import { Promoter } from "../user";
 import { AdvertiserType } from "@/app/enums/advertiser-type";
 import { ApplicationStatus } from "../campaign-application";
@@ -144,7 +143,7 @@ export interface AdvertiserCampaignListRequest {
   limit?: number;
 
   // Filtering
-  status?: CampaignStatus[];
+  status?: AdvertiserCampaignStatus[];
   type?: CampaignType[];
   dateRange?: {
     startDate?: Date;

@@ -98,7 +98,7 @@ export default function CampaignTypeStep({ formData, updateFormData }: CampaignT
       // Reset all other fields to their initial values
       title: '',
       description: '',
-      file: null,
+      files: [],
       minBudget: undefined,
       maxBudget: undefined,
       deadline: null,
