@@ -81,6 +81,7 @@ export function usePromoterProfileEdit(
           languagesSpoken: editData.languagesSpoken,
           skills: editData.skills,
           works: user.promoterDetails?.works || [],
+          isBusiness: user.promoterDetails?.isBusiness ?? false,
         },
       });
 

@@ -8,7 +8,7 @@ import PromoterDashboardTemplate from "./PromoterDashboardTemplate";
 import StripeStatusCard from "./StripeStatusCard";
 import { userService } from "@/services/user.service";
 import { useStripeOnboarding } from "@/hooks/useStripeOnboarding";
-import { CampaignType } from "@/app/enums/campaign-type";
+import { CampaignType, PromoterCampaignStatus } from "@/app/enums/campaign-type";
 import {
   formatWalletValue,
   meetsThreshold,
@@ -341,7 +341,7 @@ export default function PromoterDashboardContent({
                 };
 
                 const Icon = getCampaignIcon(campaign.type);
-                const isPendingPromoter = campaign.status === "PENDING_PROMOTER";
+                const isPendingPromoter = campaign.status === PromoterCampaignStatus.AWAITING_REVIEW;
 
                 return (
                   <div
@@ -440,7 +440,7 @@ export default function PromoterDashboardContent({
                                 <span className="text-xs font-medium text-green-700">Earned</span>
                               </div>
                               <p className="text-sm font-bold text-green-900">
-                                ${campaign.spent || 0}
+                                ${campaign.earnings || 0}
                               </p>
                             </div>
                           )}
@@ -491,7 +491,7 @@ export default function PromoterDashboardContent({
                               <p className={`text-sm font-bold ${
                                 isPendingPromoter ? "text-gray-600" : "text-blue-900"
                               }`}>
-                                {campaign.applications || 0}
+                                {campaign.meetingCount || 0}
                               </p>
                             </div>
                           ) : campaign.type === "SELLER" ? (
@@ -515,7 +515,7 @@ export default function PromoterDashboardContent({
                               <p className={`text-sm font-bold ${
                                 isPendingPromoter ? "text-gray-600" : "text-blue-900"
                               }`}>
-                                {campaign.applications || 0}
+                                {campaign.meetingCount || 0}
                               </p>
                             </div>
                           ) : (
@@ -539,7 +539,7 @@ export default function PromoterDashboardContent({
                               <p className={`text-sm font-bold ${
                                 isPendingPromoter ? "text-gray-600" : "text-orange-900"
                               }`}>
-                                {campaign.applications || 0}
+                                {campaign.commissionPerSale || 0}%
                               </p>
                             </div>
                           )}
@@ -557,7 +557,7 @@ export default function PromoterDashboardContent({
                           <span className={`text-xs ${
                             isPendingPromoter ? "text-gray-500" : "text-gray-500"
                           }`}>
-                            Budget: ${campaign.spent || 0} spent
+                            Budget: ${campaign.maxBudget || campaign.minBudget || 0}
                           </span>
                           <div className="flex items-center space-x-1.5">
                             {campaign.status === "ONGOING" && (
@@ -570,7 +570,7 @@ export default function PromoterDashboardContent({
                                 Pending
                               </span>
                             )}
-                            {campaign.spent > 0 && (
+                            {campaign.earnings > 0 && (
                               <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-xs font-medium">
                                 Earning
                               </span>

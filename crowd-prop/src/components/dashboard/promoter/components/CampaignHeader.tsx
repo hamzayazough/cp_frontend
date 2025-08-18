@@ -43,12 +43,12 @@ export default function CampaignHeader({
           color: "bg-blue-50 text-blue-700 border-blue-200",
           dot: "bg-blue-500"
         };
-      case PromoterCampaignStatus.PENDING:
+      case PromoterCampaignStatus.AWAITING_REVIEW:
         return {
           color: "bg-yellow-50 text-yellow-700 border-yellow-200",
           dot: "bg-yellow-500"
         };
-      case PromoterCampaignStatus.CANCELLED:
+      case PromoterCampaignStatus.REJECTED:
         return {
           color: "bg-red-50 text-red-700 border-red-200",
           dot: "bg-red-500"

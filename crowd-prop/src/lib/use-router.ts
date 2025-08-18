@@ -27,7 +27,7 @@ export function useRouter() {
     goToHome: () => nextRouter.push(routes.home),
     goToLogin: () => nextRouter.push(routes.login),
     goToDashboard: () => nextRouter.push(routes.dashboard),
-    goToCampaigns: () => nextRouter.push(routes.campaigns),
+    goToCampaigns: () => nextRouter.push(routes.dashboardCampaigns),
     goToMessages: () => nextRouter.push(routes.messages),
 
     // Dynamic route navigation

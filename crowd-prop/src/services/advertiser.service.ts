@@ -4,6 +4,7 @@ import {
   GetAdvertiserDashboardRequest,
   GetAdvertiserDashboardResponse,
   GetAdvertiserStatsResponse,
+  AdvertiserCampaignStatus,
 } from "@/app/interfaces/dashboard/advertiser-dashboard";
 import { Campaign } from "@/app/interfaces/campaign/campaign";
 import {
@@ -12,7 +13,7 @@ import {
   AdvertiserCampaignListRequest,
   ReviewPromoterApplicationRequest,
 } from "@/app/interfaces/campaign/advertiser-campaign";
-import { CampaignType, CampaignStatus } from "@/app/enums/campaign-type";
+import { CampaignType } from "@/app/enums/campaign-type";
 import { CampaignWork } from "@/app/interfaces/campaign-work";
 
 interface CreateCampaignResponse {
@@ -35,7 +36,7 @@ interface ReviewApplicationResponse {
 interface GetCampaignFiltersResponse {
   success: boolean;
   data: {
-    statuses: CampaignStatus[];
+    statuses: AdvertiserCampaignStatus[];
     types: CampaignType[];
   };
   message?: string;
@@ -181,7 +182,7 @@ class AdvertiserService {
   }
 
   async getCampaignFilters(): Promise<{
-    statuses: CampaignStatus[];
+    statuses: AdvertiserCampaignStatus[];
     types: CampaignType[];
   }> {
     try {
@@ -442,6 +443,43 @@ class AdvertiserService {
             : "Failed to extend campaign deadline",
       };
     }
+  }
+
+  // TODO: Implement these methods when backend APIs are available
+  async pauseCampaign(
+    campaignId: string
+  ): Promise<{ success: boolean; message: string }> {
+    // Placeholder implementation
+    console.warn(`pauseCampaign not implemented for campaign ${campaignId}`);
+    return {
+      success: false,
+      message: "Pause campaign functionality not yet implemented",
+    };
+  }
+
+  async resumeCampaign(
+    campaignId: string
+  ): Promise<{ success: boolean; message: string }> {
+    // Placeholder implementation
+    console.warn(`resumeCampaign not implemented for campaign ${campaignId}`);
+    return {
+      success: false,
+      message: "Resume campaign functionality not yet implemented",
+    };
+  }
+
+  async contactPromoter(
+    promoterId: string,
+    message: string
+  ): Promise<{ success: boolean; message: string }> {
+    // Placeholder implementation
+    console.warn(
+      `contactPromoter not implemented for promoter ${promoterId}: ${message}`
+    );
+    return {
+      success: false,
+      message: "Contact promoter functionality not yet implemented",
+    };
   }
 }
 

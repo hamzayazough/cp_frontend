@@ -8,6 +8,7 @@ import {
   ConsultantCampaignDetails,
   SellerCampaignDetails,
   SalesmanCampaignDetails,
+  BaseCampaignDetails,
 } from "@/app/interfaces/campaign/promoter-campaign-details";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { SocialPlatform } from "@/app/enums/social-platform";
@@ -151,7 +152,7 @@ export default function CampaignOverview({ campaign }: CampaignOverviewProps) {
         };
       default:
         return {
-          value: formatCurrency(campaign.campaign.budgetHeld),
+          value: formatCurrency((campaign.campaign as BaseCampaignDetails).budgetHeld),
           label: "Total budget"
         };
     }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from 'next/image';
 import { User } from "@/app/interfaces/user";
 import { PromoterWork } from "@/app/interfaces/promoter-work";
+import { Language } from "@/app/enums/language";
 import { usePromoterProfileEdit } from "@/hooks/usePromoterProfileEdit";
 import {
   MapPinIcon,
@@ -438,9 +439,9 @@ export default function PromoterProfileContent({
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                       {work.description}
                     </p>
-                    {work.mediaUrls && work.mediaUrls.length > 0 && (
+                    {work.mediaUrl && (
                       <div className="mt-3 text-xs text-blue-600">
-                        {work.mediaUrls.length} media file{work.mediaUrls.length !== 1 ? 's' : ''}
+                        Media file
                       </div>
                     )}
                   </div>
@@ -500,8 +501,8 @@ export default function PromoterProfileContent({
                       <label key={key} className="flex items-center space-x-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={editData.languagesSpoken?.includes(key) || false}
-                          onChange={() => handleLanguageToggle(key)}
+                          checked={editData.languagesSpoken?.includes(key as Language) || false}
+                          onChange={() => handleLanguageToggle(key as Language)}
                           className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                         <span className="text-sm text-gray-700">{display}</span>
@@ -511,14 +512,14 @@ export default function PromoterProfileContent({
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {user.promoterDetails.languagesSpoken.map((language) => (
+                  {user.promoterDetails?.languagesSpoken?.map((language) => (
                     <span
                       key={language}
                       className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
                     >
                       {languageDisplay[language as keyof typeof languageDisplay] || language}
                     </span>
-                  ))}
+                  )) || <span className="text-gray-500">No languages specified</span>}
                 </div>
               )}
             </div>
@@ -566,14 +567,14 @@ export default function PromoterProfileContent({
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {user.promoterDetails.skills.map((skill) => (
+                  {user.promoterDetails?.skills?.map((skill) => (
                     <span
                       key={skill}
                       className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
                     >
                       {skill}
                     </span>
-                  ))}
+                  )) || <span className="text-gray-500">No skills specified</span>}
                 </div>
               )}
             </div>

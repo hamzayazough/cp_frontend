@@ -69,7 +69,7 @@ export const useAdvertiserCampaigns = (
     totalRemainingBudget: 0,
   });
   const [filters, setFilters] = useState<{
-    statuses: CampaignStatus[];
+    statuses: AdvertiserCampaignStatus[];
     types: CampaignType[];
   }>({
     statuses: [],
@@ -113,11 +113,10 @@ export const useAdvertiserCampaigns = (
 
   const fetchCampaigns = useCallback(
     async (params?: AdvertiserCampaignListRequest) => {
+      const requestParams = params || initialParams;
       try {
         setLoading(true);
         setError(null);
-
-        const requestParams = params || initialParams;
         const response = await advertiserService.getCampaignsList(
           requestParams
         );

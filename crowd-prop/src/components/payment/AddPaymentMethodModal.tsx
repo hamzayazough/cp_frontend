@@ -276,10 +276,6 @@ export default function AddPaymentMethodModal({
                 },
                 loader: 'auto',
               }}
-              onLoadError={(error) => {
-                console.error('Stripe Elements load error:', error);
-                setError(`Stripe initialization failed: ${error.message || 'Unknown error'}`);
-              }}
             >
               <SetupIntentForm
                 onSuccess={handleSuccess}

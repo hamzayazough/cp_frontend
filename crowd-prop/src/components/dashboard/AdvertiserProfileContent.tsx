@@ -534,7 +534,6 @@ export default function AdvertiserProfileContent({ user, onUserUpdate, isViewOnl
 
       {selectedProduct && (
         <AdvertiserPortfolioDetailModal
-          isOpen={!!selectedProduct}
           onClose={() => setSelectedProduct(null)}
           work={selectedProduct}
         />

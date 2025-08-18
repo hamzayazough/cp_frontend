@@ -55,12 +55,10 @@ export class PromoterService {
       includeCampaigns: true,
       includeSuggestions: true,
       includeTransactions: true,
-      includeMessages: true,
       includeWallet: true,
       activeCampaignLimit: 10,
       suggestedCampaignLimit: 5,
       transactionLimit: 5,
-      messageLimit: 5,
       ...params,
     };
 

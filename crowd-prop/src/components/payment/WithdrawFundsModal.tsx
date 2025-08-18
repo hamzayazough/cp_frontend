@@ -27,15 +27,6 @@ export default function WithdrawFundsModal({
   const [withdrawalLimits, setWithdrawalLimits] = useState<WithdrawalLimits | null>(null);
   const [limitsLoading, setLimitsLoading] = useState(true);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadWithdrawalLimits();
-      setError(null);
-      setAmount(50);
-      setReason('');
-    }
-  }, [isOpen, loadWithdrawalLimits]);
-
   const loadWithdrawalLimits = useCallback(async () => {
     try {
       setLimitsLoading(true);
@@ -69,6 +60,15 @@ export default function WithdrawFundsModal({
       setLimitsLoading(false);
     }
   }, [currentBalance]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadWithdrawalLimits();
+      setError(null);
+      setAmount(50);
+      setReason('');
+    }
+  }, [isOpen, loadWithdrawalLimits]);
 
   const calculateFee = (): number => {
     return withdrawalLimits?.feeStructure?.standardFee || PAYMENT_CONSTANTS.WITHDRAWAL_FEE;

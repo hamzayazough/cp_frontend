@@ -187,6 +187,7 @@ export default function PromoterCampaignDetailsContent({
       {/* Header */}
       <CampaignHeader
         campaign={campaign}
+        campaignId={campaignId}
         onShareClick={() => setShowShareModal(true)}
         getTypeColor={getTypeColor}
       />

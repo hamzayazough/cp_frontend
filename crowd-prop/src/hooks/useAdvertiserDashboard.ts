@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { advertiserService } from "@/services/advertiser.service";
+import { advertiserPaymentService } from "@/services/advertiser-payment.service";
 import { AdvertiserDashboardData } from "@/app/interfaces/dashboard/advertiser-dashboard";
 // TODO: fix this hook
 interface UseAdvertiserDashboardReturn {
@@ -45,7 +46,7 @@ export const useAdvertiserDashboard = (): UseAdvertiserDashboardReturn => {
 
   const addFunds = async (amount: number) => {
     try {
-      const result = await advertiserService.addFunds(amount);
+      const result = await advertiserPaymentService.addFunds({ amount });
       if (result.success) {
         // Refetch data to update wallet balance
         await fetchData();

@@ -30,10 +30,6 @@ export default function CampaignEarningsTable({ className = '' }: CampaignEarnin
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 3 }, (_, i) => currentYear - i);
 
-  useEffect(() => {
-    loadCampaignEarnings();
-  }, [loadCampaignEarnings]);
-
   const loadCampaignEarnings = useCallback(async () => {
     try {
       setLoading(true);
@@ -51,6 +47,10 @@ export default function CampaignEarningsTable({ className = '' }: CampaignEarnin
       setLoading(false);
     }
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    loadCampaignEarnings();
+  }, [loadCampaignEarnings]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {

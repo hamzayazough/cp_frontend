@@ -183,7 +183,7 @@ export default function PayoutRequestModal({
                   max={availableBalance}
                   min={minimumThreshold}
                   step="0.01"
-                  disabled={!canRequestPayout || loading || success}
+                  disabled={!canRequestPayout || loading || !!success}
                   className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed"
                 />
               </div>
@@ -205,7 +205,7 @@ export default function PayoutRequestModal({
                       method === paymentMethod.value
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:bg-gray-50'
-                    } ${(!canRequestPayout || loading || success) ? 'cursor-not-allowed opacity-50' : ''}`}
+                    } ${(!canRequestPayout || loading || !!success) ? 'cursor-not-allowed opacity-50' : ''}`}
                   >
                     <input
                       type="radio"
@@ -213,7 +213,7 @@ export default function PayoutRequestModal({
                       value={paymentMethod.value}
                       checked={method === paymentMethod.value}
                       onChange={(e) => setMethod(e.target.value)}
-                      disabled={!canRequestPayout || loading || success}
+                      disabled={!canRequestPayout || loading || !!success}
                       className="mt-1"
                     />
                     <div>
@@ -245,7 +245,7 @@ export default function PayoutRequestModal({
               </button>
               <button
                 type="submit"
-                disabled={!canRequestPayout || loading || !amount || parseFloat(amount) <= 0 || success}
+                disabled={!canRequestPayout || loading || !amount || parseFloat(amount) <= 0 || !!success}
                 className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 {loading ? 'Processing...' : success ? 'Success!' : 'Request Payout'}
