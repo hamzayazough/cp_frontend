@@ -672,7 +672,7 @@ export default function CampaignDetailsPage({
       userRole={user?.role as UserRole || 'PROMOTER'}
       userName={user?.name}
       userEmail={user?.email}
-      userAvatar={user?.profileUrl}
+      userAvatar={user?.avatarUrl}
     >
       {/* Custom Header for Campaign Details */}
       <div className="-mx-6 -mt-6 mb-6">

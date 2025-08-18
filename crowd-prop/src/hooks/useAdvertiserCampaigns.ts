@@ -280,15 +280,7 @@ export const useAdvertiserCampaigns = (
     return () => {
       mounted = false;
     };
-  }, [
-    JSON.stringify(initialParams?.searchQuery),
-    JSON.stringify(initialParams?.status),
-    JSON.stringify(initialParams?.type),
-    initialParams?.sortBy,
-    initialParams?.sortOrder,
-    initialParams?.page,
-    initialParams?.limit,
-  ]); // React to parameter changes
+  }, [getMockDataWithFilters, initialParams]); // React to parameter changes
 
   return {
     campaigns,

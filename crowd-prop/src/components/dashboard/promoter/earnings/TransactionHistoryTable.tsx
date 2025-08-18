@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -47,11 +47,7 @@ export default function TransactionHistoryTable({ className = '' }: TransactionH
     { value: 'CANCELLED', label: 'Cancelled' },
   ];
 
-  useEffect(() => {
-    loadTransactions();
-  }, [currentPage, filters]);
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -72,7 +68,11 @@ export default function TransactionHistoryTable({ className = '' }: TransactionH
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, filters.type, filters.status]);
+
+  useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
 
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));

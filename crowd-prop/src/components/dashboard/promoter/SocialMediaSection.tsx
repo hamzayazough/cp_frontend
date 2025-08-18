@@ -23,7 +23,6 @@ export default function SocialMediaSection({
   isEditing,
   editData,
   onEditDataChange,
-  isViewOnly = false,
 }: SocialMediaSectionProps) {
   const socialMediaItems = [
     {

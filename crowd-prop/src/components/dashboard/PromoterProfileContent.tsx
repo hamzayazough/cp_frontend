@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from 'next/image';
 import { User } from "@/app/interfaces/user";
 import { PromoterWork } from "@/app/interfaces/promoter-work";
 import { usePromoterProfileEdit } from "@/hooks/usePromoterProfileEdit";
@@ -138,10 +139,11 @@ export default function PromoterProfileContent({
         {/* Cover Image */}
         <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
           {user.backgroundUrl ? (
-            <img
+            <Image
               src={user.backgroundUrl}
               alt="Cover"
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
@@ -156,10 +158,12 @@ export default function PromoterProfileContent({
               {/* Avatar */}
               <div className="relative -mt-12 sm:-mt-12">
                 {user.avatarUrl ? (
-                  <img
+                  <Image
                     src={user.avatarUrl}
                     alt={user.name}
-                    className="w-20 h-20 rounded-xl object-cover border-4 border-white shadow-lg bg-white"
+                    width={80}
+                    height={80}
+                    className="rounded-xl object-cover border-4 border-white shadow-lg bg-white"
                   />
                 ) : (
                   <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-lg">

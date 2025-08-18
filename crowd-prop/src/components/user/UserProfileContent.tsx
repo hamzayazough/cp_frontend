@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { User } from '@/app/interfaces/user';
 import AdvertiserProfileContent from '@/components/dashboard/AdvertiserProfileContent';
 import PromoterProfileContent from '@/components/dashboard/PromoterProfileContent';
@@ -44,10 +45,12 @@ export default function UserProfileContent({ user, isViewOnly }: UserProfileCont
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center space-x-4 mb-6">
               {user.avatarUrl ? (
-                <img
+                <Image
                   src={user.avatarUrl}
                   alt={user.name}
-                  className="w-20 h-20 rounded-full object-cover"
+                  width={80}
+                  height={80}
+                  className="rounded-full object-cover"
                 />
               ) : (
                 <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">

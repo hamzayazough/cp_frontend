@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   EyeIcon,
   CurrencyDollarIcon,
@@ -32,9 +32,9 @@ export default function CampaignEarningsTable({ className = '' }: CampaignEarnin
 
   useEffect(() => {
     loadCampaignEarnings();
-  }, [selectedMonth, selectedYear]);
+  }, [loadCampaignEarnings]);
 
-  const loadCampaignEarnings = async () => {
+  const loadCampaignEarnings = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -50,7 +50,7 @@ export default function CampaignEarningsTable({ className = '' }: CampaignEarnin
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedMonth, selectedYear]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   XMarkIcon,
   ExclamationTriangleIcon,
@@ -37,13 +37,7 @@ export default function FundingVerificationModal({
   const [showAddFunds, setShowAddFunds] = useState(false);
   const [isRechecking, setIsRechecking] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && estimatedBudget > 0) {
-      checkFunding();
-    }
-  }, [isOpen, estimatedBudget]);
-
-  const checkFunding = async () => {
+  const checkFunding = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -57,7 +51,13 @@ export default function FundingVerificationModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [estimatedBudget]);
+
+  useEffect(() => {
+    if (isOpen && estimatedBudget > 0) {
+      checkFunding();
+    }
+  }, [isOpen, estimatedBudget, checkFunding]);
 
   const handleRecheck = async () => {
     setIsRechecking(true);

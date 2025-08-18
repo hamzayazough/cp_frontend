@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { XMarkIcon, BanknotesIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { PAYMENT_CONSTANTS } from '@/app/const/payment-constants';
 import { advertiserPaymentService } from '@/services/advertiser-payment.service';
@@ -34,9 +34,9 @@ export default function WithdrawFundsModal({
       setAmount(50);
       setReason('');
     }
-  }, [isOpen]);
+  }, [isOpen, loadWithdrawalLimits]);
 
-  const loadWithdrawalLimits = async () => {
+  const loadWithdrawalLimits = useCallback(async () => {
     try {
       setLimitsLoading(true);
       const limits = await advertiserPaymentService.getWithdrawalLimits();
@@ -68,7 +68,7 @@ export default function WithdrawFundsModal({
     } finally {
       setLimitsLoading(false);
     }
-  };
+  }, [currentBalance]);
 
   const calculateFee = (): number => {
     return withdrawalLimits?.feeStructure?.standardFee || PAYMENT_CONSTANTS.WITHDRAWAL_FEE;

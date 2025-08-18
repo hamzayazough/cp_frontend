@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChartBarIcon } from '@heroicons/react/24/outline';
 import { promoterEarningsService } from '@/services/promoter-earnings.service';
 
@@ -17,29 +17,25 @@ interface ChartData {
   campaigns: number[];
 }
 
+const PERIODS: { value: Period; label: string; limit: number }[] = [
+  { value: 'week', label: 'Last 8 Weeks', limit: 8 },
+  { value: 'month', label: 'Last 12 Months', limit: 12 },
+  { value: 'quarter', label: 'Last 8 Quarters', limit: 8 },
+  { value: 'year', label: 'Last 5 Years', limit: 5 },
+];
+
 export default function EarningsChart({ className = '' }: EarningsChartProps) {
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('month');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const periods: { value: Period; label: string; limit: number }[] = [
-    { value: 'week', label: 'Last 8 Weeks', limit: 8 },
-    { value: 'month', label: 'Last 12 Months', limit: 12 },
-    { value: 'quarter', label: 'Last 8 Quarters', limit: 8 },
-    { value: 'year', label: 'Last 5 Years', limit: 5 },
-  ];
-
-  useEffect(() => {
-    loadChartData();
-  }, [selectedPeriod]);
-
-  const loadChartData = async () => {
+  const loadChartData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const currentPeriod = periods.find(p => p.value === selectedPeriod);
+      const currentPeriod = PERIODS.find(p => p.value === selectedPeriod);
       const limit = currentPeriod?.limit || 12;
       
       const data = await promoterEarningsService.getEarningsTrends(selectedPeriod, limit);
@@ -50,7 +46,11 @@ export default function EarningsChart({ className = '' }: EarningsChartProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPeriod]);
+
+  useEffect(() => {
+    loadChartData();
+  }, [loadChartData]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -99,7 +99,7 @@ export default function EarningsChart({ className = '' }: EarningsChartProps) {
             onChange={(e) => setSelectedPeriod(e.target.value as Period)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-sm"
           >
-            {periods.map(period => (
+            {PERIODS.map(period => (
               <option key={period.value} value={period.value}>
                 {period.label}
               </option>
@@ -130,7 +130,7 @@ export default function EarningsChart({ className = '' }: EarningsChartProps) {
           onChange={(e) => setSelectedPeriod(e.target.value as Period)}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-sm"
         >
-          {periods.map(period => (
+          {PERIODS.map(period => (
             <option key={period.value} value={period.value}>
               {period.label}
             </option>

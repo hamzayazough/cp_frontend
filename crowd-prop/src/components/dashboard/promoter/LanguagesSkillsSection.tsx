@@ -25,7 +25,6 @@ export default function LanguagesSkillsSection({
   editData,
   onLanguageToggle,
   onSkillToggle,
-  isViewOnly = false,
 }: LanguagesSkillsSectionProps) {
   const getLanguageDisplay = (language: Language) => {
     const option = LANGUAGE_OPTIONS.find((opt) => opt.value === language);

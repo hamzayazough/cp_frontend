@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { User } from 'firebase/auth';
 import { stripeService } from '@/services/stripe.service';
 import { STRIPE_ONBOARDING_CONSTANTS } from '@/app/const/stripe-onboarding';
@@ -25,11 +25,7 @@ export default function StripeOnboardingStatus({
   const maxRetries = 5;
   const retryInterval = 3000; // 3 seconds
 
-  useEffect(() => {
-    checkOnboardingStatus();
-  }, [user.uid, retryCount]);
-
-  const checkOnboardingStatus = async () => {
+  const checkOnboardingStatus = useCallback(async () => {
     try {
       setIsChecking(true);
       setError(null);
@@ -58,7 +54,11 @@ export default function StripeOnboardingStatus({
     } finally {
       setIsChecking(false);
     }
-  };
+  }, [user.uid, retryCount, onComplete, maxRetries]);
+
+  useEffect(() => {
+    checkOnboardingStatus();
+  }, [checkOnboardingStatus]);
 
   const handleRetry = () => {
     setRetryCount(0);
