@@ -116,7 +116,6 @@ export interface PromoterDashboardData {
   activeCampaigns: PromoterActiveCampaign[];
   suggestedCampaigns: PromoterSuggestedCampaign[];
   recentTransactions: PromoterTransaction[];
-  recentMessages: PromoterMessage[];
   wallet: PromoterWallet;
 }
 
@@ -127,12 +126,10 @@ export interface GetPromoterDashboardRequest {
   includeCampaigns?: boolean;
   includeSuggestions?: boolean;
   includeTransactions?: boolean;
-  includeMessages?: boolean;
   includeWallet?: boolean;
   activeCampaignLimit?: number;
   suggestedCampaignLimit?: number;
   transactionLimit?: number;
-  messageLimit?: number;
 }
 
 // Response interfaces

@@ -24,7 +24,6 @@ import {
   ClockIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
 import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
@@ -988,73 +987,6 @@ export default function PromoterDashboardContent({
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages Preview */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Messages</h2>
-                <Link
-                  href={routes.dashboardMessages}
-                  className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-                >
-                  View All
-                  <ArrowRightIcon className="h-4 w-4 ml-1" />
-                </Link>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {dashboardData.recentMessages.length > 0 ? (
-                  dashboardData.recentMessages.map((message) => (
-                    <div
-                      key={message.id}
-                      className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                    >
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-white">
-                          {message.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <p className="text-sm font-medium text-gray-900">
-                              {message.name}
-                            </p>
-                            {!message.isRead && (
-                              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-500">
-                            {message.time}
-                          </p>
-                        </div>
-                        <p className="text-sm text-gray-600 truncate">
-                          {message.message}
-                        </p>
-                        {message.campaignId && (
-                          <p className="text-xs text-gray-400 mt-1">
-                            Campaign related
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <ChatBubbleLeftIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-4 text-sm font-medium text-gray-900">
-                      No messages yet
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-500">
-                      Messages from advertisers will appear here
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
