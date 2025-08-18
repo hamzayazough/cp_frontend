@@ -91,3 +91,15 @@ export const services = {
   notification: notificationService,
   notificationSystem: notificationSystemService,
 } as const;
+
+// Promoter Earnings Service - Earnings tracking and analytics
+export { promoterEarningsService } from "./promoter-earnings.service";
+export type {
+  EarningsOverview,
+  MonthlyEarning,
+  TransactionHistory,
+  CampaignEarningsBreakdown,
+  EarningsAnalytics,
+  PayoutHistory,
+  EarningsStatistics,
+} from "./promoter-earnings.service";
