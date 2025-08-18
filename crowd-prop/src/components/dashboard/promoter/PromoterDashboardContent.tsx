@@ -25,7 +25,6 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
-import { PromoterCampaignStatus } from "@/app/interfaces/promoter-campaign";
 
 interface PromoterDashboardContentProps {
   userName?: string;
@@ -126,31 +125,6 @@ export default function PromoterDashboardContent({
       </div>
     );
   }
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case PromoterCampaignStatus.ONGOING:
-        return "bg-green-100 text-green-800";
-      case PromoterCampaignStatus.AWAITING_REVIEW:
-        return "bg-yellow-100 text-yellow-800";
-      case PromoterCampaignStatus.COMPLETED:
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case PromoterCampaignStatus.ONGOING:
-        return <ClockIcon className="h-4 w-4" />;
-      case PromoterCampaignStatus.AWAITING_REVIEW:
-        return <ExclamationTriangleIcon className="h-4 w-4" />;
-      case PromoterCampaignStatus.COMPLETED:
-        return <CheckCircleIcon className="h-4 w-4" />;
-      default:
-        return <ClockIcon className="h-4 w-4" />;
-    }
-  };
 
   return (
     <div className="space-y-8">
@@ -332,200 +306,282 @@ export default function PromoterDashboardContent({
           </div>
         </div>
         <div className="p-6">
-          <div className="space-y-4">
+          <div className="space-y-6">
             {dashboardData.activeCampaigns.length > 0 ? (
-              dashboardData.activeCampaigns.map((campaign) => (
-                <div
-                  key={campaign.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
-                >
-                  <div className="flex items-start space-x-4 mb-3">
-                    {/* Advertiser Profile */}
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative">
-                      {campaign.advertiser.profileUrl ? (
-                        <Image
-                          src={campaign.advertiser.profileUrl}
-                          alt={campaign.advertiser.companyName}
-                          fill
-                          className="object-cover"
-                          sizes="64px"
-                          unoptimized
-                          onError={(e) => {
-                            // Hide the image and show fallback
-                            e.currentTarget.style.display = "none";
-                            const parent = e.currentTarget.parentElement;
-                            if (parent) {
-                              parent.classList.add(
-                                "flex",
-                                "items-center",
-                                "justify-center",
-                                "bg-gray-200"
-                              );
-                              parent.innerHTML = `<span class="text-gray-600 font-medium text-xl">${campaign.advertiser.companyName
-                                .charAt(0)
-                                .toUpperCase()}</span>`;
-                            }
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                          <span className="text-gray-600 font-medium text-xl">
-                            {campaign.advertiser.companyName
-                              .charAt(0)
-                              .toUpperCase()}
-                          </span>
+              dashboardData.activeCampaigns.map((campaign) => {
+                // Get campaign type colors and icons
+                const getCampaignTypeColor = (type: string) => {
+                  switch (type) {
+                    case "VISIBILITY":
+                      return "bg-blue-500";
+                    case "CONSULTANT":
+                      return "bg-purple-500";
+                    case "SALESMAN":
+                      return "bg-orange-500";
+                    case "SELLER":
+                      return "bg-green-500";
+                    default:
+                      return "bg-gray-500";
+                  }
+                };
+
+                const getCampaignIcon = (type: string) => {
+                  switch (type) {
+                    case "VISIBILITY":
+                      return EyeIcon;
+                    case "CONSULTANT":
+                      return CheckCircleIcon;
+                    case "SALESMAN":
+                      return CurrencyDollarIcon;
+                    case "SELLER":
+                      return CheckCircleIcon;
+                    default:
+                      return EyeIcon;
+                  }
+                };
+
+                const Icon = getCampaignIcon(campaign.type);
+                const isPendingPromoter = campaign.status === "PENDING_PROMOTER";
+
+                return (
+                  <div
+                    key={campaign.id}
+                    className={`group rounded-lg border transition-all duration-300 overflow-hidden ${
+                      isPendingPromoter 
+                        ? "bg-gray-50 border-gray-300" 
+                        : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg cursor-pointer"
+                    }`}
+                    onClick={isPendingPromoter ? undefined : () => window.location.href = routes.dashboardCampaignDetails(campaign.id)}
+                  >
+                    {/* Header Section */}
+                    <div className="relative">
+                      {/* Status Banner */}
+                      <div className={`h-1 w-full ${getCampaignTypeColor(campaign.type)}`} />
+                      
+                      {/* Pending Promoter Overlay */}
+                      {isPendingPromoter && (
+                        <div className="absolute top-2 left-4 right-4 z-10">
+                          <div className="bg-orange-100 border border-orange-300 rounded-lg p-2 flex items-center space-x-2">
+                            <ClockIcon className="h-4 w-4 text-orange-600 flex-shrink-0" />
+                            <span className="text-xs font-medium text-orange-800">
+                              Waiting for Applicants
+                            </span>
+                          </div>
                         </div>
                       )}
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <h3 className="font-semibold text-gray-900">
-                            {campaign.title}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {campaign.advertiser.companyName}
-                          </p>
+                      <div className={`p-4 ${isPendingPromoter ? "pt-16" : ""}`}>
+                        {/* Title Row */}
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center space-x-2 flex-1">
+                            <div className={`p-1.5 rounded-lg ${
+                              isPendingPromoter
+                                ? "bg-gray-200"
+                                : campaign.type === "VISIBILITY" ? "bg-gradient-to-br from-blue-50 to-blue-100" :
+                                campaign.type === "CONSULTANT" ? "bg-gradient-to-br from-purple-50 to-purple-100" :
+                                campaign.type === "SALESMAN" ? "bg-gradient-to-br from-orange-50 to-orange-100" :
+                                campaign.type === "SELLER" ? "bg-gradient-to-br from-green-50 to-green-100" :
+                                "bg-gradient-to-br from-gray-50 to-gray-100"
+                            }`}>
+                              <Icon className={`h-4 w-4 ${
+                                isPendingPromoter
+                                  ? "text-gray-500"
+                                  : campaign.type === "VISIBILITY" ? "text-blue-600" :
+                                  campaign.type === "CONSULTANT" ? "text-purple-600" :
+                                  campaign.type === "SALESMAN" ? "text-orange-600" :
+                                  campaign.type === "SELLER" ? "text-green-600" :
+                                  "text-gray-600"
+                              }`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className={`text-base font-bold mb-0.5 truncate ${
+                                isPendingPromoter ? "text-gray-500" : "text-gray-900"
+                              }`}>
+                                {campaign.title}
+                              </h3>
+                              <div className="flex items-center space-x-2">
+                                <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                  isPendingPromoter 
+                                    ? "bg-gray-200 text-gray-600" 
+                                    : campaign.type === "VISIBILITY" ? "bg-blue-100 text-blue-800" :
+                                    campaign.type === "CONSULTANT" ? "bg-purple-100 text-purple-800" :
+                                    campaign.type === "SALESMAN" ? "bg-orange-100 text-orange-800" :
+                                    campaign.type === "SELLER" ? "bg-green-100 text-green-800" :
+                                    "bg-gray-100 text-gray-800"
+                                }`}>
+                                  {campaign.type}
+                                </span>
+                                <div className={`flex items-center text-xs ${
+                                  isPendingPromoter ? "text-gray-400" : "text-gray-500"
+                                }`}>
+                                  <span>Due {new Date(campaign.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <ArrowRightIcon className={`h-4 w-4 transition-colors ${
+                              isPendingPromoter 
+                                ? "text-gray-300" 
+                                : "text-gray-400 group-hover:text-blue-600"
+                            }`} />
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                              campaign.status
-                            )}`}
-                          >
-                            {getStatusIcon(campaign.status)}
-                            <span className="ml-1">
-                              {campaign.status.replace("_", " ")}
-                            </span>
-                          </span>
-                          <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                            {campaign.type}
-                          </span>
-                          {!campaign.isPublic && (
-                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                              Private
-                            </span>
+
+                        {/* Metrics Grid */}
+                        <div className={`grid gap-3 ${isPendingPromoter ? "grid-cols-1" : "grid-cols-2"}`}>
+                          {/* Earnings - only show when not pending */}
+                          {!isPendingPromoter && (
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg p-3 border border-green-200">
+                              <div className="flex items-center space-x-1.5 mb-0.5">
+                                <div className="p-1 bg-green-200 rounded-md">
+                                  <CurrencyDollarIcon className="h-3 w-3 text-green-600" />
+                                </div>
+                                <span className="text-xs font-medium text-green-700">Earned</span>
+                              </div>
+                              <p className="text-sm font-bold text-green-900">
+                                ${campaign.spent || 0}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Type-specific metric */}
+                          {campaign.type === "VISIBILITY" ? (
+                            <div className={`rounded-lg p-3 border ${
+                              isPendingPromoter 
+                                ? "bg-gray-100 border-gray-300" 
+                                : "bg-gradient-to-br from-purple-50 to-violet-100 border-purple-200"
+                            }`}>
+                              <div className="flex items-center space-x-1.5 mb-0.5">
+                                <div className={`p-1 rounded-md ${
+                                  isPendingPromoter ? "bg-gray-300" : "bg-purple-200"
+                                }`}>
+                                  <EyeIcon className={`h-3 w-3 ${
+                                    isPendingPromoter ? "text-gray-500" : "text-purple-600"
+                                  }`} />
+                                </div>
+                                <span className={`text-xs font-medium ${
+                                  isPendingPromoter ? "text-gray-500" : "text-purple-700"
+                                }`}>Views Generated</span>
+                              </div>
+                              <p className={`text-sm font-bold ${
+                                isPendingPromoter ? "text-gray-600" : "text-purple-900"
+                              }`}>
+                                {(campaign.views || 0).toLocaleString()}
+                              </p>
+                            </div>
+                          ) : campaign.type === "CONSULTANT" ? (
+                            <div className={`rounded-lg p-3 border ${
+                              isPendingPromoter 
+                                ? "bg-gray-100 border-gray-300" 
+                                : "bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200"
+                            }`}>
+                              <div className="flex items-center space-x-1.5 mb-0.5">
+                                <div className={`p-1 rounded-md ${
+                                  isPendingPromoter ? "bg-gray-300" : "bg-blue-200"
+                                }`}>
+                                  <CheckCircleIcon className={`h-3 w-3 ${
+                                    isPendingPromoter ? "text-gray-500" : "text-blue-600"
+                                  }`} />
+                                </div>
+                                <span className={`text-xs font-medium ${
+                                  isPendingPromoter ? "text-gray-500" : "text-blue-700"
+                                }`}>Applications</span>
+                              </div>
+                              <p className={`text-sm font-bold ${
+                                isPendingPromoter ? "text-gray-600" : "text-blue-900"
+                              }`}>
+                                {campaign.applications || 0}
+                              </p>
+                            </div>
+                          ) : campaign.type === "SELLER" ? (
+                            <div className={`rounded-lg p-3 border ${
+                              isPendingPromoter 
+                                ? "bg-gray-100 border-gray-300" 
+                                : "bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200"
+                            }`}>
+                              <div className="flex items-center space-x-1.5 mb-0.5">
+                                <div className={`p-1 rounded-md ${
+                                  isPendingPromoter ? "bg-gray-300" : "bg-blue-200"
+                                }`}>
+                                  <CurrencyDollarIcon className={`h-3 w-3 ${
+                                    isPendingPromoter ? "text-gray-500" : "text-blue-600"
+                                  }`} />
+                                </div>
+                                <span className={`text-xs font-medium ${
+                                  isPendingPromoter ? "text-gray-500" : "text-blue-700"
+                                }`}>Applications</span>
+                              </div>
+                              <p className={`text-sm font-bold ${
+                                isPendingPromoter ? "text-gray-600" : "text-blue-900"
+                              }`}>
+                                {campaign.applications || 0}
+                              </p>
+                            </div>
+                          ) : (
+                            <div className={`rounded-lg p-3 border ${
+                              isPendingPromoter 
+                                ? "bg-gray-100 border-gray-300" 
+                                : "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200"
+                            }`}>
+                              <div className="flex items-center space-x-1.5 mb-0.5">
+                                <div className={`p-1 rounded-md ${
+                                  isPendingPromoter ? "bg-gray-300" : "bg-orange-200"
+                                }`}>
+                                  <CurrencyDollarIcon className={`h-3 w-3 ${
+                                    isPendingPromoter ? "text-gray-500" : "text-orange-600"
+                                  }`} />
+                                </div>
+                                <span className={`text-xs font-medium ${
+                                  isPendingPromoter ? "text-gray-500" : "text-orange-700"
+                                }`}>Applications</span>
+                              </div>
+                              <p className={`text-sm font-bold ${
+                                isPendingPromoter ? "text-gray-600" : "text-orange-900"
+                              }`}>
+                                {campaign.applications || 0}
+                              </p>
+                            </div>
                           )}
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 mb-3">
-                    <div>
-                      <p className="text-xs text-gray-500">
-                        {campaign.type === CampaignType.VISIBILITY
-                          ? "Views Generated"
-                          : "Progress"}
-                      </p>
-                      <p className="font-semibold text-gray-600">
-                        {campaign.type === CampaignType.VISIBILITY
-                          ? campaign.views.toLocaleString()
-                          : campaign.type === CampaignType.CONSULTANT &&
-                            campaign.meetingCount
-                          ? `${campaign.meetingDone ? 1 : 0}/${
-                              campaign.meetingCount
-                            } meetings`
-                          : campaign.type === CampaignType.SELLER &&
-                            campaign.meetingCount
-                          ? `${campaign.meetingDone ? 1 : 0}/${
-                              campaign.meetingCount
-                            } meetings`
-                          : "In Progress"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Earnings</p>
-                      <p className="font-semibold text-green-600">
-                        ${campaign.earnings}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">
-                        {campaign.type === CampaignType.VISIBILITY &&
-                        campaign.cpv
-                          ? "CPV Rate"
-                          : campaign.type === CampaignType.SALESMAN &&
-                            campaign.commissionPerSale
-                          ? "Commission"
-                          : campaign.type === CampaignType.CONSULTANT &&
-                            campaign.minBudget
-                          ? "Budget Range"
-                          : "Deadline"}
-                      </p>
-                      <p className="font-semibold text-gray-600">
-                        {campaign.type === CampaignType.VISIBILITY &&
-                        campaign.cpv
-                          ? `$${campaign.cpv}`
-                          : campaign.type === CampaignType.SALESMAN &&
-                            campaign.commissionPerSale
-                          ? `${campaign.commissionPerSale}%`
-                          : campaign.type === CampaignType.CONSULTANT &&
-                            campaign.minBudget &&
-                            campaign.maxBudget
-                          ? `$${campaign.minBudget}-$${campaign.maxBudget}`
-                          : new Date(campaign.deadline).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Additional Campaign Details */}
-                  {campaign.requirements &&
-                    campaign.requirements.length > 0 && (
-                      <div className="mb-3">
-                        <p className="text-xs text-gray-500 mb-1">
-                          Requirements
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {campaign.requirements
-                            .slice(0, 3)
-                            .map((req, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs"
-                              >
-                                {req}
+                      {/* Bottom Section */}
+                      <div className={`border-t px-4 py-3 ${
+                        isPendingPromoter 
+                          ? "border-gray-300 bg-gray-100" 
+                          : "border-gray-100 bg-gray-50"
+                      }`}>
+                        {/* Footer */}
+                        <div className={`flex items-center justify-between`}>
+                          <span className={`text-xs ${
+                            isPendingPromoter ? "text-gray-500" : "text-gray-500"
+                          }`}>
+                            Budget: ${campaign.spent || 0} spent
+                          </span>
+                          <div className="flex items-center space-x-1.5">
+                            {campaign.status === "ONGOING" && (
+                              <span className="bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-xs font-medium">
+                                Active
                               </span>
-                            ))}
-                          {campaign.requirements.length > 3 && (
-                            <span className="px-2 py-1 bg-gray-50 text-gray-600 rounded text-xs">
-                              +{campaign.requirements.length - 3} more
-                            </span>
-                          )}
+                            )}
+                            {isPendingPromoter && (
+                              <span className="bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded-full text-xs font-medium">
+                                Pending
+                              </span>
+                            )}
+                            {campaign.spent > 0 && (
+                              <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-xs font-medium">
+                                Earning
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    )}
-
-                  {/* Meeting Plan for Consultant/Seller */}
-                  {(campaign.type === CampaignType.CONSULTANT ||
-                    campaign.type === CampaignType.SELLER) &&
-                    campaign.meetingPlan && (
-                      <div className="mb-3">
-                        <p className="text-xs text-gray-500 mb-1">
-                          Meeting Plan
-                        </p>
-                        <p className="text-sm text-gray-700 truncate">
-                          {campaign.meetingPlan}
-                        </p>
-                      </div>
-                    )}
-
-                  <div className="flex space-x-2">
-                    <Link
-                      href={routes.dashboardCampaignDetails(campaign.id)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
-                    >
-                      View Stats
-                    </Link>
-                    <Link
-                      href={routes.messageThread(campaign.id)}
-                      className="bg-gray-100 text-gray-700 px-3 py-1 rounded-md text-sm hover:bg-gray-200 transition-colors"
-                    >
-                      Send Message
-                    </Link>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="text-center py-8">
                 <RectangleStackIcon className="mx-auto h-12 w-12 text-gray-400" />
