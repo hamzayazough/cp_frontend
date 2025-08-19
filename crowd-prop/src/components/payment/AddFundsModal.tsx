@@ -262,6 +262,15 @@ export default function AddFundsModal({
                 <p className="text-xs text-gray-500 mt-1">
                   Add a payment method first
                 </p>
+                <button
+                  onClick={() => {
+                    handleClose();
+                    window.location.href = '/dashboard/earnings';
+                  }}
+                  className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                >
+                  Go to Payment Settings
+                </button>
               </div>
             )}
 
