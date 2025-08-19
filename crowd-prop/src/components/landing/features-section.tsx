@@ -3,31 +3,31 @@
 import { motion } from 'framer-motion';
 import { useUserType } from '@/contexts/UserTypeContext';
 import { useInView } from 'react-intersection-observer';
-import { Shield, Zap, Globe, BarChart3, Users, TrendingUp, Clock, Star } from 'lucide-react';
+import { Shield, BarChart3, Users, TrendingUp, Clock, Star } from 'lucide-react';
 
 const businessFeatures = [
   {
-    icon: Shield,
-    title: "Verified Promoters",
-    description: "Work with vetted marketing professionals and proven track records",
+    icon: Clock,
+    title: "Save Time & Resources",
+    description: "Stop spending hours on marketing tasks - focus on building your product while promoters handle the rest",
     gradient: "from-purple-600 to-pink-600"
   },
   {
-    icon: BarChart3,
-    title: "Real-Time Analytics", 
-    description: "Track campaign performance with detailed insights and ROI metrics",
+    icon: Users,
+    title: "You Choose Your Team", 
+    description: "Review promoter applications and select only those who match your specific criteria and requirements",
     gradient: "from-blue-600 to-cyan-600"
   },
   {
-    icon: Globe,
-    title: "Global Reach",
-    description: "Access promoters worldwide to target specific markets and demographics",
+    icon: BarChart3,
+    title: "Any Budget Works",
+    description: "Create campaigns from $5 to $100,000+ with complete budget control and transparent pricing",
     gradient: "from-green-600 to-emerald-600"
   },
   {
-    icon: Zap,
-    title: "Instant Deployment",
-    description: "Launch campaigns within hours and start seeing results immediately",
+    icon: Shield,
+    title: "Complete Campaign Control",
+    description: "Set exact requirements, approve deliverables, and maintain full control over your brand messaging",
     gradient: "from-orange-600 to-red-600"
   }
 ];

@@ -6,15 +6,15 @@ import { useUserType } from '@/contexts/UserTypeContext';
 import { Sparkles, ArrowRight, TrendingUp, Target } from 'lucide-react';
 
 const businessContent = {
-  title: "Scale Your Business with Any Effort",
-  subtitle: "Connect with verified promoters and marketing professionals to amplify your brand reach",
-  description: "From startup to enterprise, leverage our network of marketing professionals through four campaign types: get strategic consulting, full campaign execution, performance-based sales, or guaranteed visibility campaigns.",
+  title: "Focus on Your Product, We'll Handle Your Marketing",
+  subtitle: "Save time and resources by letting expert promoters compete for your campaigns",
+  description: "Create personalized campaigns with any budget, specify exactly what you need, and watch qualified promoters apply. You choose who matches your criteria - giving you complete control while freeing up your time to focus on what matters most: building your business.",
   cta: "Launch Your Campaign",
   features: [
-    "Strategic Marketing Consultants",
-    "Full-Service Campaign Execution", 
-    "Performance-Based Sales Promoters",
-    "Guaranteed Traffic & Visibility"
+    "Any Budget Works",
+    "You Choose Your Promoters", 
+    "Complete Campaign Control",
+    "Save Time To Focus On What Really Matters"
   ]
 };
 

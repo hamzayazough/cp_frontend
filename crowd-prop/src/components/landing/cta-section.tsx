@@ -24,11 +24,11 @@ export function CallToActionSection() {
   };
 
   const businessContent = {
-    title: "Ready to Scale Your Business?",
-    subtitle: "Join the future of promotional marketing with our innovative platform",
-    description: "Start your first campaign today and experience the power of professional promotion. No long-term contracts, transparent pricing, and guaranteed results.",
+    title: "Ready to Stop Wasting Time on Marketing?",
+    subtitle: "Let qualified promoters compete for your campaigns while you focus on your business",
+    description: "Create campaigns with any budget, set your exact requirements, and choose from applicants who match your criteria. No contracts, complete flexibility, and you only work with promoters you approve.",
     primaryCTA: "Launch Your Campaign",
-    secondaryCTA: "Schedule Demo"
+    secondaryCTA: "See How It Works"
   };
 
   const individualContent = {

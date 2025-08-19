@@ -9,30 +9,30 @@ const businessCampaigns = [
   {
     icon: Eye,
     title: "Visibility Campaigns",
-    description: "Drive targeted traffic to your website or landing page with guaranteed unique visitors",
+    description: "Need website traffic? Set your budget, specify your target audience, and let promoters compete to deliver quality visitors to your site",
     color: "from-purple-600 to-pink-600",
-    features: ["Pay per users visiting your website", "Anti-bot protection", "Real-time analytics", "Global reach"]
+    features: ["Set any budget", "You approve promoters", "Real traffic guaranteed", "Track every visitor"]
   },
   {
     icon: Lightbulb,
     title: "Consultant Campaigns", 
-    description: "Get expert marketing strategies and professional guidance from industry specialists",
+    description: "Need marketing strategy? Post your requirements, review consultant applications, and choose the expert who fits your needs and budget",
     color: "from-blue-600 to-cyan-600",
-    features: ["Marketing strategies", "Content planning", "Market analysis", "Brand guidelines"]
+    features: ["Expert advice on demand", "Choose your consultant", "Custom strategies", "Flexible budgets"]
   },
   {
     icon: Rocket,
     title: "Seller Campaigns",
-    description: "Full-service promotional execution handled by professional marketing teams",
+    description: "Need full marketing execution? Describe what you want, set your budget, and select from experienced teams who can deliver",
     color: "from-green-600 to-emerald-600", 
-    features: ["Social media management", "Content creation", "Direct outreach", "Campaign execution"]
+    features: ["Complete marketing execution", "Professional teams apply", "You choose who works", "Results you approve"]
   },
   {
     icon: DollarSign,
     title: "Salesman Campaigns",
-    description: "Performance-based promotions where you only pay for actual sales generated",
+    description: "Need actual sales? Set your commission rate, let sales professionals apply, and only pay when they deliver real customers",
     color: "from-orange-600 to-red-600",
-    features: ["Commission-based", "Sales tracking", "Risk-free growth", "Affiliate management"]
+    features: ["Pay only for sales", "Choose your sales team", "Set your own rates", "Track every conversion"]
   }
 ];
 
