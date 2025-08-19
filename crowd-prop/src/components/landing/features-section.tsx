@@ -105,18 +105,24 @@ export function FeaturesSection() {
     });
   }, [activeFeature, controls]);
 
+  // Generate deterministic positions for particles to avoid hydration mismatch
+  const particlePositions = Array.from({ length: 20 }, (_, i) => ({
+    left: ((i * 7 + 13) % 100),
+    top: ((i * 11 + 17) % 100),
+  }));
+
   return (
     <section ref={ref} className="py-32 px-6 relative overflow-hidden">
       {/* Enhanced Dynamic Background */}
       <div className="absolute inset-0">
         {/* Animated particle system */}
-        {[...Array(20)].map((_, i) => (
+        {particlePositions.map((position, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-purple-400/40 rounded-full"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${position.left}%`,
+              top: `${position.top}%`,
             }}
             animate={{
               y: [0, -100, 0],
@@ -124,9 +130,9 @@ export function FeaturesSection() {
               scale: [0, 1, 0],
             }}
             transition={{
-              duration: 3 + Math.random() * 2,
+              duration: 3 + (i % 3),
               repeat: Infinity,
-              delay: Math.random() * 3,
+              delay: i * 0.3,
             }}
           />
         ))}

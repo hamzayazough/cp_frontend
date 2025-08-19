@@ -7,6 +7,7 @@ import { auth } from '@/lib/firebase';
 import { userService } from '@/services/user.service';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
+import { ThreeDBackground } from '@/components/landing/3d-background';
 
 export default function AuthPage() {
   const [currentView, setCurrentView] = useState<'login' | 'register'>('login');
@@ -87,53 +88,62 @@ export default function AuthPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen relative overflow-hidden">
+        <ThreeDBackground />
+        <div className="relative z-10 min-h-screen flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-white/50 border-t-transparent rounded-full animate-spin"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome to CrowdProp
-          </h1>
-          <p className="text-gray-600">
-            The performance-based marketplace where businesses get promoted, and promoters get paid.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="flex border-b border-gray-200 mb-6">
-            <button
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-t-lg ${
-                currentView === 'login'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              onClick={() => setCurrentView('login')}
-            >
-              Sign In
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-t-lg ${
-                currentView === 'register'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              onClick={() => setCurrentView('register')}
-            >
-              Sign Up
-            </button>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* 3D Background */}
+      <ThreeDBackground />
+      
+      {/* Content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-blue-200 mb-2">
+              Welcome to CrowdProp
+            </h1>
+            <p className="text-white/80 text-lg">
+              The performance-based marketplace where businesses get promoted, and promoters get paid.
+            </p>
           </div>
 
-          {currentView === 'login' ? (
-            <LoginForm onSuccess={handleAuthSuccess} />
-          ) : (
-            <RegisterForm onSuccess={handleAuthSuccess} />
-          )}
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="flex border-b border-gray-200 mb-6">
+              <button
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-t-lg ${
+                  currentView === 'login'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                onClick={() => setCurrentView('login')}
+              >
+                Sign In
+              </button>
+              <button
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-t-lg ${
+                  currentView === 'register'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                onClick={() => setCurrentView('register')}
+              >
+                Sign Up
+              </button>
+            </div>
+
+            {currentView === 'login' ? (
+              <LoginForm onSuccess={handleAuthSuccess} />
+            ) : (
+              <RegisterForm onSuccess={handleAuthSuccess} />
+            )}
+          </div>
         </div>
       </div>
     </div>
