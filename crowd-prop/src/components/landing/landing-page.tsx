@@ -1,23 +1,35 @@
-import { Header } from '@/components/landing/header';
-import { HeroSection } from '@/components/landing/hero-section';
-import { HowItWorks } from '@/components/landing/how-it-works';
-import { CampaignTypes } from '@/components/landing/campaign-types';
-import { Features } from '@/components/landing/features';
-import { TestimonialSlider } from '@/components/landing/testimonial-slider';
-import { CallToActionBlock } from '@/components/landing/call-to-action-block';
-import { Footer } from '@/components/landing/footer';
+'use client';
+
+import { UserTypeProvider } from '@/contexts/UserTypeContext';
+import { ThreeDBackground } from './3d-background';
+import { UserTypeSelector } from './user-type-selector';
+import { DynamicHeroSection } from './dynamic-hero-section';
+import { CampaignShowcase } from './campaign-showcase';
+import { FeaturesSection } from './features-section';
+import { CallToActionSection } from './cta-section';
+import { FuturisticFooter } from './futuristic-footer';
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen">
-      <Header />
-      <HeroSection />
-      <HowItWorks />
-      <CampaignTypes />
-      <Features />
-      <TestimonialSlider />
-      <CallToActionBlock />
-      <Footer />
-    </div>
+    <UserTypeProvider>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* 3D Background */}
+        <ThreeDBackground />
+        
+        {/* User Type Selector */}
+        <UserTypeSelector />
+        
+        {/* Main Content */}
+        <main className="relative z-10">
+          <DynamicHeroSection />
+          <CampaignShowcase />
+          <FeaturesSection />
+          <CallToActionSection />
+        </main>
+        
+        {/* Footer */}
+        <FuturisticFooter />
+      </div>
+    </UserTypeProvider>
   );
 }

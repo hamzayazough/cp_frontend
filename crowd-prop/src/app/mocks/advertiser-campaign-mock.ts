@@ -53,7 +53,7 @@ const MOCK_PROMOTERS: Promoter[] = [
     instagramUrl: "https://instagram.com/alextech",
     twitterUrl: "https://twitter.com/alextech",
     works: [],
-    location: "San Francisco, CA",
+    location: "Montreal, CA",
     languagesSpoken: [],
     followersEstimate: [],
     skills: ["SaaS Marketing", "Growth Strategy", "Tech Consulting"],

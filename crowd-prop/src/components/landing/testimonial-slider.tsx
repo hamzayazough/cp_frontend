@@ -1,22 +1,36 @@
 'use client';
 
-import { TESTIMONIALS } from '@/app/const/landing-page';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { Shield, Zap, TrendingUp, Users } from 'lucide-react';
 
-const testimonials = TESTIMONIALS;
+const benefits = [
+  {
+    icon: Shield,
+    title: "Secure & Transparent",
+    description: "Advanced tracking and fraud prevention ensure every interaction is legitimate and properly attributed.",
+    color: "bg-blue-500"
+  },
+  {
+    icon: Zap,
+    title: "Fast Deployment",
+    description: "Launch campaigns quickly and start seeing results with our streamlined platform designed for efficiency.",
+    color: "bg-purple-500"
+  },
+  {
+    icon: TrendingUp,
+    title: "Performance-Based",
+    description: "Pay only for results with our transparent tracking system that ensures fair compensation for all parties.",
+    color: "bg-green-500"
+  },
+  {
+    icon: Users,
+    title: "Professional Network",
+    description: "Connect with verified promoters and advertisers in a professional environment built for success.",
+    color: "bg-orange-500"
+  }
+];
 
 export function TestimonialSlider() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-    }, 4000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <section className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,59 +42,38 @@ export function TestimonialSlider() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            What Our Users Say
+            Ready to Get Started?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Join thousands of satisfied advertisers and promoters who are growing their business with Crowd Prop
+            Join our innovative platform connecting advertisers with skilled promoters
           </p>
         </motion.div>
 
-        <div className="relative max-w-4xl mx-auto">
-          <div className="overflow-hidden">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {benefits.map((benefit, index) => (
             <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl p-8 lg:p-12 shadow-lg"
+              key={benefit.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <div className="flex flex-col lg:flex-row items-center gap-8">
-                <div className="flex-shrink-0">
-                  <div className={`w-20 h-20 ${testimonials[currentIndex].bgColor} rounded-full flex items-center justify-center text-white text-2xl font-semibold`}>
-                    {testimonials[currentIndex].avatar}
-                  </div>
+              <div className="flex flex-col items-center text-center">
+                <div className={`w-16 h-16 ${benefit.color} rounded-full flex items-center justify-center mb-6`}>
+                  <benefit.icon className="w-8 h-8 text-white" />
                 </div>
                 
-                <div className="text-center lg:text-left">
-                  <blockquote className="text-xl lg:text-2xl text-gray-900 mb-6 leading-relaxed">
-                    &ldquo;{testimonials[currentIndex].content}&rdquo;
-                  </blockquote>
-                  
-                  <div>
-                    <div className="font-semibold text-gray-900 text-lg">
-                      {testimonials[currentIndex].name}
-                    </div>
-                    <div className="text-blue-600 font-medium">
-                      {testimonials[currentIndex].role}
-                    </div>
-                  </div>
-                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  {benefit.title}
+                </h3>
+                
+                <p className="text-gray-600 leading-relaxed">
+                  {benefit.description}
+                </p>
               </div>
             </motion.div>
-          </div>
-
-          <div className="flex justify-center mt-8 space-x-2">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex ? 'bg-blue-600 w-8' : 'bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </section>
