@@ -38,7 +38,7 @@ export function DynamicHeroSection() {
 
   const handlePrimaryCTA = () => {
     if (userType === 'business') {
-      router.push('/dashboard/create-campaign');
+      router.push('/dashboard/campaigns/create');
     } else {
       router.push('/dashboard');
     }

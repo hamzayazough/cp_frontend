@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserType } from '@/contexts/UserTypeContext';
 import { useInView } from 'react-intersection-observer';
-import { Eye, Users, TrendingUp, DollarSign, Lightbulb, Rocket, Target, Zap, ChevronDown, Clock, Shield, Star } from 'lucide-react';
+import { Eye, Users, TrendingUp, DollarSign, Lightbulb, Rocket, Target, Zap, Clock, Shield, Star } from 'lucide-react';
 
 const businessCampaigns = [
   {
@@ -177,7 +177,7 @@ export function CampaignShowcase() {
   const { userType, isTransitioning } = useUserType();
   const router = useRouter();
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
-  const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [activeCampaign, setActiveCampaign] = useState(0);
   
   const campaigns = userType === 'business' ? businessCampaigns : individualOpportunities;
   const title = userType === 'business' ? 'Four Powerful Campaign Types' : 'Multiple Revenue Opportunities';
@@ -185,30 +185,30 @@ export function CampaignShowcase() {
     ? 'Choose the perfect promotional strategy for your business goals'
     : 'Monetize your skills across different campaign types';
 
-  const toggleCard = (index: number) => {
-    setExpandedCard(expandedCard === index ? null : index);
-  };
-
   const handleCTA = () => {
     if (userType === 'business') {
-      router.push('/dashboard/create-campaign');
+      router.push('/dashboard/campaigns/create');
     } else {
       router.push('/dashboard');
     }
   };
 
   return (
-    <section ref={ref} className="py-32 px-6 relative">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/5 to-transparent" />
+    <section ref={ref} className="py-32 px-6 relative overflow-hidden">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-600/5 rounded-full blur-2xl animate-pulse delay-500" />
+      </div>
       
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto relative">
         <motion.div
           key={userType}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: isTransitioning ? 0 : (inView ? 1 : 0), y: isTransitioning ? 30 : (inView ? 0 : 30) }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-purple-200 mb-6">
             {title}
@@ -218,165 +218,241 @@ export function CampaignShowcase() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {campaigns.map((campaign, index) => (
-            <motion.div
-              key={`${userType}-${campaign.title}`}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ 
-                opacity: isTransitioning ? 0 : (inView ? 1 : 0), 
-                y: isTransitioning ? 50 : (inView ? 0 : 50) 
-              }}
-              transition={{ delay: index * 0.15, duration: 0.8 }}
-              className="group relative"
-            >
-              <div className={`bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-white/30 transition-all duration-500 ${expandedCard === index ? 'shadow-2xl shadow-purple-500/20' : ''}`}>
-                {/* Main Card Content */}
-                <div className="p-8">
-                  <div className="flex items-start justify-between mb-6">
-                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${campaign.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <campaign.icon className="w-8 h-8 text-white" />
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          {/* Campaign Tabs - Left Side */}
+          <div className="lg:w-1/3 space-y-4">
+            {campaigns.map((campaign, index) => (
+              <motion.div
+                key={`${userType}-${campaign.title}`}
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ 
+                  opacity: isTransitioning ? 0 : (inView ? 1 : 0), 
+                  x: isTransitioning ? -50 : (inView ? 0 : -50) 
+                }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+                className={`relative cursor-pointer group ${activeCampaign === index ? 'scale-105' : ''} transition-all duration-300`}
+                onClick={() => setActiveCampaign(index)}
+              >
+                <div className={`p-6 rounded-2xl border transition-all duration-300 ${
+                  activeCampaign === index 
+                    ? `bg-gradient-to-r ${campaign.color} border-white/30 shadow-2xl` 
+                    : 'bg-black/20 backdrop-blur-sm border-white/10 hover:border-white/20'
+                }`}>
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      activeCampaign === index 
+                        ? 'bg-white/20' 
+                        : `bg-gradient-to-r ${campaign.color}`
+                    }`}>
+                      {(() => {
+                        const IconComponent = campaign.icon;
+                        return <IconComponent className="w-6 h-6 text-white" />;
+                      })()}
                     </div>
-                    <motion.button
-                      onClick={() => toggleCard(index)}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors duration-200"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <motion.div
-                        animate={{ rotate: expandedCard === index ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <ChevronDown className="w-5 h-5 text-white/60" />
-                      </motion.div>
-                    </motion.button>
+                    <div className="flex-1">
+                      <h3 className={`font-bold transition-all duration-300 ${
+                        activeCampaign === index ? 'text-white text-lg' : 'text-white/80 text-base'
+                      }`}>
+                        {campaign.title}
+                      </h3>
+                      <p className={`text-sm transition-all duration-300 ${
+                        activeCampaign === index ? 'text-white/90' : 'text-white/60'
+                      }`}>
+                        {campaign.shortDesc}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Active indicator */}
+                  {activeCampaign === index && (
+                    <motion.div
+                      layoutId="activeIndicator"
+                      className="absolute inset-0 rounded-2xl border-2 border-white/40"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Campaign Details - Right Side */}
+          <div className="lg:w-2/3">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${userType}-${activeCampaign}`}
+                initial={{ opacity: 0, x: 50, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -50, scale: 0.95 }}
+                transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+                className="bg-gradient-to-br from-black/30 to-black/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 lg:p-12 relative overflow-hidden"
+              >
+                {/* Background decoration */}
+                <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${campaigns[activeCampaign].color} opacity-10 rounded-full blur-3xl transform translate-x-32 -translate-y-32`} />
+                
+                <div className="relative">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-8">
+                    <div>
+                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-r ${campaigns[activeCampaign].color} flex items-center justify-center mb-6 shadow-2xl`}>
+                        {(() => {
+                          const IconComponent = campaigns[activeCampaign].icon;
+                          return <IconComponent className="w-10 h-10 text-white" />;
+                        })()}
+                      </div>
+                      <h3 className="text-3xl font-bold text-white mb-2">
+                        {campaigns[activeCampaign].title}
+                      </h3>
+                      <p className="text-xl text-white/80 mb-4">
+                        {campaigns[activeCampaign].shortDesc}
+                      </p>
+                      <p className="text-white/70 leading-relaxed max-w-2xl">
+                        {campaigns[activeCampaign].description}
+                      </p>
+                    </div>
                   </div>
 
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    {campaign.title}
-                  </h3>
-                  
-                  <p className="text-white/80 font-medium mb-4">
-                    {campaign.shortDesc}
-                  </p>
-
-                  <p className="text-white/60 mb-6 leading-relaxed">
-                    {campaign.description}
-                  </p>
-
-                  {/* Quick Features */}
-                  <div className="grid grid-cols-2 gap-3">
-                    {campaign.features.map((feature, featureIndex) => (
+                  {/* Features Pills */}
+                  <div className="flex flex-wrap gap-3 mb-8">
+                    {campaigns[activeCampaign].features.map((feature, index) => (
                       <motion.div
                         key={feature}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ 
-                          opacity: isTransitioning ? 0 : (inView ? 1 : 0), 
-                          x: isTransitioning ? -10 : (inView ? 0 : -10) 
-                        }}
-                        transition={{ delay: (index * 0.15) + (featureIndex * 0.1) + 0.5, duration: 0.5 }}
-                        className="flex items-center text-sm text-white/70 bg-white/5 rounded-lg p-3"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.3 }}
+                        className={`px-4 py-2 rounded-full bg-gradient-to-r ${campaigns[activeCampaign].color} bg-opacity-20 border border-white/20 text-white/90 text-sm font-medium backdrop-blur-sm`}
                       >
-                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${campaign.color} mr-2 flex-shrink-0`} />
                         {feature}
                       </motion.div>
                     ))}
                   </div>
-                </div>
 
-                {/* Expanded Details */}
-                <AnimatePresence>
-                  {expandedCard === index && (
+                  {/* Detailed Information */}
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {/* How It Works */}
                     <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
-                      className="border-t border-white/10 bg-black/10"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      className="bg-white/5 rounded-2xl p-6 backdrop-blur-sm border border-white/10"
                     >
-                      <div className="p-8 space-y-6">
-                        {/* How It Works */}
-                        <div>
-                          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
-                            <Target className="w-5 h-5 mr-2 text-purple-400" />
-                            How It Works
-                          </h4>
-                          <ol className="space-y-2">
-                            {campaign.details.howItWorks.map((step, stepIndex) => (
-                              <li key={stepIndex} className="flex items-start text-white/70">
-                                <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r ${campaign.color} text-white text-xs font-bold mr-3 mt-0.5 flex-shrink-0`}>
-                                  {stepIndex + 1}
-                                </span>
-                                {step}
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-
-                        {/* Pricing/Earnings */}
-                        <div>
-                          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
-                            <DollarSign className="w-5 h-5 mr-2 text-green-400" />
-                            {userType === 'business' ? 'Pricing' : 'Earnings'}
-                          </h4>
-                          <p className="text-white/70">
-                            {userType === 'business' ? campaign.details.pricing : campaign.details.earnings}
-                          </p>
-                        </div>
-
-                        {/* Timeline/Requirements */}
-                        <div>
-                          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
-                            <Clock className="w-5 h-5 mr-2 text-blue-400" />
-                            {userType === 'business' ? 'Timeline' : 'Requirements'}
-                          </h4>
-                          <p className="text-white/70">
-                            {userType === 'business' ? campaign.details.timeline : campaign.details.requirements}
-                          </p>
-                        </div>
-
-                        {/* Benefits */}
-                        <div>
-                          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
-                            <Star className="w-5 h-5 mr-2 text-yellow-400" />
-                            Key Benefits
-                          </h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {campaign.details.benefits.map((benefit, benefitIndex) => (
-                              <div key={benefitIndex} className="flex items-center text-white/70 text-sm">
-                                <Shield className="w-4 h-4 mr-2 text-green-400" />
-                                {benefit}
-                              </div>
-                            ))}
+                      <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
+                        <Target className="w-5 h-5 mr-2 text-purple-400" />
+                        How It Works
+                      </h4>
+                      <div className="space-y-3">
+                        {campaigns[activeCampaign].details.howItWorks.slice(0, 3).map((step, index) => (
+                          <div key={index} className="flex items-start text-white/70 text-sm">
+                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r ${campaigns[activeCampaign].color} text-white text-xs font-bold mr-3 mt-0.5 flex-shrink-0`}>
+                              {index + 1}
+                            </span>
+                            {step}
                           </div>
-                        </div>
+                        ))}
                       </div>
                     </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          ))}
+
+                    {/* Pricing & Benefits */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                      className="space-y-6"
+                    >
+                      {/* Pricing */}
+                      <div className="bg-white/5 rounded-2xl p-6 backdrop-blur-sm border border-white/10">
+                        <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                          <DollarSign className="w-5 h-5 mr-2 text-green-400" />
+                          {userType === 'business' ? 'Pricing' : 'Earnings'}
+                        </h4>
+                        <p className="text-white/70 text-sm">
+                          {userType === 'business' ? campaigns[activeCampaign].details.pricing : campaigns[activeCampaign].details.earnings}
+                        </p>
+                      </div>
+
+                      {/* Timeline/Requirements */}
+                      <div className="bg-white/5 rounded-2xl p-6 backdrop-blur-sm border border-white/10">
+                        <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                          <Clock className="w-5 h-5 mr-2 text-blue-400" />
+                          {userType === 'business' ? 'Timeline' : 'Requirements'}
+                        </h4>
+                        <p className="text-white/70 text-sm">
+                          {userType === 'business' ? campaigns[activeCampaign].details.timeline : campaigns[activeCampaign].details.requirements}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  {/* Key Benefits */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                    className="mt-8"
+                  >
+                    <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
+                      <Star className="w-5 h-5 mr-2 text-yellow-400" />
+                      Key Benefits
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {campaigns[activeCampaign].details.benefits.map((benefit, index) => (
+                        <motion.div
+                          key={benefit}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+                          className="flex items-center text-white/70 text-sm bg-white/5 rounded-lg p-3 backdrop-blur-sm"
+                        >
+                          <Shield className="w-4 h-4 mr-2 text-green-400 flex-shrink-0" />
+                          {benefit}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* CTA Button */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.5 }}
+                    className="mt-8 flex justify-center"
+                  >
+                    <motion.button
+                      className={`bg-gradient-to-r ${campaigns[activeCampaign].color} text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300`}
+                      whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(139, 92, 246, 0.3)" }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleCTA}
+                    >
+                      {userType === 'business' ? 'Create This Campaign' : 'Apply for This Role'}
+                    </motion.button>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Call to Action */}
+        {/* Auto-cycle indicator */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 30 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="text-center mt-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: inView ? 1 : 0 }}
+          transition={{ delay: 1, duration: 0.5 }}
+          className="flex justify-center mt-12"
         >
-          <p className="text-white/60 mb-6">
-            Ready to get started? {userType === 'business' ? 'Launch your first campaign' : 'Start earning today'}
-          </p>
-          <motion.button
-            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
-            whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(139, 92, 246, 0.3)" }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleCTA}
-          >
-            {userType === 'business' ? 'Create Campaign' : 'Join as Promoter'}
-          </motion.button>
+          <div className="flex space-x-2">
+            {campaigns.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveCampaign(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  activeCampaign === index 
+                    ? `bg-gradient-to-r ${campaigns[index].color}` 
+                    : 'bg-white/20 hover:bg-white/40'
+                }`}
+              />
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
