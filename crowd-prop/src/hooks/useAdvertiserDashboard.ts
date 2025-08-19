@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { advertiserService } from "@/services/advertiser.service";
 import { advertiserPaymentService } from "@/services/advertiser-payment.service";
 import { AdvertiserDashboardData } from "@/app/interfaces/dashboard/advertiser-dashboard";
-// TODO: fix this hook
+
 interface UseAdvertiserDashboardReturn {
   data: AdvertiserDashboardData | null;
   loading: boolean;
@@ -105,7 +105,7 @@ export const useAdvertiserDashboard = (): UseAdvertiserDashboardReturn => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []); // Remove fetchData dependency to prevent infinite loop
 
   return {
     data,

@@ -68,7 +68,7 @@ export const usePromoterDashboard = (): UsePromoterDashboardReturn => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]); // fetchData is now memoized with useCallback
+  }, [useTemplate]); // Only depend on useTemplate, not fetchData
 
   return {
     data,
