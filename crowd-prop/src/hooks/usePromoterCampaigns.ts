@@ -184,11 +184,11 @@ export function usePromoterCampaigns(
 
   const refreshCampaigns = useCallback(async () => {
     await fetchCampaigns(lastParams);
-  }, [fetchCampaigns, lastParams]);
+  }, [lastParams]); // Only depend on lastParams, not fetchCampaigns
 
   useEffect(() => {
     fetchCampaigns(initialParams);
-  }, [fetchCampaigns, initialParams]);
+  }, [initialParams]); // Only depend on serializable initialParams
 
   return {
     ...state,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CampaignType } from "@/app/enums/campaign-type";
 import { AdvertiserCampaignStatus } from "@/app/interfaces/dashboard/advertiser-dashboard";
 import { AdvertiserCampaignSortField } from "@/app/interfaces/campaign/advertiser-campaign";
@@ -19,6 +19,13 @@ export default function AdvertiserCampaignsContent() {
     AdvertiserCampaignSortField.UPDATED_AT
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const campaignsParams = useMemo(() => ({
+    searchQuery: appliedSearchQuery || undefined,
+    status: statusFilter.length > 0 ? statusFilter : undefined,
+    type: typeFilter.length > 0 ? typeFilter : undefined,
+    sortBy,
+    sortOrder,
+  }), [appliedSearchQuery, statusFilter, typeFilter, sortBy, sortOrder]);
 
   const {
     campaigns,
@@ -27,13 +34,7 @@ export default function AdvertiserCampaignsContent() {
     summary,
     filters,
     refetch,
-  } = useAdvertiserCampaigns({
-    searchQuery: appliedSearchQuery || undefined,
-    status: statusFilter.length > 0 ? statusFilter : undefined,
-    type: typeFilter.length > 0 ? typeFilter : undefined,
-    sortBy,
-    sortOrder,
-  });
+  } = useAdvertiserCampaigns(campaignsParams);
 
   const handleSearchBlur = () => {
     setAppliedSearchQuery(searchQuery);

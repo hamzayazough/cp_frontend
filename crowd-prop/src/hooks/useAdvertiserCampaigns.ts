@@ -108,7 +108,7 @@ export const useAdvertiserCampaigns = (
         summary: ADVERTISER_CAMPAIGN_MOCKS.campaignListResponse.summary,
       };
     },
-    []
+    [] // Remove dependencies to prevent infinite rerenders
   );
 
   const fetchCampaigns = useCallback(
@@ -280,7 +280,7 @@ export const useAdvertiserCampaigns = (
     return () => {
       mounted = false;
     };
-  }, [getMockDataWithFilters, initialParams]); // React to parameter changes
+  }, [initialParams]); // Only depend on serializable initialParams
 
   return {
     campaigns,

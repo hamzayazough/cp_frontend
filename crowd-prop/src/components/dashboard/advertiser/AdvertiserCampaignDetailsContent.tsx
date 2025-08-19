@@ -103,7 +103,7 @@ export default function AdvertiserCampaignDetailsContent({
     };
 
     loadCampaign();
-  }, [campaignId, getCampaignDetails]);
+  }, [campaignId]); // Remove getCampaignDetails to prevent infinite loop
 
   const getTypeColor = (type: CampaignType) => {
     switch (type) {
