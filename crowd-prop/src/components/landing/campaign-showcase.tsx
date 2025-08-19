@@ -5,9 +5,43 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserType } from '@/contexts/UserTypeContext';
 import { useInView } from 'react-intersection-observer';
-import { Eye, Users, TrendingUp, DollarSign, Lightbulb, Rocket, Target, Zap, Clock, Shield, Star } from 'lucide-react';
+import { Eye, Users, TrendingUp, DollarSign, Lightbulb, Rocket, Target, Zap, Clock, Shield, Star, LucideIcon } from 'lucide-react';
 
-const businessCampaigns = [
+interface BusinessCampaignDetails {
+  howItWorks: string[];
+  pricing: string;
+  timeline: string;
+  benefits: string[];
+}
+
+interface IndividualCampaignDetails {
+  howItWorks: string[];
+  earnings: string;
+  requirements: string;
+  benefits: string[];
+}
+
+interface BusinessCampaign {
+  icon: LucideIcon;
+  title: string;
+  shortDesc: string;
+  description: string;
+  color: string;
+  features: string[];
+  details: BusinessCampaignDetails;
+}
+
+interface IndividualCampaign {
+  icon: LucideIcon;
+  title: string;
+  shortDesc: string;
+  description: string;
+  color: string;
+  features: string[];
+  details: IndividualCampaignDetails;
+}
+
+const businessCampaigns: BusinessCampaign[] = [
   {
     icon: Eye,
     title: "Visibility Campaigns",
@@ -90,7 +124,7 @@ const businessCampaigns = [
   }
 ];
 
-const individualOpportunities = [
+const individualOpportunities: IndividualCampaign[] = [
   {
     icon: Target,
     title: "Strategy Consulting",
@@ -367,7 +401,10 @@ export function CampaignShowcase() {
                           {userType === 'business' ? 'Pricing' : 'Earnings'}
                         </h4>
                         <p className="text-white/70 text-sm">
-                          {userType === 'business' ? campaigns[activeCampaign].details.pricing : campaigns[activeCampaign].details.earnings}
+                          {userType === 'business' 
+                            ? (campaigns[activeCampaign] as BusinessCampaign).details.pricing 
+                            : (campaigns[activeCampaign] as IndividualCampaign).details.earnings
+                          }
                         </p>
                       </div>
 
@@ -378,7 +415,10 @@ export function CampaignShowcase() {
                           {userType === 'business' ? 'Timeline' : 'Requirements'}
                         </h4>
                         <p className="text-white/70 text-sm">
-                          {userType === 'business' ? campaigns[activeCampaign].details.timeline : campaigns[activeCampaign].details.requirements}
+                          {userType === 'business' 
+                            ? (campaigns[activeCampaign] as BusinessCampaign).details.timeline 
+                            : (campaigns[activeCampaign] as IndividualCampaign).details.requirements
+                          }
                         </p>
                       </div>
                     </motion.div>
