@@ -103,7 +103,7 @@ export default function AdvertiserCampaignDetailsContent({
     };
 
     loadCampaign();
-  }, [campaignId]); // Remove getCampaignDetails to prevent infinite loop
+  }, [campaignId, getCampaignDetails]);
 
   const getTypeColor = (type: CampaignType) => {
     switch (type) {
@@ -147,15 +147,6 @@ export default function AdvertiserCampaignDetailsContent({
     });
   };
 
-  const refreshCampaignData = async () => {
-    if (!campaign) return;
-    try {
-      const updatedCampaign = await getCampaignDetails(campaign.id);
-      setCampaign(updatedCampaign);
-    } catch (error) {
-      console.error("Error refreshing campaign data:", error);
-    }
-  };
   const handleAcceptApplication = async (applicationId: string) => {
     if (!modalState.campaign) return;
 
@@ -372,7 +363,12 @@ export default function AdvertiserCampaignDetailsContent({
           onClose={handleCloseModal}
           onAcceptApplication={handleAcceptApplication}
           onRejectApplication={handleRejectApplication}
-          onRefresh={refreshCampaignData}
+          onRefresh={async () => {
+            if (modalState.campaign) {
+              const updatedCampaign = await getCampaignDetails(modalState.campaign.id);
+              setCampaign(updatedCampaign);
+            }
+          }}
         />
       )}
     </div>

@@ -68,7 +68,7 @@ export const usePromoterDashboard = (): UsePromoterDashboardReturn => {
 
   useEffect(() => {
     fetchData();
-  }, [useTemplate]); // Only depend on useTemplate, not fetchData
+  }, [useTemplate, fetchData]);
 
   return {
     data,

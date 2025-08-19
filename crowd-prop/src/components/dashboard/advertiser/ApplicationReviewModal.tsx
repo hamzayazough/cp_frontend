@@ -22,7 +22,7 @@ interface ApplicationReviewModalProps {
   applications: PromoterApplicationInfo[];
   onAcceptApplication: (applicationId: string) => void;
   onRejectApplication: (applicationId: string) => void;
-  onRefresh?: () => void;
+  onRefresh: () => Promise<void>;
 }
 
 export default function ApplicationReviewModal({
@@ -42,15 +42,17 @@ export default function ApplicationReviewModal({
     return new Intl.NumberFormat("en-US").format(num);
   };
 
-  const handleAccept = (applicationId: string) => {
+  const handleAccept = async (applicationId: string) => {
     onAcceptApplication(applicationId);
-    onRefresh?.(); // Refresh the campaign data
     onClose();
+    // Refresh the data to ensure all data is updated
+    await onRefresh();
   };
 
-  const handleReject = (applicationId: string) => {
+  const handleReject = async (applicationId: string) => {
     onRejectApplication(applicationId);
-    // Don't close modal, just remove this application from view
+    // Refresh the data to update the application list
+    await onRefresh();
   };
 
   const handleUserClick = (userId: string, e: React.MouseEvent) => {

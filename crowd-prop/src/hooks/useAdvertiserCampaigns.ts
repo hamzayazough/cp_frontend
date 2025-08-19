@@ -280,7 +280,7 @@ export const useAdvertiserCampaigns = (
     return () => {
       mounted = false;
     };
-  }, [initialParams]); // Only depend on serializable initialParams
+  }, [initialParams, getMockDataWithFilters]);
 
   return {
     campaigns,

@@ -58,7 +58,7 @@ export default function PromoterCampaignsContent() {
     }
 
     fetchCampaigns(params);
-  }, [searchTerm, statusFilter, typeFilter]); // Remove fetchCampaigns to prevent infinite loop
+  }, [searchTerm, statusFilter, typeFilter, fetchCampaigns]);
 
   const togglePlatformsExpansion = (campaignId: string) => {
     setExpandedPlatforms(prev => {

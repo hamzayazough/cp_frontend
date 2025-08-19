@@ -105,7 +105,7 @@ export const useAdvertiserDashboard = (): UseAdvertiserDashboardReturn => {
 
   useEffect(() => {
     fetchData();
-  }, []); // Remove fetchData dependency to prevent infinite loop
+  }, [fetchData]);
 
   return {
     data,
