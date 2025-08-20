@@ -9,9 +9,7 @@ export function FuturisticFooter() {
 
   const businessLinks = [
     { title: 'Campaign Types', href: '#campaigns' },
-    { title: 'Pricing', href: '#pricing' },
-    { title: 'Analytics', href: '#analytics' },
-    { title: 'API Docs', href: '#api' }
+    { title: 'Analytics', href: '#analytics' }
   ];
 
   const individualLinks = [
@@ -104,11 +102,11 @@ export function FuturisticFooter() {
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-white/60">
                 <Mail className="w-4 h-4" />
-                <span>hello@crowdprop.com</span>
+                <span>knowvance.business@gmail.com</span>
               </li>
               <li className="flex items-center gap-3 text-white/60">
                 <Phone className="w-4 h-4" />
-                <span>+1 (555) 123-4567</span>
+                <span>+1 (581) 337-8450</span>
               </li>
               <li className="flex items-center gap-3 text-white/60">
                 <MapPin className="w-4 h-4" />
